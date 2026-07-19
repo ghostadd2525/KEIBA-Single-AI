@@ -18,6 +18,12 @@ AI・API・DB は含みません。表示のみ。
 | Build output directory | **`public`** |
 | Root directory | **（空）** ← リポジトリ直下をそのまま使う |
 
+ルートの `wrangler.toml` に `pages_build_output_dir = "public"` を記載しているため、  
+Cloudflare は本リポジトリを **Worker ではなく Pages** として認識します。
+
+> **Worker として認識された / `npx wrangler deploy` が設定された場合**  
+> 既存の Worker プロジェクトを削除し、**Workers & Pages → Create → Pages タブ → Connect to Git** で作り直してください。詳細は [`cloudflare_pages_setup.md`](./cloudflare_pages_setup.md) §0/§2。
+
 公開 URL 例: `https://keiba-single-ai.pages.dev`  
 （プロジェクト名 `KEIBA-Single-AI` は Pages 上で `keiba-single-ai` に正規化されます）
 

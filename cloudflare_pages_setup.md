@@ -4,6 +4,25 @@
 
 ---
 
+## 0. Worker として認識される場合（重要）
+
+Cloudflare が本リポジトリを **Worker** として扱い、`npx wrangler deploy` が自動設定される場合があります。  
+これは「Pages プロジェクトである」と明示する設定が無いのが原因です。
+
+**対策（本リポジトリでは対応済み）:** ルートに `wrangler.toml` を置き、`pages_build_output_dir` を指定します。
+
+```toml
+name = "keiba-single-ai"
+pages_build_output_dir = "public"
+compatibility_date = "2026-07-19"
+```
+
+- `pages_build_output_dir` があると Cloudflare は **Pages** として認識します（この行が無い `main`/`[assets]` 指定は Worker 扱い）。
+- 既に **Worker プロジェクトとして作成済み**の場合は、リポジトリ設定だけでは Pages に変換されません。  
+  ダッシュボードで **その Worker プロジェクトを削除**し、**Pages として作り直す**必要があります（§2）。
+
+---
+
 ## 1. 推奨設定（コピペ用）
 
 | 項目 | 値 |
@@ -18,12 +37,15 @@ Project 名: `KEIBA-Single-AI` → 実体・URL は `keiba-single-ai` / `https:/
 
 ---
 
-## 2. GitHub 連携手順
+## 2. GitHub 連携手順（Pages として作成）
 
-1. リポジトリ `KEIBA-Single-AI` に、**直下へ** `public/` などを配置（ネストしない）。
-2. Cloudflare → Workers & Pages → Create → Pages → Connect to Git。
-3. リポジトリを選択し、§1 の設定を入力。
-4. Save and Deploy。
+1. （Worker として作成済みなら）Cloudflare の当該 **Worker プロジェクトを削除**。
+2. Workers & Pages → **Create** → **Pages** タブ → **Connect to Git**。  
+   ※「Workers」タブの Import ではなく **Pages** タブから入ること。
+3. リポジトリ `KEIBA-Single-AI` を選択。
+4. `wrangler.toml` の `pages_build_output_dir` により Build output = `public` が自動認識される。  
+   手動設定する場合は §1 のとおり（Framework=None / Build command 空 / Build output=`public` / Root 空）。
+5. Save and Deploy。
 
 ### 既にネストしてしまった場合
 

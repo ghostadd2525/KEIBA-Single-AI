@@ -1,0 +1,6 @@
+# Cloudflare Pages project config
+# このファイルに pages_build_output_dir があることで、Cloudflare は
+# 本リポジトリを「Worker」ではなく「Pages」プロジェクトとして認識します。
+name = "keiba-single-ai"
+pages_build_output_dir = "public"
+compatibility_date = "2026-07-19"
