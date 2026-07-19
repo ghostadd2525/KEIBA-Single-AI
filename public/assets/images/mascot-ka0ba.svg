@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 240" role="img" aria-label="KA0BA">
+  <defs>
+    <linearGradient id="coat" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#8B5A2B"/>
+      <stop offset="100%" stop-color="#5C3A1E"/>
+    </linearGradient>
+    <linearGradient id="gold" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#F0D78C"/>
+      <stop offset="50%" stop-color="#C9A227"/>
+      <stop offset="100%" stop-color="#8A6A12"/>
+    </linearGradient>
+  </defs>
+  <!-- shadow -->
+  <ellipse cx="100" cy="228" rx="48" ry="8" fill="#000" opacity="0.35"/>
+  <!-- body / jacket -->
+  <path d="M55 150c8 40 30 58 45 58s37-18 45-58c-12 8-28 12-45 12s-33-4-45-12z" fill="#3A2618"/>
+  <path d="M50 118c6 28 24 42 50 42s44-14 50-42c-14 10-32 16-50 16s-36-6-50-16z" fill="#5A3A22"/>
+  <!-- headset band -->
+  <path d="M48 92c8-28 30-44 52-44s44 16 52 44" fill="none" stroke="#C9A227" stroke-width="6" stroke-linecap="round"/>
+  <circle cx="42" cy="108" r="14" fill="#1A1A1A" stroke="#C9A227" stroke-width="3"/>
+  <circle cx="158" cy="108" r="14" fill="#1A1A1A" stroke="#C9A227" stroke-width="3"/>
+  <!-- head -->
+  <ellipse cx="100" cy="108" rx="52" ry="48" fill="url(#coat)"/>
+  <!-- ears -->
+  <path d="M58 78l-10-34c12 6 22 18 26 30z" fill="#7A4A24"/>
+  <path d="M142 78l10-34c-12 6-22 18-26 30z" fill="#7A4A24"/>
+  <path d="M60 76l-6-22c8 4 14 12 16 20z" fill="#E8B4C8"/>
+  <path d="M140 76l6-22c-8 4-14 12-16 20z" fill="#E8B4C8"/>
+  <!-- top hat -->
+  <ellipse cx="100" cy="58" rx="36" ry="8" fill="#1A1410"/>
+  <rect x="78" y="22" width="44" height="36" rx="4" fill="#1A1410"/>
+  <rect x="78" y="48" width="44" height="8" fill="url(#gold)"/>
+  <!-- goggles on hat -->
+  <circle cx="90" cy="38" r="8" fill="none" stroke="#C9A227" stroke-width="2.5"/>
+  <circle cx="110" cy="38" r="8" fill="none" stroke="#C9A227" stroke-width="2.5"/>
+  <path d="M98 38h4" stroke="#C9A227" stroke-width="2"/>
+  <!-- eyes -->
+  <ellipse cx="82" cy="108" rx="12" ry="14" fill="#fff"/>
+  <ellipse cx="118" cy="108" rx="12" ry="14" fill="#fff"/>
+  <ellipse cx="84" cy="110" rx="7" ry="8" fill="#3D8B37"/>
+  <ellipse cx="120" cy="110" rx="7" ry="8" fill="#3D8B37"/>
+  <circle cx="86" cy="107" r="2.5" fill="#fff"/>
+  <circle cx="122" cy="107" r="2.5" fill="#fff"/>
+  <!-- snout -->
+  <ellipse cx="100" cy="132" rx="18" ry="12" fill="#C49A6C"/>
+  <ellipse cx="93" cy="130" rx="3" ry="2.5" fill="#3A2618"/>
+  <ellipse cx="107" cy="130" rx="3" ry="2.5" fill="#3A2618"/>
+  <!-- smile -->
+  <path d="M92 138c4 4 12 4 16 0" fill="none" stroke="#5C3A1E" stroke-width="2" stroke-linecap="round"/>
+  <!-- bow tie -->
+  <path d="M78 158l14 6-14 6 4-6zM122 158l-14 6 14 6-4-6z" fill="url(#gold)"/>
+  <circle cx="100" cy="164" r="5" fill="#F0D78C"/>
+  <!-- name plate -->
+  <rect x="70" y="188" width="60" height="18" rx="9" fill="#0B0B0F" stroke="#C9A227" stroke-width="1.5"/>
+  <text x="100" y="201" text-anchor="middle" font-family="Georgia, serif" font-size="10" fill="#F0D78C" letter-spacing="1">KA0BA</text>
+</svg>
