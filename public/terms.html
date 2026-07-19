@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#05070c" />
+  <title>Expect ～ KEIBA AI ～ · 利用規約</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Noto+Sans+JP:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="assets/styles.css" />
+  <link rel="stylesheet" href="assets/login.css" />
+  <script src="assets/auth.js"></script>
+  <script>
+    (function () {
+      if (typeof ExpectAuth === "undefined") return;
+      if (!ExpectAuth.isLoggedIn()) {
+        location.replace("login.html");
+        return;
+      }
+      if (ExpectAuth.hasAcceptedTerms()) {
+        location.replace("index.html");
+      }
+    })();
+  </script>
+</head>
+<body class="page-login page-terms">
+  <div class="login-app terms-app">
+    <header class="terms-head">
+      <p class="terms-kicker">Expect ～ KEIBA AI ～</p>
+      <h1>利用規約への同意</h1>
+      <p class="terms-lead">サービスをご利用いただく前に、内容をご確認ください。</p>
+    </header>
+
+    <div class="terms-scroll" tabindex="0" aria-label="利用規約本文">
+      <article class="terms-body">
+        <h2>利用規約</h2>
+        <p>本規約は、Expect ～ KEIBA AI ～（以下「本サービス」）の利用条件を定めるものです。ユーザーは本規約に同意のうえ本サービスを利用するものとします。</p>
+
+        <h3>1. サービス内容</h3>
+        <p>本サービスは、競馬に関する情報提供およびAIによる分析・示唆を目的としたプロトタイプです。表示される予測・信頼度・推奨は参考情報であり、結果を保証するものではありません。</p>
+
+        <h3>2. 招待制・アカウント</h3>
+        <p>本サービスは招待制です。一時IDまたは招待コードは本人のみが利用し、第三者への譲渡・共有を行わないものとします。不正利用が確認された場合、利用を停止することがあります。</p>
+
+        <h3>3. 禁止事項</h3>
+        <ul>
+          <li>法令または公序良俗に反する行為</li>
+          <li>本サービスの運営を妨害する行為</li>
+          <li>不正アクセス、データの改ざん、リバースエンジニアリング</li>
+          <li>本サービスの内容を無断で複製・再配布する行為</li>
+        </ul>
+
+        <h3>4. 免責</h3>
+        <p>本サービスの情報に基づく投票・購入・その他の判断により生じた損害について、運営は一切の責任を負いません。馬券の購入は自己責任で行ってください。未成年の方の馬券購入は法律で禁じられています。</p>
+
+        <h3>5. プライバシー</h3>
+        <p>本プロトタイプでは、端末内の一時的な保存領域（sessionStorage等）にログイン状態を保持します。個人を特定する情報の外部送信は、別途明示した場合を除き行いません。</p>
+
+        <h3>6. 規約の変更</h3>
+        <p>運営は必要に応じて本規約を変更できます。変更後に本サービスを利用した場合、変更後の規約に同意したものとみなします。</p>
+
+        <h2>プライバシーポリシー（概要）</h2>
+        <p>取得する情報は、ログイン識別子および利用に必要な端末内設定に限られます。広告目的での第三者提供は行いません。お問い合わせは運営窓口までご連絡ください。</p>
+
+        <p class="terms-meta">施行日：2026年7月19日 / 版：v1</p>
+      </article>
+    </div>
+
+    <section class="terms-actions" aria-label="規約同意">
+      <label class="terms-check">
+        <input type="checkbox" id="termsAgree" />
+        <span>
+          <a href="#terms" id="termsLink">利用規約</a>
+          および
+          <a href="#privacy" id="privacyLink">プライバシーポリシー</a>
+          に同意する
+        </span>
+      </label>
+      <p class="login-error" id="termsError" role="alert"></p>
+      <button type="button" class="login-submit" id="termsContinue" disabled>
+        同意して続ける
+        <span aria-hidden="true">›</span>
+      </button>
+    </section>
+  </div>
+
+  <script>
+    (function () {
+      var box = document.getElementById("termsAgree");
+      var btn = document.getElementById("termsContinue");
+      var err = document.getElementById("termsError");
+      var scroll = document.querySelector(".terms-scroll");
+
+      function sync() {
+        btn.disabled = !box.checked;
+        if (box.checked) err.textContent = "";
+      }
+
+      box.addEventListener("change", sync);
+      sync();
+
+      function focusScroll() {
+        if (scroll) scroll.focus({ preventScroll: false });
+      }
+      document.getElementById("termsLink").addEventListener("click", function (e) {
+        e.preventDefault();
+        focusScroll();
+      });
+      document.getElementById("privacyLink").addEventListener("click", function (e) {
+        e.preventDefault();
+        focusScroll();
+      });
+
+      btn.addEventListener("click", function () {
+        if (!box.checked) {
+          err.textContent = "続行するには規約への同意が必要です";
+          return;
+        }
+        if (!ExpectAuth.isLoggedIn()) {
+          err.textContent = "ログイン状態が切れました。再度ログインしてください";
+          location.href = "login.html";
+          return;
+        }
+        if (!ExpectAuth.acceptTerms()) {
+          err.textContent = "同意状態を保存できませんでした。再度お試しください";
+          return;
+        }
+        location.href = "index.html";
+      });
+    })();
+  </script>
+</body>
+</html>

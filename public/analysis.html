@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Expect ～ KEIBA AI ～ · 分析</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Noto+Sans+JP:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="assets/styles.css" />
+  <link rel="stylesheet" href="assets/screens.css" />
+  <script src="assets/auth.js"></script>
+  <script>ExpectAuth.requireAuth();</script>
+</head>
+<body class="page-screen" data-nav="analysis">
+  <div class="app">
+    <header class="topbar">
+      <div class="topbar-inner">
+        <div class="topbar-left">
+          <div class="brand-block topbar-text">
+            <p class="brand-name">Expect</p>
+            <p class="brand-sub">～ KEIBA AI ～</p>
+          </div>
+        </div>
+        <div class="topbar-tools">
+          <button type="button" class="icon-btn" aria-label="通知">
+            <svg class="nav-ico" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M12 3a5.5 5.5 0 0 0-5.5 5.5v2.2c0 .9-.3 1.8-.9 2.5L4.2 15.2c-.4.5-.1 1.3.6 1.3h14.4c.7 0 1-.8.6-1.3l-1.4-2c-.6-.7-.9-1.6-.9-2.5V8.5A5.5 5.5 0 0 0 12 3Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+              <path d="M10 18.5a2 2 0 0 0 4 0" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+            </svg>
+          </button>
+          <button type="button" class="icon-btn" aria-label="メニュー">
+            <svg class="nav-ico" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M5 7h14M5 12h14M5 17h14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <div class="screen">
+      <div class="chip-row" id="analysisTabs">
+        <button type="button" class="chip is-active">総合分析</button>
+        <button type="button" class="chip">血統</button>
+        <button type="button" class="chip">展開</button>
+        <button type="button" class="chip">騎手</button>
+        <button type="button" class="chip">オッズ</button>
+      </div>
+
+      <div class="gauge-hero">
+        <div class="gauge-ring">
+          <div>
+            <strong>92%</strong>
+            <small>AI総合評価</small>
+          </div>
+        </div>
+      </div>
+
+      <section class="chart-card">
+        <h3>評価詳細</h3>
+        <div class="score-list">
+          <div class="score-row"><span>血統適性</span><div class="score-bar"><i style="width:90%"></i></div><b>90%</b></div>
+          <div class="score-row"><span>展開予測</span><div class="score-bar"><i style="width:88%"></i></div><b>88%</b></div>
+          <div class="score-row"><span>騎手相性</span><div class="score-bar"><i style="width:85%"></i></div><b>85%</b></div>
+          <div class="score-row"><span>近走内容</span><div class="score-bar"><i style="width:91%"></i></div><b>91%</b></div>
+          <div class="score-row"><span>オッズ妙味</span><div class="score-bar"><i style="width:78%"></i></div><b>78%</b></div>
+        </div>
+      </section>
+
+      <section class="chart-card">
+        <h3>血統適性</h3>
+        <div class="bar-list">
+          <div class="bar-item"><span>ディープ</span><div class="score-bar"><i style="--w:92%;width:92%"></i></div><b>92</b></div>
+          <div class="bar-item"><span>キングカメ</span><div class="score-bar"><i style="width:84%"></i></div><b>84</b></div>
+          <div class="bar-item"><span>ステイ</span><div class="score-bar"><i style="width:76%"></i></div><b>76</b></div>
+          <div class="bar-item"><span>ハーツ</span><div class="score-bar"><i style="width:71%"></i></div><b>71</b></div>
+        </div>
+      </section>
+
+      <section class="chart-card">
+        <h3>AI展開予測</h3>
+        <svg class="line-chart" viewBox="0 0 320 120" aria-hidden="true">
+          <polyline fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="1" points="0,20 320,20"/>
+          <polyline fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="1" points="0,60 320,60"/>
+          <polyline fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="1" points="0,100 320,100"/>
+          <polyline fill="none" stroke="#c1a26d" stroke-width="2.5" stroke-linejoin="round"
+            points="10,88 60,70 110,74 160,48 210,42 260,28 310,22"/>
+          <circle cx="210" cy="42" r="4" fill="#d4b37d"/>
+        </svg>
+      </section>
+    </div>
+
+    <aside class="mascot-ka0ba" id="mascotKa0ba" data-mascot-mode="png">
+      <div class="mascot-bubble" id="mascotBubble" role="status" aria-live="polite"></div>
+      <button type="button" class="mascot-figure" id="mascotTalkBtn" aria-label="KA0BAに話しかける">
+        <img data-mascot-fallback src="assets/images/mascot-ka0ba.png?v=10" alt="" height="140" draggable="false" />
+      </button>
+    </aside>
+
+    <div data-expect-nav></div>
+  </div>
+  <script src="assets/shell.js"></script>
+  <script src="assets/partials-nav.js"></script>
+  <script>
+    ExpectShell.initChips("#analysisTabs");
+    ExpectShell.initMascotTalk([
+      "中盤からペースが<br>上がりやすい展開だよ！",
+      "総合評価 92%。<br>自信を持っていける内容！"
+    ]);
+  </script>
+</body>
+</html>

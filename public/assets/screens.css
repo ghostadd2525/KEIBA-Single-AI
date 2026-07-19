@@ -1,0 +1,667 @@
+/**
+ * Expect — 遷移先6画面スタイル
+ */
+
+.screen {
+  padding: 8px var(--pad) 28px;
+  display: grid;
+  gap: 14px;
+}
+
+.screen-title {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.chip-row,
+.tab-row {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-x;
+  padding-bottom: 2px;
+}
+
+.chip-row::-webkit-scrollbar,
+.tab-row::-webkit-scrollbar { display: none; }
+
+.chip,
+.tab-pill {
+  flex: 0 0 auto;
+  height: 32px;
+  padding: 0 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(193, 162, 109, 0.45);
+  color: var(--gold-soft);
+  font-size: 12px;
+  font-weight: 600;
+  background: rgba(20, 24, 32, 0.8);
+  white-space: nowrap;
+}
+
+.chip.is-active,
+.tab-pill.is-active {
+  background: linear-gradient(180deg, #e5c78f, #c1a26d 55%, #9f7e4a);
+  color: #1a1204;
+  border-color: transparent;
+}
+
+.date-tabs .tab-pill { min-width: 64px; text-align: center; }
+
+/* —— レース一覧 —— */
+.race-list { display: grid; gap: 10px; }
+
+.race-item {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 10px;
+  align-items: center;
+  padding: 12px;
+  border-radius: var(--radius);
+  background: var(--card);
+  border: 1px solid rgba(193, 162, 109, 0.18);
+  text-decoration: none;
+  color: inherit;
+}
+
+.race-item-place {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.race-item-name {
+  margin: 3px 0 0;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.race-item-meta {
+  margin: 6px 0 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.race-stars { color: var(--gold); letter-spacing: 1px; }
+
+.race-item-side {
+  display: grid;
+  justify-items: end;
+  gap: 8px;
+}
+
+.race-conf {
+  font-family: var(--display);
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--gold-soft);
+  line-height: 1;
+}
+
+.race-conf small {
+  display: block;
+  margin-top: 2px;
+  font-family: var(--font);
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.btn-detail {
+  height: 30px;
+  padding: 0 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(193, 162, 109, 0.55);
+  color: var(--gold-soft);
+  font-size: 11px;
+  font-weight: 700;
+  background: rgba(0, 0, 0, 0.25);
+}
+
+/* —— レース詳細 —— */
+.detail-head h1 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.detail-head p {
+  margin: 4px 0 0;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.honmei-card {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 12px;
+  align-items: center;
+  padding: 14px;
+  border-radius: var(--radius-lg);
+  background: linear-gradient(145deg, #1a1f2a, #12161e);
+  border: 1px solid rgba(193, 162, 109, 0.28);
+}
+
+.honmei-num {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  font-family: var(--display);
+  font-size: 26px;
+  font-weight: 700;
+  color: #1a1204;
+  background: linear-gradient(180deg, #e5c78f, #c1a26d);
+}
+
+.honmei-card h2 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.honmei-card p {
+  margin: 4px 0 0;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.radar-box {
+  width: 88px;
+  height: 88px;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at center, transparent 28%, rgba(193, 162, 109, 0.08) 29%),
+    conic-gradient(
+      from -90deg,
+      #c1a26d 0 18%,
+      rgba(193, 162, 109, 0.35) 18% 36%,
+      #d4b37d 36% 55%,
+      rgba(193, 162, 109, 0.45) 55% 72%,
+      #c1a26d 72% 88%,
+      rgba(193, 162, 109, 0.3) 88% 100%
+    );
+  position: relative;
+  box-shadow: 0 0 0 1px rgba(193, 162, 109, 0.25);
+}
+
+.radar-box span {
+  position: absolute;
+  inset: 18px;
+  border-radius: 50%;
+  background: #12161e;
+  display: grid;
+  place-items: center;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--gold);
+  text-align: center;
+  line-height: 1.2;
+}
+
+.pace-card {
+  padding: 12px;
+  border-radius: var(--radius);
+  background: var(--card);
+  border: 1px solid rgba(193, 162, 109, 0.16);
+}
+
+.pace-card h3 {
+  margin: 0 0 8px;
+  font-size: 13px;
+  color: #fff;
+}
+
+.pace-card p {
+  margin: 0 0 10px;
+  font-size: 12px;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.pace-track {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  overflow-x: auto;
+  padding: 4px 0;
+}
+
+.pace-dot {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 11px;
+  font-weight: 700;
+  color: #1a1204;
+  background: var(--gold-soft);
+  flex: 0 0 auto;
+}
+
+.pace-dot.is-dim {
+  background: #3a4250;
+  color: #c8cdd6;
+}
+
+.pace-label {
+  font-size: 10px;
+  color: var(--muted);
+  flex: 0 0 auto;
+}
+
+.fab-bet {
+  position: sticky;
+  bottom: calc(var(--nav-h) + 12px);
+  z-index: 20;
+  display: flex;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.fab-bet a,
+.fab-bet button {
+  pointer-events: auto;
+  min-width: 220px;
+  height: 44px;
+  padding: 0 20px;
+  border-radius: 999px;
+  border: 0;
+  font-size: 14px;
+  font-weight: 700;
+  color: #1a1204;
+  background: linear-gradient(180deg, #e5c78f, #c1a26d 50%, #9f7e4a);
+  box-shadow: 0 10px 24px rgba(193, 162, 109, 0.35);
+}
+
+/* —— 分析 —— */
+.gauge-hero {
+  display: grid;
+  place-items: center;
+  padding: 8px 0 4px;
+}
+
+.gauge-ring {
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at center, #0d121a 58%, transparent 59%),
+    conic-gradient(#d4b37d 0 92%, rgba(255, 255, 255, 0.08) 92% 100%);
+  display: grid;
+  place-items: center;
+  box-shadow: 0 0 0 1px rgba(193, 162, 109, 0.25);
+}
+
+.gauge-ring strong {
+  font-family: var(--display);
+  font-size: 36px;
+  color: var(--gold-soft);
+  line-height: 1;
+}
+
+.gauge-ring small {
+  display: block;
+  margin-top: 4px;
+  text-align: center;
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.score-list { display: grid; gap: 10px; }
+
+.score-row {
+  display: grid;
+  grid-template-columns: 92px 1fr auto;
+  gap: 8px;
+  align-items: center;
+  font-size: 12px;
+}
+
+.score-row span { color: var(--muted); }
+.score-row b { color: var(--gold-soft); font-variant-numeric: tabular-nums; }
+
+.score-bar {
+  height: 8px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.06);
+  overflow: hidden;
+}
+
+.score-bar i {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #8c6e42, #d4b37d);
+}
+
+.chart-card {
+  padding: 12px;
+  border-radius: var(--radius);
+  background: var(--card);
+  border: 1px solid rgba(193, 162, 109, 0.16);
+}
+
+.chart-card h3 {
+  margin: 0 0 10px;
+  font-size: 13px;
+}
+
+.line-chart {
+  width: 100%;
+  height: 120px;
+  display: block;
+}
+
+.bar-list { display: grid; gap: 8px; }
+
+.bar-item {
+  display: grid;
+  grid-template-columns: 72px 1fr 36px;
+  gap: 8px;
+  align-items: center;
+  font-size: 12px;
+}
+
+.bar-item .score-bar i { width: var(--w, 50%); }
+
+/* —— 保存レース —— */
+.saved-list { display: grid; gap: 10px; }
+
+.saved-item {
+  display: grid;
+  grid-template-columns: 72px 1fr auto;
+  gap: 10px;
+  align-items: center;
+  padding: 10px;
+  border-radius: var(--radius);
+  background: var(--card);
+  border: 1px solid rgba(193, 162, 109, 0.16);
+  text-decoration: none;
+  color: inherit;
+}
+
+.saved-thumb {
+  width: 72px;
+  height: 56px;
+  border-radius: 10px;
+  object-fit: cover;
+  background: #1a2030;
+}
+
+.saved-item h3 {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.saved-item p {
+  margin: 3px 0 0;
+  font-size: 11px;
+  color: var(--muted);
+}
+
+/* —— マイページ —— */
+.profile-card {
+  display: grid;
+  grid-template-columns: 64px 1fr;
+  gap: 12px;
+  align-items: center;
+  padding: 14px;
+  border-radius: var(--radius-lg);
+  background: var(--card);
+  border: 1px solid rgba(193, 162, 109, 0.2);
+}
+
+.profile-avatar {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid rgba(193, 162, 109, 0.45);
+  background: #1a2030;
+}
+
+.profile-card h2 {
+  margin: 0;
+  font-size: 16px;
+}
+
+.profile-card .meta {
+  margin: 4px 0 0;
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.badge-premium {
+  display: inline-block;
+  margin-top: 6px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 700;
+  color: #1a1204;
+  background: linear-gradient(90deg, #e5c78f, #c1a26d);
+}
+
+.level-bar {
+  margin-top: 8px;
+  height: 6px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+}
+
+.level-bar i {
+  display: block;
+  width: 68%;
+  height: 100%;
+  background: linear-gradient(90deg, #8c6e42, #d4b37d);
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  padding: 12px;
+  border-radius: var(--radius);
+  background: var(--card);
+  border: 1px solid rgba(193, 162, 109, 0.16);
+}
+
+.stats-grid h3 {
+  grid-column: 1 / -1;
+  margin: 0 0 4px;
+  font-size: 13px;
+}
+
+.stat-cell {
+  padding: 8px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.stat-cell span {
+  display: block;
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.stat-cell b {
+  display: block;
+  margin-top: 4px;
+  font-size: 18px;
+  font-family: var(--display);
+  color: var(--gold-soft);
+}
+
+.menu-list {
+  display: grid;
+  gap: 2px;
+  border-radius: var(--radius);
+  overflow: hidden;
+  border: 1px solid rgba(193, 162, 109, 0.16);
+  background: var(--card);
+}
+
+.menu-list a {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 12px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #fff;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.menu-list a:last-child { border-bottom: 0; }
+.menu-list a span { color: var(--gold); }
+
+/* —— チャット —— */
+.page-chat .app { padding-bottom: 0; }
+.page-chat .bottom-nav { display: none; }
+
+.chat-shell {
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100dvh - 72px);
+  padding-bottom: 0;
+}
+
+.chat-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.chat-head img {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid rgba(193, 162, 109, 0.4);
+}
+
+.chat-head h1 {
+  margin: 0;
+  font-size: 16px;
+}
+
+.chat-log {
+  flex: 1;
+  display: grid;
+  gap: 12px;
+  align-content: start;
+  padding: 8px 0 12px;
+  overflow-y: auto;
+}
+
+.msg {
+  display: flex;
+  gap: 8px;
+  align-items: flex-end;
+  max-width: 92%;
+}
+
+.msg-ai { align-self: start; }
+.msg-user {
+  align-self: end;
+  margin-left: auto;
+  flex-direction: row-reverse;
+}
+
+.msg img {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex: 0 0 auto;
+}
+
+.msg-bubble {
+  padding: 10px 12px;
+  border-radius: 14px;
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.msg-ai .msg-bubble {
+  background: #1a2030;
+  border: 1px solid rgba(193, 162, 109, 0.18);
+  color: #f0f2f5;
+  border-bottom-left-radius: 4px;
+}
+
+.msg-user .msg-bubble {
+  background: #2f6fed;
+  color: #fff;
+  border-bottom-right-radius: 4px;
+}
+
+.chat-composer {
+  position: sticky;
+  bottom: 0;
+  padding: 8px 0 calc(10px + env(safe-area-inset-bottom));
+  background: linear-gradient(180deg, transparent, #080c12 28%);
+  display: grid;
+  gap: 8px;
+}
+
+.chat-quick {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.chat-quick::-webkit-scrollbar { display: none; }
+
+.chat-input-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 8px;
+  align-items: center;
+}
+
+.chat-input-row input {
+  height: 42px;
+  border-radius: 999px;
+  border: 1px solid rgba(193, 162, 109, 0.28);
+  background: #141820;
+  color: #fff;
+  padding: 0 14px;
+  font: inherit;
+  outline: none;
+}
+
+.chat-input-row input::placeholder { color: #6e7685; }
+
+.chat-send {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  color: #1a1204;
+  background: linear-gradient(180deg, #e5c78f, #c1a26d);
+}
+
+.topbar-title-only .brand-name { font-size: 22px; }
+.topbar-title-only .brand-sub { display: none; }
+
+.page-screen .home-chrome,
+.page-screen .main:not(.is-visible) { display: none; }
+
+.page-screen .mascot-ka0ba { z-index: 40; }

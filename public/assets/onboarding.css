@@ -1,0 +1,105 @@
+/**
+ * 初回操作説明（スポットライト）
+ * くり抜き部分だけ下のUIを操作可能、それ以外はグレーアウトでブロック
+ */
+
+.ob-root {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  pointer-events: none;
+}
+
+.ob-root[hidden] {
+  display: none !important;
+}
+
+.ob-block {
+  position: absolute;
+  background: rgba(3, 5, 10, 0.72);
+  pointer-events: auto;
+  transition: all 0.25s ease;
+}
+
+.ob-ring {
+  position: absolute;
+  border-radius: 14px;
+  outline: 2px solid rgba(212, 175, 55, 0.9);
+  outline-offset: 2px;
+  pointer-events: none;
+  box-shadow: 0 0 0 1px rgba(212, 175, 55, 0.25);
+  transition: all 0.25s ease;
+  z-index: 1;
+}
+
+.ob-card {
+  position: absolute;
+  z-index: 3;
+  width: min(300px, calc(100vw - 28px));
+  padding: 14px 14px 12px;
+  border-radius: 16px;
+  background: rgba(16, 20, 28, 0.98);
+  border: 1px solid rgba(193, 162, 109, 0.45);
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.45);
+  color: #fff;
+  pointer-events: auto;
+}
+
+.ob-step {
+  margin: 0 0 6px;
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  color: rgba(212, 175, 55, 0.9);
+}
+
+.ob-card h2 {
+  margin: 0 0 6px;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.ob-card p {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.55;
+  color: rgba(255, 255, 255, 0.78);
+}
+
+.ob-actions {
+  margin-top: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.ob-skip {
+  border: 0;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.55);
+  font: inherit;
+  font-size: 12px;
+  padding: 8px 4px;
+  cursor: pointer;
+}
+
+.ob-next {
+  border: 0;
+  border-radius: 999px;
+  padding: 10px 16px;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  color: #1a1204;
+  background: linear-gradient(180deg, #e8d09a 0%, #c9a66a 48%, #a07f45 100%);
+  cursor: pointer;
+}
+
+.ob-next:active {
+  transform: scale(0.98);
+}
+
+body.is-onboarding {
+  overflow: hidden;
+}

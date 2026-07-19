@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Expect ～ KEIBA AI ～ · レース一覧</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Noto+Sans+JP:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="assets/styles.css" />
+  <link rel="stylesheet" href="assets/screens.css" />
+  <script src="assets/auth.js"></script>
+  <script>ExpectAuth.requireAuth();</script>
+</head>
+<body class="page-screen" data-nav="race">
+  <div class="app">
+    <header class="topbar">
+      <div class="topbar-inner">
+        <div class="topbar-left">
+          <div class="brand-block topbar-text">
+            <p class="brand-name">Expect</p>
+            <p class="brand-sub">～ KEIBA AI ～</p>
+          </div>
+        </div>
+        <div class="topbar-tools">
+          <button type="button" class="icon-btn" aria-label="絞り込み">
+            <svg class="nav-ico" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M4 6h16M7 12h10M10 18h4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+            </svg>
+          </button>
+          <button type="button" class="icon-btn" aria-label="カレンダー">
+            <svg class="nav-ico" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <rect x="4" y="5" width="16" height="15" rx="2" stroke="currentColor" stroke-width="1.6"/>
+              <path d="M8 3v4M16 3v4M4 10h16" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <div class="screen">
+      <div class="tab-row date-tabs chip-row" id="dateTabs">
+        <button type="button" class="tab-pill is-active">7/19</button>
+        <button type="button" class="tab-pill">7/20</button>
+        <button type="button" class="tab-pill">7/21</button>
+      </div>
+      <div class="chip-row" id="venueChips">
+        <button type="button" class="chip is-active">すべて</button>
+        <button type="button" class="chip">札幌</button>
+        <button type="button" class="chip">函館</button>
+        <button type="button" class="chip">福島</button>
+        <button type="button" class="chip">新潟</button>
+        <button type="button" class="chip">東京</button>
+        <button type="button" class="chip">中山</button>
+        <button type="button" class="chip">中京</button>
+        <button type="button" class="chip">京都</button>
+        <button type="button" class="chip">阪神</button>
+        <button type="button" class="chip">小倉</button>
+      </div>
+
+      <div class="race-list">
+        <a class="race-item" href="race.html?race_id=20260719_tokyo_11">
+          <div>
+            <p class="race-item-place">東京 11R</p>
+            <p class="race-item-name">函館記念（GIII）</p>
+            <div class="race-item-meta">
+              <span>15:45発走</span>
+              <span class="race-stars">★★★★☆</span>
+            </div>
+          </div>
+          <div class="race-item-side">
+            <div class="race-conf">88%<small>AI信頼度</small></div>
+            <span class="btn-detail">詳細を見る ›</span>
+          </div>
+        </a>
+        <a class="race-item" href="race.html?race_id=20260719_hanshin_11">
+          <div>
+            <p class="race-item-place">阪神 11R</p>
+            <p class="race-item-name">メインレース</p>
+            <div class="race-item-meta">
+              <span>15:40発走</span>
+              <span class="race-stars">★★★★★</span>
+            </div>
+          </div>
+          <div class="race-item-side">
+            <div class="race-conf">92%<small>AI信頼度</small></div>
+            <span class="btn-detail">詳細を見る ›</span>
+          </div>
+        </a>
+        <a class="race-item" href="race.html?race_id=20260719_fukushima_11">
+          <div>
+            <p class="race-item-place">福島 11R</p>
+            <p class="race-item-name">ラジオNIKKEI賞</p>
+            <div class="race-item-meta">
+              <span>15:25発走</span>
+              <span class="race-stars">★★★☆☆</span>
+            </div>
+          </div>
+          <div class="race-item-side">
+            <div class="race-conf">76%<small>AI信頼度</small></div>
+            <span class="btn-detail">詳細を見る ›</span>
+          </div>
+        </a>
+        <a class="race-item" href="race.html?race_id=20260719_hakodate_11">
+          <div>
+            <p class="race-item-place">函館 11R</p>
+            <p class="race-item-name">函館2歳S</p>
+            <div class="race-item-meta">
+              <span>15:10発走</span>
+              <span class="race-stars">★★★★☆</span>
+            </div>
+          </div>
+          <div class="race-item-side">
+            <div class="race-conf">81%<small>AI信頼度</small></div>
+            <span class="btn-detail">詳細を見る ›</span>
+          </div>
+        </a>
+      </div>
+    </div>
+
+    <aside class="mascot-ka0ba" id="mascotKa0ba" data-mascot-mode="png">
+      <div class="mascot-bubble" id="mascotBubble" role="status" aria-live="polite"></div>
+      <button type="button" class="mascot-figure" id="mascotTalkBtn" aria-label="KA0BAに話しかける">
+        <img data-mascot-fallback src="assets/images/mascot-ka0ba.png?v=10" alt="" height="140" draggable="false" />
+      </button>
+    </aside>
+
+    <div data-expect-nav></div>
+  </div>
+  <script src="assets/shell.js"></script>
+  <script src="assets/partials-nav.js"></script>
+  <script>
+    ExpectShell.initMascotTalk([
+      "気になるレースを<br>タップして詳細を<br>見てみよう！",
+      "AI信頼度が高いレースから<br>チェックするのがコツだよ！"
+    ]);
+    ExpectShell.initChips("#dateTabs");
+    ExpectShell.initChips("#venueChips");
+  </script>
+</body>
+</html>

@@ -8,6 +8,9 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Noto+Sans+JP:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="assets/styles.css" />
+  <link rel="stylesheet" href="assets/onboarding.css" />
+  <script src="assets/auth.js"></script>
+  <script>ExpectAuth.requireAuth();</script>
 </head>
 <body class="page-home">
   <div class="app">
@@ -24,10 +27,15 @@
         </div>
         <div class="topbar-tools">
           <button type="button" class="icon-btn" aria-label="通知">
-            <img src="assets/icons/bell.svg" alt="" />
+            <svg class="nav-ico" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M12 3a5.5 5.5 0 0 0-5.5 5.5v2.2c0 .9-.3 1.8-.9 2.5L4.2 15.2c-.4.5-.1 1.3.6 1.3h14.4c.7 0 1-.8.6-1.3l-1.4-2c-.6-.7-.9-1.6-.9-2.5V8.5A5.5 5.5 0 0 0 12 3Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+              <path d="M10 18.5a2 2 0 0 0 4 0" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+            </svg>
           </button>
           <button type="button" class="icon-btn" aria-label="メニュー">
-            <img src="assets/icons/menu.svg" alt="" />
+            <svg class="nav-ico" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M5 7h14M5 12h14M5 17h14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+            </svg>
           </button>
         </div>
       </div>
@@ -47,7 +55,7 @@
             <img class="info-ico" src="assets/icons/icon-info.svg" alt="" />
           </p>
           <p class="dash-roi">128%</p>
-          <a class="dash-rank" href="#catalog">週次ランキング 24位 <span>›</span></a>
+          <a class="dash-rank" href="mypage.html">週次ランキング 24位 <span>›</span></a>
         </div>
 
         <div class="fav-panel" id="favorites">
@@ -58,8 +66,8 @@
             </h2>
             <button type="button" class="fav-edit">編集</button>
           </div>
-          <div class="favorites-rail">
-            <a class="fav-card" href="#/meeting/20260719_fukushima">
+          <div class="favorites-rail" aria-label="お気に入りレース（スワイプで横スクロール）">
+            <a class="fav-card" href="races.html">
               <div class="fav-card-text">
                 <p class="fav-meta">7/19（土）</p>
                 <p class="fav-place">函館 11R</p>
@@ -77,7 +85,7 @@
               </div>
               <div class="fav-card-photo" style="background-image:url('assets/images/bg-fav-1.png')"></div>
             </a>
-            <a class="fav-card" href="#/meeting/20260720_nakayama">
+            <a class="fav-card" href="saved.html">
               <div class="fav-card-text">
                 <p class="fav-meta">7/20（日）</p>
                 <p class="fav-place">中山 11R</p>
@@ -112,7 +120,7 @@
           </div>
         </a>
 
-        <a class="ai-card ai-card--odds" href="#catalog">
+        <a class="ai-card ai-card--odds" href="analysis.html">
           <img class="ai-card-bg" src="assets/images/bg-ai-2.png" alt="" />
           <div class="ai-card-shade"></div>
           <div class="ai-card-row">
@@ -156,7 +164,7 @@
             <span>高</span>
           </div>
         </div>
-        <div class="heatmap-scroll">
+        <div class="heatmap-scroll" aria-label="競馬場×距離（スワイプで横スクロール）">
           <table class="heatmap-table">
             <thead>
               <tr>
@@ -288,8 +296,13 @@
             AI信頼度（競馬場 × 馬場状態）
             <img class="info-ico" src="assets/icons/icon-info.svg" alt="" />
           </h2>
+          <div class="heat-legend" aria-hidden="true">
+            <span>低</span>
+            <i></i>
+            <span>高</span>
+          </div>
         </div>
-        <div class="cond-table-wrap">
+        <div class="cond-table-wrap" aria-label="馬場状態（スワイプで横スクロール）">
           <table class="cond-table">
             <thead>
               <tr>
@@ -300,24 +313,24 @@
             <tbody>
               <tr>
                 <th>東京 芝</th>
-                <td class="is-good">92%</td><td>88%</td><td>80%</td><td>72%</td>
+                <td style="--v:92">92%</td><td style="--v:88">88%</td><td style="--v:80">80%</td><td style="--v:72">72%</td>
               </tr>
               <tr>
                 <th>東京 ダート</th>
-                <td class="is-good">86%</td><td>82%</td><td>75%</td><td>68%</td>
+                <td style="--v:86">86%</td><td style="--v:82">82%</td><td style="--v:75">75%</td><td style="--v:68">68%</td>
               </tr>
               <tr>
                 <th>中山 芝</th>
-                <td class="is-good">89%</td><td>84%</td><td>77%</td><td>70%</td>
+                <td style="--v:89">89%</td><td style="--v:84">84%</td><td style="--v:77">77%</td><td style="--v:70">70%</td>
               </tr>
               <tr>
                 <th>中山 ダート</th>
-                <td class="is-good">84%</td><td>79%</td><td>73%</td><td>65%</td>
+                <td style="--v:84">84%</td><td style="--v:79">79%</td><td style="--v:73">73%</td><td style="--v:65">65%</td>
               </tr>
             </tbody>
           </table>
         </div>
-        <a class="heat-more" href="#catalog">全競馬場を表示 ›</a>
+        <a class="heat-more" href="races.html">全競馬場を表示 ›</a>
       </section>
     </div>
 
@@ -327,37 +340,46 @@
     </main>
 
     <aside class="mascot-ka0ba" id="mascotKa0ba" data-mascot-mode="png" aria-label="AIコンシェルジュ KA0BA">
-      <div class="mascot-bubble" role="status">
-        今日は<br />
-        <strong>東京芝2000m</strong> の<br />
-        信頼度が高いよ！<br />
-        期待できそう！
-      </div>
-      <div class="mascot-figure">
+      <div class="mascot-bubble" id="mascotBubble" role="status" aria-live="polite"></div>
+      <button type="button" class="mascot-figure" id="mascotTalkBtn" aria-label="KA0BAに話しかける">
         <div class="mascot-live2d-slot" id="ka0baLive2dSlot" aria-hidden="true"></div>
-        <img data-mascot-fallback src="assets/images/mascot-ka0ba.png" alt="KA0BA" width="110" height="146" />
-      </div>
+        <img data-mascot-fallback src="assets/images/mascot-ka0ba.png?v=10" alt="" height="140" draggable="false" />
+      </button>
     </aside>
 
     <nav class="bottom-nav" aria-label="メインメニュー">
       <a href="index.html" class="is-active" data-nav="home">
-        <img src="assets/icons/nav-home.svg" alt="" />
+        <svg class="nav-ico" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M4 10.5 12 4l8 6.5V20a1 1 0 0 1-1 1h-5v-6H10v6H5a1 1 0 0 1-1-1v-9.5Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+        </svg>
         ホーム
       </a>
-      <a href="#catalog" data-nav="race">
-        <img src="assets/icons/nav-race.svg" alt="" />
+      <a href="races.html" data-nav="race">
+        <svg class="nav-ico" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M5 16c2-4 4.5-6 7-6s5 2 7 6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+          <path d="M8 10c.5-2 2-3.5 4-3.5S15.5 8 16 10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+          <circle cx="9" cy="17.5" r="1.5" stroke="currentColor" stroke-width="1.6" fill="none"/>
+          <circle cx="15" cy="17.5" r="1.5" stroke="currentColor" stroke-width="1.6" fill="none"/>
+        </svg>
         レース
       </a>
-      <a href="#heatmap" data-nav="analysis">
-        <img src="assets/icons/nav-chart.svg" alt="" />
+      <a href="analysis.html" data-nav="analysis">
+        <svg class="nav-ico" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M4 19h16M7 16V9M12 16V5M17 16v-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+        </svg>
         分析
       </a>
-      <a href="#favorites" data-nav="saved">
-        <img src="assets/icons/nav-star.svg" alt="" />
+      <a href="saved.html" data-nav="saved">
+        <svg class="nav-ico" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="m12 3.5 2.6 5.3 5.9.9-4.2 4.1 1 5.8L12 16.8 6.7 19.6l1-5.8L3.5 9.7l5.9-.9L12 3.5Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" fill="none"/>
+        </svg>
         保存レース
       </a>
-      <a href="#topbar" data-nav="mypage">
-        <img src="assets/icons/nav-user.svg" alt="" />
+      <a href="mypage.html" data-nav="mypage">
+        <svg class="nav-ico" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <circle cx="12" cy="8" r="3.5" stroke="currentColor" stroke-width="1.6" fill="none"/>
+          <path d="M5 19.5c1.5-3.5 4-5 7-5s5.5 1.5 7 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+        </svg>
         マイページ
       </a>
     </nav>
@@ -365,6 +387,7 @@
 
   <script src="data/sample_data.js"></script>
   <script src="assets/app.js"></script>
+  <script src="assets/onboarding.js"></script>
   <script>
     /* 表示専用（app.js 非改変）: 時計 + ホーム/カタログ表示切替 */
     (function () {
@@ -405,6 +428,125 @@
         if (mascot) mascot.hidden = catalog;
         document.body.classList.toggle("is-catalog-view", catalog);
       }
+
+      /** タッチはネイティブ、マウスはドラッグで横スクロール */
+      function enableSwipeScroll(el) {
+        if (!el) return;
+        var pointerId = null;
+        var startX = 0;
+        var startScrollLeft = 0;
+        var moved = false;
+
+        el.addEventListener("pointerdown", function (e) {
+          if (e.pointerType === "touch") return;
+          if (e.pointerType === "mouse" && e.button !== 0) return;
+          pointerId = e.pointerId;
+          startX = e.clientX;
+          startScrollLeft = el.scrollLeft;
+          moved = false;
+          el.setPointerCapture(e.pointerId);
+          el.classList.add("is-dragging");
+        });
+
+        el.addEventListener("pointermove", function (e) {
+          if (pointerId !== e.pointerId) return;
+          var dx = e.clientX - startX;
+          if (Math.abs(dx) > 3) moved = true;
+          el.scrollLeft = startScrollLeft - dx;
+        });
+
+        function endDrag(e) {
+          if (pointerId !== e.pointerId) return;
+          pointerId = null;
+          el.classList.remove("is-dragging");
+          try { el.releasePointerCapture(e.pointerId); } catch (err) { /* noop */ }
+        }
+
+        el.addEventListener("pointerup", endDrag);
+        el.addEventListener("pointercancel", endDrag);
+        el.addEventListener("click", function (e) {
+          if (!moved) return;
+          e.preventDefault();
+          e.stopPropagation();
+          moved = false;
+        }, true);
+      }
+
+      enableSwipeScroll(document.querySelector(".favorites-rail"));
+      enableSwipeScroll(document.querySelector(".heatmap-scroll"));
+      enableSwipeScroll(document.querySelector(".cond-table-wrap"));
+
+      /* KA0BA: タップで吹き出しトーク */
+      (function initMascotTalk() {
+        var root = document.getElementById("mascotKa0ba");
+        var btn = document.getElementById("mascotTalkBtn");
+        var bubble = document.getElementById("mascotBubble");
+        if (!root || !btn || !bubble) return;
+
+        var lines = [
+          "今日は<br><strong>東京芝2000m</strong> の<br>信頼度が高いよ！<br>期待できそう！",
+          "お疲れさま！<br>今週の回収率は<br><strong>128%</strong> だよ♪",
+          "お気に入りレース、<br>忘れずにチェックしてね！",
+          "オッズが動いたら<br>すぐ教えてあげるね！",
+          "血統と走破タイム、<br>今日の本命は<br>自信ありだよ！",
+          "タップありがとう！<br>一緒に的中を<br>狙おうね♪"
+        ];
+        var idx = 0;
+        var hideTimer = null;
+        var typeTimer = null;
+
+        function clearTimers() {
+          if (hideTimer) { clearTimeout(hideTimer); hideTimer = null; }
+          if (typeTimer) { clearInterval(typeTimer); typeTimer = null; }
+        }
+
+        function hideBubble() {
+          clearTimers();
+          root.classList.remove("is-speaking");
+        }
+
+        function speak(html) {
+          clearTimers();
+          root.classList.remove("is-speaking");
+          void root.offsetWidth;
+          root.classList.add("is-speaking");
+
+          var plain = html.replace(/<br\s*\/?>/gi, "\n").replace(/<\/?strong>/gi, "");
+          var cursor = 0;
+          bubble.innerHTML = "";
+          typeTimer = setInterval(function () {
+            cursor += 1;
+            var slice = plain.slice(0, cursor)
+              .replace(/&/g, "&amp;")
+              .replace(/</g, "&lt;")
+              .replace(/>/g, "&gt;")
+              .replace(/\n/g, "<br>");
+            bubble.innerHTML = slice;
+            if (cursor >= plain.length) {
+              clearInterval(typeTimer);
+              typeTimer = null;
+              bubble.innerHTML = html;
+              hideTimer = setTimeout(hideBubble, 4200);
+            }
+          }, 28);
+        }
+
+        btn.addEventListener("click", function () {
+          var line = lines[idx % lines.length];
+          idx += 1;
+          speak(line);
+        });
+
+        // 操作説明が無いときだけ初回ひとこと
+        setTimeout(function () {
+          if (!root.hidden && ExpectAuth && !ExpectAuth.needsOnboarding()) speak(lines[0]);
+        }, 700);
+      })();
+
+      // 初回ログイン後のみスポットライト操作説明
+      setTimeout(function () {
+        if (window.ExpectOnboarding) ExpectOnboarding.start();
+      }, 450);
 
       window.addEventListener("hashchange", syncView);
       syncView();

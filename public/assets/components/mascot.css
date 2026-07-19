@@ -11,12 +11,19 @@
  */
 
 .mascot-ka0ba {
-  --mascot-size: 22vw;
+  /* デザインシート: 身長 ≈ 画面の約20% / 右下に1枚絵として配置 */
+  --mascot-h: clamp(104px, 20vh, 148px);
+  --app-rail: min(100vw, var(--app-max, 430px));
+  --kaoba-gold: #d4af37;
+  --kaoba-navy: #2c3e50;
   position: fixed;
-  right: max(0.5rem, calc((100vw - var(--app-max, 430px)) / 2 + 0.2rem));
-  bottom: calc(4.4rem + env(safe-area-inset-bottom, 0px));
+  /* 中央寄せの .app 右端に合わせる（分割プレビューでも枠外に出ない） */
+  left: auto;
+  right: calc((100vw - var(--app-rail)) / 2 + 0.2rem);
+  bottom: calc(4.15rem + env(safe-area-inset-bottom, 0px));
   z-index: 40;
-  width: clamp(84px, var(--mascot-size), 120px);
+  width: auto;
+  max-width: min(42vw, 150px);
   pointer-events: none;
   display: flex;
   flex-direction: column;
@@ -26,46 +33,75 @@
 }
 
 .mascot-ka0ba .mascot-bubble {
-  pointer-events: auto;
-  max-width: min(220px, 62vw);
-  padding: 0.65rem 0.8rem;
-  border-radius: 14px 14px 4px 14px;
-  background: rgba(12, 12, 16, 0.72);
-  border: 1px solid rgba(201, 162, 39, 0.45);
+  pointer-events: none;
+  max-width: min(200px, 52vw, 11.5rem);
+  margin-right: 0.15rem;
+  padding: 0.7rem 0.85rem;
+  border-radius: 12px;
+  background: rgba(44, 62, 80, 0.92);
+  border: 1.5px solid var(--kaoba-gold);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
-  color: #f0d78c;
+  color: #ffffff;
   font-size: 0.72rem;
   line-height: 1.45;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
-  animation: mascot-bubble-in 0.55s ease both;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(8px) scale(0.96);
+  transition: opacity 0.28s ease, transform 0.28s ease, visibility 0.28s;
+  align-self: flex-end;
+}
+
+.mascot-ka0ba.is-speaking .mascot-bubble {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0) scale(1);
+  animation: mascot-bubble-in 0.35s ease both;
 }
 
 .mascot-ka0ba .mascot-bubble strong {
-  color: #fff8e7;
+  color: var(--kaoba-gold);
   font-weight: 600;
 }
 
 .mascot-ka0ba .mascot-figure {
   pointer-events: auto;
   position: relative;
-  width: 100%;
-  aspect-ratio: 3 / 4;
+  /* 1枚絵: 高さ基準・幅は画像比率のまま */
+  width: auto;
+  height: var(--mascot-h);
   display: block;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
   background: transparent;
   border: none;
   box-shadow: none;
   filter: drop-shadow(0 12px 16px rgba(0, 0, 0, 0.5));
   animation: mascot-idle 4.2s ease-in-out infinite;
-  transform-origin: 50% 90%;
+  transform-origin: 70% 100%;
+  -webkit-tap-highlight-color: transparent;
 }
 
-/* PNG フォールバック（透過必須） */
+.mascot-ka0ba .mascot-figure:focus-visible {
+  outline: 2px solid rgba(240, 215, 140, 0.7);
+  outline-offset: 4px;
+  border-radius: 12px;
+}
+
+.mascot-ka0ba.is-speaking .mascot-figure {
+  animation: mascot-talk 0.55s ease;
+}
+
+/* PNG フォールバック（1枚絵として等倍比率で表示） */
 .mascot-ka0ba .mascot-figure img[data-mascot-fallback] {
-  width: 100%;
+  width: auto;
   height: 100%;
+  max-width: none;
   display: block;
   object-fit: contain;
+  object-position: right bottom;
   background: transparent;
   border: 0;
   outline: none;
@@ -73,6 +109,7 @@
   -webkit-user-drag: none;
   user-select: none;
   animation: mascot-breathe 3.2s ease-in-out infinite;
+  pointer-events: none;
 }
 
 /* Live2D / Cubism 用スロット */
@@ -127,6 +164,13 @@
   50% { transform: scale(1.02); }
 }
 
+@keyframes mascot-talk {
+  0% { transform: translateY(0) scale(1); }
+  30% { transform: translateY(-8px) scale(1.04) rotate(2deg); }
+  60% { transform: translateY(-2px) scale(1.01) rotate(-1deg); }
+  100% { transform: translateY(0) scale(1); }
+}
+
 @keyframes mascot-bubble-in {
   from { opacity: 0; transform: translateY(8px) scale(0.96); }
   to { opacity: 1; transform: translateY(0) scale(1); }
@@ -134,13 +178,14 @@
 
 @media (prefers-reduced-motion: reduce) {
   .mascot-ka0ba .mascot-figure,
-  .mascot-ka0ba .mascot-figure img[data-mascot-fallback] {
+  .mascot-ka0ba .mascot-figure img[data-mascot-fallback],
+  .mascot-ka0ba.is-speaking .mascot-figure {
     animation: none;
   }
 }
 
 @media (min-width: 640px) {
   .mascot-ka0ba {
-    --mascot-size: 102px;
+    --mascot-h: 140px;
   }
 }

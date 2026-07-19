@@ -8,64 +8,109 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Noto+Sans+JP:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="assets/styles.css" />
+  <link rel="stylesheet" href="assets/screens.css" />
+  <script src="assets/auth.js"></script>
+  <script>ExpectAuth.requireAuth();</script>
 </head>
-<body class="is-race-page is-catalog-view">
+<body class="page-screen" data-nav="race">
   <div class="app">
     <header class="topbar">
       <div class="topbar-inner">
         <div class="topbar-left">
-          <a class="back-btn" id="backLink" href="index.html" aria-label="戻る">‹</a>
-          <div class="brand-block topbar-text">
-            <p class="brand-name">Expect</p>
-            <p class="brand-sub">～ KEIBA AI ～</p>
-            <h1 class="page-title">レース詳細</h1>
+          <a class="back-btn" href="races.html" aria-label="戻る">‹</a>
+          <div class="brand-block topbar-text topbar-title-only">
+            <p class="brand-name" id="raceTitle">阪神 11R</p>
+            <p class="brand-sub">小倉記念 · 15:40</p>
           </div>
         </div>
         <div class="topbar-tools">
-          <button type="button" class="icon-btn" aria-label="通知">
-            <img src="assets/icons/bell.svg" alt="" />
-          </button>
-          <button type="button" class="icon-btn" aria-label="メニュー">
-            <img src="assets/icons/menu.svg" alt="" />
+          <button type="button" class="icon-btn" aria-label="カレンダー">
+            <svg class="nav-ico" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <rect x="4" y="5" width="16" height="15" rx="2" stroke="currentColor" stroke-width="1.6"/>
+              <path d="M8 3v4M16 3v4M4 10h16" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+            </svg>
           </button>
         </div>
       </div>
     </header>
 
-    <main class="main is-catalog" id="main" aria-live="polite">
-      <p class="muted">読み込み中…</p>
-    </main>
+    <div class="screen">
+      <div class="chip-row" id="detailTabs">
+        <button type="button" class="chip is-active">AI予想</button>
+        <button type="button" class="chip">出馬表</button>
+        <button type="button" class="chip">オッズ</button>
+        <button type="button" class="chip">データ</button>
+        <button type="button" class="chip">結果</button>
+      </div>
 
-    <nav class="bottom-nav" aria-label="メインメニュー">
-      <a href="index.html">
-        <img src="assets/icons/nav-home.svg" alt="" />
-        ホーム
-      </a>
-      <a href="index.html#catalog" class="is-active">
-        <img src="assets/icons/nav-race.svg" alt="" />
-        レース
-      </a>
-      <a href="index.html#heatmap">
-        <img src="assets/icons/nav-chart.svg" alt="" />
-        分析
-      </a>
-      <a href="index.html#favorites">
-        <img src="assets/icons/nav-star.svg" alt="" />
-        保存レース
-      </a>
-      <a href="index.html#topbar">
-        <img src="assets/icons/nav-user.svg" alt="" />
-        マイページ
-      </a>
-    </nav>
+      <article class="honmei-card">
+        <div class="honmei-num">7</div>
+        <div>
+          <h2>エンプレスリターン</h2>
+          <p>AI本命 · 信頼度 92%</p>
+          <p class="race-stars" style="margin-top:6px">★★★★★</p>
+        </div>
+        <div class="radar-box" aria-label="能力レーダー">
+          <span>血統<br>展開<br>騎手</span>
+        </div>
+      </article>
+
+      <section class="pace-card">
+        <h3>展開予想</h3>
+        <p>逃げ・先行が厚く、中盤でペースが上がりやすい。差し馬の仕掛けどころが鍵になる展開だよ。</p>
+        <div class="pace-track" aria-label="位置取りイメージ">
+          <span class="pace-label">スタート</span>
+          <span class="pace-dot">3</span>
+          <span class="pace-dot">1</span>
+          <span class="pace-dot is-dim">5</span>
+          <span class="pace-dot">7</span>
+          <span class="pace-dot is-dim">9</span>
+          <span class="pace-dot">4</span>
+          <span class="pace-label">ゴール</span>
+        </div>
+      </section>
+
+      <section class="chart-card">
+        <h3>評価内訳</h3>
+        <div class="score-list">
+          <div class="score-row"><span>血統適性</span><div class="score-bar"><i style="width:90%"></i></div><b>90</b></div>
+          <div class="score-row"><span>展開予測</span><div class="score-bar"><i style="width:86%"></i></div><b>86</b></div>
+          <div class="score-row"><span>騎手相性</span><div class="score-bar"><i style="width:84%"></i></div><b>84</b></div>
+          <div class="score-row"><span>近走内容</span><div class="score-bar"><i style="width:88%"></i></div><b>88</b></div>
+          <div class="score-row"><span>オッズ妙味</span><div class="score-bar"><i style="width:79%"></i></div><b>79</b></div>
+        </div>
+      </section>
+
+      <div class="fab-bet">
+        <a href="chat.html">買い目戦略を見る</a>
+      </div>
+    </div>
+
+    <aside class="mascot-ka0ba" id="mascotKa0ba" data-mascot-mode="png">
+      <div class="mascot-bubble" id="mascotBubble" role="status" aria-live="polite"></div>
+      <button type="button" class="mascot-figure" id="mascotTalkBtn" aria-label="KA0BAに話しかける">
+        <img data-mascot-fallback src="assets/images/mascot-ka0ba.png?v=10" alt="" height="140" draggable="false" />
+      </button>
+    </aside>
+
+    <div data-expect-nav></div>
   </div>
-
-  <script src="data/sample_data.js"></script>
-  <script src="assets/app.js"></script>
+  <script src="assets/shell.js"></script>
+  <script src="assets/partials-nav.js"></script>
   <script>
-    document.addEventListener("DOMContentLoaded", function () {
-      SingleDemo.initRacePage();
-    });
+    ExpectShell.initChips("#detailTabs");
+    ExpectShell.initMascotTalk([
+      "逃げ・先行が厚いから<br>差し有利の展開に<br>なりそう！",
+      "7番は総合評価トップ。<br>本命候補だよ！"
+    ]);
+    var id = new URLSearchParams(location.search).get("race_id") || "";
+    if (id.indexOf("tokyo") >= 0) {
+      document.getElementById("raceTitle").textContent = "東京 11R";
+    } else if (id.indexOf("fukushima") >= 0) {
+      document.getElementById("raceTitle").textContent = "福島 11R";
+    } else if (id.indexOf("hakodate") >= 0) {
+      document.getElementById("raceTitle").textContent = "函館 11R";
+    }
   </script>
 </body>
 </html>
