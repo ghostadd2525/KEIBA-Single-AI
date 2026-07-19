@@ -186,13 +186,14 @@
       <p class="muted">読み込み中…</p>
     </main>
 
-    <!-- KA0BA: Live2D差し替え前提の独立コンポーネント -->
-    <aside class="mascot-ka0ba" id="mascotKa0ba" aria-label="AIコンシェルジュ KA0BA">
+    <!-- KA0BA: Live2D差し替え前提（現在は透過PNG + idleモーション） -->
+    <aside class="mascot-ka0ba" id="mascotKa0ba" data-mascot-mode="png" aria-label="AIコンシェルジュ KA0BA">
       <div class="mascot-bubble" role="status">
         今日は<strong>東京芝2000m</strong>の信頼度が高いよ！期待できそう！
       </div>
       <div class="mascot-figure">
-        <img src="assets/images/mascot-ka0ba.png" alt="KA0BA" width="110" height="146" />
+        <div class="mascot-live2d-slot" id="ka0baLive2dSlot" aria-hidden="true"></div>
+        <img data-mascot-fallback src="assets/images/mascot-ka0ba.png" alt="KA0BA" width="110" height="146" />
       </div>
       <p class="mascot-name">KA0BA</p>
     </aside>
