@@ -58,8 +58,13 @@
         <button type="button" class="chip">小倉</button>
       </div>
 
+      <p class="heat-note" style="margin:0 0 8px">お気に入りは最大3件。4件目を追加すると一番古いレースが外れます。</p>
+
       <div class="race-list">
-        <a class="race-item" href="race.html?race_id=20260719_tokyo_11">
+        <a class="race-item race-item--bg1" href="race.html?race_id=20260719_tokyo_11">
+          <button type="button" class="fav-btn fav-btn--icon" data-fav-toggle="20260719_tokyo_11" data-fav-place="東京 11R" data-fav-name="函館記念" data-fav-badge="GIII" data-fav-date="7/19（土）" aria-label="お気に入りに追加">
+            <span class="fav-star" aria-hidden="true">★</span>
+          </button>
           <div>
             <p class="race-item-place">東京 11R</p>
             <p class="race-item-name">函館記念（GIII）</p>
@@ -73,7 +78,10 @@
             <span class="btn-detail">詳細を見る ›</span>
           </div>
         </a>
-        <a class="race-item" href="race.html?race_id=20260719_hanshin_11">
+        <a class="race-item race-item--bg2" href="race.html?race_id=20260719_hanshin_11">
+          <button type="button" class="fav-btn fav-btn--icon" data-fav-toggle="20260719_hanshin_11" data-fav-place="阪神 11R" data-fav-name="メインレース" data-fav-badge="GIII" data-fav-date="7/19（土）" aria-label="お気に入りに追加">
+            <span class="fav-star" aria-hidden="true">★</span>
+          </button>
           <div>
             <p class="race-item-place">阪神 11R</p>
             <p class="race-item-name">メインレース</p>
@@ -87,7 +95,10 @@
             <span class="btn-detail">詳細を見る ›</span>
           </div>
         </a>
-        <a class="race-item" href="race.html?race_id=20260719_fukushima_11">
+        <a class="race-item race-item--bg3" href="race.html?race_id=20260719_fukushima_11">
+          <button type="button" class="fav-btn fav-btn--icon" data-fav-toggle="20260719_fukushima_11" data-fav-place="福島 11R" data-fav-name="ラジオNIKKEI賞" data-fav-badge="GIII" data-fav-date="7/19（土）" aria-label="お気に入りに追加">
+            <span class="fav-star" aria-hidden="true">★</span>
+          </button>
           <div>
             <p class="race-item-place">福島 11R</p>
             <p class="race-item-name">ラジオNIKKEI賞</p>
@@ -101,7 +112,10 @@
             <span class="btn-detail">詳細を見る ›</span>
           </div>
         </a>
-        <a class="race-item" href="race.html?race_id=20260719_hakodate_11">
+        <a class="race-item race-item--bg4" href="race.html?race_id=20260719_hakodate_11">
+          <button type="button" class="fav-btn fav-btn--icon" data-fav-toggle="20260719_hakodate_11" data-fav-place="函館 11R" data-fav-name="函館2歳S" data-fav-badge="GIII" data-fav-date="7/19（土）" aria-label="お気に入りに追加">
+            <span class="fav-star" aria-hidden="true">★</span>
+          </button>
           <div>
             <p class="race-item-place">函館 11R</p>
             <p class="race-item-name">函館2歳S</p>
@@ -115,27 +129,44 @@
             <span class="btn-detail">詳細を見る ›</span>
           </div>
         </a>
+        <a class="race-item race-item--bg1" href="race.html?race_id=20260720_nakayama_11">
+          <button type="button" class="fav-btn fav-btn--icon" data-fav-toggle="20260720_nakayama_11" data-fav-place="中山 11R" data-fav-name="中山ダート戦" data-fav-badge="L" data-fav-date="7/20（日）" aria-label="お気に入りに追加">
+            <span class="fav-star" aria-hidden="true">★</span>
+          </button>
+          <div>
+            <p class="race-item-place">中山 11R</p>
+            <p class="race-item-name">中山ダート戦</p>
+            <div class="race-item-meta">
+              <span>15:30発走</span>
+              <span class="race-stars">★★★★☆</span>
+            </div>
+          </div>
+          <div class="race-item-side">
+            <div class="race-conf">79%<small>AI信頼度</small></div>
+            <span class="btn-detail">詳細を見る ›</span>
+          </div>
+        </a>
       </div>
     </div>
 
     <aside class="mascot-ka0ba" id="mascotKa0ba" data-mascot-mode="png">
       <div class="mascot-bubble" id="mascotBubble" role="status" aria-live="polite"></div>
-      <button type="button" class="mascot-figure" id="mascotTalkBtn" aria-label="KA0BAに話しかける">
+      <button type="button" class="mascot-figure" id="mascotTalkBtn" aria-label="KAOBAに話しかける">
         <img data-mascot-fallback src="assets/images/mascot-ka0ba.png?v=10" alt="" height="140" draggable="false" />
       </button>
     </aside>
 
     <div data-expect-nav></div>
   </div>
+  <script src="assets/favorites.js"></script>
   <script src="assets/shell.js"></script>
   <script src="assets/partials-nav.js"></script>
   <script>
+    ExpectFavorites.bindButtons();
     ExpectShell.initMascotTalk([
-      "気になるレースを<br>タップして詳細を<br>見てみよう！",
-      "AI信頼度が高いレースから<br>チェックするのがコツだよ！"
+      "気になるレースは<br>★ でお気に入り登録してね！",
+      "お気に入りは最大3件だよ。<br>古いは順に外れるよ！"
     ]);
-    ExpectShell.initChips("#dateTabs");
-    ExpectShell.initChips("#venueChips");
   </script>
 </body>
 </html>

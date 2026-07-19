@@ -24,6 +24,9 @@
           </div>
         </div>
         <div class="topbar-tools">
+          <button type="button" class="fav-btn fav-btn--icon" id="raceFavBtn" data-fav-toggle="" aria-label="お気に入りに追加">
+            <span class="fav-star" aria-hidden="true">★</span>
+          </button>
           <button type="button" class="icon-btn" aria-label="カレンダー">
             <svg class="nav-ico" viewBox="0 0 24 24" fill="none" aria-hidden="true">
               <rect x="4" y="5" width="16" height="15" rx="2" stroke="currentColor" stroke-width="1.6"/>
@@ -81,6 +84,11 @@
         </div>
       </section>
 
+      <button type="button" class="fav-btn fav-btn--block" id="raceFavBtnBlock" data-fav-toggle="" aria-label="お気に入りに追加">
+        <span class="fav-star" aria-hidden="true">★</span>
+        <span data-fav-label>お気に入り</span>
+      </button>
+
       <div class="fab-bet">
         <a href="chat.html">買い目戦略を見る</a>
       </div>
@@ -95,22 +103,33 @@
 
     <div data-expect-nav></div>
   </div>
+  <script src="assets/favorites.js"></script>
   <script src="assets/shell.js"></script>
   <script src="assets/partials-nav.js"></script>
   <script>
     ExpectShell.initChips("#detailTabs");
     ExpectShell.initMascotTalk([
       "逃げ・先行が厚いから<br>差し有利の展開に<br>なりそう！",
-      "7番は総合評価トップ。<br>本命候補だよ！"
+      "★ でお気に入り登録すると<br>ホームに最大3件まで<br>表示されるよ！"
     ]);
-    var id = new URLSearchParams(location.search).get("race_id") || "";
-    if (id.indexOf("tokyo") >= 0) {
-      document.getElementById("raceTitle").textContent = "東京 11R";
-    } else if (id.indexOf("fukushima") >= 0) {
-      document.getElementById("raceTitle").textContent = "福島 11R";
-    } else if (id.indexOf("hakodate") >= 0) {
-      document.getElementById("raceTitle").textContent = "函館 11R";
-    }
+
+    var id = new URLSearchParams(location.search).get("race_id") || "20260719_hanshin_11";
+    var meta = ExpectFavorites.getMeta(id);
+    var titleEl = document.getElementById("raceTitle");
+    var subEl = document.querySelector(".brand-sub");
+    if (titleEl) titleEl.textContent = meta.place || "レース詳細";
+    if (subEl) subEl.textContent = (meta.name || "") + (meta.badge ? " · " + meta.badge : "");
+
+    ["raceFavBtn", "raceFavBtnBlock"].forEach(function (btnId) {
+      var btn = document.getElementById(btnId);
+      if (!btn) return;
+      btn.setAttribute("data-fav-toggle", id);
+      btn.setAttribute("data-fav-place", meta.place || "");
+      btn.setAttribute("data-fav-name", meta.name || "");
+      btn.setAttribute("data-fav-badge", meta.badge || "");
+      btn.setAttribute("data-fav-date", meta.dateLabel || "");
+    });
+    ExpectFavorites.bindButtons();
   </script>
 </body>
 </html>
