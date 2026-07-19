@@ -11,17 +11,17 @@
  */
 
 .mascot-ka0ba {
-  --mascot-size: 20vw;
+  --mascot-size: 22vw;
   position: fixed;
-  right: max(0.75rem, calc((100vw - var(--app-max, 430px)) / 2 + 0.35rem));
-  bottom: calc(4.6rem + env(safe-area-inset-bottom, 0px));
+  right: max(0.5rem, calc((100vw - var(--app-max, 430px)) / 2 + 0.2rem));
+  bottom: calc(4.4rem + env(safe-area-inset-bottom, 0px));
   z-index: 40;
-  width: clamp(78px, var(--mascot-size), 118px);
+  width: clamp(84px, var(--mascot-size), 120px);
   pointer-events: none;
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  gap: 0.4rem;
+  gap: 0.35rem;
   background: transparent;
 }
 

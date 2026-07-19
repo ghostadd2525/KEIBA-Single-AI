@@ -6,10 +6,10 @@
   <title>Expect ～ KEIBA AI ～ · レース詳細</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Noto+Sans+JP:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="assets/styles.css" />
 </head>
-<body class="is-race-page">
+<body class="is-race-page is-catalog-view">
   <div class="app">
     <header class="topbar">
       <div class="topbar-inner">
@@ -21,42 +21,27 @@
             <h1 class="page-title">レース詳細</h1>
           </div>
         </div>
-        <div class="topbar-actions">
-          <div class="topbar-tools">
-            <button type="button" class="icon-btn" aria-label="通知">
-              <img src="assets/icons/bell.svg" alt="" />
-            </button>
-            <button type="button" class="icon-btn" aria-label="メニュー">
-              <img src="assets/icons/menu.svg" alt="" />
-            </button>
-          </div>
-          <p class="clock-date" id="clockDate">—</p>
-          <p class="clock" id="clockTime">--:--</p>
+        <div class="topbar-tools">
+          <button type="button" class="icon-btn" aria-label="通知">
+            <img src="assets/icons/bell.svg" alt="" />
+          </button>
+          <button type="button" class="icon-btn" aria-label="メニュー">
+            <img src="assets/icons/menu.svg" alt="" />
+          </button>
         </div>
       </div>
     </header>
 
-    <main class="main" id="main" aria-live="polite">
+    <main class="main is-catalog" id="main" aria-live="polite">
       <p class="muted">読み込み中…</p>
     </main>
-
-    <aside class="mascot-ka0ba" id="mascotKa0ba" data-mascot-mode="png" aria-label="AIコンシェルジュ KA0BA">
-      <div class="mascot-bubble" role="status">
-        このレース、印と本命から入るのがおすすめだよ。
-      </div>
-      <div class="mascot-figure">
-        <div class="mascot-live2d-slot" id="ka0baLive2dSlot" aria-hidden="true"></div>
-        <img data-mascot-fallback src="assets/images/mascot-ka0ba.png" alt="KA0BA" width="110" height="146" />
-      </div>
-      <p class="mascot-name">KA0BA</p>
-    </aside>
 
     <nav class="bottom-nav" aria-label="メインメニュー">
       <a href="index.html">
         <img src="assets/icons/nav-home.svg" alt="" />
         ホーム
       </a>
-      <a href="index.html#main" class="is-active">
+      <a href="index.html#catalog" class="is-active">
         <img src="assets/icons/nav-race.svg" alt="" />
         レース
       </a>
@@ -77,29 +62,6 @@
 
   <script src="data/sample_data.js"></script>
   <script src="assets/app.js"></script>
-  <script>
-    /* 表示専用: 時計のみ */
-    (function () {
-      function pad(n) { return String(n).padStart(2, "0"); }
-      function tick() {
-        var now = new Date();
-        var week = ["日", "月", "火", "水", "木", "金", "土"];
-        var dateEl = document.getElementById("clockDate");
-        var timeEl = document.getElementById("clockTime");
-        if (dateEl) {
-          dateEl.textContent =
-            now.getFullYear() + "年" +
-            (now.getMonth() + 1) + "月" +
-            now.getDate() + "日（" + week[now.getDay()] + "）";
-        }
-        if (timeEl) {
-          timeEl.textContent = pad(now.getHours()) + ":" + pad(now.getMinutes());
-        }
-      }
-      tick();
-      setInterval(tick, 15000);
-    })();
-  </script>
   <script>
     document.addEventListener("DOMContentLoaded", function () {
       SingleDemo.initRacePage();

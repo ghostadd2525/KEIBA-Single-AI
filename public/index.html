@@ -6,11 +6,12 @@
   <title>Expect ～ KEIBA AI ～</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Noto+Sans+JP:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="assets/styles.css" />
 </head>
-<body>
+<body class="page-home">
   <div class="app">
+    <!-- ===== Header（モック準拠） ===== -->
     <header class="topbar" id="topbar">
       <div class="topbar-inner">
         <div class="topbar-left">
@@ -18,108 +19,148 @@
           <div class="brand-block topbar-text">
             <p class="brand-name">Expect</p>
             <p class="brand-sub">～ KEIBA AI ～</p>
-            <!-- JS が書き換えるページタイトル（既存フック維持） -->
             <h1 class="page-title" id="pageTitle">開催一覧</h1>
           </div>
         </div>
-        <div class="topbar-actions">
-          <div class="topbar-tools">
-            <button type="button" class="icon-btn" aria-label="通知">
-              <img src="assets/icons/bell.svg" alt="" />
-            </button>
-            <button type="button" class="icon-btn" aria-label="メニュー">
-              <img src="assets/icons/menu.svg" alt="" />
-            </button>
-          </div>
-          <p class="clock-date" id="clockDate">—</p>
-          <p class="clock" id="clockTime">--:--</p>
+        <div class="topbar-tools">
+          <button type="button" class="icon-btn" aria-label="通知">
+            <img src="assets/icons/bell.svg" alt="" />
+          </button>
+          <button type="button" class="icon-btn" aria-label="メニュー">
+            <img src="assets/icons/menu.svg" alt="" />
+          </button>
         </div>
       </div>
     </header>
 
-    <!-- デザイン専用シェル（データ／遷移ロジック非依存） -->
+    <!-- ===== Home mockup canvas ===== -->
     <div class="home-chrome" id="homeChrome">
-      <section class="favorites-block" id="favorites" aria-label="お気に入りレース">
-        <h2 class="section-label"><span class="star" aria-hidden="true">★</span> お気に入りレース</h2>
-        <div class="favorites-rail">
-          <a class="fav-card" href="race.html?race_id=20260719_hanshin_11">
-            <span class="fav-badge">GIII</span>
-            <div class="fav-card-inner">
-              <p class="fav-meta">7/19 (土) · 阪神 11R</p>
-              <p class="fav-title">メインレース</p>
-              <p class="fav-meta">ダート 1800m</p>
-            </div>
-          </a>
-          <a class="fav-card" href="#/meeting/20260719_fukushima">
-            <span class="fav-badge">OP</span>
-            <div class="fav-card-inner">
-              <p class="fav-meta">7/19 (土) · 福島 11R</p>
-              <p class="fav-title">福島記念級</p>
-              <p class="fav-meta">芝 2000m</p>
-            </div>
-          </a>
-          <a class="fav-card" href="#/meeting/20260720_nakayama">
-            <span class="fav-badge">L</span>
-            <div class="fav-card-inner">
-              <p class="fav-meta">7/20 (日) · 中山 11R</p>
-              <p class="fav-title">中山ダート戦</p>
-              <p class="fav-meta">ダート 1200m</p>
-            </div>
-          </a>
+      <p class="home-date" id="clockDate">2025年7月19日（土）</p>
+
+      <!-- 左: 時計・回収率 / 右: お気に入りレース -->
+      <section class="dash-row" aria-label="本日サマリーとお気に入り">
+        <div class="dash-stats">
+          <p class="dash-time" id="clockTime">09:41</p>
+          <hr class="dash-rule" />
+          <p class="dash-label">
+            今週の回収率
+            <img class="info-ico" src="assets/icons/icon-info.svg" alt="" />
+          </p>
+          <p class="dash-roi">128%</p>
+          <a class="dash-rank" href="#catalog">週次ランキング 24位 <span>›</span></a>
+        </div>
+
+        <div class="fav-panel" id="favorites">
+          <div class="fav-panel-head">
+            <h2 class="fav-panel-title">
+              <span class="star" aria-hidden="true">☆</span>
+              お気に入りレース
+            </h2>
+            <button type="button" class="fav-edit">編集</button>
+          </div>
+          <div class="favorites-rail">
+            <a class="fav-card" href="#/meeting/20260719_fukushima">
+              <div class="fav-card-text">
+                <p class="fav-meta">7/19（土）</p>
+                <p class="fav-place">函館 11R</p>
+                <p class="fav-name">函館2歳S</p>
+                <span class="fav-badge">GIII</span>
+              </div>
+              <div class="fav-card-photo" style="background-image:url('assets/images/bg-fav-1.png')"></div>
+            </a>
+            <a class="fav-card" href="race.html?race_id=20260719_hanshin_11">
+              <div class="fav-card-text">
+                <p class="fav-meta">7/19（土）</p>
+                <p class="fav-place">阪神 11R</p>
+                <p class="fav-name">メインレース</p>
+                <span class="fav-badge">GIII</span>
+              </div>
+              <div class="fav-card-photo" style="background-image:url('assets/images/bg-fav-1.png')"></div>
+            </a>
+            <a class="fav-card" href="#/meeting/20260720_nakayama">
+              <div class="fav-card-text">
+                <p class="fav-meta">7/20（日）</p>
+                <p class="fav-place">中山 11R</p>
+                <p class="fav-name">中山ダート戦</p>
+                <span class="fav-badge">L</span>
+              </div>
+              <div class="fav-card-photo" style="background-image:url('assets/images/bg-fav-1.png')"></div>
+            </a>
+          </div>
         </div>
       </section>
 
-      <section class="ai-cards" id="aiCards" aria-label="AIコンシェルジュ">
-        <a class="ai-card" href="race.html?race_id=20260719_hanshin_11">
-          <img class="ai-card-bg" src="assets/images/card-ai-predict.svg" alt="" />
-          <div class="ai-card-body">
-            <p class="ai-card-kicker">AI予想</p>
-            <h3 class="ai-card-title">今日の本命</h3>
-            <p class="ai-card-desc">コンシェルジュが本日の軸を提案します</p>
-            <div class="ai-card-foot">
-              <div class="ai-gauge" style="--p: 87" aria-label="AI信頼度 87%">
-                <span>87%</span>
+      <!-- AIカード3枚（文言・構成はモック準拠） -->
+      <section class="ai-cards" id="aiCards">
+        <a class="ai-card ai-card--predict" href="race.html?race_id=20260719_hanshin_11">
+          <img class="ai-card-bg" src="assets/images/bg-ai-1.png" alt="" />
+          <div class="ai-card-shade"></div>
+          <div class="ai-card-row">
+            <span class="ai-ico" aria-hidden="true"><img src="assets/icons/icon-brain.svg" alt="" /></span>
+            <div class="ai-copy">
+              <p class="ai-kicker">AI予想</p>
+              <h3 class="ai-title">今日の本命</h3>
+              <p class="ai-desc">AIが導き出す勝利の答え</p>
+            </div>
+            <div class="ai-side">
+              <div class="ai-gauge" style="--p:87" aria-label="AI信頼度 87%">
+                <span class="ai-gauge-num">87%</span>
+                <span class="ai-gauge-label">AI信頼度</span>
               </div>
               <span class="ai-pill">本命を見る ›</span>
             </div>
           </div>
         </a>
 
-        <a class="ai-card" href="#/meeting/20260719_hanshin">
-          <img class="ai-card-bg" src="assets/images/card-odds.svg" alt="" />
-          <div class="ai-card-body">
-            <p class="ai-card-kicker">オッズ変動AI</p>
-            <h3 class="ai-card-title">市場の息吹</h3>
-            <p class="ai-card-desc">人気の急変を静かに可視化</p>
-            <div class="ai-card-foot">
-              <span></span>
-              <span class="ai-pill is-ghost">オッズを分析 ›</span>
+        <a class="ai-card ai-card--odds" href="#catalog">
+          <img class="ai-card-bg" src="assets/images/bg-ai-2.png" alt="" />
+          <div class="ai-card-shade"></div>
+          <div class="ai-card-row">
+            <span class="ai-ico" aria-hidden="true"><img src="assets/icons/icon-bars.svg" alt="" /></span>
+            <div class="ai-copy">
+              <h3 class="ai-title">オッズ変動AI</h3>
+              <p class="ai-desc">リアルタイムで変わるオッズを解析</p>
+            </div>
+            <div class="ai-side ai-side--solo">
+              <span class="ai-pill">オッズを分析 ›</span>
             </div>
           </div>
         </a>
 
-        <a class="ai-card" href="race.html?race_id=20260719_hanshin_11">
-          <img class="ai-card-bg" src="assets/images/card-pedigree.svg" alt="" />
-          <div class="ai-card-body">
-            <p class="ai-card-kicker">血統 × 走破タイム解析</p>
-            <h3 class="ai-card-title">血と時計</h3>
-            <p class="ai-card-desc">適性とパフォーマンスを照合</p>
-            <div class="ai-card-foot">
-              <span></span>
-              <span class="ai-pill is-ghost">解析を見る ›</span>
+        <a class="ai-card ai-card--pedigree" href="race.html?race_id=20260719_hanshin_11">
+          <img class="ai-card-bg" src="assets/images/bg-ai-3.png" alt="" />
+          <div class="ai-card-shade"></div>
+          <div class="ai-card-row">
+            <span class="ai-ico" aria-hidden="true"><img src="assets/icons/icon-dna.svg" alt="" /></span>
+            <div class="ai-copy">
+              <h3 class="ai-title">血統 × 走破タイム解析</h3>
+              <p class="ai-desc">データが語る、血統と適性の真実</p>
+            </div>
+            <div class="ai-side ai-side--solo">
+              <span class="ai-pill">解析を見る ›</span>
             </div>
           </div>
         </a>
       </section>
 
-      <section class="heatmap-block" id="heatmap" aria-label="AI信頼度ヒートマップ">
-        <h2 class="section-label">AI信頼度</h2>
-        <p class="heatmap-note">レース会場 × 距離（表示用デモ値・ロジック非連動）</p>
+      <!-- AI信頼度ヒートマップ（会場×距離） -->
+      <section class="heat-card" id="heatmap">
+        <div class="heat-head">
+          <h2 class="heat-title">
+            AI信頼度（レース会場 × 距離）
+            <img class="info-ico" src="assets/icons/icon-info.svg" alt="" />
+          </h2>
+          <div class="heat-legend" aria-hidden="true">
+            <span>低</span>
+            <i></i>
+            <span>高</span>
+          </div>
+        </div>
         <div class="heatmap-scroll">
           <table class="heatmap-table">
             <thead>
               <tr>
-                <th class="row-head">会場</th>
+                <th class="row-head"></th>
                 <th>芝1200</th><th>芝1600</th><th>芝2000</th><th>芝2400</th>
                 <th>ダ1200</th><th>ダ1600</th><th>ダ2000</th><th>ダ2400</th>
               </tr>
@@ -127,95 +168,195 @@
             <tbody>
               <tr>
                 <th class="row-head">札幌</th>
-                <td class="heat-cell" style="--v:62">62</td><td class="heat-cell" style="--v:58">58</td><td class="heat-cell" style="--v:55">55</td><td class="heat-cell" style="--v:48">48</td>
-                <td class="heat-cell" style="--v:70">70</td><td class="heat-cell" style="--v:66">66</td><td class="heat-cell" style="--v:52">52</td><td class="heat-cell" style="--v:44">44</td>
+                <td><span class="hv" style="--v:62"><b>62%</b><i></i></span></td>
+                <td><span class="hv" style="--v:58"><b>58%</b><i></i></span></td>
+                <td><span class="hv" style="--v:55"><b>55%</b><i></i></span></td>
+                <td><span class="hv" style="--v:48"><b>48%</b><i></i></span></td>
+                <td><span class="hv" style="--v:70"><b>70%</b><i></i></span></td>
+                <td><span class="hv" style="--v:66"><b>66%</b><i></i></span></td>
+                <td><span class="hv" style="--v:52"><b>52%</b><i></i></span></td>
+                <td><span class="hv" style="--v:44"><b>44%</b><i></i></span></td>
               </tr>
               <tr>
                 <th class="row-head">函館</th>
-                <td class="heat-cell" style="--v:68">68</td><td class="heat-cell" style="--v:64">64</td><td class="heat-cell" style="--v:60">60</td><td class="heat-cell" style="--v:50">50</td>
-                <td class="heat-cell" style="--v:72">72</td><td class="heat-cell" style="--v:61">61</td><td class="heat-cell" style="--v:49">49</td><td class="heat-cell" style="--v:42">42</td>
+                <td><span class="hv" style="--v:68"><b>68%</b><i></i></span></td>
+                <td><span class="hv" style="--v:64"><b>64%</b><i></i></span></td>
+                <td><span class="hv" style="--v:60"><b>60%</b><i></i></span></td>
+                <td><span class="hv" style="--v:50"><b>50%</b><i></i></span></td>
+                <td><span class="hv" style="--v:72"><b>72%</b><i></i></span></td>
+                <td><span class="hv" style="--v:61"><b>61%</b><i></i></span></td>
+                <td><span class="hv" style="--v:49"><b>49%</b><i></i></span></td>
+                <td><span class="hv" style="--v:42"><b>42%</b><i></i></span></td>
               </tr>
               <tr>
                 <th class="row-head">福島</th>
-                <td class="heat-cell" style="--v:71">71</td><td class="heat-cell" style="--v:74">74</td><td class="heat-cell" style="--v:69">69</td><td class="heat-cell" style="--v:57">57</td>
-                <td class="heat-cell" style="--v:63">63</td><td class="heat-cell" style="--v:59">59</td><td class="heat-cell" style="--v:51">51</td><td class="heat-cell" style="--v:40">40</td>
+                <td><span class="hv" style="--v:71"><b>71%</b><i></i></span></td>
+                <td><span class="hv" style="--v:74"><b>74%</b><i></i></span></td>
+                <td><span class="hv" style="--v:69"><b>69%</b><i></i></span></td>
+                <td><span class="hv" style="--v:57"><b>57%</b><i></i></span></td>
+                <td><span class="hv" style="--v:63"><b>63%</b><i></i></span></td>
+                <td><span class="hv" style="--v:59"><b>59%</b><i></i></span></td>
+                <td><span class="hv" style="--v:51"><b>51%</b><i></i></span></td>
+                <td><span class="hv" style="--v:40"><b>40%</b><i></i></span></td>
               </tr>
               <tr>
                 <th class="row-head">新潟</th>
-                <td class="heat-cell" style="--v:76">76</td><td class="heat-cell" style="--v:80">80</td><td class="heat-cell" style="--v:78">78</td><td class="heat-cell" style="--v:72">72</td>
-                <td class="heat-cell" style="--v:58">58</td><td class="heat-cell" style="--v:54">54</td><td class="heat-cell" style="--v:47">47</td><td class="heat-cell" style="--v:38">38</td>
+                <td><span class="hv" style="--v:76"><b>76%</b><i></i></span></td>
+                <td><span class="hv" style="--v:80"><b>80%</b><i></i></span></td>
+                <td><span class="hv" style="--v:78"><b>78%</b><i></i></span></td>
+                <td><span class="hv" style="--v:72"><b>72%</b><i></i></span></td>
+                <td><span class="hv" style="--v:58"><b>58%</b><i></i></span></td>
+                <td><span class="hv" style="--v:54"><b>54%</b><i></i></span></td>
+                <td><span class="hv" style="--v:47"><b>47%</b><i></i></span></td>
+                <td><span class="hv" style="--v:38"><b>38%</b><i></i></span></td>
               </tr>
               <tr>
                 <th class="row-head">東京</th>
-                <td class="heat-cell" style="--v:84">84</td><td class="heat-cell" style="--v:88">88</td><td class="heat-cell" style="--v:91">91</td><td class="heat-cell" style="--v:86">86</td>
-                <td class="heat-cell" style="--v:79">79</td><td class="heat-cell" style="--v:77">77</td><td class="heat-cell" style="--v:73">73</td><td class="heat-cell" style="--v:65">65</td>
+                <td><span class="hv" style="--v:84"><b>84%</b><i></i></span></td>
+                <td><span class="hv" style="--v:88"><b>88%</b><i></i></span></td>
+                <td><span class="hv" style="--v:91"><b>91%</b><i></i></span></td>
+                <td><span class="hv" style="--v:86"><b>86%</b><i></i></span></td>
+                <td><span class="hv" style="--v:79"><b>79%</b><i></i></span></td>
+                <td><span class="hv" style="--v:77"><b>77%</b><i></i></span></td>
+                <td><span class="hv" style="--v:73"><b>73%</b><i></i></span></td>
+                <td><span class="hv" style="--v:65"><b>65%</b><i></i></span></td>
               </tr>
               <tr>
                 <th class="row-head">中山</th>
-                <td class="heat-cell" style="--v:82">82</td><td class="heat-cell" style="--v:85">85</td><td class="heat-cell" style="--v:83">83</td><td class="heat-cell" style="--v:70">70</td>
-                <td class="heat-cell" style="--v:81">81</td><td class="heat-cell" style="--v:78">78</td><td class="heat-cell" style="--v:74">74</td><td class="heat-cell" style="--v:60">60</td>
+                <td><span class="hv" style="--v:82"><b>82%</b><i></i></span></td>
+                <td><span class="hv" style="--v:85"><b>85%</b><i></i></span></td>
+                <td><span class="hv" style="--v:83"><b>83%</b><i></i></span></td>
+                <td><span class="hv" style="--v:70"><b>70%</b><i></i></span></td>
+                <td><span class="hv" style="--v:81"><b>81%</b><i></i></span></td>
+                <td><span class="hv" style="--v:78"><b>78%</b><i></i></span></td>
+                <td><span class="hv" style="--v:74"><b>74%</b><i></i></span></td>
+                <td><span class="hv" style="--v:60"><b>60%</b><i></i></span></td>
               </tr>
               <tr>
                 <th class="row-head">中京</th>
-                <td class="heat-cell" style="--v:75">75</td><td class="heat-cell" style="--v:79">79</td><td class="heat-cell" style="--v:77">77</td><td class="heat-cell" style="--v:68">68</td>
-                <td class="heat-cell" style="--v:80">80</td><td class="heat-cell" style="--v:76">76</td><td class="heat-cell" style="--v:71">71</td><td class="heat-cell" style="--v:58">58</td>
+                <td><span class="hv" style="--v:75"><b>75%</b><i></i></span></td>
+                <td><span class="hv" style="--v:79"><b>79%</b><i></i></span></td>
+                <td><span class="hv" style="--v:77"><b>77%</b><i></i></span></td>
+                <td><span class="hv" style="--v:68"><b>68%</b><i></i></span></td>
+                <td><span class="hv" style="--v:80"><b>80%</b><i></i></span></td>
+                <td><span class="hv" style="--v:76"><b>76%</b><i></i></span></td>
+                <td><span class="hv" style="--v:71"><b>71%</b><i></i></span></td>
+                <td><span class="hv" style="--v:58"><b>58%</b><i></i></span></td>
               </tr>
               <tr>
                 <th class="row-head">京都</th>
-                <td class="heat-cell" style="--v:78">78</td><td class="heat-cell" style="--v:83">83</td><td class="heat-cell" style="--v:87">87</td><td class="heat-cell" style="--v:84">84</td>
-                <td class="heat-cell" style="--v:70">70</td><td class="heat-cell" style="--v:67">67</td><td class="heat-cell" style="--v:62">62</td><td class="heat-cell" style="--v:55">55</td>
+                <td><span class="hv" style="--v:78"><b>78%</b><i></i></span></td>
+                <td><span class="hv" style="--v:83"><b>83%</b><i></i></span></td>
+                <td><span class="hv" style="--v:87"><b>87%</b><i></i></span></td>
+                <td><span class="hv" style="--v:84"><b>84%</b><i></i></span></td>
+                <td><span class="hv" style="--v:70"><b>70%</b><i></i></span></td>
+                <td><span class="hv" style="--v:67"><b>67%</b><i></i></span></td>
+                <td><span class="hv" style="--v:62"><b>62%</b><i></i></span></td>
+                <td><span class="hv" style="--v:55"><b>55%</b><i></i></span></td>
               </tr>
               <tr>
                 <th class="row-head">阪神</th>
-                <td class="heat-cell" style="--v:80">80</td><td class="heat-cell" style="--v:84">84</td><td class="heat-cell" style="--v:86">86</td><td class="heat-cell" style="--v:79">79</td>
-                <td class="heat-cell" style="--v:83">83</td><td class="heat-cell" style="--v:85">85</td><td class="heat-cell" style="--v:80">80</td><td class="heat-cell" style="--v:66">66</td>
+                <td><span class="hv" style="--v:80"><b>80%</b><i></i></span></td>
+                <td><span class="hv" style="--v:84"><b>84%</b><i></i></span></td>
+                <td><span class="hv" style="--v:86"><b>86%</b><i></i></span></td>
+                <td><span class="hv" style="--v:79"><b>79%</b><i></i></span></td>
+                <td><span class="hv" style="--v:83"><b>83%</b><i></i></span></td>
+                <td><span class="hv" style="--v:85"><b>85%</b><i></i></span></td>
+                <td><span class="hv" style="--v:80"><b>80%</b><i></i></span></td>
+                <td><span class="hv" style="--v:66"><b>66%</b><i></i></span></td>
               </tr>
               <tr>
                 <th class="row-head">小倉</th>
-                <td class="heat-cell" style="--v:73">73</td><td class="heat-cell" style="--v:70">70</td><td class="heat-cell" style="--v:64">64</td><td class="heat-cell" style="--v:52">52</td>
-                <td class="heat-cell" style="--v:69">69</td><td class="heat-cell" style="--v:63">63</td><td class="heat-cell" style="--v:50">50</td><td class="heat-cell" style="--v:41">41</td>
+                <td><span class="hv" style="--v:73"><b>73%</b><i></i></span></td>
+                <td><span class="hv" style="--v:70"><b>70%</b><i></i></span></td>
+                <td><span class="hv" style="--v:64"><b>64%</b><i></i></span></td>
+                <td><span class="hv" style="--v:52"><b>52%</b><i></i></span></td>
+                <td><span class="hv" style="--v:69"><b>69%</b><i></i></span></td>
+                <td><span class="hv" style="--v:63"><b>63%</b><i></i></span></td>
+                <td><span class="hv" style="--v:50"><b>50%</b><i></i></span></td>
+                <td><span class="hv" style="--v:41"><b>41%</b><i></i></span></td>
               </tr>
             </tbody>
           </table>
         </div>
       </section>
+
+      <!-- AI信頼度（競馬場 × 馬場状態） -->
+      <section class="heat-card heat-card--condition">
+        <div class="heat-head">
+          <h2 class="heat-title">
+            AI信頼度（競馬場 × 馬場状態）
+            <img class="info-ico" src="assets/icons/icon-info.svg" alt="" />
+          </h2>
+        </div>
+        <div class="cond-table-wrap">
+          <table class="cond-table">
+            <thead>
+              <tr>
+                <th></th>
+                <th>良</th><th>稍重</th><th>重</th><th>不良</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th>東京 芝</th>
+                <td class="is-good">92%</td><td>88%</td><td>80%</td><td>72%</td>
+              </tr>
+              <tr>
+                <th>東京 ダート</th>
+                <td class="is-good">86%</td><td>82%</td><td>75%</td><td>68%</td>
+              </tr>
+              <tr>
+                <th>中山 芝</th>
+                <td class="is-good">89%</td><td>84%</td><td>77%</td><td>70%</td>
+              </tr>
+              <tr>
+                <th>中山 ダート</th>
+                <td class="is-good">84%</td><td>79%</td><td>73%</td><td>65%</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <a class="heat-more" href="#catalog">全競馬場を表示 ›</a>
+      </section>
     </div>
 
+    <!-- 既存機能フック（ホームでは非表示。#catalog / 開催配下で表示） -->
     <main class="main" id="main" aria-live="polite">
-      <p class="catalog-heading" id="catalogHeading">開催一覧</p>
       <p class="muted">読み込み中…</p>
     </main>
 
-    <!-- KA0BA: Live2D差し替え前提（現在は透過PNG + idleモーション） -->
     <aside class="mascot-ka0ba" id="mascotKa0ba" data-mascot-mode="png" aria-label="AIコンシェルジュ KA0BA">
       <div class="mascot-bubble" role="status">
-        今日は<strong>東京芝2000m</strong>の信頼度が高いよ！期待できそう！
+        今日は<br />
+        <strong>東京芝2000m</strong> の<br />
+        信頼度が高いよ！<br />
+        期待できそう！
       </div>
       <div class="mascot-figure">
         <div class="mascot-live2d-slot" id="ka0baLive2dSlot" aria-hidden="true"></div>
         <img data-mascot-fallback src="assets/images/mascot-ka0ba.png" alt="KA0BA" width="110" height="146" />
       </div>
-      <p class="mascot-name">KA0BA</p>
     </aside>
 
     <nav class="bottom-nav" aria-label="メインメニュー">
-      <a href="index.html" class="is-active">
+      <a href="index.html" class="is-active" data-nav="home">
         <img src="assets/icons/nav-home.svg" alt="" />
         ホーム
       </a>
-      <a href="#main">
+      <a href="#catalog" data-nav="race">
         <img src="assets/icons/nav-race.svg" alt="" />
         レース
       </a>
-      <a href="#heatmap">
+      <a href="#heatmap" data-nav="analysis">
         <img src="assets/icons/nav-chart.svg" alt="" />
         分析
       </a>
-      <a href="#favorites">
+      <a href="#favorites" data-nav="saved">
         <img src="assets/icons/nav-star.svg" alt="" />
         保存レース
       </a>
-      <a href="#topbar">
+      <a href="#topbar" data-nav="mypage">
         <img src="assets/icons/nav-user.svg" alt="" />
         マイページ
       </a>
@@ -225,7 +366,7 @@
   <script src="data/sample_data.js"></script>
   <script src="assets/app.js"></script>
   <script>
-    /* 表示専用: 時計のみ。AIロジック / app.js には非干渉 */
+    /* 表示専用（app.js 非改変）: 時計 + ホーム/カタログ表示切替 */
     (function () {
       function pad(n) { return String(n).padStart(2, "0"); }
       function tick() {
@@ -251,15 +392,22 @@
     document.addEventListener("DOMContentLoaded", function () {
       SingleDemo.initIndex();
 
-      /* 表示専用: 開催配下ではホームシェルを隠し、既存一覧を優先表示 */
       var chrome = document.getElementById("homeChrome");
-      function syncChrome() {
-        if (!chrome) return;
-        var nested = /^#\/meeting\//.test(location.hash || "");
-        chrome.hidden = nested;
+      var main = document.getElementById("main");
+      var mascot = document.getElementById("mascotKa0ba");
+
+      function syncView() {
+        var hash = location.hash || "";
+        var nested = /^#\/meeting\//.test(hash);
+        var catalog = hash === "#catalog" || nested;
+        if (chrome) chrome.hidden = catalog;
+        if (main) main.classList.toggle("is-catalog", catalog);
+        if (mascot) mascot.hidden = catalog;
+        document.body.classList.toggle("is-catalog-view", catalog);
       }
-      window.addEventListener("hashchange", syncChrome);
-      syncChrome();
+
+      window.addEventListener("hashchange", syncView);
+      syncView();
     });
   </script>
 </body>
