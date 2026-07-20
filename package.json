@@ -11,6 +11,7 @@
     "beta": "node scripts/beta-admin.mjs",
     "test:contract": "node --test tests/contract/*.test.mjs",
     "test:snapshot": "node --test tests/bff/snapshots.test.mjs",
+    "test:ops": "cd services/win5-ai && python -m unittest discover -s tests/ops -p test_*.py -v",
     "test": "node --test tests/contract/*.test.mjs tests/bff/snapshots.test.mjs"
   },
   "devDependencies": {

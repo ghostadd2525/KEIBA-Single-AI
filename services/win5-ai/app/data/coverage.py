@@ -32,7 +32,11 @@ def compute_coverage(
 
     total = len(items)
     real = sum(1 for i in items if i.get("engine_source") == "real_ai")
-    mock = sum(1 for i in items if i.get("engine_source") == "mock_fallback")
+    mock = sum(
+        1
+        for i in items
+        if i.get("engine_source") in ("mock_fallback", "mock")
+    )
     missing_races = sum(
         1 for i in items if i.get("fallback_reason") == "race_not_found"
     )

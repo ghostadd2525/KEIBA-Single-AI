@@ -1,0 +1,61 @@
+{
+  "generated_at": "2026-07-20T07:19:15.356847+00:00",
+  "engine": "mock",
+  "api": [
+    {
+      "path": "/health",
+      "status": 200,
+      "rounds": 5,
+      "p50_ms": 1.75,
+      "p95_ms": 11.83,
+      "avg_ms": 3.63
+    },
+    {
+      "path": "/v1/predictions",
+      "status": 200,
+      "rounds": 5,
+      "p50_ms": 4.62,
+      "p95_ms": 28.65,
+      "avg_ms": 9.27
+    },
+    {
+      "path": "/v1/data/coverage",
+      "status": 200,
+      "rounds": 5,
+      "p50_ms": 2.3,
+      "p95_ms": 26.89,
+      "avg_ms": 7.2
+    },
+    {
+      "path": "/v1/diagnostics/missing",
+      "status": 200,
+      "rounds": 5,
+      "p50_ms": 6.28,
+      "p95_ms": 16.26,
+      "avg_ms": 9.04
+    },
+    {
+      "path": "/v1/admin/monitoring",
+      "status": 200,
+      "rounds": 5,
+      "p50_ms": 24.57,
+      "p95_ms": 39.28,
+      "avg_ms": 26.47
+    },
+    {
+      "path": "/v1/conversation/chat",
+      "status": 200,
+      "rounds": 5,
+      "p50_ms": 19.31,
+      "p95_ms": 21.69,
+      "avg_ms": 19.54
+    }
+  ],
+  "etl": {
+    "name": "etl_import_sample",
+    "duration_ms": 155.34,
+    "races": 2,
+    "features": 3
+  },
+  "notes": "Baseline for Phase F operational readiness. Re-run after major changes."
+}

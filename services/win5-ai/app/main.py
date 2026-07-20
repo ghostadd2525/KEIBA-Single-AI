@@ -7,6 +7,7 @@ from __future__ import annotations
 import json
 import os
 import re
+import time
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from typing import Any
 from urllib.parse import parse_qs, urlparse
@@ -22,6 +23,8 @@ from .diagnostics import FALLBACK_REASONS, REASON_HELP, collect_missing_report
 from .engine import data as engine
 from .engine import domains
 from .engine.adapters import analysis_adapter, kaoba_adapter, prediction_adapter
+from .ops.monitoring import MonitoringService
+from .ops.performance import record_timing
 
 AI_API_KEY = os.environ.get("AI_API_KEY", "")
 HOST = os.environ.get("AI_HOST", "127.0.0.1")
@@ -69,6 +72,15 @@ class Handler(BaseHTTPRequestHandler):
         self.end_headers()
         if status != 204:
             self.wfile.write(raw)
+        started = getattr(self, "_request_started_at", None)
+        if started is not None:
+            path = getattr(self, "_request_path", "unknown")
+            ms = (time.perf_counter() - started) * 1000
+            record_timing("api", path, ms, status="ok" if status < 400 else "error")
+
+    def _begin_request(self, path: str) -> None:
+        self._request_started_at = time.perf_counter()
+        self._request_path = path
 
     def do_OPTIONS(self) -> None:  # noqa: N802
         self._send(204, {})
@@ -77,6 +89,7 @@ class Handler(BaseHTTPRequestHandler):
         parsed = urlparse(self.path)
         path = parsed.path
         qs = parse_qs(parsed.query)
+        self._begin_request(path)
 
         if path == "/health":
             self._send(
@@ -172,6 +185,11 @@ class Handler(BaseHTTPRequestHandler):
             self._send(200, ok(list_sources(), {"service": "DataSources"}))
             return
 
+        if path == "/v1/admin/monitoring":
+            metrics = MonitoringService().collect()
+            self._send(200, ok(metrics, {"service": "Monitoring"}))
+            return
+
         if path == "/v1/diagnostics/missing":
             _, meta = prediction_adapter.list_with_meta()
             items = meta.get("items") or []
@@ -218,6 +236,7 @@ class Handler(BaseHTTPRequestHandler):
     def do_POST(self) -> None:  # noqa: N802
         parsed = urlparse(self.path)
         path = parsed.path
+        self._begin_request(path)
 
         bad = self._check_key()
         if bad:

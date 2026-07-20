@@ -90,7 +90,7 @@ class FeatureBuilder:
 
             entry_rows.append(
                 {
-                    "race_id": core_id,
+                    "race_id": ident.catalog_race_id or core_id,
                     "horse_id": norm.horse_id,
                     "horse_number": norm.horse_number,
                     "horse_name": norm.horse_name,

@@ -1,0 +1,20 @@
+{
+  "schema_version": "prediction-regression/1.0",
+  "engine": "mock",
+  "description": "Stable mock prediction signatures for regression detection",
+  "races": {
+    "20260719_hanshin_11": {
+      "engine_source": "mock",
+      "top_runners": [
+        {"horse_number": 7, "model_rank": 1, "win_prob": 0.22},
+        {"horse_number": 3, "model_rank": 2, "win_prob": 0.15},
+        {"horse_number": 12, "model_rank": 3, "win_prob": 0.11}
+      ],
+      "ai_confidence": 0.62
+    }
+  },
+  "tolerance": {
+    "win_prob": 0.001,
+    "ai_confidence": 0.001
+  }
+}
