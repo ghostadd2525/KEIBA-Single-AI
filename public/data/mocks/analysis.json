@@ -1,0 +1,86 @@
+{
+  "20260719_hanshin_11": {
+    "race_id": "20260719_hanshin_11",
+    "charts": [
+      { "key": "pedigree", "label": "血統", "value": 90 },
+      { "key": "pace", "label": "展開", "value": 86 },
+      { "key": "jockey", "label": "騎手", "value": 84 },
+      { "key": "form", "label": "近走", "value": 88 },
+      { "key": "odds", "label": "オッズ", "value": 79 }
+    ],
+    "overall": 92,
+    "narrative": "本命7は上位確率がやや分離。差し有利の気配で軸は明確。"
+  },
+  "20260719_tokyo_11": {
+    "race_id": "20260719_tokyo_11",
+    "charts": [
+      { "key": "pedigree", "label": "血統", "value": 82 },
+      { "key": "pace", "label": "展開", "value": 78 },
+      { "key": "jockey", "label": "騎手", "value": 80 },
+      { "key": "form", "label": "近走", "value": 76 },
+      { "key": "odds", "label": "オッズ", "value": 74 }
+    ],
+    "overall": 88,
+    "narrative": "上位拮抗。少点数のワイド〜馬連が相性◎。"
+  },
+  "20260719_fukushima_11": {
+    "race_id": "20260719_fukushima_11",
+    "charts": [
+      { "key": "pedigree", "label": "血統", "value": 70 },
+      { "key": "pace", "label": "展開", "value": 74 },
+      { "key": "jockey", "label": "騎手", "value": 68 },
+      { "key": "form", "label": "近走", "value": 72 },
+      { "key": "odds", "label": "オッズ", "value": 66 }
+    ],
+    "overall": 76,
+    "narrative": "波乱含み。相手候補を広げすぎないのが鍵。"
+  },
+  "20260719_hakodate_11": {
+    "race_id": "20260719_hakodate_11",
+    "charts": [
+      { "key": "pedigree", "label": "血統", "value": 78 },
+      { "key": "pace", "label": "展開", "value": 80 },
+      { "key": "jockey", "label": "騎手", "value": 76 },
+      { "key": "form", "label": "近走", "value": 74 },
+      { "key": "odds", "label": "オッズ", "value": 70 }
+    ],
+    "overall": 81,
+    "narrative": "短距離適性が効く。先行勢の残し方に注目。"
+  },
+  "20260720_nakayama_11": {
+    "race_id": "20260720_nakayama_11",
+    "charts": [
+      { "key": "pedigree", "label": "血統", "value": 74 },
+      { "key": "pace", "label": "展開", "value": 77 },
+      { "key": "jockey", "label": "騎手", "value": 72 },
+      { "key": "form", "label": "近走", "value": 75 },
+      { "key": "odds", "label": "オッズ", "value": 71 }
+    ],
+    "overall": 79,
+    "narrative": "ダート短距離。内枠の利が残りやすい。"
+  },
+  "20260719_hanshin_10": {
+    "race_id": "20260719_hanshin_10",
+    "charts": [
+      { "key": "pedigree", "label": "血統", "value": 72 },
+      { "key": "pace", "label": "展開", "value": 70 },
+      { "key": "jockey", "label": "騎手", "value": 68 },
+      { "key": "form", "label": "近走", "value": 71 },
+      { "key": "odds", "label": "オッズ", "value": 69 }
+    ],
+    "overall": 74,
+    "narrative": "特別戦。人気薄の1頭絡みが妙味。"
+  },
+  "20260719_hakodate_10": {
+    "race_id": "20260719_hakodate_10",
+    "charts": [
+      { "key": "pedigree", "label": "血統", "value": 64 },
+      { "key": "pace", "label": "展開", "value": 66 },
+      { "key": "jockey", "label": "騎手", "value": 62 },
+      { "key": "form", "label": "近走", "value": 65 },
+      { "key": "odds", "label": "オッズ", "value": 60 }
+    ],
+    "overall": 68,
+    "narrative": "未勝利戦。少点数で様子見も吉。"
+  }
+}

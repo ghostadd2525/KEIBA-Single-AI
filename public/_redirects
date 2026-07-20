@@ -1,3 +1,9 @@
 # Cloudflare Pages redirects
-# ルートはログイン画面へ
-/ /login.html 302
+#
+# ルート `/` は index.html（ホーム）を配信する。
+# `/` → login.html の強制リダイレクトは置かない。
+# （Wrangler / Pages が index.html を `/` に正規化するため、
+#  ログイン後の index.html 遷移が login に戻りループする）
+#
+# ログイン画面: /login.html（login /login）
+# ホーム:       / および /index.html

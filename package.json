@@ -1,0 +1,19 @@
+{
+  "name": "keiba-single-ai",
+  "private": true,
+  "description": "Expect KEIBA AI — Cloudflare Pages UI + Functions BFF",
+  "scripts": {
+    "dev": "wrangler pages dev public --compatibility-date=2026-07-19",
+    "dev:ai": "wrangler pages dev public --compatibility-date=2026-07-19 --binding AI_BASE_URL=http://127.0.0.1:8000",
+    "ai": "python services/win5-ai/run.py",
+    "validate:bundle": "node scripts/validate-fixtures.mjs",
+    "validate:fixtures": "node scripts/validate-fixtures.mjs",
+    "beta": "node scripts/beta-admin.mjs",
+    "test:contract": "node --test tests/contract/*.test.mjs",
+    "test:snapshot": "node --test tests/bff/snapshots.test.mjs",
+    "test": "node --test tests/contract/*.test.mjs tests/bff/snapshots.test.mjs"
+  },
+  "devDependencies": {
+    "wrangler": "^4.20.0"
+  }
+}

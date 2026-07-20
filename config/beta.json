@@ -1,0 +1,14 @@
+{
+  "schema_version": "expect-beta-config/1.0",
+  "beta_name": "Expect KEIBA AI — Invitation Beta",
+  "maintenance_mode": false,
+  "maintenance_message": "ただいまメンテナンス中です。しばらくしてから再度お試しください。",
+  "terms_version": "2026-07-19",
+  "invitation_required": true,
+  "max_concurrent_sessions": null,
+  "audit": {
+    "enabled": true,
+    "sink": "jsonl"
+  },
+  "notes": "Phase10 運営設定。public/config/beta.json と同期すること。"
+}
