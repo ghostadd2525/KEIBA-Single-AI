@@ -104,9 +104,9 @@ def _parse_expect_slug(race_id: str) -> tuple[str, str, int] | None:
 
 
 def _core_resolvable(race_id: str) -> bool:
-    from ai_platform.core.facade import predict_ranking
-
     try:
+        from ai_platform.core.facade import predict_ranking
+
         return predict_ranking(race_id) is not None
     except Exception:
         return False
