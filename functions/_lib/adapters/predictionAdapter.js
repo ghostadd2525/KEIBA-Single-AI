@@ -64,6 +64,9 @@ export function mergeGetProvenanceMeta(base, provenanceMeta = {}) {
   };
   if (provenanceMeta.race_id) next.race_id = provenanceMeta.race_id;
   if (provenanceMeta.core_race_id) next.core_race_id = provenanceMeta.core_race_id;
+  if (provenanceMeta.feature_source) next.feature_source = provenanceMeta.feature_source;
+  if (provenanceMeta.fallback_reason) next.fallback_reason = provenanceMeta.fallback_reason;
+  if (provenanceMeta.detail) next.detail = provenanceMeta.detail;
   return next;
 }
 

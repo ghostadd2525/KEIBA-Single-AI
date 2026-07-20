@@ -88,6 +88,8 @@ def get_meta(engine: str, item: dict[str, Any]) -> dict[str, Any]:
     }
     if item.get("core_race_id"):
         meta["core_race_id"] = item["core_race_id"]
+    if item.get("feature_source"):
+        meta["feature_source"] = item["feature_source"]
     if item.get("fallback_reason"):
         meta["fallback_reason"] = item["fallback_reason"]
     if item.get("detail"):

@@ -40,6 +40,9 @@
 
     <div data-expect-nav></div>
   </div>
+  <script src="assets/api/auth.js"></script>
+  <script src="assets/api/prediction.js"></script>
+  <script src="assets/api/prediction-bind.js"></script>
   <script src="assets/favorites.js"></script>
   <script src="assets/shell.js"></script>
   <script src="assets/reminders.js"></script>
@@ -125,11 +128,80 @@
         };
       }
 
-      var data = STRATEGY[id] || fallbackStrategy();
-      var back = document.getElementById("strategyBack");
-      var sub = document.getElementById("strategySub");
-      if (back) back.href = "race.html?race_id=" + encodeURIComponent(id);
-      if (sub) sub.textContent = (meta.place || "レース") + (meta.name ? " · " + meta.name : "");
+      function strategyFromBundle(bundle) {
+        if (!bundle) return null;
+        var bind = window.ExpectPredictionBind || {};
+        var honmei = bind.honmeiRunner ? bind.honmeiRunner(bundle) : null;
+        var taikou = bind.runnerByMark ? bind.runnerByMark(bundle, "taikou") : null;
+        var ana = bind.runnerByMark ? bind.runnerByMark(bundle, "ana") : null;
+        var chuuken = bind.runnerByMark ? bind.runnerByMark(bundle, "chuuken") : null;
+        var conf = bind.scorePercent ? bind.scorePercent(bundle) : null;
+        var reasons = ((bundle.explain || {}).reasons) || [];
+        function reasonFor(num) {
+          for (var i = 0; i < reasons.length; i++) {
+            if (Number(reasons[i].horse_number) === Number(num)) {
+              return reasons[i].bullets && reasons[i].bullets[0]
+                ? reasons[i].bullets[0]
+                : "PredictionBundle 評価";
+            }
+          }
+          return "PredictionBundle 評価";
+        }
+        var rivals = [];
+        if (taikou) {
+          rivals.push({
+            num: String(taikou.horse_number),
+            name: taikou.horse_name || "",
+            role: "対抗",
+            reason: reasonFor(taikou.horse_number),
+          });
+        }
+        if (ana) {
+          rivals.push({
+            num: String(ana.horse_number),
+            name: ana.horse_name || "",
+            role: "単穴",
+            reason: reasonFor(ana.horse_number),
+          });
+        }
+        if (chuuken) {
+          rivals.push({
+            num: String(chuuken.horse_number),
+            name: chuuken.horse_name || "",
+            role: "連下",
+            reason: reasonFor(chuuken.horse_number),
+          });
+        }
+        var items = ((bundle.betting_recommendations || {}).items) || [];
+        var tickets = items.slice(0, 6).map(function (it, idx) {
+          return {
+            type: it.bet_type || "買い目",
+            legs: it.legs_display || "—",
+            points: it.recommendation_rank != null ? "#" + it.recommendation_rank : "—",
+            stake: it.recommendation_score != null ? "score " + it.recommendation_score : "—",
+            note: it.comment || "",
+          };
+        });
+        return {
+          axis: {
+            num: honmei ? String(honmei.horse_number) : "—",
+            name: honmei ? honmei.horse_name || "本命" : "本命候補",
+            role: "本命軸",
+            odds: "—",
+          },
+          rivals: rivals.length ? rivals : fallbackStrategy().rivals,
+          tickets: tickets.length ? tickets : fallbackStrategy().tickets,
+          scenarios: [
+            {
+              title: "基本シナリオ",
+              body: (bundle.explain && bundle.explain.narrative) || "PredictionBundle narrative",
+            },
+          ],
+          risk: "betting_recommendations 準拠。点数は API 推奨に従う。",
+          bankroll: { total: "API準拠", main: "55%", cover: "30%", lottery: "15%" },
+          aiOverall: conf,
+        };
+      }
 
       function escapeHtml(s) {
         return String(s == null ? "" : s)
@@ -158,7 +230,13 @@
           .join("");
       }
 
-      var rivalsHtml = data.rivals
+      function paintStrategy(data) {
+        var back = document.getElementById("strategyBack");
+        var sub = document.getElementById("strategySub");
+        if (back) back.href = "race.html?race_id=" + encodeURIComponent(id);
+        if (sub) sub.textContent = (meta.place || "レース") + (meta.name ? " · " + meta.name : "");
+
+        var rivalsHtml = data.rivals
         .map(function (r) {
           return (
             '<li class="strategy-rival">' +
@@ -227,7 +305,7 @@
         "</p>" +
         '<div class="strategy-hero-stats">' +
         "<div><span>AI総合</span><b>" +
-        (ai.overall || "—") +
+        (data.aiOverall != null ? data.aiOverall : ai.overall || "—") +
         "%</b></div>" +
         "<div><span>推奨総額</span><b>" +
         escapeHtml(data.bankroll.total) +
@@ -390,6 +468,28 @@
           escapeHtml(data.axis.name) +
           "</strong> を軸に<br>シナリオ別で相手を変えよう♪"
       ]);
+      }
+
+      function loadAndPaint() {
+        if (window.ExpectApi && ExpectApi.Prediction && ExpectApi.Prediction.getWithMeta) {
+          ExpectApi.Prediction.getWithMeta(id)
+            .then(function (result) {
+              var fromBundle = strategyFromBundle(result.bundle);
+              var data = fromBundle || STRATEGY[id] || fallbackStrategy();
+              if (fromBundle && fromBundle.aiOverall != null) {
+                ai.overall = fromBundle.aiOverall;
+              }
+              paintStrategy(data);
+            })
+            .catch(function () {
+              paintStrategy(STRATEGY[id] || fallbackStrategy());
+            });
+          return;
+        }
+        paintStrategy(STRATEGY[id] || fallbackStrategy());
+      }
+
+      loadAndPaint();
     })();
   </script>
 </body>

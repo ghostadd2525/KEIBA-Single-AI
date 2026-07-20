@@ -9,6 +9,8 @@
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Noto+Sans+JP:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="assets/styles.css" />
   <link rel="stylesheet" href="assets/screens.css" />
+  <link rel="stylesheet" href="assets/ux.css" />
+  <link rel="stylesheet" href="assets/vqa.css" />
   <script src="assets/auth.js"></script>
   <script>ExpectAuth.requireAuth();</script>
 </head>
@@ -46,21 +48,33 @@
         <button type="button" class="chip">結果</button>
       </div>
 
-      <article class="honmei-card">
-        <div class="honmei-num">7</div>
+      <div id="raceProvenance" class="race-provenance-wrap" hidden></div>
+
+      <section class="chart-card" id="marksSection">
+        <h3>印</h3>
+        <div id="marksSectionBody"><p class="muted">読み込み中…</p></div>
+      </section>
+
+      <section class="chart-card" id="pickCardsSection">
+        <h3>対抗・穴</h3>
+        <div id="pickCardsBody" class="pick-cards"><p class="muted">読み込み中…</p></div>
+      </section>
+
+      <article class="honmei-card is-loading" id="honmeiCard">
+        <div class="honmei-num">—</div>
         <div>
-          <h2>エンプレスリターン</h2>
-          <p>AI本命 · 信頼度 92%</p>
-          <p class="race-stars" style="margin-top:6px">★★★★★</p>
+          <h2>読み込み中…</h2>
+          <p>AI本命 · 信頼度 —</p>
+          <p class="race-stars" style="margin-top:6px">☆☆☆☆☆</p>
         </div>
         <div class="radar-box" aria-label="能力レーダー">
           <span>血統<br>展開<br>騎手</span>
         </div>
       </article>
 
-      <section class="pace-card">
+      <section class="pace-card" id="paceCard">
         <h3>展開予想</h3>
-        <p>逃げ・先行が厚く、中盤でペースが上がりやすい。差し馬の仕掛けどころが鍵になる展開だよ。</p>
+        <p>レースデータを読み込んでいます…</p>
         <div class="pace-track" aria-label="位置取りイメージ">
           <span class="pace-label">スタート</span>
           <span class="pace-dot">3</span>
@@ -73,15 +87,25 @@
         </div>
       </section>
 
-      <section class="chart-card">
+      <section class="chart-card is-loading" id="chartCard">
         <h3>評価内訳</h3>
         <div class="score-list">
-          <div class="score-row"><span>血統適性</span><div class="score-bar"><i style="width:90%"></i></div><b>90</b></div>
-          <div class="score-row"><span>展開予測</span><div class="score-bar"><i style="width:86%"></i></div><b>86</b></div>
-          <div class="score-row"><span>騎手相性</span><div class="score-bar"><i style="width:84%"></i></div><b>84</b></div>
-          <div class="score-row"><span>近走内容</span><div class="score-bar"><i style="width:88%"></i></div><b>88</b></div>
-          <div class="score-row"><span>オッズ妙味</span><div class="score-bar"><i style="width:79%"></i></div><b>79</b></div>
+          <div class="score-row"><span>血統適性</span><div class="score-bar"><i style="width:0%"></i></div><b>—</b></div>
+          <div class="score-row"><span>展開予測</span><div class="score-bar"><i style="width:0%"></i></div><b>—</b></div>
+          <div class="score-row"><span>騎手相性</span><div class="score-bar"><i style="width:0%"></i></div><b>—</b></div>
+          <div class="score-row"><span>近走内容</span><div class="score-bar"><i style="width:0%"></i></div><b>—</b></div>
+          <div class="score-row"><span>オッズ妙味</span><div class="score-bar"><i style="width:0%"></i></div><b>—</b></div>
         </div>
+      </section>
+
+      <section class="chart-card" id="confidenceSection">
+        <h3>AI信頼度</h3>
+        <div id="raceConfidenceDetail"><p class="muted">PredictionBundle.ai_confidence を表示</p></div>
+      </section>
+
+      <section class="chart-card" id="reasonsSection">
+        <h3>理由</h3>
+        <div id="reasonsSectionBody"><p class="muted">読み込み中…</p></div>
       </section>
 
       <div class="fab-bet">
@@ -98,6 +122,13 @@
 
     <div data-expect-nav></div>
   </div>
+  <script src="assets/api/auth.js"></script>
+  <script src="assets/api/contract-guard.js"></script>
+  <script src="assets/api/prediction.js"></script>
+  <script src="assets/api/prediction-bind.js"></script>
+  <script src="assets/api/analysis.js"></script>
+  <script src="assets/api/analysis-bind.js"></script>
+  <script src="assets/ux.js"></script>
   <script src="assets/favorites.js"></script>
   <script src="assets/shell.js"></script>
   <script src="assets/reminders.js"></script>
@@ -113,8 +144,11 @@
     var meta = ExpectFavorites.getMeta(id);
     var titleEl = document.getElementById("raceTitle");
     var subEl = document.querySelector(".brand-sub");
-    if (titleEl) titleEl.textContent = meta.place || "レース詳細";
-    if (subEl) subEl.textContent = (meta.name || "") + (meta.badge ? " · " + meta.badge : "");
+    /* 未取得時: 既存モック／localStorage メタをそのまま表示 */
+    if (titleEl && meta.place) titleEl.textContent = meta.place;
+    if (subEl && (meta.name || meta.badge)) {
+      subEl.textContent = (meta.name || "") + (meta.badge ? " · " + meta.badge : "");
+    }
 
     var favBtn = document.getElementById("raceFavBtn");
     if (favBtn) {
@@ -129,7 +163,133 @@
     if (strategyLink) {
       strategyLink.href = "strategy.html?race_id=" + encodeURIComponent(id);
     }
-    ExpectFavorites.bindButtons();
+
+    /* PB 入口 → race_id で Analysis（loading / 本命刷り込み） */
+    var detailMount = document.querySelector(".screen");
+    var honmeiCard = document.getElementById("honmeiCard");
+    var chartCard = document.getElementById("chartCard");
+
+    function markReady() {
+      if (honmeiCard) {
+        honmeiCard.classList.remove("is-loading");
+        honmeiCard.classList.add("is-ready");
+      }
+      if (chartCard) chartCard.classList.remove("is-loading");
+    }
+
+    if (window.ExpectApi && ExpectApi.Prediction && window.ExpectPredictionBind) {
+      ExpectApi.Prediction.getWithMeta(id)
+        .then(function (result) {
+          var bundle = result.bundle;
+          var envelopeMeta = result.meta || {};
+          var pbCheck =
+            (bundle && bundle.__contract) ||
+            (window.ExpectContractGuard && ExpectContractGuard.validatePredictionBundle(bundle)) ||
+            { ok: true, errors: [] };
+          if (!pbCheck.ok) {
+            markReady();
+            if (window.ExpectContractGuard) {
+              ExpectContractGuard.showErrorCard(detailMount, {
+                title: "レース詳細を更新できません",
+                message: "PredictionBundle が契約と一致しません。",
+                errors: pbCheck.errors,
+              });
+            }
+            ExpectFavorites.bindButtons();
+            return;
+          }
+          if (window.ExpectContractGuard) ExpectContractGuard.clearErrorCard(detailMount);
+
+          var applied = ExpectPredictionBind.applyRaceDetail(bundle, envelopeMeta, id);
+          if (applied && applied.mismatch && window.ExpectUx && detailMount) {
+            detailMount.insertBefore(
+              ExpectUx.stateCard({
+                kind: "warn",
+                title: "race_id の不一致",
+                message:
+                  "URL race_id=" +
+                  id +
+                  " に対し API は " +
+                  applied.raceId +
+                  " を返しました。Core: " +
+                  (envelopeMeta.core_race_id || "—"),
+              }),
+              detailMount.firstChild
+            );
+          }
+          if (honmeiCard) {
+            honmeiCard.classList.remove("is-loading");
+            honmeiCard.classList.add("is-ready");
+          }
+          if (applied && favBtn) {
+            favBtn.setAttribute("data-fav-place", applied.place || meta.place || "");
+            favBtn.setAttribute("data-fav-name", applied.name || meta.name || "");
+            favBtn.setAttribute("data-fav-badge", applied.badge || meta.badge || "");
+            if (applied.postTime) favBtn.setAttribute("data-fav-time", applied.postTime);
+            if (applied.dateLabel) favBtn.setAttribute("data-fav-date", applied.dateLabel);
+          }
+          var narrative = bundle && bundle.explain && bundle.explain.narrative;
+          var raceId = (bundle && bundle.race_id) || id;
+
+          function afterAnalysis(analysis) {
+            if (chartCard) chartCard.classList.remove("is-loading");
+            if (analysis) {
+              var aCheck =
+                analysis.__contract ||
+                (window.ExpectContractGuard && ExpectContractGuard.validateAnalysis(analysis)) ||
+                { ok: true, errors: [] };
+              if (!aCheck.ok) {
+                if (window.ExpectContractGuard) {
+                  ExpectContractGuard.showErrorCard(detailMount, {
+                    title: "評価内訳を更新できません",
+                    message: "Analysis が契約と一致しません。本命カード等は Prediction のままです。",
+                    errors: aCheck.errors,
+                  });
+                }
+              } else if (window.ExpectAnalysisBind) {
+                ExpectAnalysisBind.applyRaceDetailAnalysis(analysis);
+                if (!narrative && analysis.narrative) narrative = analysis.narrative;
+              }
+            }
+            if (ExpectShell.speakMascot && narrative) {
+              ExpectShell.speakMascot(narrative.replace(/。/g, "。<br>"), 5200);
+            }
+            ExpectFavorites.bindButtons();
+          }
+
+          if (ExpectApi.Analysis) {
+            return ExpectApi.Analysis.get(raceId).then(afterAnalysis).catch(function () {
+              afterAnalysis(null);
+            });
+          }
+          afterAnalysis(null);
+        })
+        .catch(function () {
+          markReady();
+          if (window.ExpectUx && detailMount) {
+            detailMount.insertBefore(
+              ExpectUx.stateCard({
+                kind: "error",
+                title: "レース詳細を更新できません",
+                message: "PredictionBundle の取得に失敗しました。",
+                onRetry: function () {
+                  location.reload();
+                },
+              }),
+              detailMount.firstChild
+            );
+          } else if (window.ExpectContractGuard) {
+            ExpectContractGuard.showErrorCard(detailMount, {
+              title: "レース詳細を更新できません",
+              message: "PredictionBundle の取得に失敗しました。",
+            });
+          }
+          ExpectFavorites.bindButtons();
+        });
+    } else {
+      markReady();
+      ExpectFavorites.bindButtons();
+    }
   </script>
 </body>
 </html>
