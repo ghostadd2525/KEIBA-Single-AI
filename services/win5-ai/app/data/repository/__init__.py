@@ -22,11 +22,15 @@ class RaceRepository:
             conn.execute(
                 """
                 INSERT INTO races(
-                  race_id, date, venue, race_no, meeting_id, surface, distance,
+                  race_id, core_race_id, public_race_id, venue_code,
+                  date, venue, race_no, meeting_id, surface, distance,
                   class_label, grade, field_size, post_time, status, source,
                   extra_json, created_at, updated_at
-                ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+                ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
                 ON CONFLICT(race_id) DO UPDATE SET
+                  core_race_id=excluded.core_race_id,
+                  public_race_id=excluded.public_race_id,
+                  venue_code=excluded.venue_code,
                   date=excluded.date,
                   venue=excluded.venue,
                   race_no=excluded.race_no,
@@ -44,6 +48,9 @@ class RaceRepository:
                 """,
                 (
                     row["race_id"],
+                    row.get("core_race_id"),
+                    row.get("public_race_id"),
+                    row.get("venue_code"),
                     row.get("date"),
                     row.get("venue"),
                     int(row.get("race_no") or 0),
@@ -70,6 +77,16 @@ class RaceRepository:
         try:
             row = conn.execute(
                 "SELECT * FROM races WHERE race_id = ?", (race_id,)
+            ).fetchone()
+            if row:
+                return dict(row)
+            row = conn.execute(
+                "SELECT * FROM races WHERE core_race_id = ?", (race_id,)
+            ).fetchone()
+            if row:
+                return dict(row)
+            row = conn.execute(
+                "SELECT * FROM races WHERE public_race_id = ?", (race_id,)
             ).fetchone()
             return dict(row) if row else None
         finally:
@@ -112,6 +129,8 @@ class RaceRepository:
             "races": [
                 {
                     "race_id": r["race_id"],
+                    "core_race_id": r.get("core_race_id"),
+                    "public_race_id": r.get("public_race_id"),
                     "date": r["date"],
                     "venue": r["venue"],
                     "race_no": r["race_no"],
@@ -180,6 +199,68 @@ class FeatureRepository:
                 d["payload"] = json.loads(d.pop("payload_json") or "{}")
                 out.append(d)
             return out
+        finally:
+            conn.close()
+
+
+class HorseRepository:
+    def __init__(self) -> None:
+        migrate()
+
+    def upsert(self, row: dict[str, Any]) -> None:
+        conn = connect()
+        try:
+            conn.execute(
+                """
+                INSERT INTO horses(horse_id, horse_name, created_at, updated_at)
+                VALUES (?,?,?,?)
+                ON CONFLICT(horse_id) DO UPDATE SET
+                  horse_name=excluded.horse_name,
+                  updated_at=excluded.updated_at
+                """,
+                (
+                    row["horse_id"],
+                    row.get("horse_name") or "",
+                    _now(),
+                    _now(),
+                ),
+            )
+            conn.commit()
+        finally:
+            conn.close()
+
+
+class EntryRepository:
+    def __init__(self) -> None:
+        migrate()
+
+    def upsert(self, row: dict[str, Any]) -> None:
+        conn = connect()
+        try:
+            conn.execute(
+                """
+                INSERT INTO entries(
+                  race_id, horse_id, horse_number, horse_name,
+                  jockey, odds, popularity
+                ) VALUES (?,?,?,?,?,?,?)
+                ON CONFLICT(race_id, horse_number) DO UPDATE SET
+                  horse_id=excluded.horse_id,
+                  horse_name=excluded.horse_name,
+                  jockey=excluded.jockey,
+                  odds=excluded.odds,
+                  popularity=excluded.popularity
+                """,
+                (
+                    row["race_id"],
+                    row.get("horse_id"),
+                    row.get("horse_number"),
+                    row.get("horse_name"),
+                    row.get("jockey"),
+                    row.get("odds"),
+                    row.get("popularity"),
+                ),
+            )
+            conn.commit()
         finally:
             conn.close()
 

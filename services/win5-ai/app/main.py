@@ -13,6 +13,8 @@ from urllib.parse import parse_qs, urlparse
 
 from . import conversation
 from .data import db as app_db
+from .data.etl import import_day as etl_import_day
+from .data.race_resolver import resolve_identity
 from .diagnostics import FALLBACK_REASONS, REASON_HELP, collect_missing_report
 from .engine import data as engine
 from .engine import domains
@@ -118,8 +120,16 @@ class Handler(BaseHTTPRequestHandler):
             )
             return
 
+        if path == "/v1/races/resolve":
+            text = (qs.get("text") or qs.get("q") or [""])[0]
+            ident = resolve_identity(text)
+            if not ident:
+                self._send(*err("NOT_FOUND", "race not resolved", 404))
+                return
+            self._send(200, ok(ident.as_meta(), {"service": "RaceResolver"}))
+            return
+
         if path == "/v1/diagnostics/missing":
-            # 最新 list を実行してレポート再生成
             _, meta = prediction_adapter.list_with_meta()
             items = meta.get("items") or []
             report = collect_missing_report(items)
@@ -200,6 +210,19 @@ class Handler(BaseHTTPRequestHandler):
         if path == "/v1/admin/migrate":
             applied = app_db.migrate()
             self._send(200, ok({"applied": applied, "db": str(app_db.db_path())}))
+            return
+
+        if path == "/v1/admin/etl/import-day":
+            data_dir = str(body.get("data_dir") or "").strip()
+            race_date = str(body.get("date") or body.get("race_date") or "").strip() or None
+            if not data_dir:
+                self._send(*err("BAD_REQUEST", "data_dir required", 400))
+                return
+            from pathlib import Path
+
+            result = etl_import_day(Path(data_dir), race_date=race_date)
+            engine.clear_caches()
+            self._send(200, ok(result.as_dict(), {"service": "EtlPipeline"}))
             return
 
         self._send(*err("NOT_FOUND", "unknown path", 404))

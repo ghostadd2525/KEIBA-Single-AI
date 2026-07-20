@@ -16,6 +16,7 @@ from typing import Any
 
 from ...diagnostics.logging_ops import log_fallback_event
 from ...diagnostics.missing_collector import collect_missing_report
+from ...data.race_resolver import RaceResolver, resolve_identity
 from .. import data, domains
 from . import single_prediction_mapper as mapper
 
@@ -138,13 +139,30 @@ class RealAiPredictionSource:
 
     def __init__(self, fallback: MockPredictionSource | None = None) -> None:
         self._fallback = fallback or MockPredictionSource()
+        self._resolver = RaceResolver()
 
     def _catalog_race(self, race_id: str) -> dict[str, Any] | None:
+        ident = resolve_identity(race_id)
+        if ident and ident.race_row:
+            return ident.race_row
         catalog = data.load_races()
         for race in catalog.get("races") or []:
             if str(race.get("race_id") or "") == race_id:
                 return race
+            if ident:
+                if race.get("core_race_id") == ident.core_race_id:
+                    return race
+                if race.get("public_race_id") == ident.public_race_id:
+                    return race
+        if ident:
+            return ident.as_meta()
         return None
+
+    def _resolve_public_id(self, race_id: str) -> str:
+        ident = resolve_identity(race_id)
+        if ident and ident.public_race_id:
+            return ident.public_race_id
+        return str(race_id).strip()
 
     def _mock_one(self, rid: str, race: dict[str, Any] | None) -> dict[str, Any]:
         specific = data.MOCK_DIR / f"bundle-{rid}.json"
@@ -217,7 +235,7 @@ class RealAiPredictionSource:
         return items, meta
 
     def get_with_meta(self, race_id: str) -> tuple[dict[str, Any] | None, dict[str, Any] | None]:
-        rid = str(race_id or "").strip()
+        rid = self._resolve_public_id(str(race_id or "").strip())
         if not rid:
             return None, None
         bundle, item = self._infer(rid, self._catalog_race(rid))

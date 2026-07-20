@@ -72,7 +72,17 @@ def classify_feature_availability(core_race_id: str) -> str | None:
     """
     Core race の特徴量有無を分類。
     Returns None if loadable; otherwise a fallback_reason code.
+    DB features を優先し、なければ platform CSV を参照。
     """
+    try:
+        from ...data.repository import FeatureRepository
+
+        rows = FeatureRepository().list_for_race(str(core_race_id))
+        if rows:
+            return None
+    except Exception:
+        pass
+
     root = locate_ai_platform_root()
     if root is None:
         return "platform_missing"
@@ -155,9 +165,20 @@ def _core_resolvable(race_id: str) -> bool:
 
 def resolve_core_race_id(race_id: str, race_meta: dict[str, Any] | None = None) -> str | None:
     """
-    Expect / Core 双方の race_id を Core が解決できる ID に寄せる。
-    解決不能なら None（呼び出し側で Mock フォールバック）。
+    Expect / Core / catalog / UI 表記を Core race_id に解決。
+    Race Resolver 経由（DB → platform fallback）。
     """
+    from ...data.race_resolver import resolve_identity
+
+    ident = resolve_identity(race_id, race_meta=race_meta)
+    if ident and ident.core_race_id:
+        if _core_resolvable(ident.core_race_id):
+            return ident.core_race_id
+    # legacy platform-only resolution
+    return _resolve_core_race_id_legacy(race_id, race_meta)
+
+
+def _resolve_core_race_id_legacy(race_id: str, race_meta: dict[str, Any] | None = None) -> str | None:
     rid = str(race_id or "").strip()
     if not rid:
         return None
@@ -500,6 +521,8 @@ def diagnose_inference(
     """
     実推論診断。成功時 engine_source=real_ai、失敗時は fallback_reason 付き。
     """
+    from ...data.race_resolver import resolve_identity
+
     out: dict[str, Any] = {
         "race_id": public_race_id,
         "ok": False,
@@ -515,7 +538,10 @@ def diagnose_inference(
         return out
 
     try:
-        core_id = resolve_core_race_id(public_race_id, race_meta)
+        identity = resolve_identity(public_race_id, race_meta=race_meta)
+        core_id = identity.core_race_id if identity else None
+        if not core_id:
+            core_id = resolve_core_race_id(public_race_id, race_meta)
     except Exception as exc:
         out["fallback_reason"] = "exception"
         out["detail"] = f"resolve_core_race_id: {exc}"
