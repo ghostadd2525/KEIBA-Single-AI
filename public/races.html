@@ -9,6 +9,8 @@
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Noto+Sans+JP:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="assets/styles.css" />
   <link rel="stylesheet" href="assets/screens.css" />
+  <link rel="stylesheet" href="assets/ux.css" />
+  <link rel="stylesheet" href="assets/vqa.css" />
   <script src="assets/auth.js"></script>
   <script>ExpectAuth.requireAuth();</script>
 </head>
@@ -64,21 +66,11 @@
         </label>
         <div class="race-search-block">
           <p class="race-search-label">開催日</p>
-          <div class="chip-row" id="raceSearchDates">
-            <button type="button" class="chip is-active" data-search-date="all">すべて</button>
-            <button type="button" class="chip" data-search-date="7/19">7/19</button>
-            <button type="button" class="chip" data-search-date="7/20">7/20</button>
-            <button type="button" class="chip" data-search-date="7/21">7/21</button>
-          </div>
+          <div class="chip-row" id="raceSearchDates"></div>
         </div>
         <div class="race-search-block">
           <p class="race-search-label">開催会場</p>
-          <div class="chip-row" id="raceSearchVenues">
-            <button type="button" class="chip is-active" data-search-venue="all">すべて</button>
-            <button type="button" class="chip" data-search-venue="函館">函館</button>
-            <button type="button" class="chip" data-search-venue="阪神">阪神</button>
-            <button type="button" class="chip" data-search-venue="中山">中山</button>
-          </div>
+          <div class="chip-row" id="raceSearchVenues"></div>
         </div>
         <p class="race-search-count" id="raceSearchCount">条件に合うレースを表示します</p>
         <div class="race-search-actions">
@@ -90,141 +82,19 @@
 
     <div class="screen">
       <div class="race-filters" id="raceFilters">
-        <div class="tab-row date-tabs chip-row" id="dateTabs">
-          <button type="button" class="tab-pill is-active" data-filter-date="7/19">7/19</button>
-          <button type="button" class="tab-pill" data-filter-date="7/20">7/20</button>
-          <button type="button" class="tab-pill" data-filter-date="7/21">7/21</button>
-        </div>
-        <div class="chip-row" id="venueChips" aria-label="今週の開催会場">
-          <button type="button" class="chip is-active" data-venue="all">すべて</button>
-          <button type="button" class="chip" data-venue="函館">函館</button>
-          <button type="button" class="chip" data-venue="阪神">阪神</button>
-          <button type="button" class="chip" data-venue="中山">中山</button>
-        </div>
+        <div class="tab-row date-tabs chip-row" id="dateTabs"></div>
+        <div class="chip-row" id="venueChips" aria-label="開催会場"></div>
         <p class="heat-note race-filters-note" id="raceFilterNote">今週の対象会場は3場（すべて／各会場で絞り込み）。お気に入りは最大3件です。</p>
       </div>
 
-      <div class="race-list" id="raceList">
-        <p class="race-list-empty" id="raceListEmpty" hidden>条件に合うレースがありません。検索条件を変えてみてください。</p>
-        <a class="race-item race-item--bg1" href="race.html?race_id=20260719_tokyo_11" data-race-date="7/19" data-race-venue="東京" data-race-name="函館記念" data-race-conf="88" data-race-time="15:45" data-race-place="東京 11R">
-          <button type="button" class="fav-btn fav-btn--icon" data-fav-toggle="20260719_tokyo_11" data-fav-place="東京 11R" data-fav-name="函館記念" data-fav-badge="GIII" data-fav-time="15:45" data-fav-date="7/19（土）" aria-label="お気に入りに追加">
-            <span class="fav-star" aria-hidden="true">★</span>
-          </button>
-          <div>
-            <p class="race-item-place">東京 11R</p>
-            <p class="race-item-name">函館記念（GIII）</p>
-            <div class="race-item-meta">
-              <span>15:45発走</span>
-              <span class="race-stars">★★★★☆</span>
-            </div>
-          </div>
-          <div class="race-item-side">
-            <div class="race-conf">88%<small>AI信頼度</small></div>
-            <span class="btn-detail">詳細を見る ›</span>
-          </div>
-        </a>
-        <a class="race-item race-item--bg2" href="race.html?race_id=20260719_hanshin_11" data-race-date="7/19" data-race-venue="阪神" data-race-name="メインレース" data-race-conf="92" data-race-time="15:40" data-race-place="阪神 11R">
-          <button type="button" class="fav-btn fav-btn--icon" data-fav-toggle="20260719_hanshin_11" data-fav-place="阪神 11R" data-fav-name="メインレース" data-fav-badge="GIII" data-fav-time="15:40" data-fav-date="7/19（土）" aria-label="お気に入りに追加">
-            <span class="fav-star" aria-hidden="true">★</span>
-          </button>
-          <div>
-            <p class="race-item-place">阪神 11R</p>
-            <p class="race-item-name">メインレース</p>
-            <div class="race-item-meta">
-              <span>15:40発走</span>
-              <span class="race-stars">★★★★★</span>
-            </div>
-          </div>
-          <div class="race-item-side">
-            <div class="race-conf">92%<small>AI信頼度</small></div>
-            <span class="btn-detail">詳細を見る ›</span>
-          </div>
-        </a>
-        <a class="race-item race-item--bg3" href="race.html?race_id=20260719_fukushima_11" data-race-date="7/19" data-race-venue="福島" data-race-name="ラジオNIKKEI賞" data-race-conf="76" data-race-time="15:25" data-race-place="福島 11R">
-          <button type="button" class="fav-btn fav-btn--icon" data-fav-toggle="20260719_fukushima_11" data-fav-place="福島 11R" data-fav-name="ラジオNIKKEI賞" data-fav-badge="GIII" data-fav-time="15:25" data-fav-date="7/19（土）" aria-label="お気に入りに追加">
-            <span class="fav-star" aria-hidden="true">★</span>
-          </button>
-          <div>
-            <p class="race-item-place">福島 11R</p>
-            <p class="race-item-name">ラジオNIKKEI賞</p>
-            <div class="race-item-meta">
-              <span>15:25発走</span>
-              <span class="race-stars">★★★☆☆</span>
-            </div>
-          </div>
-          <div class="race-item-side">
-            <div class="race-conf">76%<small>AI信頼度</small></div>
-            <span class="btn-detail">詳細を見る ›</span>
-          </div>
-        </a>
-        <a class="race-item race-item--bg4" href="race.html?race_id=20260719_hakodate_11" data-race-date="7/19" data-race-venue="函館" data-race-name="函館2歳S" data-race-conf="81" data-race-time="15:10" data-race-place="函館 11R">
-          <button type="button" class="fav-btn fav-btn--icon" data-fav-toggle="20260719_hakodate_11" data-fav-place="函館 11R" data-fav-name="函館2歳S" data-fav-badge="GIII" data-fav-time="15:10" data-fav-date="7/19（土）" aria-label="お気に入りに追加">
-            <span class="fav-star" aria-hidden="true">★</span>
-          </button>
-          <div>
-            <p class="race-item-place">函館 11R</p>
-            <p class="race-item-name">函館2歳S</p>
-            <div class="race-item-meta">
-              <span>15:10発走</span>
-              <span class="race-stars">★★★★☆</span>
-            </div>
-          </div>
-          <div class="race-item-side">
-            <div class="race-conf">81%<small>AI信頼度</small></div>
-            <span class="btn-detail">詳細を見る ›</span>
-          </div>
-        </a>
-        <a class="race-item race-item--bg1" href="race.html?race_id=20260720_nakayama_11" data-race-date="7/20" data-race-venue="中山" data-race-name="中山ダート戦" data-race-conf="79" data-race-time="15:30" data-race-place="中山 11R">
-          <button type="button" class="fav-btn fav-btn--icon" data-fav-toggle="20260720_nakayama_11" data-fav-place="中山 11R" data-fav-name="中山ダート戦" data-fav-badge="L" data-fav-time="15:30" data-fav-date="7/20（日）" aria-label="お気に入りに追加">
-            <span class="fav-star" aria-hidden="true">★</span>
-          </button>
-          <div>
-            <p class="race-item-place">中山 11R</p>
-            <p class="race-item-name">中山ダート戦</p>
-            <div class="race-item-meta">
-              <span>15:30発走</span>
-              <span class="race-stars">★★★★☆</span>
-            </div>
-          </div>
-          <div class="race-item-side">
-            <div class="race-conf">79%<small>AI信頼度</small></div>
-            <span class="btn-detail">詳細を見る ›</span>
-          </div>
-        </a>
-        <a class="race-item race-item--bg2" href="race.html?race_id=20260719_hanshin_10" data-race-date="7/19" data-race-venue="阪神" data-race-name="特別戦" data-race-conf="74" data-race-time="14:50" data-race-place="阪神 10R">
-          <button type="button" class="fav-btn fav-btn--icon" data-fav-toggle="20260719_hanshin_10" data-fav-place="阪神 10R" data-fav-name="特別戦" data-fav-badge="OP" data-fav-time="14:50" data-fav-date="7/19（土）" aria-label="お気に入りに追加">
-            <span class="fav-star" aria-hidden="true">★</span>
-          </button>
-          <div>
-            <p class="race-item-place">阪神 10R</p>
-            <p class="race-item-name">特別戦</p>
-            <div class="race-item-meta">
-              <span>14:50発走</span>
-              <span class="race-stars">★★★☆☆</span>
-            </div>
-          </div>
-          <div class="race-item-side">
-            <div class="race-conf">74%<small>AI信頼度</small></div>
-            <span class="btn-detail">詳細を見る ›</span>
-          </div>
-        </a>
-        <a class="race-item race-item--bg3" href="race.html?race_id=20260719_hakodate_10" data-race-date="7/19" data-race-venue="函館" data-race-name="未勝利戦" data-race-conf="68" data-race-time="14:20" data-race-place="函館 10R">
-          <button type="button" class="fav-btn fav-btn--icon" data-fav-toggle="20260719_hakodate_10" data-fav-place="函館 10R" data-fav-name="未勝利戦" data-fav-badge="—" data-fav-time="14:20" data-fav-date="7/19（土）" aria-label="お気に入りに追加">
-            <span class="fav-star" aria-hidden="true">★</span>
-          </button>
-          <div>
-            <p class="race-item-place">函館 10R</p>
-            <p class="race-item-name">未勝利戦</p>
-            <div class="race-item-meta">
-              <span>14:20発走</span>
-              <span class="race-stars">★★☆☆☆</span>
-            </div>
-          </div>
-          <div class="race-item-side">
-            <div class="race-conf">68%<small>AI信頼度</small></div>
-            <span class="btn-detail">詳細を見る ›</span>
-          </div>
-        </a>
+      <div class="race-list" id="raceList" aria-busy="true">
+        <div class="expect-skeleton" id="raceListSkeleton" role="status" aria-label="レース読み込み中">
+          <div class="expect-skel expect-skel--card"></div>
+          <div class="expect-skel expect-skel--card"></div>
+          <div class="expect-skel expect-skel--card"></div>
+          <div class="expect-skel expect-skel--card"></div>
+        </div>
+        <p class="race-list-empty" id="raceListEmpty" hidden>レースを読み込み中…</p>
       </div>
     </div>
 
@@ -237,18 +107,28 @@
 
     <div data-expect-nav></div>
   </div>
+  <script src="assets/api/mock-gate.js"></script>
+  <script src="assets/api/auth.js"></script>
+  <script src="assets/api/contract-guard.js"></script>
+  <script src="assets/api/prediction.js"></script>
+  <script src="assets/api/race-id-meta.js"></script>
+  <script src="assets/api/prediction-bind.js"></script>
+  <script src="assets/api/real-data-bind.js"></script>
+  <script src="assets/ux.js"></script>
   <script src="assets/favorites.js"></script>
   <script src="assets/shell.js"></script>
   <script src="assets/reminders.js"></script>
   <script src="assets/partials-nav.js"></script>
   <script>
-    ExpectFavorites.bindButtons();
     ExpectShell.initMascotTalk([
       "気になるレースは<br>★ でお気に入り登録してね！",
       "お気に入りは最大3件だよ。<br>古いは順に外れるよ！"
     ]);
     ExpectShell.initChips("#dateTabs");
     ExpectShell.initChips("#venueChips");
+
+    function bootRaceUi() {
+    ExpectFavorites.bindButtons();
 
     (function initRaceSearch() {
       var root = document.getElementById("raceSearchRoot");
@@ -260,7 +140,7 @@
       var list = document.getElementById("raceList");
       if (!root || !openBtn || !list) return;
 
-      var state = { q: "", date: "7/19", venue: "all" };
+      var state = { q: "", date: "all", venue: "all" };
 
       function items() {
         return Array.prototype.slice.call(list.querySelectorAll(".race-item"));
@@ -502,6 +382,77 @@
 
         applySort();
       })();
+    })();
+    } // bootRaceUi
+
+    (function loadRacesFromApi() {
+      var list = document.getElementById("raceList");
+      if (!list) return;
+
+      function renderError(message) {
+        list.setAttribute("aria-busy", "false");
+        list.innerHTML = "";
+        if (window.ExpectUx) {
+          list.appendChild(
+            ExpectUx.stateCard({
+              kind: "error",
+              title: "レース一覧を表示できません",
+              message: message || "通信エラーのため一覧を更新できませんでした。",
+              onRetry: function () {
+                location.reload();
+              },
+            })
+          );
+        } else {
+          list.innerHTML =
+            '<p class="race-list-empty" id="raceListEmpty">レースの取得に失敗しました。再読み込みしてください。</p>';
+        }
+        bootRaceUi();
+      }
+
+      if (!window.ExpectApi || !ExpectApi.Prediction || !window.ExpectPredictionBind) {
+        renderError("API クライアントが読み込めていません。");
+        return;
+      }
+
+      ExpectApi.Prediction.list({})
+        .then(function (bundles) {
+          var filtered = window.ExpectContractGuard
+            ? ExpectContractGuard.filterValidBundles(bundles)
+            : { ok: bundles || [], rejected: [] };
+          var races = filtered.ok;
+          var html = races.map(ExpectPredictionBind.raceCardHtml).join("");
+          list.setAttribute("aria-busy", "false");
+          list.innerHTML =
+            '<p class="race-list-empty" id="raceListEmpty" hidden>条件に合うレースがありません。検索条件を変えてみてください。</p>' +
+            html;
+          if (filtered.rejected.length && window.ExpectContractGuard) {
+            ExpectContractGuard.showErrorCard(list, {
+              title: "一部レースを表示できません",
+              message:
+                filtered.rejected.length +
+                "件が PredictionBundle 契約違反のため除外しました。",
+              errors: (filtered.rejected[0] && filtered.rejected[0].errors) || [],
+            });
+          }
+          if (!races.length) {
+            var e2 = document.getElementById("raceListEmpty");
+            if (e2) {
+              e2.hidden = false;
+              e2.textContent = filtered.rejected.length
+                ? "契約を満たすレースがありません。"
+                : "レースがありません。";
+            }
+          }
+          if (window.ExpectRealDataBind) {
+            ExpectRealDataBind.cacheBundles(races);
+            ExpectRealDataBind.applyRacesFilters(races);
+          }
+          bootRaceUi();
+        })
+        .catch(function () {
+          renderError("通信エラーのため一覧を更新できませんでした。");
+        });
     })();
   </script>
 </body>

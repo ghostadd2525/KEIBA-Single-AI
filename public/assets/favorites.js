@@ -7,6 +7,7 @@
   var KEY = "expect_favorites_v1";
   var MAX = 3;
 
+  /** @deprecated dev fallback — Prefer cacheBundles() from Prediction API */
   var CATALOG = {
     "20260719_tokyo_11": {
       id: "20260719_tokyo_11",
@@ -70,6 +71,61 @@
     }
   };
 
+  var _bundleCache = {};
+
+  function scoreFromBundle(b) {
+    if (!b) return null;
+    var c = b.ai_confidence || {};
+    if (typeof c.score === "number") {
+      return c.score <= 1 ? Math.round(c.score * 100) : Math.round(c.score);
+    }
+    return null;
+  }
+
+  function metaFromBundle(b) {
+    if (!b || !b.race_id) return null;
+    var info = b.race_info || {};
+    var d = info.date || "";
+    var p = String(d).split("-");
+    var dateLabel =
+      info.date_label ||
+      (p.length === 3 ? Number(p[1]) + "/" + Number(p[2]) : d);
+    return {
+      id: b.race_id,
+      date: d,
+      dateLabel: dateLabel,
+      place:
+        (info.venue || "") + (info.race_no != null ? " " + info.race_no + "R" : ""),
+      name: info.class_label || "",
+      badge: info.grade || "",
+      postTime: info.post_time || "",
+      image: "assets/images/race-bg-1.png",
+      bg: ((Number(info.race_no) || 1) % 4) + 1,
+    };
+  }
+
+  function aiFromBundle(b) {
+    var overall = scoreFromBundle(b) || 70;
+    return {
+      overall: overall,
+      pedigree: overall,
+      pace: overall,
+      jockey: overall,
+      form: overall,
+      odds: overall,
+    };
+  }
+
+  function cacheBundles(bundles) {
+    (bundles || []).forEach(function (b) {
+      if (b && b.race_id) _bundleCache[b.race_id] = b;
+    });
+  }
+
+  function cacheBundle(bundle) {
+    if (bundle && bundle.race_id) _bundleCache[bundle.race_id] = bundle;
+  }
+
   var AI_PARAM_LABELS = {
     pedigree: "血統適性",
     pace: "展開予測",
@@ -82,8 +138,17 @@
     return { overall: 70, pedigree: 70, pace: 70, jockey: 70, form: 70, odds: 70 };
   }
 
+  function allowCatalog() {
+    return (
+      global.ExpectMockGate &&
+      typeof ExpectMockGate.allowMockFallback === "function" &&
+      ExpectMockGate.allowMockFallback()
+    );
+  }
+
   function getAi(id) {
-    var base = CATALOG[id] && CATALOG[id].ai;
+    if (_bundleCache[id]) return aiFromBundle(_bundleCache[id]);
+    var base = allowCatalog() && CATALOG[id] && CATALOG[id].ai;
     return Object.assign(defaultAi(), base || {});
   }
 
@@ -111,17 +176,158 @@
     if (!store) return false;
     try {
       store.setItem(KEY, JSON.stringify(list));
+      scheduleServerSync();
       return true;
     } catch (e) {
       return false;
     }
   }
 
+  var _syncTimer = null;
+  var _syncing = false;
+
+  /** サーバー同期用 DTO（expect-favorites/1.0） */
+  function exportForSync() {
+    var items = list().map(function (item) {
+      return {
+        race_id: item.id,
+        place: item.place || null,
+        name: item.name || null,
+        badge: item.badge || null,
+        post_time: item.postTime || null,
+        date_label: item.dateLabel || null,
+        added_at: item.addedAt || Date.now(),
+      };
+    });
+    return {
+      schema_version: "expect-favorites/1.0",
+      race_ids: items.map(function (x) {
+        return x.race_id;
+      }),
+      items: items,
+      synced_at: null,
+    };
+  }
+
+  /**
+   * サーバー favorites を localStorage へ取り込む
+   * @param {object} fav FavoritesState
+   * @param {{ merge?: boolean }} opts merge=true でローカルと結合
+   */
+  function importFromServer(fav, opts) {
+    opts = opts || {};
+    if (!fav || typeof fav !== "object") return list();
+    var remoteItems = Array.isArray(fav.items) ? fav.items : [];
+    var mapped = remoteItems.map(function (it) {
+      return normalize({
+        id: it.race_id || it.id,
+        place: it.place,
+        name: it.name,
+        badge: it.badge,
+        postTime: it.post_time || it.postTime,
+        dateLabel: it.date_label || it.dateLabel,
+        addedAt: it.added_at || it.addedAt || Date.now(),
+      });
+    });
+
+    var next = mapped;
+    if (opts.merge) {
+      var map = {};
+      list().concat(mapped).forEach(function (item) {
+        var prev = map[item.id];
+        if (!prev || (item.addedAt || 0) >= (prev.addedAt || 0)) map[item.id] = item;
+      });
+      next = Object.keys(map)
+        .map(function (k) {
+          return map[k];
+        })
+        .sort(function (a, b) {
+          return (b.addedAt || 0) - (a.addedAt || 0);
+        })
+        .slice(0, MAX);
+    } else {
+      next = mapped
+        .sort(function (a, b) {
+          return (b.addedAt || 0) - (a.addedAt || 0);
+        })
+        .slice(0, MAX);
+    }
+
+    var store = storage();
+    if (store) {
+      try {
+        store.setItem(KEY, JSON.stringify(next));
+      } catch (e) { /* ignore */ }
+    }
+    global.dispatchEvent(
+      new CustomEvent("expect:favorites-changed", { detail: { list: list(), source: "server" } })
+    );
+    return list();
+  }
+
+  function canSync() {
+    var authed =
+      global.ExpectAuth &&
+      (typeof ExpectAuth.hasServerSession === "function"
+        ? ExpectAuth.hasServerSession()
+        : ExpectAuth.isLoggedIn() && ExpectAuth.getAccessToken && ExpectAuth.getAccessToken());
+    return !!(
+      authed &&
+      global.ExpectApi &&
+      ExpectApi.Auth &&
+      typeof ExpectApi.Auth.putFavorites === "function"
+    );
+  }
+
+  function scheduleServerSync() {
+    if (!canSync()) return;
+    if (_syncTimer) clearTimeout(_syncTimer);
+    _syncTimer = setTimeout(function () {
+      syncNow({ reason: "local-change" }).catch(function () { /* ignore */ });
+    }, 600);
+  }
+
+  /** ログイン後・変更後の push / pull */
+  function syncNow(opts) {
+    opts = opts || {};
+    if (!canSync()) return Promise.resolve({ ok: false, reason: "guest" });
+    if (_syncing) return Promise.resolve({ ok: false, reason: "busy" });
+    _syncing = true;
+
+    var push = ExpectApi.Auth.putFavorites(exportForSync())
+      .then(function (fav) {
+        if (fav) importFromServer(fav, { merge: false });
+        return { ok: true, favorites: fav, reason: opts.reason || "sync" };
+      })
+      .catch(function (err) {
+        return { ok: false, error: err };
+      })
+      .then(function (result) {
+        _syncing = false;
+        return result;
+      });
+
+    return push;
+  }
+
+  function pullFromServer() {
+    if (!canSync() || !ExpectApi.Auth.getFavorites) {
+      return Promise.resolve({ ok: false, reason: "guest" });
+    }
+    return ExpectApi.Auth.getFavorites()
+      .then(function (fav) {
+        importFromServer(fav, { merge: true });
+        return { ok: true, favorites: fav };
+      })
+      .catch(function (err) {
+        return { ok: false, error: err };
+      });
+  }
+
   function normalize(entry) {
-    var base = CATALOG[entry.id] || {};
+    var base = getMeta(entry.id, entry);
     var image = entry.image || base.image || "assets/images/race-bg-1.png";
     var bg = entry.bg || base.bg || 1;
-    // 古い保存データに旧画像が残っていても race-bg に寄せる
     if (String(image).indexOf("race-bg-") < 0 && base.image) {
       image = base.image;
       bg = base.bg || bg;
@@ -137,7 +343,7 @@
       image: image,
       bg: bg,
       ai: getAi(entry.id),
-      addedAt: entry.addedAt || Date.now()
+      addedAt: entry.addedAt || Date.now(),
     };
   }
 
@@ -156,7 +362,11 @@
   }
 
   function getMeta(id, override) {
-    var base = CATALOG[id] ? Object.assign({}, CATALOG[id]) : { id: id };
+    var base = _bundleCache[id]
+      ? Object.assign({ ai: getAi(id) }, metaFromBundle(_bundleCache[id]))
+      : allowCatalog() && CATALOG[id]
+        ? Object.assign({}, CATALOG[id])
+        : { id: id };
     if (override) {
       Object.keys(override).forEach(function (k) {
         if (override[k] != null && override[k] !== "") base[k] = override[k];
@@ -496,6 +706,13 @@
     renderHome: renderHome,
     bindHomeEdit: bindHomeEdit,
     bindButtons: bindButtons,
-    syncStarButtons: syncStarButtons
+    syncStarButtons: syncStarButtons,
+    exportForSync: exportForSync,
+    importFromServer: importFromServer,
+    syncNow: syncNow,
+    pullFromServer: pullFromServer,
+    canSync: canSync,
+    cacheBundles: cacheBundles,
+    cacheBundle: cacheBundle,
   };
 })(window);

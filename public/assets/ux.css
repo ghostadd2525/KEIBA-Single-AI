@@ -346,6 +346,43 @@
   display: flex;
   align-items: center;
   gap: 10px;
+  position: relative;
+}
+
+.chat-live2d-slot.is-compact {
+  border-style: solid;
+  border-color: rgba(193, 162, 109, 0.22);
+  background: rgba(20, 24, 32, 0.45);
+  padding-right: 36px;
+}
+
+.chat-live2d-dismiss {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 28px;
+  height: 28px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--muted, #9aa3b2);
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.chat-return-row {
+  margin: 0 0 8px;
+}
+
+.chat-return-link {
+  display: inline-flex;
+  align-items: center;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--gold-soft, #e5c78f);
+  text-decoration: none;
 }
 
 .chat-live2d-slot strong {
@@ -362,6 +399,25 @@
   border-radius: 999px;
   border: 1px solid rgba(193, 162, 109, 0.45);
   color: var(--gold-soft, #e5c78f);
+}
+
+.chip.is-soon,
+.chip[disabled] {
+  opacity: 0.55;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.chip-soon {
+  margin-left: 6px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--muted, #9aa3b2);
+}
+
+.dash-metric[hidden] {
+  display: none !important;
 }
 
 /* —— Home polish —— */

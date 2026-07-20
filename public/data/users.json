@@ -1,4 +1,17 @@
 {
   "schema_version": "expect-user/1.0",
-  "users": []
+  "users": [
+    {
+      "user_id": "cursor-review",
+      "display_name": "Cursor Reviewer",
+      "password_hash": "sha256$expect-beta-v1$4a3e4f3b7109837026135ce234c770c4057b440995062e39c866a41c43afb3c7",
+      "invite_id": null,
+      "status": "active",
+      "role": "REVIEWER",
+      "created_at": "2026-07-20T12:00:00.000Z",
+      "terms_version": "2026-07-19",
+      "terms_accepted_at": "2026-07-20T12:00:00.000Z",
+      "note": "UI review account. Role REVIEWER is advisory; auth privilege matrix maps unknown roles to USER."
+    }
+  ]
 }

@@ -139,14 +139,23 @@ async function fetchFromPythonGet(context, raceId) {
 async function fetchFromMockGet(context, raceId) {
   let bundle = await loadAssetJson(context, `/data/mocks/bundle-${raceId}.json`);
   if (!bundle) {
-    bundle = await loadAssetJson(context, "/data/mocks/bundle-20260719_hanshin_11.json");
-    if (!bundle) return { ok: false, error: "PredictionBundle not found", status: 404 };
+    const catalog = await loadAssetJson(context, "/data/mocks/races.json");
+    const race = ((catalog && catalog.races) || []).find((r) => r.race_id === raceId);
+    const template = await loadAssetJson(context, "/data/mocks/bundle-20260719_hanshin_11.json");
+    if (race && template) {
+      bundle = catalogToPredictionBundle(race, template);
+    } else if (template) {
+      bundle = normalizePredictionBundle(template, raceId);
+    } else {
+      return { ok: false, error: "PredictionBundle not found", status: 404 };
+    }
+  } else {
+    bundle = normalizePredictionBundle(bundle, raceId);
   }
-  const normalized = normalizePredictionBundle(bundle, raceId);
-  const item = bffMockItem(normalized);
+  const item = bffMockItem(bundle);
   return {
     ok: true,
-    bundle: normalized,
+    bundle,
     source: "mock",
     provider: "mock",
     provenanceMeta: {

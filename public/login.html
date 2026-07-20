@@ -28,70 +28,88 @@
     </div>
 
     <section class="login-card" aria-label="ログイン">
-      <div class="login-block-head">
-        <div class="login-ico" aria-hidden="true">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-            <rect x="4" y="7" width="16" height="12" rx="2" stroke="currentColor" stroke-width="1.6"/>
-            <path d="M8 7V6a4 4 0 0 1 8 0v1" stroke="currentColor" stroke-width="1.6"/>
-            <circle cx="12" cy="13" r="1.4" fill="currentColor"/>
-          </svg>
-        </div>
-        <div>
-          <h2>一時IDでログイン</h2>
-          <p>招待された方のみご利用いただけます</p>
-        </div>
+      <div class="login-tabs" role="tablist" aria-label="認証方法">
+        <button type="button" class="login-tab is-active" role="tab" aria-selected="true" data-tab="invite" id="tabInvite">一時ID（初回）</button>
+        <button type="button" class="login-tab" role="tab" aria-selected="false" data-tab="account" id="tabAccount">ログイン</button>
       </div>
 
-      <form id="loginForm">
-        <label class="login-field">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-            <path d="M4 8h16v10a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8Z" stroke="currentColor" stroke-width="1.6"/>
-            <path d="M4 8l8 5 8-5" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+      <!-- 一時ID初回（初期表示） -->
+      <div class="login-pane" id="paneInvite" role="tabpanel">
+        <div class="login-block-head">
+          <div class="login-ico" aria-hidden="true">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+              <rect x="5" y="11" width="14" height="10" rx="2" stroke="currentColor" stroke-width="1.6"/>
+              <path d="M8 11V8a4 4 0 0 1 8 0v3" stroke="currentColor" stroke-width="1.6"/>
+            </svg>
+          </div>
+          <div>
+            <h2>一時IDで開始</h2>
+            <p>招待された方の初回設定へ進みます</p>
+          </div>
+        </div>
+
+        <form id="inviteForm">
+          <label class="login-field">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M4 8h16v10a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8Z" stroke="currentColor" stroke-width="1.6"/>
+              <path d="M4 8l8 5 8-5" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+            </svg>
+            <input id="tempId" name="tempId" type="text" autocomplete="off" placeholder="例: BETA-7X4P-Q8MN" required />
+          </label>
+          <button class="login-submit" type="submit">
+            初回設定へ
+            <span aria-hidden="true">›</span>
+          </button>
+        </form>
+
+        <p class="login-tip">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.6"/>
+            <path d="M12 10v6M12 7.5h.01" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
           </svg>
-          <input id="tempId" name="tempId" type="text" inputmode="text" autocomplete="username" placeholder="一時IDを入力してください" required />
-        </label>
-
-        <button class="login-submit" type="submit">
-          ログイン
-          <span aria-hidden="true">›</span>
-        </button>
-        <p class="login-error" id="loginError" role="alert"></p>
-      </form>
-
-      <p class="login-tip">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-          <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.6"/>
-          <path d="M12 10v6M12 7.5h.01" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-        </svg>
-        一時IDは招待時に発行されたものをご利用ください
-      </p>
-
-      <div class="login-or">または</div>
-
-      <button type="button" class="login-invite" id="inviteToggle">
-        <span class="login-invite-left">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-            <rect x="5" y="11" width="14" height="10" rx="2" stroke="currentColor" stroke-width="1.6"/>
-            <path d="M8 11V8a4 4 0 0 1 8 0v3" stroke="currentColor" stroke-width="1.6"/>
-          </svg>
-          招待コードをお持ちの方はこちら
-        </span>
-        <span aria-hidden="true">›</span>
-      </button>
-
-      <div class="login-invite-panel" id="invitePanel" hidden>
-        <label class="login-field">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-            <rect x="5" y="11" width="14" height="10" rx="2" stroke="currentColor" stroke-width="1.6"/>
-            <path d="M8 11V8a4 4 0 0 1 8 0v3" stroke="currentColor" stroke-width="1.6"/>
-          </svg>
-          <input id="inviteCode" type="text" placeholder="招待コードを入力" />
-        </label>
-        <button class="login-submit" type="button" id="inviteLoginBtn">
-          招待コードで続行
-          <span aria-hidden="true">›</span>
-        </button>
+          一時IDは1回のみ有効です。設定後はログインIDでサインインしてください
+        </p>
       </div>
+
+      <!-- 正式ログイン -->
+      <div class="login-pane" id="paneAccount" role="tabpanel" hidden>
+        <div class="login-block-head">
+          <div class="login-ico" aria-hidden="true">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+              <rect x="4" y="7" width="16" height="12" rx="2" stroke="currentColor" stroke-width="1.6"/>
+              <path d="M8 7V6a4 4 0 0 1 8 0v1" stroke="currentColor" stroke-width="1.6"/>
+              <circle cx="12" cy="13" r="1.4" fill="currentColor"/>
+            </svg>
+          </div>
+          <div>
+            <h2>ログイン</h2>
+            <p>設定済みのログインIDとパスワード</p>
+          </div>
+        </div>
+
+        <form id="accountForm">
+          <label class="login-field">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <circle cx="12" cy="8" r="3.5" stroke="currentColor" stroke-width="1.6"/>
+              <path d="M5 19c1.5-3 4-4.5 7-4.5s5.5 1.5 7 4.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+            </svg>
+            <input id="loginId" name="loginId" type="text" autocomplete="username" placeholder="ログインID" required />
+          </label>
+          <label class="login-field">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <rect x="5" y="11" width="14" height="10" rx="2" stroke="currentColor" stroke-width="1.6"/>
+              <path d="M8 11V8a4 4 0 0 1 8 0v3" stroke="currentColor" stroke-width="1.6"/>
+            </svg>
+            <input id="loginPassword" name="password" type="password" autocomplete="current-password" placeholder="パスワード" required />
+          </label>
+          <button class="login-submit" type="submit">
+            ログイン
+            <span aria-hidden="true">›</span>
+          </button>
+        </form>
+      </div>
+
+      <p class="login-error" id="loginError" role="alert"></p>
 
       <div class="login-notice">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -99,59 +117,81 @@
           <path d="m9.5 12 1.8 1.8L15 10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
         <div>
-          <strong>当サービスは招待制です</strong>
-          <p>不正アクセス防止のため、限られた方のみご利用いただけます。</p>
+          <strong>招待制β版です</strong>
+          <p>一般登録はありません。管理者が発行した一時IDをお持ちの方のみ初回設定できます。</p>
         </div>
       </div>
     </section>
   </div>
 
+  <script src="assets/api/auth.js"></script>
+  <script src="assets/favorites.js"></script>
   <script src="assets/auth.js"></script>
   <script>
     (function () {
       if (ExpectAuth.isLoggedIn()) {
-        // 規約は端末で初回同意済みならスキップ
         location.replace(ExpectAuth.hasAcceptedTerms() ? "index.html" : "terms.html");
         return;
       }
 
-      var form = document.getElementById("loginForm");
       var err = document.getElementById("loginError");
-      var inviteToggle = document.getElementById("inviteToggle");
-      var invitePanel = document.getElementById("invitePanel");
-      var inviteLoginBtn = document.getElementById("inviteLoginBtn");
+      var paneAccount = document.getElementById("paneAccount");
+      var paneInvite = document.getElementById("paneInvite");
+      var tabAccount = document.getElementById("tabAccount");
+      var tabInvite = document.getElementById("tabInvite");
 
-      function goAfterLogin(id) {
-        if (!ExpectAuth.login(id)) {
-          err.textContent = "ログイン状態を保存できませんでした。ブラウザの保存設定を確認してください";
-          return;
-        }
-        location.href = ExpectAuth.hasAcceptedTerms() ? "index.html" : "terms.html";
+      function showTab(name) {
+        var isAccount = name === "account";
+        paneAccount.hidden = !isAccount;
+        paneInvite.hidden = isAccount;
+        tabAccount.classList.toggle("is-active", isAccount);
+        tabInvite.classList.toggle("is-active", !isAccount);
+        tabAccount.setAttribute("aria-selected", isAccount ? "true" : "false");
+        tabInvite.setAttribute("aria-selected", isAccount ? "false" : "true");
+        err.textContent = "";
       }
 
-      form.addEventListener("submit", function (e) {
+      tabAccount.addEventListener("click", function () { showTab("account"); });
+      tabInvite.addEventListener("click", function () { showTab("invite"); });
+      showTab("invite");
+
+      document.getElementById("accountForm").addEventListener("submit", function (e) {
         e.preventDefault();
-        var id = (document.getElementById("tempId").value || "").trim();
+        err.textContent = "";
+        var id = (document.getElementById("loginId").value || "").trim();
+        var password = document.getElementById("loginPassword").value || "";
         if (id.length < 4) {
-          err.textContent = "一時IDを正しく入力してください（4文字以上）";
+          err.textContent = "ログインIDを入力してください";
           return;
         }
-        err.textContent = "";
-        goAfterLogin(id);
-      });
-
-      inviteToggle.addEventListener("click", function () {
-        invitePanel.hidden = !invitePanel.hidden;
-      });
-
-      inviteLoginBtn.addEventListener("click", function () {
-        var code = (document.getElementById("inviteCode").value || "").trim();
-        if (code.length < 4) {
-          err.textContent = "招待コードを正しく入力してください";
+        if (!password) {
+          err.textContent = "パスワードを入力してください";
           return;
         }
+        ExpectAuth.loginWithApi(id, password)
+          .then(function () {
+            location.href = "index.html";
+          })
+          .catch(function (e2) {
+            err.textContent = (e2 && e2.message) || "ログインに失敗しました";
+          });
+      });
+
+      document.getElementById("inviteForm").addEventListener("submit", function (e) {
+        e.preventDefault();
         err.textContent = "";
-        goAfterLogin("invite:" + code);
+        var inviteId = (document.getElementById("tempId").value || "").trim();
+        if (inviteId.length < 4) {
+          err.textContent = "一時IDを入力してください";
+          return;
+        }
+        ExpectAuth.startInvite(inviteId)
+          .then(function () {
+            location.href = "setup.html";
+          })
+          .catch(function (e2) {
+            err.textContent = (e2 && e2.message) || "一時IDを確認できませんでした";
+          });
       });
     })();
   </script>

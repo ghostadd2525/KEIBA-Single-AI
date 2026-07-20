@@ -150,6 +150,34 @@ body.page-races {
   display: none !important;
 }
 
+/* Phase3: 契約違反フォールバック（レイアウト非破壊） */
+.contract-error-card {
+  margin: 0 0 12px;
+  padding: 14px 16px;
+  border: 1px dashed rgba(193, 162, 109, 0.4);
+  border-radius: var(--radius, 12px);
+  background: rgba(40, 28, 22, 0.35);
+  color: var(--muted, #b8a99a);
+}
+.contract-error-card__title {
+  margin: 0 0 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #e8d5b5;
+}
+.contract-error-card__msg {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.5;
+}
+.contract-error-card__detail {
+  margin: 8px 0 0;
+  font-size: 11px;
+  line-height: 1.4;
+  opacity: 0.75;
+  word-break: break-all;
+}
+
 /* レース検索（カレンダーアイコン） */
 .race-search-root {
   position: fixed;

@@ -1,16 +1,21 @@
 import { writeAudit, AuditEvent } from "./_lib/auditLog.js";
 import { requireAuth } from "./_lib/auth.js";
+import { resolveAuthorization } from "./_lib/authorization.js";
 import { getBetaConfig } from "./_lib/betaConfig.js";
 import { jsonError } from "./_lib/errors.js";
+import { evaluateOpsAccess, resolveOpsMode } from "./_lib/opsMode.js";
 
-const MAINTENANCE_ALLOW = new Set([
-  "/api/auth/login",
-  "/api/auth/logout",
-  "/api/auth/me",
-  "/api/auth/invite/start",
-  "/api/auth/setup",
-]);
-
+/**
+ * Phase OPS-1A — 認可フロー
+ *
+ * 1. requireAuth（認証）
+ * 2. resolveAuthorization（ロール / bypass 権限）← 公開制御より先
+ * 3. evaluateOpsAccess（OPS Mode PUBLIC/CLOSED）
+ * 4. USER のみ CLOSED で 503。ADMIN（将来 OPS/DEVELOPER）は常時許可
+ *
+ * /api/health / /api/ops/monitor は exempt（OPS-Monitor 非影響）
+ * Result Automation は Python 側のため本 Middleware 対象外
+ */
 export async function onRequest(context) {
   const url = new URL(context.request.url);
   if (!url.pathname.startsWith("/api/")) {
@@ -24,16 +29,49 @@ export async function onRequest(context) {
   try {
     beta = await getBetaConfig(context);
   } catch {
-    /* fail open */
+    /* fail open on config */
   }
 
-  if (beta.maintenance_mode && !MAINTENANCE_ALLOW.has(url.pathname)) {
+  // 権限判定は公開制御より先
+  const authz = await resolveAuthorization(context, beta);
+  const opsMode = resolveOpsMode(beta);
+  const access = evaluateOpsAccess({
+    pathname: url.pathname,
+    opsMode,
+    role: authz.role,
+    bypassOpsMode: authz.bypass_ops_mode,
+  });
+
+  if (!access.allow) {
     writeAudit(context, {
-      type: "maintenance_block",
+      type: "ops_mode_block",
       ok: false,
-      detail: { path: url.pathname },
+      actor: context.data && context.data.user && context.data.user.id,
+      detail: {
+        path: url.pathname,
+        ops_mode: access.ops_mode,
+        role: access.role,
+        reason: access.reason,
+      },
     });
-    return jsonError("MAINTENANCE", beta.maintenance_message || "maintenance", 503);
+    return jsonError(
+      "OPS_CLOSED",
+      beta.maintenance_message || "ただいま公開時間外です。開催日のみご利用いただけます。",
+      503
+    );
+  }
+
+  if (access.reason === "role_bypass" && opsMode !== "PUBLIC") {
+    writeAudit(context, {
+      type: "ops_admin_bypass",
+      ok: true,
+      actor: context.data && context.data.user && context.data.user.id,
+      detail: {
+        path: url.pathname,
+        ops_mode: opsMode,
+        role: access.role,
+      },
+    });
   }
 
   // 利用監査（レスポンス契約は変更しない）

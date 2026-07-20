@@ -27,44 +27,29 @@
 
     <div class="screen">
       <section class="balance-hero" aria-label="今月の成績サマリー">
-        <p class="balance-hero-label">2026年7月 · 成績サマリー</p>
-        <p class="balance-hero-value is-plus">+¥58,400</p>
-        <p class="balance-hero-sub">前月比 <span class="is-plus">+12,800</span> · 回収率 <strong>132%</strong></p>
+        <p class="balance-hero-label">読み込み中…</p>
+        <p class="balance-hero-value">—</p>
+        <p class="balance-hero-sub">User API / Coverage から取得</p>
       </section>
 
       <section class="stats-grid">
-        <h3>今月の成績</h3>
-        <div class="stat-cell"><span>的中率</span><b>71%</b></div>
-        <div class="stat-cell"><span>回収率</span><b>132%</b></div>
-        <div class="stat-cell"><span>収支</span><b class="is-plus">+58,400</b></div>
-        <div class="stat-cell"><span>的中数</span><b>23R</b></div>
+        <h3>今月のアクティビティ</h3>
+        <div class="stat-cell"><span>閲覧数</span><b>—</b></div>
+        <div class="stat-cell"><span>AIカバレッジ</span><b>—</b></div>
+        <div class="stat-cell"><span>収支</span><b>—</b></div>
+        <div class="stat-cell"><span>閲覧R</span><b>—</b></div>
       </section>
 
       <section class="balance-week">
-        <h3>週次の成績</h3>
+        <h3>最近の閲覧履歴</h3>
         <ul class="balance-week-list">
-          <li>
-            <span>第1週</span>
-            <b class="is-plus">+18,200</b>
-          </li>
-          <li>
-            <span>第2週</span>
-            <b class="is-plus">+9,600</b>
-          </li>
-          <li>
-            <span>第3週</span>
-            <b class="is-minus">-4,200</b>
-          </li>
-          <li>
-            <span>第4週（今月）</span>
-            <b class="is-plus">+34,800</b>
-          </li>
+          <li><span>読み込み中…</span><b>—</b></li>
         </ul>
       </section>
 
       <section class="balance-notes">
         <h3>ポイント</h3>
-        <p>重賞レースの的中が収支を押し上げています。来週は芝中距離の信頼度が高い会場を中心に確認しよう。</p>
+        <p>的中・収支 API は未提供のため、User API の予測閲覧履歴を表示しています。</p>
         <a class="balance-link" href="mypage.html">マイページで詳細を見る ›</a>
       </section>
     </div>
@@ -78,15 +63,31 @@
 
     <div data-expect-nav></div>
   </div>
+  <script src="assets/api/mock-gate.js"></script>
+  <script src="assets/api/auth.js"></script>
+  <script src="assets/api/user.js"></script>
+  <script src="assets/api/supply.js"></script>
+  <script src="assets/api/real-data-bind.js"></script>
   <script src="assets/favorites.js"></script>
   <script src="assets/shell.js"></script>
   <script src="assets/reminders.js"></script>
   <script src="assets/partials-nav.js"></script>
   <script>
-    ExpectShell.initMascotTalk([
-      "今月の成績は<br><strong>+58,400円</strong> だよ！<br>好調だね♪",
-      "回収率 <strong>132%</strong>！<br>この調子でいこう！"
-    ]);
+    (function () {
+      Promise.all([
+        ExpectApi.User.history().catch(function () { return null; }),
+        ExpectApi.Supply.coverage().catch(function () { return null; }),
+      ]).then(function (pair) {
+        if (window.ExpectRealDataBind) {
+          ExpectRealDataBind.bindSavedPage(pair[0], pair[1]);
+        }
+        var n = (pair[0] && pair[0].count) || 0;
+        ExpectShell.initMascotTalk([
+          "今月 <strong>" + n + "件</strong> の<br>レースを見たね！",
+          "AIカバレッジも<br>チェックしてみてね！"
+        ]);
+      });
+    })();
   </script>
 </body>
 </html>

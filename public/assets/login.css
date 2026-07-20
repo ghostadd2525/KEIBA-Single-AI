@@ -466,3 +466,56 @@ body.page-login {
   transform: none;
 }
 
+
+/* Phase9 ? login tabs / setup */
+.login-tabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  margin: 0 0 16px;
+  padding: 4px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.login-tab {
+  appearance: none;
+  border: 0;
+  border-radius: 10px;
+  min-height: 40px;
+  padding: 8px 10px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #9aa3b2;
+  background: transparent;
+  cursor: pointer;
+}
+
+.login-tab.is-active {
+  color: #1a1408;
+  background: linear-gradient(180deg, #e8d5a8, #c9a86c);
+}
+
+.login-field-label {
+  position: absolute;
+  left: 14px;
+  top: -8px;
+  font-size: 11px;
+  color: #b0b6c2;
+  background: #121722;
+  padding: 0 6px;
+  z-index: 1;
+}
+
+.page-setup .login-field {
+  position: relative;
+  margin-top: 14px;
+}
+
+.setup-terms {
+  margin: 16px 0 8px;
+}
+
+.login-pane[hidden] {
+  display: none !important;
+}

@@ -40,8 +40,11 @@
 
     <div data-expect-nav></div>
   </div>
+  <script src="assets/api/mock-gate.js"></script>
+  <script src="assets/api/race-id-meta.js"></script>
   <script src="assets/api/auth.js"></script>
   <script src="assets/api/prediction.js"></script>
+  <script src="assets/api/analysis.js"></script>
   <script src="assets/api/prediction-bind.js"></script>
   <script src="assets/favorites.js"></script>
   <script src="assets/shell.js"></script>
@@ -49,54 +52,14 @@
   <script src="assets/partials-nav.js"></script>
   <script>
     (function () {
-      var id = new URLSearchParams(location.search).get("race_id") || "20260719_hanshin_11";
+      var id = new URLSearchParams(location.search).get("race_id") || "";
+      if (!id) {
+        document.getElementById("strategyScreen").innerHTML =
+          "<p class='muted'>race_id を指定してください。<a href='races.html'>レース一覧</a></p>";
+        return;
+      }
       var meta = ExpectFavorites.getMeta(id);
       var ai = ExpectFavorites.getAi(id);
-
-      var STRATEGY = {
-        "20260719_hanshin_11": {
-          axis: { num: "7", name: "エンプレスリターン", role: "本命軸", odds: "3.8" },
-          rivals: [
-            { num: "3", name: "シャドウゲイル", role: "対抗", reason: "先行力と枠順が噛み合う" },
-            { num: "1", name: "ゴールドスペル", role: "単穴", reason: "上がり最速候補、差し届く展開" },
-            { num: "4", name: "ナイトオペラ", role: "連下", reason: "安定感あり、ワイド向き" }
-          ],
-          tickets: [
-            { type: "馬連", legs: "7-3,1,4", points: "3点", stake: "¥1,500", note: "軸1頭流し（相手3頭）" },
-            { type: "ワイド", legs: "7-3 / 7-1", points: "2点", stake: "¥1,000", note: "的中率重視の土台" },
-            { type: "三連複", legs: "7-3-1,4", points: "2点", stake: "¥1,000", note: "穴を1頭まで許容" },
-            { type: "三連単", legs: "7→3,1→3,1,4", points: "6点", stake: "¥1,200", note: "1着固定・点数抑制" }
-          ],
-          scenarios: [
-            { title: "基本シナリオ（確率高）", body: "逃げ・先行が牽制し合い、中盤でペースアップ。7番が好位差しで押し切る想定。" },
-            { title: "崩しシナリオ", body: "ペースが緩むと3番の粘り込みが脅威。馬連の相手に3を厚めに残す。" },
-            { title: "波乱シナリオ", body: "差し一気の展開なら1番の上がりが刺さる。三連系に1を必ず絡める。" }
-          ],
-          risk: "三連単の点数を増やしすぎないこと。軸が崩れた場合は深追いせず次レースへ。",
-          bankroll: { total: "¥4,700", main: "60%", cover: "25%", lottery: "15%" }
-        },
-        "20260719_tokyo_11": {
-          axis: { num: "5", name: "スカイメモリー", role: "本命軸", odds: "4.6" },
-          rivals: [
-            { num: "2", name: "ブレイブノート", role: "対抗", reason: "コース適性が高く先行残し" },
-            { num: "8", name: "ルーセントアイ", role: "単穴", reason: "距離延長で伸びしろ" },
-            { num: "11", name: "ミッドナイト", role: "連下", reason: "枠なりで損しにくい" }
-          ],
-          tickets: [
-            { type: "馬連", legs: "5-2,8,11", points: "3点", stake: "¥1,500", note: "軸流し" },
-            { type: "ワイド", legs: "5-2 / 5-8", points: "2点", stake: "¥800", note: "回収の底上げ" },
-            { type: "三連複", legs: "5-2-8,11", points: "2点", stake: "¥1,000", note: "相手を絞る" },
-            { type: "三連単", legs: "5→2,8→2,8,11", points: "6点", stake: "¥1,200", note: "1着固定" }
-          ],
-          scenarios: [
-            { title: "基本シナリオ", body: "内枠先行がペースを作り、5番が直線外から差し切る。" },
-            { title: "崩しシナリオ", body: "スローなら2番の粘り込み。馬連の相手筆頭に。" },
-            { title: "波乱シナリオ", body: "馬場が差し有利なら8番が跳ねる。三連系に必須。" }
-          ],
-          risk: "人気薄の大穴は見送り、軸の安定感を優先。",
-          bankroll: { total: "¥4,500", main: "55%", cover: "30%", lottery: "15%" }
-        }
-      };
 
       function fallbackStrategy() {
         var overall = ai.overall || 75;
@@ -137,21 +100,28 @@
         var chuuken = bind.runnerByMark ? bind.runnerByMark(bundle, "chuuken") : null;
         var conf = bind.scorePercent ? bind.scorePercent(bundle) : null;
         var reasons = ((bundle.explain || {}).reasons) || [];
+        function horseName(r) {
+          if (!r) return "";
+          if (window.ExpectRaceIdMeta && ExpectRaceIdMeta.displayHorseName) {
+            return ExpectRaceIdMeta.displayHorseName(r.horse_name, r.horse_number);
+          }
+          return r.horse_name || "";
+        }
         function reasonFor(num) {
           for (var i = 0; i < reasons.length; i++) {
             if (Number(reasons[i].horse_number) === Number(num)) {
               return reasons[i].bullets && reasons[i].bullets[0]
                 ? reasons[i].bullets[0]
-                : "PredictionBundle 評価";
+                : "展開・実績から評価";
             }
           }
-          return "PredictionBundle 評価";
+          return "展開・実績から評価";
         }
         var rivals = [];
         if (taikou) {
           rivals.push({
             num: String(taikou.horse_number),
-            name: taikou.horse_name || "",
+            name: horseName(taikou),
             role: "対抗",
             reason: reasonFor(taikou.horse_number),
           });
@@ -159,7 +129,7 @@
         if (ana) {
           rivals.push({
             num: String(ana.horse_number),
-            name: ana.horse_name || "",
+            name: horseName(ana),
             role: "単穴",
             reason: reasonFor(ana.horse_number),
           });
@@ -167,25 +137,35 @@
         if (chuuken) {
           rivals.push({
             num: String(chuuken.horse_number),
-            name: chuuken.horse_name || "",
+            name: horseName(chuuken),
             role: "連下",
             reason: reasonFor(chuuken.horse_number),
           });
         }
+        var BET_JA = {
+          win: "単勝",
+          place: "複勝",
+          quinella: "馬連",
+          exacta: "馬単",
+          wide: "ワイド",
+          trio: "三連複",
+          trifecta: "三連単",
+        };
         var items = ((bundle.betting_recommendations || {}).items) || [];
-        var tickets = items.slice(0, 6).map(function (it, idx) {
+        var tickets = items.slice(0, 6).map(function (it) {
+          var rawType = String(it.bet_type || "買い目");
           return {
-            type: it.bet_type || "買い目",
+            type: BET_JA[rawType.toLowerCase()] || rawType,
             legs: it.legs_display || "—",
             points: it.recommendation_rank != null ? "#" + it.recommendation_rank : "—",
-            stake: it.recommendation_score != null ? "score " + it.recommendation_score : "—",
+            stake: it.recommendation_score != null ? "優先度 " + it.recommendation_score : "—",
             note: it.comment || "",
           };
         });
         return {
           axis: {
             num: honmei ? String(honmei.horse_number) : "—",
-            name: honmei ? honmei.horse_name || "本命" : "本命候補",
+            name: honmei ? horseName(honmei) || "本命" : "本命候補",
             role: "本命軸",
             odds: "—",
           },
@@ -194,11 +174,11 @@
           scenarios: [
             {
               title: "基本シナリオ",
-              body: (bundle.explain && bundle.explain.narrative) || "PredictionBundle narrative",
+              body: (bundle.explain && bundle.explain.narrative) || "AI評価に基づく基本シナリオです。",
             },
           ],
-          risk: "betting_recommendations 準拠。点数は API 推奨に従う。",
-          bankroll: { total: "API準拠", main: "55%", cover: "30%", lottery: "15%" },
+          risk: "推奨買い目に準拠。点数は増やしすぎない。",
+          bankroll: { total: "推奨額", main: "55%", cover: "30%", lottery: "15%" },
           aiOverall: conf,
         };
       }
@@ -211,12 +191,15 @@
           .replace(/"/g, "&quot;");
       }
 
-      function paramRows() {
+      function paramRows(analysisData) {
         var labels = ExpectFavorites.AI_PARAM_LABELS;
         var keys = ["pedigree", "pace", "jockey", "form", "odds"];
+        var chart = analysisData && ExpectApi.Analysis.chartMap
+          ? ExpectApi.Analysis.chartMap(analysisData)
+          : ai;
         return keys
           .map(function (k) {
-            var v = ai[k] || 0;
+            var v = chart[k] || 0;
             return (
               '<div class="score-row"><span>' +
               escapeHtml(labels[k] || k) +
@@ -230,10 +213,22 @@
           .join("");
       }
 
-      function paintStrategy(data) {
+      function paintStrategy(data, analysisData, bundle) {
         var back = document.getElementById("strategyBack");
         var sub = document.getElementById("strategySub");
         if (back) back.href = "race.html?race_id=" + encodeURIComponent(id);
+        if (bundle && bundle.race_info) {
+          var info = bundle.race_info;
+          meta.place =
+            (window.ExpectRaceIdMeta && ExpectRaceIdMeta.displayPlace(id, null)) ||
+            (info.venue || "") + (info.race_no != null ? " " + info.race_no + "R" : "") ||
+            meta.place;
+          meta.name = info.class_label || meta.name;
+          meta.badge = info.grade || meta.badge;
+          meta.postTime = info.post_time || meta.postTime;
+        } else if (window.ExpectRaceIdMeta) {
+          meta.place = ExpectRaceIdMeta.displayPlace(id, meta.place);
+        }
         if (sub) sub.textContent = (meta.place || "レース") + (meta.name ? " · " + meta.name : "");
 
         var rivalsHtml = data.rivals
@@ -294,7 +289,7 @@
 
       document.getElementById("strategyScreen").innerHTML =
         '<section class="strategy-hero">' +
-        '<p class="strategy-kicker">DETAILED BET STRATEGY</p>' +
+        '<p class="strategy-kicker">買い目の組み立て</p>' +
         "<h2>" +
         escapeHtml(meta.place || "レース") +
         "</h2>" +
@@ -360,7 +355,7 @@
         '<section class="chart-card">' +
         "<h3>AIパラメータ根拠</h3>" +
         '<div class="score-list">' +
-        paramRows() +
+        paramRows(analysisData) +
         "</div></section>" +
         '<div class="strategy-actions">' +
         '<a class="strategy-btn strategy-btn--ghost" href="race.html?race_id=' +
@@ -370,24 +365,6 @@
         "</div>";
 
       document.getElementById("consultKaobaBtn").addEventListener("click", function () {
-        var ticketsText = data.tickets
-          .map(function (t) {
-            return (
-              "・" + t.type + " " + t.legs + "（" + t.points + " / " + t.stake + "）" + t.note
-            );
-          })
-          .join("\n");
-        var rivalsText = data.rivals
-          .map(function (r) {
-            return "・" + r.num + " " + r.name + "（" + r.role + "）" + r.reason;
-          })
-          .join("\n");
-        var scenariosText = data.scenarios
-          .map(function (s) {
-            return "・" + s.title + "：" + s.body;
-          })
-          .join("\n");
-
         var payload = {
           type: "strategy_review",
           raceId: id,
@@ -403,57 +380,21 @@
           bankroll: data.bankroll,
           risk: data.risk,
           summaryText:
-            "【買い目戦略の詳細データ】\n" +
-            (meta.place || "レース") +
-            " " +
-            (meta.name || "") +
-            (meta.badge ? "（" + meta.badge + "）" : "") +
-            (meta.postTime ? " 発走" + meta.postTime : "") +
-            "\n" +
-            "AI総合:" +
-            (ai.overall || "—") +
-            "% / 血統" +
-            (ai.pedigree || "—") +
-            " 展開" +
-            (ai.pace || "—") +
-            " 騎手" +
-            (ai.jockey || "—") +
-            " 近走" +
-            (ai.form || "—") +
-            " オッズ" +
-            (ai.odds || "—") +
-            "\n" +
-            "軸:" +
+            "このレース（" +
+            (meta.place || id) +
+            (meta.name ? " " + meta.name : "") +
+            "）の買い目戦略を評価して。軸は " +
             data.axis.num +
-            " " +
-            data.axis.name +
-            "（" +
-            data.axis.role +
-            " 想定オッズ" +
-            data.axis.odds +
-            "）\n" +
-            "相手:\n" +
-            rivalsText +
-            "\n" +
-            "推奨買い目:\n" +
-            ticketsText +
-            "\n" +
-            "シナリオ:\n" +
-            scenariosText +
-            "\n" +
-            "資金配分: 合計" +
-            data.bankroll.total +
-            "（主軸" +
-            data.bankroll.main +
-            " / 保険" +
-            data.bankroll.cover +
-            " / 一発" +
-            data.bankroll.lottery +
-            "）\n" +
-            "リスク管理: " +
-            data.risk +
-            "\n\n" +
-            "この戦略を評価して、改善点と最終的なおすすめを教えて。"
+            "番、AI総合" +
+            (ai.overall || "—") +
+            "%。改善点と最終おすすめを短く教えて。",
+          displaySummary:
+            (meta.place || "対象レース") +
+            " · 軸 " +
+            data.axis.num +
+            "番 · AI総合 " +
+            (ai.overall || "—") +
+            "%",
         };
 
         try {
@@ -472,21 +413,33 @@
 
       function loadAndPaint() {
         if (window.ExpectApi && ExpectApi.Prediction && ExpectApi.Prediction.getWithMeta) {
-          ExpectApi.Prediction.getWithMeta(id)
-            .then(function (result) {
+          Promise.all([
+            ExpectApi.Prediction.getWithMeta(id),
+            ExpectApi.Analysis
+              ? ExpectApi.Analysis.get(id).catch(function () { return null; })
+              : Promise.resolve(null),
+          ])
+            .then(function (parts) {
+              var result = parts[0];
+              var analysisData = parts[1];
+              if (result && result.bundle && ExpectFavorites.cacheBundle) {
+                ExpectFavorites.cacheBundle(result.bundle);
+                meta = ExpectFavorites.getMeta(id);
+                ai = ExpectFavorites.getAi(id);
+              }
               var fromBundle = strategyFromBundle(result.bundle);
-              var data = fromBundle || STRATEGY[id] || fallbackStrategy();
+              var data = fromBundle || fallbackStrategy();
               if (fromBundle && fromBundle.aiOverall != null) {
                 ai.overall = fromBundle.aiOverall;
               }
-              paintStrategy(data);
+              paintStrategy(data, analysisData, result.bundle);
             })
             .catch(function () {
-              paintStrategy(STRATEGY[id] || fallbackStrategy());
+              paintStrategy(fallbackStrategy(), null, null);
             });
           return;
         }
-        paintStrategy(STRATEGY[id] || fallbackStrategy());
+        paintStrategy(fallbackStrategy(), null, null);
       }
 
       loadAndPaint();

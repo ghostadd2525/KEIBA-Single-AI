@@ -230,12 +230,15 @@
             return attachContract(attachMeta(normalizeBundle(b, b.race_id), meta));
           });
         })
-        .catch(function () {
-          return mockList(query).then(function (items) {
-            return items.map(function (b) {
-              return attachContract(b);
+        .catch(function (err) {
+          if (global.ExpectMockGate && ExpectMockGate.allowMockFallback()) {
+            return mockList(query).then(function (items) {
+              return items.map(function (b) {
+                return attachContract(b);
+              });
             });
-          });
+          }
+          return Promise.reject(err || new Error("Prediction API unavailable"));
         });
     },
 
@@ -256,11 +259,14 @@
           );
           return { bundle: bundle, meta: (bundle && bundle.__meta) || parsed.meta || {} };
         })
-        .catch(function () {
-          return mockGet(raceId).then(function (b) {
-            var bundle = attachContract(b);
-            return { bundle: bundle, meta: (bundle && bundle.__meta) || {} };
-          });
+        .catch(function (err) {
+          if (global.ExpectMockGate && ExpectMockGate.allowMockFallback()) {
+            return mockGet(raceId).then(function (b) {
+              var bundle = attachContract(b);
+              return { bundle: bundle, meta: (bundle && bundle.__meta) || {} };
+            });
+          }
+          return Promise.reject(err || new Error("Prediction API unavailable"));
         });
     },
 

@@ -13,6 +13,20 @@
       .replace(/"/g, "&quot;");
   }
 
+  function horseLabel(name, num) {
+    if (global.ExpectRaceIdMeta && ExpectRaceIdMeta.displayHorseName) {
+      return ExpectRaceIdMeta.displayHorseName(name, num);
+    }
+    return name || (num != null ? String(num) + "番" : "出走馬");
+  }
+
+  function publicFactors(factors) {
+    if (global.ExpectRaceIdMeta && ExpectRaceIdMeta.publicConfidenceFactors) {
+      return ExpectRaceIdMeta.publicConfidenceFactors(factors);
+    }
+    return Array.isArray(factors) ? factors : [];
+  }
+
   function scorePercent(bundle) {
     if (global.ExpectApi && ExpectApi.Prediction && ExpectApi.Prediction.scorePercent) {
       return ExpectApi.Prediction.scorePercent(bundle);
@@ -169,7 +183,7 @@
         (info.venue || "") + (info.race_no != null ? " " + info.race_no + "R" : "");
       var horse =
         h && h.horse_number != null
-          ? h.horse_number + "番" + (h.horse_name ? " " + h.horse_name : "")
+          ? h.horse_number + "番 " + horseLabel(h.horse_name, h.horse_number)
           : "";
       if (place && horse) desc.textContent = place + " · " + horse;
       else if (horse) desc.textContent = "本命 " + horse;
@@ -186,40 +200,29 @@
 
   function provenanceHtml(meta, bundle) {
     meta = meta || (bundle && bundle.__meta) || {};
-    var explainMeta = ((bundle && bundle.explain) || {}).meta || {};
     var engine = meta.engine_source || "unknown";
-    var feature =
-      meta.feature_source ||
-      bundle.feature_source ||
-      explainMeta.feature_source ||
-      "";
-    var coreId = meta.core_race_id || explainMeta.core_race_id || "";
-    var fallback = meta.fallback_reason || "";
-    var engineCls =
-      engine === "real_ai" ? "is-real" : engine === "mock_fallback" ? "is-fallback" : "is-mock";
-    var html =
-      '<div class="race-provenance ' +
-      engineCls +
-      '">' +
-      '<span class="race-provenance-pill">' +
-      escapeHtml(engine === "real_ai" ? "Real AI" : engine === "mock_fallback" ? "Mock Fallback" : "Mock") +
-      "</span>";
-    if (feature) {
-      html +=
-        '<span class="race-provenance-pill">Feature: ' +
-        escapeHtml(FEATURE_LABEL[feature] || feature) +
-        "</span>";
+    // 本番 UI: Mock / Fallback バッジは出さない（Real AI のみ控えめ表示）
+    if (engine !== "real_ai") {
+      return "";
     }
-    if (coreId) {
-      html +=
-        '<span class="race-provenance-meta">Core race_id: ' + escapeHtml(coreId) + "</span>";
+    return (
+      '<div class="race-provenance is-real">' +
+      '<span class="race-provenance-pill">AI予想</span>' +
+      "</div>"
+    );
+  }
+
+  function applyProvenanceBar(meta, bundle) {
+    var el = document.getElementById("raceProvenance");
+    if (!el) return;
+    var html = provenanceHtml(meta, bundle);
+    if (!html) {
+      el.hidden = true;
+      el.innerHTML = "";
+      return;
     }
-    if (fallback) {
-      html +=
-        '<span class="race-provenance-meta">fallback: ' + escapeHtml(fallback) + "</span>";
-    }
-    html += "</div>";
-    return html;
+    el.hidden = false;
+    el.innerHTML = html;
   }
 
   function marksSectionHtml(bundle) {
@@ -247,7 +250,7 @@
         escapeHtml(String(r.horse_number)) +
         "</span>" +
         '<span class="mark-chip-name">' +
-        escapeHtml(r.horse_name || "") +
+        escapeHtml(horseLabel(r.horse_name, r.horse_number)) +
         "</span>" +
         '<span class="mark-chip-rank">#' +
         escapeHtml(String(r.model_rank != null ? r.model_rank : "—")) +
@@ -275,12 +278,12 @@
         "<h4>" +
         escapeHtml(String(r.horse_number)) +
         " " +
-        escapeHtml(r.horse_name || "") +
+        escapeHtml(horseLabel(r.horse_name, r.horse_number)) +
         "</h4>" +
-        '<p class="pick-card-meta">model_rank #' +
+        '<p class="pick-card-meta">評価順位 #' +
         escapeHtml(String(r.model_rank != null ? r.model_rank : "—")) +
         (typeof r.win_prob === "number"
-          ? " · win " + Math.round(r.win_prob * 1000) / 10 + "%"
+          ? " · 勝率 " + Math.round(r.win_prob * 1000) / 10 + "%"
           : "") +
         "</p></article>";
     });
@@ -316,13 +319,6 @@
       dots[i].textContent = String(top[i].horse_number);
       dots[i].classList.toggle("is-dim", i >= 3);
     }
-  }
-
-  function applyProvenanceBar(meta, bundle) {
-    var el = document.getElementById("raceProvenance");
-    if (!el) return;
-    el.innerHTML = provenanceHtml(meta, bundle);
-    el.hidden = false;
   }
 
   function applyMarksAndPicks(bundle) {
@@ -373,7 +369,7 @@
       var p = card.querySelector("p");
       var stars = card.querySelector(".race-stars");
       if (num) num.textContent = String(honmei.horse_number);
-      if (h2) h2.textContent = honmei.horse_name || "本命馬";
+      if (h2) h2.textContent = horseLabel(honmei.horse_name, honmei.horse_number);
       if (p) {
         p.textContent =
           "AI本命 · 信頼度 " +
@@ -389,13 +385,13 @@
     var confEl = document.getElementById("raceConfidenceDetail");
     if (confEl && bundle.ai_confidence) {
       var ac = bundle.ai_confidence;
-      var factors = ac.factors || [];
+      var factors = publicFactors(ac.factors || []);
       confEl.innerHTML =
-        "<p>score: <strong>" +
+        "<p>信頼度 <strong>" +
         (conf != null ? conf + "%" : "—") +
-        "</strong> · band: <strong>" +
+        "</strong>（" +
         escapeHtml(bandLabel) +
-        "</strong></p>" +
+        "）</p>" +
         (factors.length
           ? "<ul>" +
             factors

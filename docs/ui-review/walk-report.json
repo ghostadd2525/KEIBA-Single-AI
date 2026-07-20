@@ -1,0 +1,238 @@
+{
+  "base": "http://127.0.0.1:8788",
+  "account": "cursor-review",
+  "race_id": "20260719_tokyo_11",
+  "findings": [
+    "LOGIN url=http://127.0.0.1:8788/",
+    "HOME url=http://127.0.0.1:8788/ | Expect ～ KEIBA AI ～ 開催一覧 2026年7月20日（月） 21:19 今週の回収率 — 閲覧履歴 — › ☆ お気に入りレース 編集 レース詳細の ★ からお気に入りに追加できます（最大3件） AI予想 今日の本命 東京 11R · 7番 サンプルホースA 88% AI信頼度 本命を見る › オッズ変動AI リアルタイムで変わるオッズを解析 オッズを分析 › KAOBA FORTUNE 今日の運試し 今日の競馬運を占ってみよう 運勢を見る › AI信頼度（レース会場 × 距離） 低 高 対象会場 5場 · Prediction API",
+    "HOME nav_links=5 mascot=1 ai_cards=3",
+    "HOME mascot_bubble=",
+    "RACES | Expect ～ KEIBA AI ～ すべて 7/19 7/20 すべて 中山 函館 東京 福島 阪神 今週の対象会場は3場（すべて／各会場で絞り込み）。お気に入りは最大3件です。 ★ 東京 11R 函館記念（GIII） 15:45発走 ★★★★☆ 88% AI信頼度 詳細を見る › ★ 中山 11R 中山ダート戦（L） 15:30発走 ★★★★☆ 79% AI信頼度 詳細を見る › ★ 阪神 ",
+    "RACE url=http://127.0.0.1:8788/race?race_id=20260719_tokyo_11 race_id=20260719_tokyo_11 | ‹ 阪神 11R ★ AI予想 出馬表 オッズ データ 結果 Mock Fallback 印 ◎ 7 サンプルホースA #1 ○ 3 サンプルホースB #2 ▲ 12 サンプルホースC #3 △ 5 サンプルホースD #4 対抗・穴 対抗 ○ 3 サンプルホースB model_rank #2 · win 15% 穴 ▲ 12 サンプルホースC model_rank #3 · win 11% 中穴 △ 5 サンプルホースD model_rank #4 · win 9% 7 サンプルホースA AI本命 · 信頼度 62%（ふつう） ★★★☆☆ 血統 展開 騎",
+    "RACE tabs=[\"AI予想\",\"出馬表\",\"オッズ\",\"データ\",\"結果\"]",
+    "RACE strategy_cta=買い目戦略を詳しく見る",
+    "RACE fab_visible=true",
+    "RACE after_tab_clicks active=オッズ",
+    "STRATEGY | ‹ 買い目戦略 DETAILED BET STRATEGY 阪神 11R 3歳以上1勝クラス · 発走 15:40 AI総合 62% 推奨総額 API準拠 主軸配分 55% 軸馬と相手評価 7 サンプルホースA 本命軸 · 想定オッズ — 3 サンプルホースB 対抗 相手関係から対抗 12 サンプルホースC 単穴 穴候補としてのダミー説明 5 サンプルホースD 連下 PredictionBundle 評価 推奨買い目フォーメーション trifecta score 0.91 7-3-12 #1 · 本命軸の順当目 trifecta score 0.84 7",
+    "STRATEGY consult_btn=true",
+    "CHAT_FROM_STRATEGY url=http://127.0.0.1:8788/chat?from=strategy&race_id=20260719_tokyo_11 | ‹ KAOBA Live2D KAOBA の Live2D 表示枠（準備中）。いまは PNG マスコットで応答します。 買い目戦略の詳細データを受け取ったよ。内容を確認して評価するね！ 【買い目戦略の詳細データ】 阪神 11R 3歳以上1勝クラス 発走15:40 AI総合:62% / 血統62 展開62 騎手62 近走62 オッズ62 軸:7 サンプルホースA（本命軸 想定オッズ—） 相手: ・3 サンプルホースB（対抗）相手関係から対抗 ・12 サンプルホースC（単穴）穴候補としてのダミー説明 ・5 サンプルホースD（連下）PredictionBundle 評価 推奨買い目: ・trifecta 7-3-12（#1 / score",
+    "CHAT open_messages=3",
+    "CHAT chip_reply=いま通信が不安定みたい。少し待ってからもう一度ね。",
+    "CHAT free_reply=いま通信が不安定みたい。少し待ってからもう一度ね。",
+    "CHAT_DIRECT url=http://127.0.0.1:8788/chat msgs=1 | ‹ KAOBA Live2D KAOBA の Live2D 表示枠（準備中）。いまは PNG マスコットで応答します。 こんにちは！今日のレース、何が気になる？展開・血統・買い目、なんでも聞いてね。 展開予想 オッズ変動 血統 買い目提案",
+    "A11Y small_targets=[{\"tag\":\"BUTTON\",\"w\":28,\"h\":28,\"label\":\"リマインダー\"},{\"tag\":\"BUTTON\",\"w\":28,\"h\":28,\"label\":\"メニュー\"},{\"tag\":\"A\",\"w\":69,\"h\":19,\"label\":\"閲覧履歴 — ›\"},{\"tag\":\"BUTTON\",\"w\":26,\"h\":24,\"label\":\"編集\"},{\"tag\":\"BUTTON\",\"w\":56,\"h\":33,\"label\":\"スキップ\"}]"
+  ],
+  "apis": [
+    {
+      "status": 200,
+      "path": "/assets/api/mock-gate.js"
+    },
+    {
+      "status": 200,
+      "path": "/assets/api/auth.js"
+    },
+    {
+      "status": 200,
+      "path": "/assets/api/contract-guard.js"
+    },
+    {
+      "status": 200,
+      "path": "/assets/api/prediction.js"
+    },
+    {
+      "status": 200,
+      "path": "/assets/api/prediction-bind.js"
+    },
+    {
+      "status": 200,
+      "path": "/assets/api/analysis-bind.js"
+    },
+    {
+      "status": 200,
+      "path": "/assets/api/analysis.js"
+    },
+    {
+      "status": 200,
+      "path": "/api/predictions/20260719_tokyo_11"
+    },
+    {
+      "status": 200,
+      "path": "/api/analysis/20260719_tokyo_11"
+    },
+    {
+      "status": 200,
+      "path": "/assets/api/mock-gate.js"
+    },
+    {
+      "status": 200,
+      "path": "/assets/api/auth.js"
+    },
+    {
+      "status": 200,
+      "path": "/assets/api/prediction.js"
+    },
+    {
+      "status": 200,
+      "path": "/assets/api/analysis.js"
+    },
+    {
+      "status": 200,
+      "path": "/assets/api/prediction-bind.js"
+    },
+    {
+      "status": 200,
+      "path": "/api/predictions/20260719_tokyo_11"
+    },
+    {
+      "status": 200,
+      "path": "/api/analysis/20260719_tokyo_11"
+    },
+    {
+      "status": 200,
+      "path": "/assets/api/mock-gate.js"
+    },
+    {
+      "status": 200,
+      "path": "/assets/api/auth.js"
+    },
+    {
+      "status": 200,
+      "path": "/assets/api/conversation.js"
+    },
+    {
+      "status": 200,
+      "path": "/assets/api/kaoba.js"
+    },
+    {
+      "status": 404,
+      "path": "/api/conversation/chat"
+    },
+    {
+      "status": 404,
+      "path": "/api/conversation/chat"
+    },
+    {
+      "status": 404,
+      "path": "/api/conversation/chat"
+    },
+    {
+      "status": 200,
+      "path": "/assets/api/mock-gate.js"
+    },
+    {
+      "status": 200,
+      "path": "/assets/api/auth.js"
+    },
+    {
+      "status": 200,
+      "path": "/assets/api/conversation.js"
+    },
+    {
+      "status": 200,
+      "path": "/assets/api/kaoba.js"
+    },
+    {
+      "status": 200,
+      "path": "/assets/api/mock-gate.js"
+    },
+    {
+      "status": 200,
+      "path": "/assets/api/auth.js"
+    },
+    {
+      "status": 200,
+      "path": "/assets/api/contract-guard.js"
+    },
+    {
+      "status": 200,
+      "path": "/assets/api/supply.js"
+    },
+    {
+      "status": 200,
+      "path": "/assets/api/prediction.js"
+    },
+    {
+      "status": 200,
+      "path": "/assets/api/prediction-bind.js"
+    },
+    {
+      "status": 200,
+      "path": "/assets/api/user.js"
+    },
+    {
+      "status": 200,
+      "path": "/assets/api/real-data-bind.js"
+    },
+    {
+      "status": 200,
+      "path": "/api/predictions"
+    },
+    {
+      "status": 200,
+      "path": "/api/predictions"
+    },
+    {
+      "status": 404,
+      "path": "/api/data/coverage"
+    },
+    {
+      "status": 404,
+      "path": "/api/v1/history"
+    },
+    {
+      "status": 404,
+      "path": "/api/data/coverage"
+    }
+  ],
+  "consoles": [
+    {
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    },
+    {
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    },
+    {
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    },
+    {
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    },
+    {
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    },
+    {
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    },
+    {
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    },
+    {
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    },
+    {
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    },
+    {
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    },
+    {
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    },
+    {
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    }
+  ],
+  "generated_at": "2026-07-20T12:20:55.953Z"
+}

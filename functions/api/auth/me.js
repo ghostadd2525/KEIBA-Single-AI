@@ -19,7 +19,14 @@ export async function onRequestGet(context) {
 
   const state = getUserState(session.id);
   return jsonOk(
-    toMeResponse({ id: session.id, display_name }, state.favorites),
+    toMeResponse(
+      {
+        id: session.id,
+        display_name,
+        role: profile && profile.role ? profile.role : session.role || "USER",
+      },
+      state.favorites
+    ),
     {
       source: "stub-auth",
       service: "AuthService",

@@ -33,13 +33,16 @@
     </header>
 
     <div class="screen chat-shell">
-      <div class="chat-live2d-slot" id="live2dSlot" aria-label="Live2D プレースホルダー">
-        <span class="chat-live2d-slot__badge">Live2D</span>
-        <span><strong>KAOBA</strong> の Live2D 表示枠（準備中）。いまは PNG マスコットで応答します。</span>
+      <div class="chat-live2d-slot is-compact" id="live2dSlot" aria-label="KAOBA">
+        <button type="button" class="chat-live2d-dismiss" id="live2dDismiss" aria-label="閉じる">×</button>
+        <span><strong>KAOBA</strong> がチャットでサポートします</span>
       </div>
       <div class="chat-log" id="chatLog"></div>
 
       <div class="chat-composer">
+        <div class="chat-return-row" id="chatReturnRow" hidden>
+          <a class="chat-return-link" id="chatReturnStrategy" href="strategy.html">← 買い目戦略に戻る</a>
+        </div>
         <div class="chat-quick chip-row" id="quickChips">
           <button type="button" class="chip" data-q="展開予想を教えて">展開予想</button>
           <button type="button" class="chip" data-q="オッズの動きは？">オッズ変動</button>
@@ -57,6 +60,7 @@
       </div>
     </div>
   </div>
+  <script src="assets/api/mock-gate.js"></script>
   <script src="assets/api/auth.js"></script>
   <script src="assets/api/conversation.js"></script>
   <script src="assets/api/kaoba.js"></script>
@@ -170,41 +174,10 @@
       var sessionId = null;
 
       function renderConversationExtras(data) {
+        // 本番チャットでは開発用 sections/context JSON を出さない
         var parts = [];
-        if (data.sections && data.sections.length) {
-          parts.push("<hr><strong>sections</strong>");
-          data.sections.forEach(function (sec) {
-            parts.push("<p><em>" + (sec.title || sec.kind || "section") + "</em></p>");
-            if (sec.bullets && sec.bullets.length) {
-              parts.push("<ul>" + sec.bullets.map(function (b) {
-                return "<li>" + b + "</li>";
-              }).join("") + "</ul>");
-            } else if (sec.body) {
-              parts.push("<p>" + sec.body + "</p>");
-            }
-          });
-        }
-        if (data.context) {
-          parts.push("<hr><strong>context</strong><pre style='white-space:pre-wrap;font-size:12px'>" +
-            JSON.stringify(data.context, null, 2) + "</pre>");
-        }
-        if (data.sources && data.sources.length) {
-          parts.push("<hr><strong>sources</strong><ul>" +
-            data.sources.map(function (s) {
-              return "<li>" + (s.name || s.type || JSON.stringify(s)) + "</li>";
-            }).join("") +
-            "</ul>");
-        }
-        if (data.prediction_meta) {
-          parts.push("<p class='muted'>engine: " +
-            (data.prediction_meta.engine_source || "—") +
-            (data.prediction_meta.fallback_reason
-              ? " · fallback: " + data.prediction_meta.fallback_reason
-              : "") +
-            (data.prediction_meta.core_race_id
-              ? " · core: " + data.prediction_meta.core_race_id
-              : "") +
-            "</p>");
+        if (data && data.prediction_meta && data.prediction_meta.engine_source === "real_ai") {
+          parts.push("<p class='muted'>AI予想を参照して回答しています</p>");
         }
         return parts.join("");
       }
@@ -225,37 +198,47 @@
           history: history.slice(-8),
         };
 
-        if (window.ExpectApi && ExpectApi.Conversation && ExpectApi.Conversation.chat) {
-          return ExpectApi.Conversation.chat(payload).then(function (data) {
-            sessionId = data.session_id || sessionId;
-            var reply = (data && data.reply) || "うまく答えられなかったみたい。";
-            var html = reply.replace(/\n/g, "<br>") + renderConversationExtras(data);
-            addMsg(html, "ai", true);
+        function viaKaoba() {
+          if (!window.ExpectApi || !ExpectApi.Kaoba || !ExpectApi.Kaoba.chat) {
+            return Promise.reject(new Error("no kaoba"));
+          }
+          return ExpectApi.Kaoba.chat({
+            message: text,
+            race_id: payload.race_id,
+            context: payload.context,
+            history: payload.history,
+          }).then(function (data) {
+            var reply =
+              (data && (data.reply || data.message)) ||
+              "うまく答えられなかったみたい。もう一度聞いてね。";
+            addMsg(reply, "ai");
             history.push({ role: "assistant", content: reply });
           });
         }
 
-        if (!window.ExpectApi || !ExpectApi.Kaoba || !ExpectApi.Kaoba.chat) {
-          return Promise.reject(new Error("no chat client"));
+        if (window.ExpectApi && ExpectApi.Conversation && ExpectApi.Conversation.chat) {
+          return ExpectApi.Conversation.chat(payload)
+            .then(function (data) {
+              sessionId = data.session_id || sessionId;
+              var reply = (data && data.reply) || "うまく答えられなかったみたい。";
+              var html = reply.replace(/\n/g, "<br>") + renderConversationExtras(data);
+              addMsg(html, "ai", true);
+              history.push({ role: "assistant", content: reply });
+            })
+            .catch(function () {
+              return viaKaoba();
+            });
         }
 
-        return ExpectApi.Kaoba.chat({
-          message: text,
-          race_id: payload.race_id,
-          context: payload.context,
-          history: payload.history,
-        }).then(function (data) {
-          var reply = (data && data.reply) || "うまく答えられなかったみたい。もう一度聞いてね。";
-          addMsg(reply, "ai");
-          history.push({ role: "assistant", content: reply });
-        });
+        return viaKaoba();
       }
 
       function send(text, options) {
         options = options || {};
         text = (text || "").trim();
         if (!text || (input && input.disabled)) return;
-        addMsg(text, "user");
+        var userVisible = options.userDisplay || text;
+        addMsg(userVisible, "user");
         if (!options.keepInput) input.value = "";
         history.push({ role: "user", content: text });
         setBusy(true);
@@ -277,7 +260,13 @@
           }
 
           if (!window.ExpectApi || (!ExpectApi.Conversation && !ExpectApi.Kaoba)) {
-            addMsg("API クライアントが読み込めていないよ。", "ai");
+            if (options.strategyReply && strategyCtx) {
+              var local = buildStrategyReview(strategyCtx);
+              addMsg(local, "ai", true);
+              history.push({ role: "assistant", content: local.replace(/<[^>]+>/g, "") });
+            } else {
+              addMsg("API クライアントが読み込めていないよ。", "ai");
+            }
             setBusy(false);
             return;
           }
@@ -311,23 +300,41 @@
         }
       }
 
+      var live2d = document.getElementById("live2dSlot");
+      var live2dDismiss = document.getElementById("live2dDismiss");
+      if (live2dDismiss && live2d) {
+        live2dDismiss.addEventListener("click", function () {
+          live2d.hidden = true;
+        });
+      }
+
       // 初期表示
       if (fromStrategy) {
         strategyCtx = readStrategyContext();
+        var returnRow = document.getElementById("chatReturnRow");
+        var returnLink = document.getElementById("chatReturnStrategy");
         if (back && raceId) {
           back.href = "strategy.html?race_id=" + encodeURIComponent(raceId);
         } else if (back) {
           back.href = "races.html";
         }
+        if (returnRow) returnRow.hidden = false;
+        if (returnLink && raceId) {
+          returnLink.href = "strategy.html?race_id=" + encodeURIComponent(raceId);
+        }
 
         addMsg(
-          "買い目戦略の詳細データを受け取ったよ。内容を確認して評価するね！",
+          "買い目戦略を受け取ったよ。内容を確認して評価するね！",
           "ai"
         );
 
         if (strategyCtx && strategyCtx.summaryText) {
           setTimeout(function () {
-            send(strategyCtx.summaryText, { strategyReply: true, delay: 700 });
+            send(strategyCtx.summaryText, {
+              strategyReply: true,
+              delay: 700,
+              userDisplay: strategyCtx.displaySummary || "この戦略を評価して",
+            });
           }, 350);
         } else {
           setTimeout(function () {

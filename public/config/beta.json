@@ -3,6 +3,8 @@
   "beta_name": "Expect KEIBA AI — Invitation Beta",
   "maintenance_mode": false,
   "maintenance_message": "ただいまメンテナンス中です。しばらくしてから再度お試しください。",
+  "ops_mode": null,
+  "admin_user_ids": [],
   "terms_version": "2026-07-19",
   "invitation_required": true,
   "max_concurrent_sessions": null,

@@ -1,0 +1,404 @@
+/**
+ * Phase UI-RealData — Prediction / Coverage / User から UI をバインド
+ */
+(function (global) {
+  "use strict";
+
+  function scorePercent(bundle) {
+    if (global.ExpectPredictionBind && ExpectPredictionBind.scorePercent) {
+      return ExpectPredictionBind.scorePercent(bundle);
+    }
+    var c = (bundle && bundle.ai_confidence) || {};
+    if (typeof c.score === "number") {
+      return c.score <= 1 ? Math.round(c.score * 100) : Math.round(c.score);
+    }
+    return null;
+  }
+
+  function dateLabel(info) {
+    if (!info) return "";
+    if (info.date_label) return info.date_label;
+    var d = info.date || "";
+    var p = String(d).split("-");
+    if (p.length === 3) return Number(p[1]) + "/" + Number(p[2]);
+    return d;
+  }
+
+  function escapeHtml(s) {
+    return String(s == null ? "" : s)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;");
+  }
+
+  function surfaceJa(surface) {
+    var s = String(surface || "").toLowerCase();
+    if (s.indexOf("turf") >= 0 || s === "芝") return "芝";
+    if (s.indexOf("dirt") >= 0 || s === "ダ" || s === "ダート") return "ダ";
+    return "芝";
+  }
+
+  function distanceBucket(dist) {
+    var d = Number(dist) || 0;
+    var buckets = [1200, 1600, 2000, 2400];
+    var best = buckets[0];
+    var diff = Math.abs(d - best);
+    for (var i = 1; i < buckets.length; i++) {
+      var nd = Math.abs(d - buckets[i]);
+      if (nd < diff) {
+        diff = nd;
+        best = buckets[i];
+      }
+    }
+    return best;
+  }
+
+  function aggregateByVenueSurfaceDistance(bundles) {
+    var map = {};
+    (bundles || []).forEach(function (b) {
+      var info = b.race_info || {};
+      var venue = info.venue || "—";
+      var surf = surfaceJa(info.surface);
+      var bucket = distanceBucket(info.distance);
+      var key = venue + "|" + surf + "|" + bucket;
+      var pct = scorePercent(b);
+      if (pct == null) return;
+      if (!map[key]) map[key] = { sum: 0, n: 0 };
+      map[key].sum += pct;
+      map[key].n += 1;
+    });
+    return map;
+  }
+
+  function avgFromMap(map, venue, surf, bucket) {
+    var key = venue + "|" + surf + "|" + bucket;
+    var row = map[key];
+    if (!row || !row.n) return null;
+    return Math.round(row.sum / row.n);
+  }
+
+  function venuesFromBundles(bundles) {
+    var set = {};
+    (bundles || []).forEach(function (b) {
+      var v = b.race_info && b.race_info.venue;
+      if (v) set[v] = true;
+    });
+    return Object.keys(set).sort();
+  }
+
+  function datesFromBundles(bundles) {
+    var set = {};
+    (bundles || []).forEach(function (b) {
+      var lbl = dateLabel(b.race_info || {});
+      if (lbl) set[lbl] = true;
+    });
+    return Object.keys(set).sort();
+  }
+
+  function cellHtml(pct) {
+    if (pct == null) {
+      return '<td><span class="hv hv--empty" style="--v:0"><b>—</b><i></i></span></td>';
+    }
+    return (
+      '<td><span class="hv" style="--v:' +
+      pct +
+      '"><b>' +
+      pct +
+      '%</b><i></i></span></td>'
+    );
+  }
+
+  function paintDistanceHeatmap(bundles) {
+    var tbody = document.querySelector("#heatmapBody");
+    if (!tbody) return;
+    var venues = venuesFromBundles(bundles);
+    if (!venues.length) {
+      tbody.innerHTML =
+        '<tr><td colspan="9" class="muted">Prediction API からレースを取得できませんでした</td></tr>';
+      return;
+    }
+    var agg = aggregateByVenueSurfaceDistance(bundles);
+    var cols = [
+      { surf: "芝", bucket: 1200 },
+      { surf: "芝", bucket: 1600 },
+      { surf: "芝", bucket: 2000 },
+      { surf: "芝", bucket: 2400 },
+      { surf: "ダ", bucket: 1200 },
+      { surf: "ダ", bucket: 1600 },
+      { surf: "ダ", bucket: 2000 },
+      { surf: "ダ", bucket: 2400 },
+    ];
+    tbody.innerHTML = venues
+      .map(function (venue) {
+        var cells = cols
+          .map(function (c) {
+            return cellHtml(avgFromMap(agg, venue, c.surf, c.bucket));
+          })
+          .join("");
+        return (
+          "<tr><th class=\"row-head\">" + escapeHtml(venue) + "</th>" + cells + "</tr>"
+        );
+      })
+      .join("");
+    var note = document.querySelector("#heatmap [data-heat-asof]");
+    if (note) {
+      note.textContent =
+        "対象会場 " + venues.length + "場 · Prediction API 集計（会場×距離×芝ダ）";
+    }
+  }
+
+  function paintConditionHeatmap(bundles) {
+    var tbody = document.querySelector("#conditionHeatmapBody");
+    if (!tbody) return;
+    var agg = {};
+    (bundles || []).forEach(function (b) {
+      var info = b.race_info || {};
+      var venue = info.venue || "—";
+      var surf = surfaceJa(info.surface);
+      var key = venue + " " + surf;
+      var pct = scorePercent(b);
+      if (pct == null) return;
+      if (!agg[key]) agg[key] = { sum: 0, n: 0 };
+      agg[key].sum += pct;
+      agg[key].n += 1;
+    });
+    var keys = Object.keys(agg).sort();
+    if (!keys.length) {
+      tbody.innerHTML =
+        '<tr><td colspan="5" class="muted">データなし</td></tr>';
+      return;
+    }
+    tbody.innerHTML = keys
+      .map(function (key) {
+        var avg = Math.round(agg[key].sum / agg[key].n);
+        var cells = [avg, avg, avg, avg]
+          .map(function (v) {
+            return '<td style="--v:' + v + '">' + v + "%</td>";
+          })
+          .join("");
+        return "<tr><th>" + escapeHtml(key) + "</th>" + cells + "</tr>";
+      })
+      .join("");
+  }
+
+  function paintDashMetrics(coverage, history) {
+    var roiEl = document.getElementById("dashCoverage") || document.querySelector(".dash-roi");
+    var rankEl = document.getElementById("dashHistory") || document.querySelector(".dash-rank");
+    var metricWrap = roiEl && roiEl.closest ? roiEl.closest(".dash-metric") : null;
+    if (roiEl) {
+      if (coverage && (Number(coverage.race_total) || 0) > 0) {
+        var total = Number(coverage.race_total) || 0;
+        var real = Number(coverage.real_ai) || 0;
+        var pct = total ? Math.round((real / total) * 100) : 0;
+        roiEl.textContent = pct + "%";
+        var label = roiEl.parentElement && roiEl.parentElement.querySelector(".dash-label");
+        if (label) {
+          label.innerHTML =
+            'AIカバレッジ <img class="info-ico" src="assets/icons/icon-info.svg" alt="" />';
+        }
+        if (metricWrap) metricWrap.hidden = false;
+      } else {
+        roiEl.textContent = "";
+        if (metricWrap) metricWrap.hidden = true;
+      }
+    }
+    if (rankEl && history) {
+      var n = Number(history.count) || (history.items && history.items.length) || 0;
+      rankEl.innerHTML = "閲覧履歴 " + n + "件 <span>›</span>";
+    }
+  }
+
+  function buildFilterChips(bundles) {
+    return {
+      dates: datesFromBundles(bundles),
+      venues: venuesFromBundles(bundles),
+    };
+  }
+
+  function renderChipRow(container, attr, values, allLabel) {
+    if (!container) return;
+    var html =
+      '<button type="button" class="chip is-active" data-' +
+      attr +
+      '="all">' +
+      escapeHtml(allLabel || "すべて") +
+      "</button>";
+    values.forEach(function (v, i) {
+      var cls = "chip";
+      html +=
+        '<button type="button" class="' +
+        cls +
+        '" data-' +
+        attr +
+        '="' +
+        escapeHtml(v) +
+        '">' +
+        escapeHtml(v) +
+        "</button>";
+    });
+    container.innerHTML = html;
+  }
+
+  function renderDateTabs(container, dates) {
+    if (!container) return;
+    var html =
+      '<button type="button" class="tab-pill is-active" data-filter-date="all">すべて</button>';
+    (dates || []).forEach(function (d) {
+      html +=
+        '<button type="button" class="tab-pill" data-filter-date="' +
+        escapeHtml(d) +
+        '">' +
+        escapeHtml(d) +
+        "</button>";
+    });
+    container.innerHTML = html;
+  }
+
+  function applyRacesFilters(bundles) {
+    var chips = buildFilterChips(bundles);
+    renderDateTabs(document.getElementById("dateTabs"), chips.dates);
+    renderChipRow(document.getElementById("venueChips"), "venue", chips.venues);
+    renderChipRow(document.getElementById("raceSearchDates"), "search-date", chips.dates);
+    renderChipRow(document.getElementById("raceSearchVenues"), "search-venue", chips.venues);
+    var note = document.getElementById("raceFilterNote");
+    if (note) {
+      note.textContent =
+        "対象 " +
+        (bundles ? bundles.length : 0) +
+        "レース · 会場 " +
+        chips.venues.length +
+        " · お気に入りは最大3件";
+    }
+  }
+
+  function bindMypageProfile(me, history, chat) {
+    var card = document.querySelector(".profile-card");
+    if (!card || !me) return;
+    var p = me.profile || {};
+    var h2 = card.querySelector("h2");
+    var metas = card.querySelectorAll(".meta");
+    var badge = card.querySelector(".badge-premium");
+    if (h2) h2.textContent = p.display_name || me.login_id || "ユーザー";
+    if (metas[0]) metas[0].textContent = "login_id · " + (me.login_id || "—");
+    if (badge) {
+      badge.textContent = me.status === "active" ? "Active Member" : me.status || "Member";
+    }
+    if (metas[1]) {
+      var histN = (history && history.count) || 0;
+      var chatN = (chat && chat.count) || 0;
+      metas[1].textContent = "Lv. — · 閲覧 " + histN + " · チャット " + chatN;
+    }
+    var stats = document.querySelector(".stats-grid");
+    if (stats && history) {
+      var cells = stats.querySelectorAll(".stat-cell b");
+      var n = Number(history.count) || 0;
+      if (cells[0]) cells[0].textContent = n + "件";
+      if (cells[1]) cells[1].textContent = "—";
+      if (cells[2]) cells[2].textContent = "—";
+      if (cells[3]) cells[3].textContent = n + "R";
+      stats.querySelector("h3").textContent = "アクティビティ（User API）";
+    }
+  }
+
+  function bindSavedPage(history, coverage) {
+    var heroLabel = document.querySelector(".balance-hero-label");
+    var heroValue = document.querySelector(".balance-hero-value");
+    var heroSub = document.querySelector(".balance-hero-sub");
+    var now = new Date();
+    var ym = now.getFullYear() + "年" + (now.getMonth() + 1) + "月";
+    if (heroLabel) heroLabel.textContent = ym + " · 閲覧アクティビティ";
+    var n = (history && history.count) || 0;
+    if (heroValue) {
+      heroValue.textContent = n + " レース閲覧";
+      heroValue.classList.remove("is-plus", "is-minus");
+    }
+    if (heroSub && coverage) {
+      var total = Number(coverage.race_total) || 0;
+      var real = Number(coverage.real_ai) || 0;
+      var pct = total ? Math.round((real / total) * 100) : 0;
+      heroSub.innerHTML =
+        'AIカバレッジ <strong>' + pct + "%</strong> (" + real + "/" + total + ")";
+    }
+    var stats = document.querySelector(".stats-grid");
+    if (stats) {
+      stats.querySelector("h3").textContent = "今月のアクティビティ";
+      var cells = stats.querySelectorAll(".stat-cell b");
+      if (cells[0]) cells[0].textContent = n + "件";
+      if (cells[1]) cells[1].textContent = coverage ? coverage.coverage + "%" : "—";
+      if (cells[2]) cells[2].textContent = "—";
+      if (cells[3]) cells[3].textContent = n + "R";
+    }
+    var weekList = document.querySelector(".balance-week-list");
+    if (weekList && history && history.items) {
+      var items = history.items.slice(0, 8);
+      if (!items.length) {
+        weekList.innerHTML = "<li><span>履歴なし</span><b>—</b></li>";
+      } else {
+        weekList.innerHTML = items
+          .map(function (it) {
+            return (
+              "<li><span>" +
+              escapeHtml(it.race_id || "—") +
+              "</span><b>" +
+              escapeHtml(it.engine_source || it.viewed_at || "—") +
+              "</b></li>"
+            );
+          })
+          .join("");
+      }
+    }
+    var notes = document.querySelector(".balance-notes p");
+    if (notes) {
+      notes.textContent =
+        "的中・収支データは未提供のため、User API の予測閲覧履歴と Coverage を表示しています。";
+    }
+  }
+
+  function mascotLinesFromData(bundles, coverage) {
+    var top = null;
+    if (bundles && bundles.length && global.ExpectPredictionBind) {
+      top = ExpectPredictionBind.pickTopByConfidence(bundles);
+    }
+    var lines = ["お疲れさま！<br>今日も一緒に<br>レースを見ていこう！"];
+    if (top) {
+      var info = top.race_info || {};
+      var conf = scorePercent(top);
+      lines.push(
+        "今日は<br><strong>" +
+          escapeHtml(info.venue || "") +
+          (info.race_no != null ? " " + info.race_no + "R" : "") +
+          "</strong> の<br>信頼度が高いよ！" +
+          (conf != null ? "（" + conf + "%）" : "")
+      );
+    }
+    if (coverage && coverage.coverage != null) {
+      lines.push(
+        "AIカバレッジは<br><strong>" +
+          coverage.coverage +
+          "%</strong> だよ！"
+      );
+    }
+    lines.push("お気に入りレース、<br>忘れずにチェックしてね！");
+    return lines;
+  }
+
+  function cacheBundles(bundles) {
+    if (global.ExpectFavorites && typeof ExpectFavorites.cacheBundles === "function") {
+      ExpectFavorites.cacheBundles(bundles);
+    }
+  }
+
+  global.ExpectRealDataBind = {
+    scorePercent: scorePercent,
+    paintDistanceHeatmap: paintDistanceHeatmap,
+    paintConditionHeatmap: paintConditionHeatmap,
+    paintDashMetrics: paintDashMetrics,
+    applyRacesFilters: applyRacesFilters,
+    bindMypageProfile: bindMypageProfile,
+    bindSavedPage: bindSavedPage,
+    mascotLinesFromData: mascotLinesFromData,
+    cacheBundles: cacheBundles,
+    buildFilterChips: buildFilterChips,
+  };
+})(window);

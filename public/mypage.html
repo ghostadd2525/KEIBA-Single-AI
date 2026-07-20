@@ -81,9 +81,11 @@
 
     <div data-expect-nav></div>
   </div>
+  <script src="assets/api/mock-gate.js"></script>
   <script src="assets/api/auth.js"></script>
   <script src="assets/api/supply.js"></script>
   <script src="assets/api/user.js"></script>
+  <script src="assets/api/real-data-bind.js"></script>
   <script src="assets/favorites.js"></script>
   <script src="assets/shell.js"></script>
   <script src="assets/reminders.js"></script>
@@ -116,6 +118,9 @@
           var me = parts[0];
           var hist = parts[1];
           var chat = parts[2];
+          if (window.ExpectRealDataBind && me) {
+            ExpectRealDataBind.bindMypageProfile(me, hist, chat);
+          }
           if (!me) {
             profileEl.innerHTML =
               "<p class='muted'>ログイン後に User Service からプロフィールを表示します。</p>";

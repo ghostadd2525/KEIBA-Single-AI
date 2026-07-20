@@ -17,7 +17,7 @@ export function toLoginResponse(token, expiresIn, user, favorites) {
 }
 
 export function toMeResponse(user, favorites) {
-  return {
+  const out = {
     schema_version: AUTH_SCHEMA,
     user: {
       id: user.id,
@@ -25,6 +25,10 @@ export function toMeResponse(user, favorites) {
     },
     favorites: favorites || undefined,
   };
+  if (user.role) {
+    out.user.role = String(user.role);
+  }
+  return out;
 }
 
 export function toLogoutResponse() {

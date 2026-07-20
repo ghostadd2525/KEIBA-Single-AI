@@ -4,6 +4,7 @@
  *
  * Analysis / Confidence / Ticket / Kaoba は bundle.race_id をキーに参照する。
  */
+import { alignRaceInfoToRaceId } from "./raceIdMeta.js";
 
 export const BUNDLE_SCHEMA = "single-prediction-bundle/2.0";
 
@@ -95,9 +96,10 @@ export function normalizePredictionBundle(raw, raceId) {
     throw new Error("invalid PredictionBundle");
   }
   const id = raceId || raw.race_id || (raw.race_info && raw.race_info.race_id);
-  const info = { ...(raw.race_info || {}) };
+  let info = { ...(raw.race_info || {}) };
   if (id) {
     info.race_id = id;
+    info = alignRaceInfoToRaceId(info, id);
   }
 
   return {

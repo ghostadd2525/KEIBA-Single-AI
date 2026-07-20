@@ -13,6 +13,7 @@ export function getEnv(context) {
     CF_ACCESS_CLIENT_ID: String(env.CF_ACCESS_CLIENT_ID || ""),
     CF_ACCESS_CLIENT_SECRET: String(env.CF_ACCESS_CLIENT_SECRET || ""),
     EXPECT_ENV: String(env.EXPECT_ENV || ""),
+    OPS_MONITOR_KEY: String(env.OPS_MONITOR_KEY || ""),
   };
 }
 

@@ -1,5 +1,6 @@
 import { jsonError } from "./errors.js";
 import { getEnv } from "./env.js";
+import { normalizeRole } from "./roles.js";
 
 const PUBLIC_PATHS = new Set([
   "/api/login",
@@ -7,6 +8,8 @@ const PUBLIC_PATHS = new Set([
   "/api/auth/logout",
   "/api/auth/invite/start",
   "/api/auth/setup",
+  "/api/health",
+  "/api/ops/monitor",
 ]);
 
 export function getBearer(request) {
@@ -16,15 +19,18 @@ export function getBearer(request) {
 }
 
 /**
- * stub token: stub.<base64url({sub,exp,purpose})>.<exp>
+ * stub token: stub.<base64url({sub,exp,purpose,role?})>.<exp>
  * purpose: "access" | "setup"（未指定トークンは access 扱い）
+ * role: optional（OPS-1A）。正本は users.json / allowlist。
  */
 export function makeStubToken(userId, expiresIn = 86400, opts = {}) {
   const exp = Math.floor(Date.now() / 1000) + expiresIn;
   const purpose = opts.purpose || "access";
-  const payload = btoa(
-    unescape(encodeURIComponent(JSON.stringify({ sub: userId, exp, purpose })))
-  )
+  const payloadObj = { sub: userId, exp, purpose };
+  if (opts.role) {
+    payloadObj.role = normalizeRole(opts.role);
+  }
+  const payload = btoa(unescape(encodeURIComponent(JSON.stringify(payloadObj))))
     .replace(/\+/g, "-")
     .replace(/\//g, "_")
     .replace(/=+$/, "");
@@ -34,7 +40,7 @@ export function makeStubToken(userId, expiresIn = 86400, opts = {}) {
 /**
  * @param {string} token
  * @param {{ purpose?: "access"|"setup" }} [opts]
- * @returns {{ id: string, purpose: string } | null}
+ * @returns {{ id: string, purpose: string, role?: string } | null}
  */
 export function verifyStubToken(token, opts = {}) {
   if (!token || !token.startsWith("stub.")) return null;
@@ -48,7 +54,9 @@ export function verifyStubToken(token, opts = {}) {
     const purpose = payload.purpose || "access";
     const want = opts.purpose || "access";
     if (purpose !== want) return null;
-    return { id: String(payload.sub), purpose };
+    const out = { id: String(payload.sub), purpose };
+    if (payload.role) out.role = normalizeRole(payload.role);
+    return out;
   } catch {
     return null;
   }

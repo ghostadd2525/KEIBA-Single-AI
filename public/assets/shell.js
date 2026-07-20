@@ -190,10 +190,14 @@
         e.preventDefault();
         e.stopPropagation();
         closeMenu();
+        var go = function () {
+          window.location.href = "login.html";
+        };
         if (global.ExpectAuth && typeof ExpectAuth.logout === "function") {
-          ExpectAuth.logout();
+          Promise.resolve(ExpectAuth.logout()).finally(go);
+        } else {
+          go();
         }
-        window.location.href = "login.html";
       });
     }
 

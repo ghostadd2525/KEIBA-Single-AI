@@ -9,6 +9,8 @@
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Noto+Sans+JP:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="assets/styles.css" />
   <link rel="stylesheet" href="assets/screens.css" />
+  <link rel="stylesheet" href="assets/ux.css" />
+  <link rel="stylesheet" href="assets/vqa.css" />
   <script src="assets/auth.js"></script>
   <script>ExpectAuth.requireAuth();</script>
 </head>
@@ -27,7 +29,7 @@
     </header>
 
     <div class="screen">
-      <section class="chart-card analysis-summary" aria-labelledby="aiSummaryTitle">
+      <section class="chart-card analysis-summary is-loading" id="analysisSummary" aria-labelledby="aiSummaryTitle">
         <h3 id="aiSummaryTitle">AI総評パラメータ</h3>
         <p class="analysis-lead">お気に入り登録レースを集計した総合評価です。</p>
         <div class="pie-layout">
@@ -44,7 +46,12 @@
       <section class="chart-card" aria-labelledby="favAiTitle">
         <h3 id="favAiTitle">お気に入りレースのAI評価</h3>
         <p class="analysis-lead">登録中のレースごとにパラメータを円グラフ表示します。</p>
-        <div class="fav-ai-grid" id="favAiGrid"></div>
+        <div class="fav-ai-grid" id="favAiGrid" aria-busy="true">
+          <div class="expect-skeleton" id="favAiSkeleton">
+            <div class="expect-skel expect-skel--card"></div>
+            <div class="expect-skel expect-skel--card"></div>
+          </div>
+        </div>
       </section>
     </div>
 
@@ -57,6 +64,13 @@
 
     <div data-expect-nav></div>
   </div>
+  <script src="assets/api/mock-gate.js"></script>
+  <script src="assets/api/auth.js"></script>
+  <script src="assets/api/contract-guard.js"></script>
+  <script src="assets/api/prediction.js"></script>
+  <script src="assets/api/analysis.js"></script>
+  <script src="assets/api/analysis-bind.js"></script>
+  <script src="assets/ux.js"></script>
   <script src="assets/favorites.js"></script>
   <script src="assets/shell.js"></script>
   <script src="assets/reminders.js"></script>
@@ -245,7 +259,80 @@
         ExpectShell.initMascotTalk(lines);
       }
 
-      render();
+      function finishLoading() {
+        var summary = document.getElementById("analysisSummary");
+        var grid = document.getElementById("favAiGrid");
+        if (summary) summary.classList.remove("is-loading");
+        if (grid) grid.setAttribute("aria-busy", "false");
+      }
+
+      function enrichFromApi(list) {
+        var grid = document.getElementById("favAiGrid");
+        if (!list.length || !window.ExpectApi || !ExpectApi.Prediction || !ExpectApi.Analysis) {
+          render();
+          finishLoading();
+          return;
+        }
+        var rejected = 0;
+        Promise.all(
+          list.map(function (item) {
+            var rid = item.id;
+            return Promise.all([
+              ExpectApi.Prediction.get(rid),
+              ExpectApi.Analysis.get(rid),
+            ]).then(function (pair) {
+              var bundle = pair[0];
+              var analysis = pair[1];
+              var pbOk = !bundle || !bundle.__contract || bundle.__contract.ok;
+              var aOk = !analysis || !analysis.__contract || analysis.__contract.ok;
+              if (!pbOk || !aOk) {
+                rejected += 1;
+                return;
+              }
+              item.ai = ExpectAnalysisBind.toAiParams(bundle, analysis);
+              if (bundle && bundle.race_info) {
+                var info = bundle.race_info;
+                item.place =
+                  item.place ||
+                  (info.venue || "") + (info.race_no != null ? " " + info.race_no + "R" : "");
+                item.name = item.name || info.class_label || "";
+                item.badge = item.badge || info.grade || "";
+              }
+            });
+          })
+        ).then(function () {
+          if (rejected && window.ExpectContractGuard && grid) {
+            ExpectContractGuard.showErrorCard(grid, {
+              title: "一部のお気に入りを更新できません",
+              message: rejected + "件が API 契約違反のためスキップしました。",
+            });
+          }
+          render();
+          finishLoading();
+        }).catch(function () {
+          if (window.ExpectUx && grid) {
+            grid.innerHTML = "";
+            grid.appendChild(
+              ExpectUx.stateCard({
+                kind: "error",
+                title: "AI分析を更新できません",
+                message: "Prediction / Analysis の取得に失敗しました。",
+                onRetry: function () {
+                  location.reload();
+                },
+              })
+            );
+          } else if (window.ExpectContractGuard && grid) {
+            ExpectContractGuard.showErrorCard(grid, {
+              title: "AI分析を更新できません",
+              message: "Prediction / Analysis の取得に失敗しました。",
+            });
+          }
+          finishLoading();
+        });
+      }
+
+      enrichFromApi(ExpectFavorites.list());
     })();
   </script>
 </body>

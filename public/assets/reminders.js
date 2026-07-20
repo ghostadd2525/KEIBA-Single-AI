@@ -2,6 +2,8 @@
  * お気に入りレースのリマインダー
  * - 発走15分前: チケット購入
  * - 発走5分前: レース開始
+ *
+ * 発走時刻は Prediction API / bundle キャッシュから取得（POST_FALLBACK 廃止）
  */
 (function (global) {
   "use strict";
@@ -12,16 +14,10 @@
   var START_OFFSET_MIN = 5;
   var POLL_MS = 20000;
 
-  var POST_FALLBACK = {
-    "20260719_tokyo_11": { date: "2026-07-19", postTime: "15:45", place: "東京 11R", name: "函館記念" },
-    "20260719_hanshin_11": { date: "2026-07-19", postTime: "15:40", place: "阪神 11R", name: "メインレース" },
-    "20260719_fukushima_11": { date: "2026-07-19", postTime: "15:25", place: "福島 11R", name: "ラジオNIKKEI賞" },
-    "20260719_hakodate_11": { date: "2026-07-19", postTime: "15:10", place: "函館 11R", name: "函館2歳S" },
-    "20260720_nakayama_11": { date: "2026-07-20", postTime: "15:30", place: "中山 11R", name: "中山ダート戦" }
-  };
-
   var pollTimer = null;
   var bound = false;
+  var _metaHydrating = false;
+  var _metaHydrated = false;
 
   function storage() {
     try {
@@ -41,18 +37,44 @@
       var list = JSON.parse(store.getItem(FAV_KEY) || "[]");
       if (!Array.isArray(list)) return [];
       return list.map(function (item) {
-        var fb = POST_FALLBACK[item.id] || {};
         return {
           id: item.id,
-          date: item.date || fb.date || "",
-          postTime: item.postTime || fb.postTime || "",
-          place: item.place || fb.place || "レース",
-          name: item.name || fb.name || ""
+          date: item.date || "",
+          postTime: item.postTime || "",
+          place: item.place || "レース",
+          name: item.name || "",
         };
       });
     } catch (e) {
       return [];
     }
+  }
+
+  function ensureRaceMeta() {
+    if (_metaHydrated || _metaHydrating) return Promise.resolve();
+    if (!global.ExpectApi || !ExpectApi.Prediction || !global.ExpectFavorites) {
+      return Promise.resolve();
+    }
+    var favs = readFavorites().filter(function (f) {
+      return f.id && (!f.date || !f.postTime);
+    });
+    if (!favs.length) {
+      _metaHydrated = true;
+      return Promise.resolve();
+    }
+    _metaHydrating = true;
+    return Promise.all(
+      favs.map(function (f) {
+        return ExpectApi.Prediction.get(f.id)
+          .then(function (b) {
+            if (b && ExpectFavorites.cacheBundle) ExpectFavorites.cacheBundle(b);
+          })
+          .catch(function () {});
+      })
+    ).finally(function () {
+      _metaHydrating = false;
+      _metaHydrated = true;
+    });
   }
 
   function readFired() {
@@ -75,9 +97,13 @@
   }
 
   function parsePostDate(fav) {
-    var fb = POST_FALLBACK[fav.id] || {};
-    var date = fav.date || fb.date;
-    var time = fav.postTime || fb.postTime;
+    var date = fav.date;
+    var time = fav.postTime;
+    if ((!date || !time) && global.ExpectFavorites && ExpectFavorites.getMeta) {
+      var meta = ExpectFavorites.getMeta(fav.id);
+      date = date || meta.date || "";
+      time = time || meta.postTime || "";
+    }
     if (!date || !time) return null;
     var parts = String(time).split(":");
     var h = parseInt(parts[0], 10);
@@ -125,7 +151,7 @@
         postAt: post,
         at: new Date(post.getTime() - TICKET_OFFSET_MIN * 60000),
         href: "race.html?race_id=" + encodeURIComponent(fav.id),
-        note: "発走" + TICKET_OFFSET_MIN + "分前"
+        note: "発走" + TICKET_OFFSET_MIN + "分前",
       });
       events.push({
         key: fav.id + ":start",
@@ -136,7 +162,7 @@
         postAt: post,
         at: new Date(post.getTime() - START_OFFSET_MIN * 60000),
         href: "race.html?race_id=" + encodeURIComponent(fav.id),
-        note: "発走" + START_OFFSET_MIN + "分前"
+        note: "発走" + START_OFFSET_MIN + "分前",
       });
     });
     events.sort(function (a, b) {
@@ -158,7 +184,6 @@
     return buildEvents(now).filter(function (ev) {
       if (fired[ev.key]) return false;
       var t = ev.at.getTime();
-      // 発火ウィンドウ: 予定時刻〜+2分（取りこぼし防止）
       return t <= now.getTime() && now.getTime() - t < 2 * 60000;
     });
   }
@@ -204,7 +229,7 @@
     try {
       new Notification(ev.typeLabel + "リマインダー", {
         body: ev.label + "（" + ev.note + " / 発走 " + formatClock(ev.postAt) + "）",
-        tag: ev.key
+        tag: ev.key,
       });
     } catch (e) {}
   }
@@ -285,16 +310,14 @@
     var fired = readFired();
     if (!events.length) {
       list.innerHTML =
-        '<p class="global-bell-empty">予定中のリマインダーはありません。</p>';
+        '<p class="global-bell-empty">発走時刻が取得できないお気に入りがあるか、予定中のリマインダーはありません。</p>';
       return;
     }
 
     list.innerHTML = events
       .map(function (ev) {
         var done = !!fired[ev.key] || ev.at.getTime() < now.getTime();
-        var status = done
-          ? "通知済み / 経過"
-          : formatRemain(ev.at.getTime() - now.getTime());
+        var status = done ? "通知済み / 経過" : formatRemain(ev.at.getTime() - now.getTime());
         return (
           '<a class="global-bell-item' +
           (done ? " is-done" : "") +
@@ -341,8 +364,10 @@
     var panel = wrap && wrap.querySelector("[data-bell-panel]");
     if (!wrap || !btn || !panel || bound) {
       if (wrap && btn && panel) {
-        renderPanel();
-        updateBadge();
+        ensureRaceMeta().finally(function () {
+          renderPanel();
+          updateBadge();
+        });
       }
       return;
     }
@@ -401,15 +426,17 @@
       if (e.key === "Escape") close();
     });
 
-    renderPanel();
-    updateBadge();
-    fireDue();
-    if (pollTimer) clearInterval(pollTimer);
-    pollTimer = setInterval(function () {
+    ensureRaceMeta().finally(function () {
+      renderPanel();
+      updateBadge();
       fireDue();
-      if (wrap.classList.contains("is-open")) renderPanel();
-      else updateBadge();
-    }, POLL_MS);
+      if (pollTimer) clearInterval(pollTimer);
+      pollTimer = setInterval(function () {
+        fireDue();
+        if (wrap.classList.contains("is-open")) renderPanel();
+        else updateBadge();
+      }, POLL_MS);
+    });
   }
 
   function tryBind() {
@@ -420,7 +447,8 @@
   global.ExpectReminders = {
     bind: bind,
     buildEvents: buildEvents,
-    fireDue: fireDue
+    fireDue: fireDue,
+    ensureRaceMeta: ensureRaceMeta,
   };
 
   if (document.readyState === "loading") {

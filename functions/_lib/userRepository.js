@@ -21,12 +21,14 @@ function coerceUser(raw) {
   if (!raw || typeof raw !== "object") return null;
   const user_id = normalizeUserId(raw.user_id || raw.id);
   if (!user_id) return null;
+  const roleRaw = raw.role != null ? String(raw.role) : "USER";
   return {
     user_id,
     password_hash: raw.password_hash || "",
     display_name: raw.display_name != null ? String(raw.display_name) : user_id,
     invite_id: raw.invite_id ? String(raw.invite_id).toUpperCase() : null,
     status: String(raw.status || "active").toLowerCase(),
+    role: String(roleRaw).trim().toUpperCase() || "USER",
     created_at: raw.created_at || null,
     terms_version: raw.terms_version || null,
     terms_accepted_at: raw.terms_accepted_at || null,
@@ -35,10 +37,14 @@ function coerceUser(raw) {
 
 async function ensureSeed(context) {
   if (seedLoaded) return;
-  const doc = await loadAssetJson(context, "/data/users.json");
-  const list = (doc && Array.isArray(doc.users) ? doc.users : []).map(coerceUser).filter(Boolean);
-  for (const u of list) {
-    if (!runtimeUsers.has(u.user_id)) runtimeUsers.set(u.user_id, u);
+  try {
+    const doc = await loadAssetJson(context, "/data/users.json");
+    const list = (doc && Array.isArray(doc.users) ? doc.users : []).map(coerceUser).filter(Boolean);
+    for (const u of list) {
+      if (!runtimeUsers.has(u.user_id)) runtimeUsers.set(u.user_id, u);
+    }
+  } catch {
+    /* ASSETS 未設定・テスト環境では空 seed で続行 */
   }
   seedLoaded = true;
 }
@@ -73,6 +79,7 @@ export async function createUser(context, input) {
     display_name: input.display_name != null ? String(input.display_name) : user_id,
     invite_id: input.invite_id ? String(input.invite_id).toUpperCase() : null,
     status: "active",
+    role: String(input.role || "USER").trim().toUpperCase() || "USER",
     created_at: new Date().toISOString(),
     terms_version: input.terms_version || null,
     terms_accepted_at: input.terms_accepted_at || new Date().toISOString(),

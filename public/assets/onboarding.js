@@ -7,15 +7,15 @@
 
   var STEPS = [
     {
-      selector: "#favorites",
-      title: "お気に入りレース",
-      body: "注目レースをここに並べられます。カードを横にスワイプして確認しましょう。",
+      selector: "#aiCards",
+      title: "AIの着眼点",
+      body: "今日の本命やオッズなど、AIの注目ポイントがまとまっています。気になるカードをタップしてみてください。",
       pad: 8
     },
     {
-      selector: "#aiCards",
-      title: "AIの着眼点",
-      body: "今日の注目ポイントや信頼度がまとまっています。気になるカードをタップしてみてください。",
+      selector: "#favorites",
+      title: "お気に入りレース",
+      body: "レース詳細の ★ から注目レースを追加できます。カードを横にスワイプして確認しましょう。",
       pad: 8
     },
     {
@@ -101,13 +101,17 @@
       var ch = card.offsetHeight || 140;
       var vw = window.innerWidth;
       var vh = window.innerHeight;
+      // カードはスポットライトの下側を優先。はみ出す場合は画面下端に固定（本命カードを覆いすぎない）
       var left = clamp(hole.x + (hole.w - cw) / 2, 14, vw - cw - 14);
       var top = hole.y + hole.h + gap;
 
-      if (top + ch > vh - 12) {
-        top = hole.y - ch - gap;
+      if (top + ch > vh - 72) {
+        top = Math.min(hole.y + hole.h + gap, vh - ch - 72);
       }
       if (top < 12) {
+        top = 12;
+      }
+      if (top + ch > vh - 12) {
         top = clamp(vh - ch - 16, 12, vh - ch - 12);
       }
 

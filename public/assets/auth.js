@@ -1,11 +1,12 @@
 /**
- * Expect 簡易認証（プロトタイプ用）
- * 規約同意・操作説明は端末内で初回のみ（ログアウト後も再表示しない）
+ * Expect 認証 — Phase9 招待制β
+ * ゲスト閲覧不可（strict 既定）。一時ID → 初回設定 → 正式ログイン。
  */
 (function (global) {
   "use strict";
 
   var AUTH_KEY = "expect_auth_v1";
+  var TOKEN_KEY = "expect_access_token_v1";
   var TERMS_KEY = "expect_terms_v1";
   var ONBOARD_KEY = "expect_onboard_v1";
   var TERMS_VERSION = "2026-07-19";
@@ -52,9 +53,30 @@
     return readJson(AUTH_KEY);
   }
 
+  function getAccessToken() {
+    var store = storage();
+    if (!store) return "";
+    return store.getItem(TOKEN_KEY) || "";
+  }
+
+  function setAccessToken(token) {
+    var store = storage();
+    if (!store) return false;
+    if (!token) {
+      store.removeItem(TOKEN_KEY);
+      return true;
+    }
+    store.setItem(TOKEN_KEY, String(token));
+    return true;
+  }
+
   function isLoggedIn() {
     var s = readAuth();
-    return !!(s && s.id);
+    return !!(s && s.id && getAccessToken());
+  }
+
+  function hasServerSession() {
+    return isLoggedIn() && !!getAccessToken();
   }
 
   function hasAcceptedTerms() {
@@ -67,19 +89,81 @@
     return !(o && o.version === ONBOARD_VERSION && o.done === true);
   }
 
-  function login(id) {
+  function login(id, opts) {
+    opts = opts || {};
+    if (opts.access_token) setAccessToken(opts.access_token);
     return writeJson(AUTH_KEY, {
       id: String(id),
-      at: Date.now()
+      display_name: opts.display_name || String(id),
+      at: Date.now(),
+    });
+  }
+
+  function localFavoritesPayload() {
+    if (global.ExpectFavorites && typeof ExpectFavorites.exportForSync === "function") {
+      return ExpectFavorites.exportForSync();
+    }
+    return { schema_version: "expect-favorites/1.0", race_ids: [], items: [] };
+  }
+
+  function finishLogin(data, fallbackId) {
+    var user = (data && data.user) || { id: fallbackId };
+    login(user.id || fallbackId, {
+      access_token: data && data.access_token,
+      display_name: user.display_name,
+    });
+    if (data && data.access_token) {
+      acceptTerms();
+    }
+    if (data && data.favorites && global.ExpectFavorites && ExpectFavorites.importFromServer) {
+      ExpectFavorites.importFromServer(data.favorites, { merge: true });
+    }
+    if (global.ExpectFavorites && ExpectFavorites.syncNow) {
+      ExpectFavorites.syncNow({ reason: "login" }).catch(function () { /* ignore */ });
+    }
+    return { ok: true, data: data };
+  }
+
+  /** 正式ログイン（ログインID + パスワード） */
+  function loginWithApi(id, password) {
+    var creds = {
+      id: String(id),
+      password: password != null ? String(password) : "",
+      favorites: localFavoritesPayload(),
+    };
+
+    if (global.ExpectApi && ExpectApi.Auth && typeof ExpectApi.Auth.login === "function") {
+      return ExpectApi.Auth.login(creds).then(function (data) {
+        return finishLogin(data, id);
+      });
+    }
+    return Promise.reject(new Error("Auth API unavailable"));
+  }
+
+  /** 一時IDで初回設定を開始 */
+  function startInvite(inviteId) {
+    if (!global.ExpectApi || !ExpectApi.Auth || !ExpectApi.Auth.inviteStart) {
+      return Promise.reject(new Error("Auth API unavailable"));
+    }
+    return ExpectApi.Auth.inviteStart(inviteId);
+  }
+
+  /** 初回設定完了 */
+  function completeSetup(payload) {
+    if (!global.ExpectApi || !ExpectApi.Auth || !ExpectApi.Auth.setup) {
+      return Promise.reject(new Error("Auth API unavailable"));
+    }
+    var body = Object.assign({}, payload, { favorites: localFavoritesPayload() });
+    return ExpectApi.Auth.setup(body).then(function (data) {
+      return finishLogin(data, payload.login_id || payload.id);
     });
   }
 
   function acceptTerms() {
-    if (!isLoggedIn()) return false;
     return writeJson(TERMS_KEY, {
       accepted: true,
       version: TERMS_VERSION,
-      at: Date.now()
+      at: Date.now(),
     });
   }
 
@@ -87,23 +171,74 @@
     return writeJson(ONBOARD_KEY, {
       done: true,
       version: ONBOARD_VERSION,
-      at: Date.now()
+      at: Date.now(),
     });
   }
 
   function logout() {
-    // ログイン状態のみクリア（規約・操作説明は初回フラグとして残す）
-    removeKey(AUTH_KEY);
+    var fav = localFavoritesPayload();
+    var clearLocal = function () {
+      removeKey(AUTH_KEY);
+      setAccessToken("");
+      if (global.ExpectApi && ExpectApi.Auth && ExpectApi.Auth.setSetupToken) {
+        ExpectApi.Auth.setSetupToken("");
+      }
+      if (global.ExpectApi && typeof ExpectApi.logout === "function") {
+        ExpectApi.logout();
+      }
+    };
+
+    if (global.ExpectApi && ExpectApi.Auth && typeof ExpectApi.Auth.logout === "function") {
+      return ExpectApi.Auth.logout({ favorites: fav })
+        .catch(function () { /* ignore network */ })
+        .then(function () {
+          clearLocal();
+          return { ok: true };
+        });
+    }
+    clearLocal();
+    return Promise.resolve({ ok: true });
   }
 
-  function pageName() {
-    var parts = (location.pathname || "").split("/");
-    return parts[parts.length - 1] || "index.html";
+  function refreshMe() {
+    if (!isLoggedIn() || !global.ExpectApi || !ExpectApi.Auth || !ExpectApi.Auth.me) {
+      return Promise.resolve(null);
+    }
+    return ExpectApi.Auth.me().then(function (data) {
+      if (data && data.user) {
+        writeJson(AUTH_KEY, {
+          id: data.user.id,
+          display_name: data.user.display_name || data.user.id,
+          at: Date.now(),
+        });
+      }
+      if (data && data.favorites && global.ExpectFavorites && ExpectFavorites.importFromServer) {
+        ExpectFavorites.importFromServer(data.favorites, { merge: true });
+      }
+      return data;
+    });
   }
 
-  function requireAuth() {
+  /**
+   * Phase9 β: 既定でログイン必須（strict）。
+   * opts.strict === false でゲスト許可（非推奨）。
+   */
+  function requireAuth(opts) {
+    opts = opts || {};
     var here = pageName();
-    if (here === "login.html" || here === "terms.html") return false;
+    if (
+      here === "login.html" ||
+      here === "terms.html" ||
+      here === "setup.html" ||
+      here === "login" ||
+      here === "terms" ||
+      here === "setup"
+    ) {
+      return true;
+    }
+
+    var strict = opts.strict !== false;
+    if (!strict) return true;
 
     if (!isLoggedIn()) {
       location.replace("login.html");
@@ -116,17 +251,30 @@
     return true;
   }
 
+  function pageName() {
+    var parts = (location.pathname || "").split("/");
+    var last = parts[parts.length - 1] || "index.html";
+    return last;
+  }
+
   global.ExpectAuth = {
     TERMS_VERSION: TERMS_VERSION,
     ONBOARD_VERSION: ONBOARD_VERSION,
     isLoggedIn: isLoggedIn,
+    hasServerSession: hasServerSession,
     hasAcceptedTerms: hasAcceptedTerms,
     needsOnboarding: needsOnboarding,
     login: login,
+    loginWithApi: loginWithApi,
+    startInvite: startInvite,
+    completeSetup: completeSetup,
     acceptTerms: acceptTerms,
     completeOnboarding: completeOnboarding,
     logout: logout,
     requireAuth: requireAuth,
-    current: readAuth
+    refreshMe: refreshMe,
+    current: readAuth,
+    getAccessToken: getAccessToken,
+    setAccessToken: setAccessToken,
   };
 })(window);

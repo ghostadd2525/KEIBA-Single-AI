@@ -101,7 +101,17 @@
     return s.toFixed(2);
   }
 
-  function loadPredictionBundle() {
+  function loadPredictionBundle(raceId) {
+    var id = raceId || "20260719_hanshin_11";
+    if (global.ExpectApi && global.ExpectApi.Prediction && global.ExpectApi.Prediction.get) {
+      return global.ExpectApi.Prediction.get(id).catch(function () {
+        return loadPredictionBundleFallback();
+      });
+    }
+    return loadPredictionBundleFallback();
+  }
+
+  function loadPredictionBundleFallback() {
     return fetch("data/sample_prediction_bundle.json")
       .then(function (res) {
         if (!res.ok) throw new Error("HTTP " + res.status);
