@@ -6,19 +6,26 @@ import sys
 ROOT = Path(__file__).resolve().parent
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
-# Single AI / AI Core: parent of KEIBA-Single-AI (or AI_PLATFORM_ROOT)
+
 _platform = Path(__import__("os").environ.get("AI_PLATFORM_ROOT") or "")
 if not _platform.is_dir():
-    # services/win5-ai → … → platform root containing ai_platform/
     for candidate in (ROOT.parents[2], ROOT.parents[1], ROOT.parent):
         if (candidate / "ai_platform").is_dir():
             _platform = candidate
             break
+
+_overlay = ROOT / "platform" / "core-overlay"
+if _platform.is_dir() and _overlay.is_dir():
+    from app.core.platform_overlay import apply_platform_overlay
+
+    apply_platform_overlay(_platform, _overlay)
+
 if _platform.is_dir() and str(_platform) not in sys.path:
     sys.path.insert(0, str(_platform))
-# Register FeatureRepository → FeatureLoader bridge before Core imports
+
 try:
-    import app.core  # noqa: F401
+    import app.core  # noqa: F401 — FeatureLoader DB bridge
 except ImportError:
     pass
+
 runpy.run_module("app.main", run_name="__main__")
