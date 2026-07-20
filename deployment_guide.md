@@ -30,6 +30,9 @@ python -m http.server 8080
 
 詳細: [`cloudflare_pages_setup.md`](./cloudflare_pages_setup.md)
 
+**Python AI（EC2）:** [`docs/deployment-guide.md`](./docs/deployment-guide.md)
+
+
 ---
 
 ## 3. 動作確認

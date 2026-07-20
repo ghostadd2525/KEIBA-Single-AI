@@ -16,3 +16,13 @@ npm-debug.log*
 dist/
 .cache/
 *.log
+
+# β監査ログ（JSONL）。ディレクトリ自体は残す
+logs/audit/*.jsonl
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
