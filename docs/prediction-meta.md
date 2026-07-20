@@ -83,7 +83,7 @@
 | 値 | 意味 |
 |---|---|
 | `real_ai` | `AI_ENGINE=real` かつ Single AI 推論成功 |
-| `mock_fallback` | `AI_ENGINE=real` だが Core 未解決などで Python Mock へフォールバック |
+| `mock_fallback` | `AI_ENGINE=real` だが Core 未解決などで Python Mock へフォールバック。`fallback_reason` を付与（詳細: [`ops/production-foundation.md`](./ops/production-foundation.md)） |
 | `mock` | Python `AI_ENGINE=mock` |
 | `bff_mock` | BFF が ASSETS mock を直接読んだ（`AI_BASE_URL` なし等） |
 
