@@ -53,5 +53,12 @@ export async function loadAssetJson(context, assetPath) {
   const url = new URL(assetPath, context.request.url);
   const res = await context.env.ASSETS.fetch(url);
   if (!res.ok) return null;
-  return res.json();
+  const ct = (res.headers.get("content-type") || "").toLowerCase();
+  // Pages may SPA-fallback missing assets to index.html (200) — treat as miss
+  if (ct.includes("text/html")) return null;
+  try {
+    return await res.json();
+  } catch {
+    return null;
+  }
 }
