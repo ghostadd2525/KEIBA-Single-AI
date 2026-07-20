@@ -1,150 +1,95 @@
 # -*- coding: utf-8 -*-
 """
-Conversation Layer — Resolver → Prediction → Reason Builder → Response
+Conversation AI — 自然言語で競馬 AI を利用する統合レイヤー。
 
-Prediction を直接呼ばず、Race Resolver で race_id を正規化してから推論する。
+Resolver → Tools (Prediction/Coverage/Diagnostics) → Reason Builder → Response
+複数ターン会話は ContextManager が session 状態を維持。
 """
 from __future__ import annotations
 
-import re
 import uuid
-from dataclasses import dataclass
 from typing import Any
 
-from ..data.race_resolver import RaceIdentity, RaceResolver
+from ..data.race_resolver import RaceResolver
 from ..data.repository import ConversationRepository, PredictionRepository
-from ..engine.adapters import prediction_adapter
-from .reason_builder import ReasonBuilder
-
-
-@dataclass
-class IntentResult:
-    intent: str
-    race_id: str | None = None
-    confidence: float = 0.0
-    identity: RaceIdentity | None = None
-    slots: dict[str, Any] | None = None
-
-
-class IntentParser:
-    def __init__(self, resolver: RaceResolver) -> None:
-        self.resolver = resolver
-
-    def parse(self, message: str, *, explicit_race_id: str | None = None) -> IntentResult:
-        text = (message or "").strip()
-        identity: RaceIdentity | None = None
-        race_id: str | None = None
-
-        if explicit_race_id:
-            identity = self.resolver.resolve(str(explicit_race_id))
-            race_id = identity.public_race_id if identity else str(explicit_race_id)
-        else:
-            identity = self._resolve_from_message(text)
-            if identity:
-                race_id = identity.public_race_id or identity.catalog_race_id
-
-        intent = self._classify_intent(text, bool(race_id))
-        confidence = 0.85 if race_id else 0.55 if intent != "unknown" else 0.2
-        return IntentResult(
-            intent=intent,
-            race_id=race_id,
-            confidence=confidence,
-            identity=identity,
-        )
-
-    def _resolve_from_message(self, text: str) -> RaceIdentity | None:
-        embedded = re.search(r"(20\d{6}_[a-z0-9]+_\d+)", text.lower())
-        if embedded:
-            return self.resolver.resolve(embedded.group(1))
-
-        core = re.search(r"(20\d{2}-\d{2}-\d{2}-\d{2}-\d+)", text)
-        if core:
-            return self.resolver.resolve(core.group(1))
-
-        catalog = re.search(
-            r"(20\d{2}-\d{2}-\d{2}-(?:札幌|函館|福島|新潟|東京|中山|中京|京都|阪神|小倉)-\d+)",
-            text,
-        )
-        if catalog:
-            return self.resolver.resolve(catalog.group(1))
-
-        ui = re.search(
-            r"(札幌|函館|福島|新潟|東京|中山|中京|京都|阪神|小倉)\s*(\d{1,2})\s*R?",
-            text,
-        )
-        if ui:
-            return self.resolver.parse_ui_label(text)
-
-        return None
-
-    def _classify_intent(self, text: str, has_race: bool) -> str:
-        if any(k in text for k in ("理由", "なぜ", "根拠", "why")):
-            return "explain_pick"
-        if any(k in text for k in ("穴", "大穴", "穴馬")):
-            return "find_upset"
-        if any(k in text for k in ("買い", "買う", "見送", "評価して")):
-            return "buy_advice"
-        if any(k in text for k in ("予想", "本命", "印", "予測")) or has_race:
-            return "predict_race"
-        return "unknown"
+from .context import ContextManager, ConversationContext
+from .intent import IntentParser, IntentResult
+from .reason_builder import ReasonBuilder, ReasonPayload
+from .tools import ConversationTools
 
 
 class ResponseBuilder:
-    """ReasonBuilder 出力 → 会話応答テキスト + actions。"""
-
     def build(
         self,
         intent: IntentResult,
-        reason: Any,
+        reason: ReasonPayload,
         *,
+        ctx: ConversationContext,
         meta: dict[str, Any] | None = None,
+        tool_data: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
-        if not reason.bullets and not reason.summary:
+        if not reason.summary and not reason.bullets:
             return {
-                "reply": "対象レースの予想データが見つかりませんでした。race_id を指定してください。",
+                "reply": "ご質問の意図を特定できませんでした。レース名や「カバレッジを教えて」などとお試しください。",
                 "citations": [],
-                "actions": [{"type": "list_races"}],
+                "actions": [{"type": "list_races"}, {"type": "help"}],
             }
 
-        if intent.intent == "explain_pick" and reason.bullets:
-            reply = "選定理由:\n- " + "\n- ".join(reason.bullets[:5])
-        else:
-            reply = reason.summary
-            if reason.narrative and intent.intent == "predict_race":
-                reply = f"{reply}{reason.narrative}"
+        parts: list[str] = [reason.summary]
+        if reason.bullets:
+            if intent.intent in ("explain_pick", "diagnostics_inquiry", "greeting", "list_races"):
+                parts.append("\n".join(f"・{b}" for b in reason.bullets[:8]))
+            elif intent.intent == "predict_race" and reason.narrative:
+                parts.append(reason.narrative)
+            elif len(reason.bullets) == 1:
+                parts.append(reason.bullets[0])
+            else:
+                parts.append("\n".join(f"・{b}" for b in reason.bullets[:5]))
 
-        actions = [{"type": "open_race", "race_id": intent.race_id}] if intent.race_id else [
-            {"type": "list_races"}
-        ]
+        reply = "\n".join(p for p in parts if p)
+
+        actions: list[dict[str, Any]] = []
+        if intent.race_id:
+            actions.append({"type": "open_race", "race_id": intent.race_id})
+        if intent.intent == "coverage_inquiry":
+            actions.append({"type": "open_coverage"})
+        if intent.intent == "diagnostics_inquiry":
+            actions.append({"type": "open_diagnostics"})
+        if not actions:
+            actions.append({"type": "list_races"})
+
         return {
             "reply": reply,
             "race_id": intent.race_id,
-            "intent": intent.intent,
             "top_runners": reason.top_runners,
             "ai_confidence": reason.ai_confidence,
             "citations": reason.citations,
+            "sections": reason.sections,
             "actions": actions,
             "resolved": intent.identity.as_meta() if intent.identity else None,
+            "context": ctx.as_meta(),
+            "sources": (tool_data or {}).get("sources") or [],
         }
 
 
 class ConversationService:
-    """
-    Resolver → Prediction → Reason Builder → Response
-    """
-
     def __init__(self) -> None:
         self.resolver = RaceResolver()
-        self.intent_parser = IntentParser(self.resolver)
-        self.reason_builder = ReasonBuilder()
-        self.response_builder = ResponseBuilder()
         self.history = ConversationRepository()
         self.predictions_store = PredictionRepository()
+        self.context_manager = ContextManager(self.history, self.resolver)
+        self.intent_parser = IntentParser(self.context_manager)
+        self.tools = ConversationTools()
+        self.reason_builder = ReasonBuilder()
+        self.response_builder = ResponseBuilder()
 
     def chat(self, body: dict[str, Any]) -> dict[str, Any]:
         message = str(body.get("message") or body.get("text") or "").strip()
         session_id = str(body.get("session_id") or uuid.uuid4())
         explicit_race = body.get("race_id")
+
+        ctx = self.context_manager.load(session_id)
+        ctx.turn += 1
 
         self.history.append(
             session_id=session_id,
@@ -153,24 +98,35 @@ class ConversationService:
             race_id=explicit_race,
         )
 
-        intent = self.intent_parser.parse(message, explicit_race_id=explicit_race)
+        intent = self.intent_parser.parse(message, ctx, explicit_race_id=explicit_race)
+        if intent.identity:
+            ctx.update_from_identity(intent.identity)
+        ctx.last_intent = intent.intent
 
-        bundle = None
-        meta = None
-        if intent.race_id:
-            bundle, meta = prediction_adapter.get_with_meta(intent.race_id)
-            if bundle and meta:
-                self.predictions_store.save(
-                    race_id=str(intent.race_id),
-                    bundle=bundle,
-                    engine_source=str(meta.get("engine_source") or "unknown"),
-                    fallback_reason=meta.get("fallback_reason"),
-                    core_race_id=meta.get("core_race_id"),
-                    model_version=meta.get("model_version"),
-                )
+        tool_data = self.tools.execute(intent.intent, race_id=intent.race_id)
 
-        reason = self.reason_builder.build(intent.intent, bundle, race_id=intent.race_id)
-        built = self.response_builder.build(intent, reason, meta=meta)
+        pred_block = tool_data.get("prediction") or {}
+        bundle = pred_block.get("bundle")
+        meta = pred_block.get("meta")
+        if bundle and meta and intent.race_id:
+            self.predictions_store.save(
+                race_id=str(intent.race_id),
+                bundle=bundle,
+                engine_source=str(meta.get("engine_source") or "unknown"),
+                fallback_reason=meta.get("fallback_reason"),
+                core_race_id=meta.get("core_race_id"),
+                model_version=meta.get("model_version"),
+            )
+
+        reason = self.reason_builder.build(
+            intent.intent,
+            tool_data,
+            race_id=intent.race_id,
+            prediction_meta=meta,
+        )
+        built = self.response_builder.build(
+            intent, reason, ctx=ctx, meta=meta, tool_data=tool_data
+        )
 
         self.history.append(
             session_id=session_id,
@@ -182,15 +138,19 @@ class ConversationService:
                 "engine_source": (meta or {}).get("engine_source"),
                 "fallback_reason": (meta or {}).get("fallback_reason"),
                 "resolved": built.get("resolved"),
+                "context": built.get("context"),
+                "sources": built.get("sources"),
             },
         )
 
         return {
             "session_id": session_id,
+            "turn": ctx.turn,
             "intent": {
                 "name": intent.intent,
                 "confidence": intent.confidence,
                 "race_id": intent.race_id,
+                "slots": intent.slots,
             },
             "prediction_meta": {
                 "engine_source": (meta or {}).get("engine_source"),
