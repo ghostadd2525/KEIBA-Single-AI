@@ -12,7 +12,7 @@
   <script src="assets/auth.js"></script>
   <script>ExpectAuth.requireAuth();</script>
 </head>
-<body class="page-screen" data-nav="race">
+<body class="page-screen page-races" data-nav="race">
   <div class="app">
     <header class="topbar">
       <div class="topbar-inner">
@@ -23,12 +23,22 @@
           </div>
         </div>
         <div class="topbar-tools">
-          <button type="button" class="icon-btn" aria-label="絞り込み">
-            <svg class="nav-ico" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-              <path d="M4 6h16M7 12h10M10 18h4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
-            </svg>
-          </button>
-          <button type="button" class="icon-btn" aria-label="カレンダー">
+          <div class="race-sort">
+            <button type="button" class="icon-btn" id="raceSortOpen" aria-label="並び替え" aria-haspopup="menu" aria-expanded="false" title="並び替え">
+              <svg class="nav-ico" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M4 6h16M7 12h10M10 18h4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+              </svg>
+            </button>
+            <div class="race-sort-panel" id="raceSortPanel" hidden role="menu" aria-label="並び替え">
+              <p class="race-sort-head">並び替え</p>
+              <button type="button" class="race-sort-item is-active" role="menuitem" data-sort="conf-desc">AI信頼度が高い順</button>
+              <button type="button" class="race-sort-item" role="menuitem" data-sort="conf-asc">AI信頼度が低い順</button>
+              <button type="button" class="race-sort-item" role="menuitem" data-sort="time-asc">発走が早い順</button>
+              <button type="button" class="race-sort-item" role="menuitem" data-sort="time-desc">発走が遅い順</button>
+              <button type="button" class="race-sort-item" role="menuitem" data-sort="venue-asc">会場名順</button>
+            </div>
+          </div>
+          <button type="button" class="icon-btn" id="raceSearchOpen" aria-label="レース検索" aria-haspopup="dialog" title="レース検索">
             <svg class="nav-ico" viewBox="0 0 24 24" fill="none" aria-hidden="true">
               <rect x="4" y="5" width="16" height="15" rx="2" stroke="currentColor" stroke-width="1.6"/>
               <path d="M8 3v4M16 3v4M4 10h16" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
@@ -38,31 +48,66 @@
       </div>
     </header>
 
+    <div class="race-search-root" id="raceSearchRoot" hidden>
+      <div class="race-search-backdrop" data-race-search-close></div>
+      <div class="race-search-sheet" role="dialog" aria-modal="true" aria-labelledby="raceSearchTitle">
+        <div class="race-search-head">
+          <div>
+            <p class="race-search-kicker">SEARCH</p>
+            <h2 id="raceSearchTitle">レース検索</h2>
+          </div>
+          <button type="button" class="icon-btn race-search-close" data-race-search-close aria-label="閉じる">✕</button>
+        </div>
+        <label class="race-search-field">
+          <span>キーワード</span>
+          <input type="search" id="raceSearchQuery" placeholder="レース名・会場・R（例: 阪神 11R）" autocomplete="off" />
+        </label>
+        <div class="race-search-block">
+          <p class="race-search-label">開催日</p>
+          <div class="chip-row" id="raceSearchDates">
+            <button type="button" class="chip is-active" data-search-date="all">すべて</button>
+            <button type="button" class="chip" data-search-date="7/19">7/19</button>
+            <button type="button" class="chip" data-search-date="7/20">7/20</button>
+            <button type="button" class="chip" data-search-date="7/21">7/21</button>
+          </div>
+        </div>
+        <div class="race-search-block">
+          <p class="race-search-label">開催会場</p>
+          <div class="chip-row" id="raceSearchVenues">
+            <button type="button" class="chip is-active" data-search-venue="all">すべて</button>
+            <button type="button" class="chip" data-search-venue="函館">函館</button>
+            <button type="button" class="chip" data-search-venue="阪神">阪神</button>
+            <button type="button" class="chip" data-search-venue="中山">中山</button>
+          </div>
+        </div>
+        <p class="race-search-count" id="raceSearchCount">条件に合うレースを表示します</p>
+        <div class="race-search-actions">
+          <button type="button" class="race-search-reset" id="raceSearchReset">条件クリア</button>
+          <button type="button" class="race-search-apply" id="raceSearchApply">この条件で見る</button>
+        </div>
+      </div>
+    </div>
+
     <div class="screen">
-      <div class="tab-row date-tabs chip-row" id="dateTabs">
-        <button type="button" class="tab-pill is-active">7/19</button>
-        <button type="button" class="tab-pill">7/20</button>
-        <button type="button" class="tab-pill">7/21</button>
-      </div>
-      <div class="chip-row" id="venueChips">
-        <button type="button" class="chip is-active">すべて</button>
-        <button type="button" class="chip">札幌</button>
-        <button type="button" class="chip">函館</button>
-        <button type="button" class="chip">福島</button>
-        <button type="button" class="chip">新潟</button>
-        <button type="button" class="chip">東京</button>
-        <button type="button" class="chip">中山</button>
-        <button type="button" class="chip">中京</button>
-        <button type="button" class="chip">京都</button>
-        <button type="button" class="chip">阪神</button>
-        <button type="button" class="chip">小倉</button>
+      <div class="race-filters" id="raceFilters">
+        <div class="tab-row date-tabs chip-row" id="dateTabs">
+          <button type="button" class="tab-pill is-active" data-filter-date="7/19">7/19</button>
+          <button type="button" class="tab-pill" data-filter-date="7/20">7/20</button>
+          <button type="button" class="tab-pill" data-filter-date="7/21">7/21</button>
+        </div>
+        <div class="chip-row" id="venueChips" aria-label="今週の開催会場">
+          <button type="button" class="chip is-active" data-venue="all">すべて</button>
+          <button type="button" class="chip" data-venue="函館">函館</button>
+          <button type="button" class="chip" data-venue="阪神">阪神</button>
+          <button type="button" class="chip" data-venue="中山">中山</button>
+        </div>
+        <p class="heat-note race-filters-note" id="raceFilterNote">今週の対象会場は3場（すべて／各会場で絞り込み）。お気に入りは最大3件です。</p>
       </div>
 
-      <p class="heat-note" style="margin:0 0 8px">お気に入りは最大3件。4件目を追加すると一番古いレースが外れます。</p>
-
-      <div class="race-list">
-        <a class="race-item race-item--bg1" href="race.html?race_id=20260719_tokyo_11">
-          <button type="button" class="fav-btn fav-btn--icon" data-fav-toggle="20260719_tokyo_11" data-fav-place="東京 11R" data-fav-name="函館記念" data-fav-badge="GIII" data-fav-date="7/19（土）" aria-label="お気に入りに追加">
+      <div class="race-list" id="raceList">
+        <p class="race-list-empty" id="raceListEmpty" hidden>条件に合うレースがありません。検索条件を変えてみてください。</p>
+        <a class="race-item race-item--bg1" href="race.html?race_id=20260719_tokyo_11" data-race-date="7/19" data-race-venue="東京" data-race-name="函館記念" data-race-conf="88" data-race-time="15:45" data-race-place="東京 11R">
+          <button type="button" class="fav-btn fav-btn--icon" data-fav-toggle="20260719_tokyo_11" data-fav-place="東京 11R" data-fav-name="函館記念" data-fav-badge="GIII" data-fav-time="15:45" data-fav-date="7/19（土）" aria-label="お気に入りに追加">
             <span class="fav-star" aria-hidden="true">★</span>
           </button>
           <div>
@@ -78,8 +123,8 @@
             <span class="btn-detail">詳細を見る ›</span>
           </div>
         </a>
-        <a class="race-item race-item--bg2" href="race.html?race_id=20260719_hanshin_11">
-          <button type="button" class="fav-btn fav-btn--icon" data-fav-toggle="20260719_hanshin_11" data-fav-place="阪神 11R" data-fav-name="メインレース" data-fav-badge="GIII" data-fav-date="7/19（土）" aria-label="お気に入りに追加">
+        <a class="race-item race-item--bg2" href="race.html?race_id=20260719_hanshin_11" data-race-date="7/19" data-race-venue="阪神" data-race-name="メインレース" data-race-conf="92" data-race-time="15:40" data-race-place="阪神 11R">
+          <button type="button" class="fav-btn fav-btn--icon" data-fav-toggle="20260719_hanshin_11" data-fav-place="阪神 11R" data-fav-name="メインレース" data-fav-badge="GIII" data-fav-time="15:40" data-fav-date="7/19（土）" aria-label="お気に入りに追加">
             <span class="fav-star" aria-hidden="true">★</span>
           </button>
           <div>
@@ -95,8 +140,8 @@
             <span class="btn-detail">詳細を見る ›</span>
           </div>
         </a>
-        <a class="race-item race-item--bg3" href="race.html?race_id=20260719_fukushima_11">
-          <button type="button" class="fav-btn fav-btn--icon" data-fav-toggle="20260719_fukushima_11" data-fav-place="福島 11R" data-fav-name="ラジオNIKKEI賞" data-fav-badge="GIII" data-fav-date="7/19（土）" aria-label="お気に入りに追加">
+        <a class="race-item race-item--bg3" href="race.html?race_id=20260719_fukushima_11" data-race-date="7/19" data-race-venue="福島" data-race-name="ラジオNIKKEI賞" data-race-conf="76" data-race-time="15:25" data-race-place="福島 11R">
+          <button type="button" class="fav-btn fav-btn--icon" data-fav-toggle="20260719_fukushima_11" data-fav-place="福島 11R" data-fav-name="ラジオNIKKEI賞" data-fav-badge="GIII" data-fav-time="15:25" data-fav-date="7/19（土）" aria-label="お気に入りに追加">
             <span class="fav-star" aria-hidden="true">★</span>
           </button>
           <div>
@@ -112,8 +157,8 @@
             <span class="btn-detail">詳細を見る ›</span>
           </div>
         </a>
-        <a class="race-item race-item--bg4" href="race.html?race_id=20260719_hakodate_11">
-          <button type="button" class="fav-btn fav-btn--icon" data-fav-toggle="20260719_hakodate_11" data-fav-place="函館 11R" data-fav-name="函館2歳S" data-fav-badge="GIII" data-fav-date="7/19（土）" aria-label="お気に入りに追加">
+        <a class="race-item race-item--bg4" href="race.html?race_id=20260719_hakodate_11" data-race-date="7/19" data-race-venue="函館" data-race-name="函館2歳S" data-race-conf="81" data-race-time="15:10" data-race-place="函館 11R">
+          <button type="button" class="fav-btn fav-btn--icon" data-fav-toggle="20260719_hakodate_11" data-fav-place="函館 11R" data-fav-name="函館2歳S" data-fav-badge="GIII" data-fav-time="15:10" data-fav-date="7/19（土）" aria-label="お気に入りに追加">
             <span class="fav-star" aria-hidden="true">★</span>
           </button>
           <div>
@@ -129,8 +174,8 @@
             <span class="btn-detail">詳細を見る ›</span>
           </div>
         </a>
-        <a class="race-item race-item--bg1" href="race.html?race_id=20260720_nakayama_11">
-          <button type="button" class="fav-btn fav-btn--icon" data-fav-toggle="20260720_nakayama_11" data-fav-place="中山 11R" data-fav-name="中山ダート戦" data-fav-badge="L" data-fav-date="7/20（日）" aria-label="お気に入りに追加">
+        <a class="race-item race-item--bg1" href="race.html?race_id=20260720_nakayama_11" data-race-date="7/20" data-race-venue="中山" data-race-name="中山ダート戦" data-race-conf="79" data-race-time="15:30" data-race-place="中山 11R">
+          <button type="button" class="fav-btn fav-btn--icon" data-fav-toggle="20260720_nakayama_11" data-fav-place="中山 11R" data-fav-name="中山ダート戦" data-fav-badge="L" data-fav-time="15:30" data-fav-date="7/20（日）" aria-label="お気に入りに追加">
             <span class="fav-star" aria-hidden="true">★</span>
           </button>
           <div>
@@ -143,6 +188,40 @@
           </div>
           <div class="race-item-side">
             <div class="race-conf">79%<small>AI信頼度</small></div>
+            <span class="btn-detail">詳細を見る ›</span>
+          </div>
+        </a>
+        <a class="race-item race-item--bg2" href="race.html?race_id=20260719_hanshin_10" data-race-date="7/19" data-race-venue="阪神" data-race-name="特別戦" data-race-conf="74" data-race-time="14:50" data-race-place="阪神 10R">
+          <button type="button" class="fav-btn fav-btn--icon" data-fav-toggle="20260719_hanshin_10" data-fav-place="阪神 10R" data-fav-name="特別戦" data-fav-badge="OP" data-fav-time="14:50" data-fav-date="7/19（土）" aria-label="お気に入りに追加">
+            <span class="fav-star" aria-hidden="true">★</span>
+          </button>
+          <div>
+            <p class="race-item-place">阪神 10R</p>
+            <p class="race-item-name">特別戦</p>
+            <div class="race-item-meta">
+              <span>14:50発走</span>
+              <span class="race-stars">★★★☆☆</span>
+            </div>
+          </div>
+          <div class="race-item-side">
+            <div class="race-conf">74%<small>AI信頼度</small></div>
+            <span class="btn-detail">詳細を見る ›</span>
+          </div>
+        </a>
+        <a class="race-item race-item--bg3" href="race.html?race_id=20260719_hakodate_10" data-race-date="7/19" data-race-venue="函館" data-race-name="未勝利戦" data-race-conf="68" data-race-time="14:20" data-race-place="函館 10R">
+          <button type="button" class="fav-btn fav-btn--icon" data-fav-toggle="20260719_hakodate_10" data-fav-place="函館 10R" data-fav-name="未勝利戦" data-fav-badge="—" data-fav-time="14:20" data-fav-date="7/19（土）" aria-label="お気に入りに追加">
+            <span class="fav-star" aria-hidden="true">★</span>
+          </button>
+          <div>
+            <p class="race-item-place">函館 10R</p>
+            <p class="race-item-name">未勝利戦</p>
+            <div class="race-item-meta">
+              <span>14:20発走</span>
+              <span class="race-stars">★★☆☆☆</span>
+            </div>
+          </div>
+          <div class="race-item-side">
+            <div class="race-conf">68%<small>AI信頼度</small></div>
             <span class="btn-detail">詳細を見る ›</span>
           </div>
         </a>
@@ -160,6 +239,7 @@
   </div>
   <script src="assets/favorites.js"></script>
   <script src="assets/shell.js"></script>
+  <script src="assets/reminders.js"></script>
   <script src="assets/partials-nav.js"></script>
   <script>
     ExpectFavorites.bindButtons();
@@ -167,6 +247,262 @@
       "気になるレースは<br>★ でお気に入り登録してね！",
       "お気に入りは最大3件だよ。<br>古いは順に外れるよ！"
     ]);
+    ExpectShell.initChips("#dateTabs");
+    ExpectShell.initChips("#venueChips");
+
+    (function initRaceSearch() {
+      var root = document.getElementById("raceSearchRoot");
+      var openBtn = document.getElementById("raceSearchOpen");
+      var queryInput = document.getElementById("raceSearchQuery");
+      var countEl = document.getElementById("raceSearchCount");
+      var emptyEl = document.getElementById("raceListEmpty");
+      var noteEl = document.getElementById("raceFilterNote");
+      var list = document.getElementById("raceList");
+      if (!root || !openBtn || !list) return;
+
+      var state = { q: "", date: "7/19", venue: "all" };
+
+      function items() {
+        return Array.prototype.slice.call(list.querySelectorAll(".race-item"));
+      }
+
+      function setActive(container, attr, value) {
+        if (!container) return;
+        container.querySelectorAll("[" + attr + "]").forEach(function (el) {
+          el.classList.toggle("is-active", el.getAttribute(attr) === value);
+        });
+      }
+
+      function match(item) {
+        var date = item.getAttribute("data-race-date") || "";
+        var venue = item.getAttribute("data-race-venue") || "";
+        var name = item.getAttribute("data-race-name") || "";
+        var place = item.getAttribute("data-race-place") || "";
+        var hay = (date + " " + venue + " " + name + " " + place).toLowerCase();
+        if (state.date !== "all" && date !== state.date) return false;
+        if (state.venue !== "all" && venue !== state.venue) return false;
+        if (state.q) {
+          var tokens = state.q.toLowerCase().split(/\s+/).filter(Boolean);
+          for (var i = 0; i < tokens.length; i++) {
+            if (hay.indexOf(tokens[i]) < 0) return false;
+          }
+        }
+        return true;
+      }
+
+      function applyFilters() {
+        var shown = 0;
+        items().forEach(function (item) {
+          var ok = match(item);
+          item.hidden = !ok;
+          if (ok) shown += 1;
+        });
+        if (emptyEl) emptyEl.hidden = shown > 0;
+        if (countEl) {
+          countEl.textContent =
+            shown + "件のレースが見つかりました（全" + items().length + "件中）";
+        }
+        if (noteEl) {
+          var parts = [];
+          if (state.date !== "all") parts.push(state.date);
+          if (state.venue !== "all") parts.push(state.venue);
+          if (state.q) parts.push("「" + state.q + "」");
+          var sortPart = list.getAttribute("data-sort-label") || "";
+          if (parts.length) {
+            noteEl.textContent =
+              "検索中: " + parts.join(" / ") + " → " + shown + "件" +
+              (sortPart ? " ／ " + sortPart : "");
+          } else {
+            noteEl.textContent = sortPart
+              ? "並び替え: " + sortPart + " ／ 今週の対象会場は3場。お気に入りは最大3件です。"
+              : "今週の対象会場は3場（すべて／各会場で絞り込み）。お気に入りは最大3件です。";
+          }
+        }
+        // 上部チップと同期
+        if (state.date !== "all") {
+          setActive(document.getElementById("dateTabs"), "data-filter-date", state.date);
+        }
+        setActive(document.getElementById("venueChips"), "data-venue", state.venue);
+        setActive(document.getElementById("raceSearchDates"), "data-search-date", state.date);
+        setActive(document.getElementById("raceSearchVenues"), "data-search-venue", state.venue);
+      }
+
+      function openSearch() {
+        root.hidden = false;
+        document.body.classList.add("is-race-search");
+        setActive(document.getElementById("raceSearchDates"), "data-search-date", state.date);
+        setActive(document.getElementById("raceSearchVenues"), "data-search-venue", state.venue);
+        if (queryInput) {
+          queryInput.value = state.q;
+          setTimeout(function () { queryInput.focus(); }, 40);
+        }
+        applyFilters();
+      }
+
+      function closeSearch() {
+        root.hidden = true;
+        document.body.classList.remove("is-race-search");
+      }
+
+      openBtn.addEventListener("click", function (e) {
+        e.preventDefault();
+        openSearch();
+      });
+
+      root.addEventListener("click", function (e) {
+        if (e.target.closest("[data-race-search-close]")) closeSearch();
+      });
+
+      document.addEventListener("keydown", function (e) {
+        if (e.key === "Escape" && !root.hidden) closeSearch();
+      });
+
+      document.getElementById("raceSearchDates").addEventListener("click", function (e) {
+        var btn = e.target.closest("[data-search-date]");
+        if (!btn) return;
+        state.date = btn.getAttribute("data-search-date") || "all";
+        setActive(this, "data-search-date", state.date);
+        applyFilters();
+      });
+
+      document.getElementById("raceSearchVenues").addEventListener("click", function (e) {
+        var btn = e.target.closest("[data-search-venue]");
+        if (!btn) return;
+        state.venue = btn.getAttribute("data-search-venue") || "all";
+        setActive(this, "data-search-venue", state.venue);
+        applyFilters();
+      });
+
+      queryInput.addEventListener("input", function () {
+        state.q = (queryInput.value || "").trim();
+        applyFilters();
+      });
+
+      document.getElementById("raceSearchReset").addEventListener("click", function () {
+        state = { q: "", date: "all", venue: "all" };
+        queryInput.value = "";
+        applyFilters();
+      });
+
+      document.getElementById("raceSearchApply").addEventListener("click", function () {
+        applyFilters();
+        closeSearch();
+        if (ExpectShell.speakMascot) {
+          ExpectShell.speakMascot("条件で絞り込んだよ！<br>気になるレースを選んでね♪", 4200);
+        }
+      });
+
+      // 上部の日付・会場チップでも絞り込み
+      document.getElementById("dateTabs").addEventListener("click", function (e) {
+        var btn = e.target.closest("[data-filter-date]");
+        if (!btn) return;
+        state.date = btn.getAttribute("data-filter-date") || "all";
+        applyFilters();
+      });
+
+      document.getElementById("venueChips").addEventListener("click", function (e) {
+        var btn = e.target.closest("[data-venue]");
+        if (!btn) return;
+        state.venue = btn.getAttribute("data-venue") || "all";
+        applyFilters();
+      });
+
+      applyFilters();
+
+      (function initRaceSort() {
+        var wrap = document.querySelector(".race-sort");
+        var btn = document.getElementById("raceSortOpen");
+        var panel = document.getElementById("raceSortPanel");
+        if (!wrap || !btn || !panel) return;
+
+        var sortKey = "conf-desc";
+        var labels = {
+          "conf-desc": "AI信頼度が高い順",
+          "conf-asc": "AI信頼度が低い順",
+          "time-asc": "発走が早い順",
+          "time-desc": "発走が遅い順",
+          "venue-asc": "会場名順"
+        };
+
+        function timeValue(t) {
+          var p = String(t || "0:0").split(":");
+          return (parseInt(p[0], 10) || 0) * 60 + (parseInt(p[1], 10) || 0);
+        }
+
+        function applySort() {
+          var rows = items().slice();
+          rows.sort(function (a, b) {
+            var ca = parseInt(a.getAttribute("data-race-conf") || "0", 10);
+            var cb = parseInt(b.getAttribute("data-race-conf") || "0", 10);
+            var ta = timeValue(a.getAttribute("data-race-time"));
+            var tb = timeValue(b.getAttribute("data-race-time"));
+            var va = a.getAttribute("data-race-venue") || "";
+            var vb = b.getAttribute("data-race-venue") || "";
+            if (sortKey === "conf-desc") return cb - ca;
+            if (sortKey === "conf-asc") return ca - cb;
+            if (sortKey === "time-asc") return ta - tb;
+            if (sortKey === "time-desc") return tb - ta;
+            if (sortKey === "venue-asc") {
+              if (va === vb) return ta - tb;
+              return va.localeCompare(vb, "ja");
+            }
+            return 0;
+          });
+          rows.forEach(function (row) {
+            list.appendChild(row);
+          });
+          if (emptyEl) list.insertBefore(emptyEl, list.firstChild);
+          list.setAttribute("data-sort-label", labels[sortKey] || "");
+          panel.querySelectorAll("[data-sort]").forEach(function (el) {
+            el.classList.toggle("is-active", el.getAttribute("data-sort") === sortKey);
+          });
+        }
+
+        function close() {
+          wrap.classList.remove("is-open");
+          panel.hidden = true;
+          btn.setAttribute("aria-expanded", "false");
+        }
+
+        function open() {
+          wrap.classList.add("is-open");
+          panel.hidden = false;
+          btn.setAttribute("aria-expanded", "true");
+        }
+
+        btn.addEventListener("click", function (e) {
+          e.preventDefault();
+          e.stopPropagation();
+          if (wrap.classList.contains("is-open")) close();
+          else open();
+        });
+
+        panel.addEventListener("click", function (e) {
+          var item = e.target.closest("[data-sort]");
+          if (!item) return;
+          sortKey = item.getAttribute("data-sort") || "conf-desc";
+          applySort();
+          applyFilters();
+          close();
+          if (ExpectShell.speakMascot) {
+            ExpectShell.speakMascot(
+              "並び替えたよ！<br><strong>" + (labels[sortKey] || "") + "</strong>",
+              3800
+            );
+          }
+        });
+
+        document.addEventListener("click", function (e) {
+          if (!wrap.contains(e.target)) close();
+        });
+
+        document.addEventListener("keydown", function (e) {
+          if (e.key === "Escape") close();
+        });
+
+        applySort();
+      })();
+    })();
   </script>
 </body>
 </html>

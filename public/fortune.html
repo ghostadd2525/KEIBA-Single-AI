@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Expect ～ KEIBA AI ～ · 今日の運試し</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Noto+Sans+JP:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="assets/styles.css" />
+  <link rel="stylesheet" href="assets/screens.css" />
+  <script src="assets/auth.js"></script>
+  <script>ExpectAuth.requireAuth();</script>
+</head>
+<body class="page-screen page-fortune" data-nav="home">
+  <div class="app">
+    <header class="topbar">
+      <div class="topbar-inner">
+        <div class="topbar-left">
+          <a class="back-btn" href="index.html" aria-label="戻る">‹</a>
+          <div class="brand-block topbar-text topbar-title-only">
+            <p class="brand-name">今日の運試し</p>
+            <p class="brand-sub">KAOBA FORTUNE</p>
+          </div>
+        </div>
+        <div class="topbar-tools" aria-hidden="true"></div>
+      </div>
+    </header>
+
+    <div class="screen">
+      <section class="fortune-hero" id="fortuneHero">
+        <p class="fortune-kicker" id="fortuneDate">—</p>
+        <div class="fortune-result-row">
+          <div class="fortune-emotion" aria-hidden="true">
+            <img id="fortuneEmotionImg" src="assets/images/kaoba-emotion-joy.png?v=3" alt="" />
+          </div>
+          <div class="fortune-result-text">
+            <p class="fortune-rank-label">本日の競馬運</p>
+            <p class="fortune-rank" id="fortuneRank">—</p>
+            <p class="fortune-score" id="fortuneScore"></p>
+            <p class="fortune-emotion-label" id="fortuneEmotionLabel"></p>
+          </div>
+        </div>
+        <p class="fortune-message" id="fortuneMessage">カードを引いて今日の運勢を見てみよう</p>
+      </section>
+
+      <section class="chart-card fortune-card">
+        <h3>ラッキー項目</h3>
+        <ul class="fortune-lucky" id="fortuneLucky"></ul>
+      </section>
+
+      <section class="chart-card fortune-card">
+        <h3>今日の一手</h3>
+        <p class="fortune-advice" id="fortuneAdvice">—</p>
+      </section>
+
+      <button type="button" class="fortune-draw" id="fortuneDraw">運試しカードを引く</button>
+      <p class="fortune-note">※娯楽用の占いです。馬券は自己責任で楽しんでね。</p>
+    </div>
+
+    <aside class="mascot-ka0ba" id="mascotKa0ba" data-mascot-mode="png">
+      <div class="mascot-bubble" id="mascotBubble" role="status" aria-live="polite"></div>
+      <button type="button" class="mascot-figure" id="mascotTalkBtn" aria-label="KA0BAに話しかける">
+        <img data-mascot-fallback src="assets/images/mascot-ka0ba.png?v=10" alt="" height="140" draggable="false" />
+      </button>
+    </aside>
+
+    <div data-expect-nav></div>
+  </div>
+  <script src="assets/favorites.js"></script>
+  <script src="assets/shell.js"></script>
+  <script src="assets/reminders.js"></script>
+  <script src="assets/partials-nav.js"></script>
+  <script>
+    (function () {
+      /* 5分割スタンプ（喜・怒・哀・楽・駄々っ子）を結果ごとに1枚ずつ */
+      var EMOTIONS = {
+        joy:     { src: "assets/images/kaoba-emotion-joy.png?v=3",     label: "喜（よろこび）" },
+        anger:   { src: "assets/images/kaoba-emotion-anger.png?v=3",   label: "怒（いかり）" },
+        sorrow:  { src: "assets/images/kaoba-emotion-sorrow.png?v=3",  label: "哀（かなしみ）" },
+        fun:     { src: "assets/images/kaoba-emotion-fun.png?v=3",     label: "楽（たのしみ）" },
+        tantrum: { src: "assets/images/kaoba-emotion-tantrum.png?v=3", label: "駄々っ子" }
+      };
+      var RANKS = [
+        { rank: "大吉", score: 96, emotion: "joy",     msg: "流れが味方してる日！自信のあるレースに素直に乗ろう。" },
+        { rank: "中吉", score: 84, emotion: "fun",     msg: "堅実な判断が光る一日。軸を明確にして点数を抑えめに。" },
+        { rank: "吉",   score: 72, emotion: "sorrow",  msg: "まずまずの運気。人気薄の大穴より、評価の高い軸を優先。" },
+        { rank: "小吉", score: 64, emotion: "anger",   msg: "小さな的中を積み重ねる日。ワイドや馬連が相性◎。" },
+        { rank: "末吉", score: 52, emotion: "tantrum", msg: "焦らず様子見も吉。気になる1鞍だけに絞ると◎。" }
+      ];
+      var COLORS = ["赤", "金", "紺", "緑", "紫", "白"];
+      var VENUES = ["函館", "阪神", "中山", "東京", "福島"];
+      var STYLES = ["差し", "先行", "逃げ", "追込"];
+      var BETS = ["ワイド", "馬連", "単勝", "三連複"];
+      var NUMS = ["3", "5", "7", "8", "1", "4", "6", "9"];
+      var ADVICE = [
+        "本命は1頭に絞り、相手は最大3頭まで。深追いは今日は控えめに。",
+        "午前中の気配を見てから午後の勝負レースへ。焦らないのが勝ち。",
+        "人気薄を1頭だけ絡めると妙味が出やすい日。点数は増やしすぎないで。",
+        "展開予想が当たる気配。ペースが速そうなレースを優先して見てみて。",
+        "回収より的中率を意識。少点数のフォーメーションが今日の鍵。"
+      ];
+
+      function hashDay(d) {
+        var key = d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate();
+        var h = 0;
+        for (var i = 0; i < key.length; i++) h = (h * 31 + key.charCodeAt(i)) >>> 0;
+        return h;
+      }
+
+      function pick(arr, n) {
+        return arr[n % arr.length];
+      }
+
+      function buildFortune(seed) {
+        var rank = pick(RANKS, seed);
+        return {
+          rank: rank.rank,
+          score: rank.score - (seed % 7),
+          emotion: rank.emotion,
+          message: rank.msg,
+          color: pick(COLORS, seed >> 3),
+          venue: pick(VENUES, seed >> 5),
+          style: pick(STYLES, seed >> 7),
+          bet: pick(BETS, seed >> 9),
+          number: pick(NUMS, seed >> 11),
+          advice: pick(ADVICE, seed >> 2)
+        };
+      }
+
+      function render(f, dateLabel) {
+        document.getElementById("fortuneDate").textContent = dateLabel;
+        document.getElementById("fortuneRank").textContent = f.rank;
+        document.getElementById("fortuneScore").textContent = "運気スコア " + f.score;
+        document.getElementById("fortuneMessage").textContent = f.message;
+        document.getElementById("fortuneAdvice").textContent = f.advice;
+        document.getElementById("fortuneLucky").innerHTML =
+          "<li><span>ラッキー会場</span><b>" + f.venue + "</b></li>" +
+          "<li><span>ラッキー脚質</span><b>" + f.style + "</b></li>" +
+          "<li><span>ラッキー番号</span><b>" + f.number + "</b></li>" +
+          "<li><span>ラッキー券種</span><b>" + f.bet + "</b></li>" +
+          "<li><span>ラッキーカラー</span><b>" + f.color + "</b></li>";
+
+        var emo = EMOTIONS[f.emotion] || EMOTIONS.joy;
+        var emoImg = document.getElementById("fortuneEmotionImg");
+        var emoLabel = document.getElementById("fortuneEmotionLabel");
+        emoImg.src = emo.src;
+        emoImg.alt = emo.label;
+        emoLabel.textContent = emo.label;
+
+        var hero = document.getElementById("fortuneHero");
+        hero.classList.remove("is-reveal");
+        void hero.offsetWidth;
+        hero.classList.add("is-reveal");
+      }
+
+      var now = new Date();
+      var week = ["日", "月", "火", "水", "木", "金", "土"];
+      var dateLabel =
+        now.getFullYear() + "年" + (now.getMonth() + 1) + "月" + now.getDate() + "日（" + week[now.getDay()] + "）";
+      var seed = hashDay(now);
+      var fortune = buildFortune(seed);
+      var drawn = false;
+
+      function draw() {
+        drawn = true;
+        render(fortune, dateLabel);
+        document.getElementById("fortuneDraw").textContent = "今日の運勢を見直す";
+        if (ExpectShell.speakMascot) {
+          ExpectShell.speakMascot(
+            "今日の運勢は<br><strong>" +
+              fortune.rank +
+              "</strong> だよ！<br>ラッキー会場は <strong>" +
+              fortune.venue +
+              "</strong>♪",
+            5200
+          );
+        }
+      }
+
+      document.getElementById("fortuneDraw").addEventListener("click", draw);
+
+      // 初回は自動で表示（占いっぽくすぐ結果が見える）
+      render(fortune, dateLabel);
+      drawn = true;
+      document.getElementById("fortuneDraw").textContent = "もう一度気配を見る";
+
+      ExpectShell.initMascotTalk([
+        "今日の運試し、<br>楽しんでいってね！",
+        "占いは参考程度に。<br>最後はキミの直感だよ♪",
+        "ラッキー会場のレースから<br>覗いてみるのもあり！"
+      ]);
+    })();
+  </script>
+</body>
+</html>

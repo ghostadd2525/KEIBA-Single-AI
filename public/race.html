@@ -12,7 +12,7 @@
   <script src="assets/auth.js"></script>
   <script>ExpectAuth.requireAuth();</script>
 </head>
-<body class="page-screen" data-nav="race">
+<body class="page-screen page-race-detail" data-nav="race">
   <div class="app">
     <header class="topbar">
       <div class="topbar-inner">
@@ -84,13 +84,8 @@
         </div>
       </section>
 
-      <button type="button" class="fav-btn fav-btn--block" id="raceFavBtnBlock" data-fav-toggle="" aria-label="お気に入りに追加">
-        <span class="fav-star" aria-hidden="true">★</span>
-        <span data-fav-label>お気に入り</span>
-      </button>
-
       <div class="fab-bet">
-        <a href="chat.html">買い目戦略を見る</a>
+        <a id="strategyLink" href="strategy.html">買い目戦略を詳しく見る</a>
       </div>
     </div>
 
@@ -105,6 +100,7 @@
   </div>
   <script src="assets/favorites.js"></script>
   <script src="assets/shell.js"></script>
+  <script src="assets/reminders.js"></script>
   <script src="assets/partials-nav.js"></script>
   <script>
     ExpectShell.initChips("#detailTabs");
@@ -120,15 +116,19 @@
     if (titleEl) titleEl.textContent = meta.place || "レース詳細";
     if (subEl) subEl.textContent = (meta.name || "") + (meta.badge ? " · " + meta.badge : "");
 
-    ["raceFavBtn", "raceFavBtnBlock"].forEach(function (btnId) {
-      var btn = document.getElementById(btnId);
-      if (!btn) return;
-      btn.setAttribute("data-fav-toggle", id);
-      btn.setAttribute("data-fav-place", meta.place || "");
-      btn.setAttribute("data-fav-name", meta.name || "");
-      btn.setAttribute("data-fav-badge", meta.badge || "");
-      btn.setAttribute("data-fav-date", meta.dateLabel || "");
-    });
+    var favBtn = document.getElementById("raceFavBtn");
+    if (favBtn) {
+      favBtn.setAttribute("data-fav-toggle", id);
+      favBtn.setAttribute("data-fav-place", meta.place || "");
+      favBtn.setAttribute("data-fav-name", meta.name || "");
+      favBtn.setAttribute("data-fav-badge", meta.badge || "");
+      favBtn.setAttribute("data-fav-date", meta.dateLabel || "");
+      if (meta.postTime) favBtn.setAttribute("data-fav-time", meta.postTime);
+    }
+    var strategyLink = document.getElementById("strategyLink");
+    if (strategyLink) {
+      strategyLink.href = "strategy.html?race_id=" + encodeURIComponent(id);
+    }
     ExpectFavorites.bindButtons();
   </script>
 </body>

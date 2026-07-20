@@ -12,7 +12,7 @@
   <script src="assets/auth.js"></script>
   <script>ExpectAuth.requireAuth();</script>
 </head>
-<body class="page-screen" data-nav="analysis">
+<body class="page-screen page-analysis" data-nav="analysis">
   <div class="app">
     <header class="topbar">
       <div class="topbar-inner">
@@ -22,71 +22,29 @@
             <p class="brand-sub">～ KEIBA AI ～</p>
           </div>
         </div>
-        <div class="topbar-tools">
-          <button type="button" class="icon-btn" aria-label="通知">
-            <svg class="nav-ico" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-              <path d="M12 3a5.5 5.5 0 0 0-5.5 5.5v2.2c0 .9-.3 1.8-.9 2.5L4.2 15.2c-.4.5-.1 1.3.6 1.3h14.4c.7 0 1-.8.6-1.3l-1.4-2c-.6-.7-.9-1.6-.9-2.5V8.5A5.5 5.5 0 0 0 12 3Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
-              <path d="M10 18.5a2 2 0 0 0 4 0" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
-            </svg>
-          </button>
-          <button type="button" class="icon-btn" aria-label="メニュー">
-            <svg class="nav-ico" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-              <path d="M5 7h14M5 12h14M5 17h14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
-            </svg>
-          </button>
-        </div>
+        <div class="topbar-tools" aria-hidden="true"></div>
       </div>
     </header>
 
     <div class="screen">
-      <div class="chip-row" id="analysisTabs">
-        <button type="button" class="chip is-active">総合分析</button>
-        <button type="button" class="chip">血統</button>
-        <button type="button" class="chip">展開</button>
-        <button type="button" class="chip">騎手</button>
-        <button type="button" class="chip">オッズ</button>
-      </div>
-
-      <div class="gauge-hero">
-        <div class="gauge-ring">
-          <div>
-            <strong>92%</strong>
-            <small>AI総合評価</small>
+      <section class="chart-card analysis-summary" aria-labelledby="aiSummaryTitle">
+        <h3 id="aiSummaryTitle">AI総評パラメータ</h3>
+        <p class="analysis-lead">お気に入り登録レースを集計した総合評価です。</p>
+        <div class="pie-layout">
+          <div class="pie-chart pie-chart--lg" id="summaryPie" role="img" aria-label="AI総評の円グラフ">
+            <div class="pie-chart-center">
+              <strong id="summaryOverall">—</strong>
+              <small>総合</small>
+            </div>
           </div>
-        </div>
-      </div>
-
-      <section class="chart-card">
-        <h3>評価詳細</h3>
-        <div class="score-list">
-          <div class="score-row"><span>血統適性</span><div class="score-bar"><i style="width:90%"></i></div><b>90%</b></div>
-          <div class="score-row"><span>展開予測</span><div class="score-bar"><i style="width:88%"></i></div><b>88%</b></div>
-          <div class="score-row"><span>騎手相性</span><div class="score-bar"><i style="width:85%"></i></div><b>85%</b></div>
-          <div class="score-row"><span>近走内容</span><div class="score-bar"><i style="width:91%"></i></div><b>91%</b></div>
-          <div class="score-row"><span>オッズ妙味</span><div class="score-bar"><i style="width:78%"></i></div><b>78%</b></div>
+          <ul class="pie-legend" id="summaryLegend"></ul>
         </div>
       </section>
 
-      <section class="chart-card">
-        <h3>血統適性</h3>
-        <div class="bar-list">
-          <div class="bar-item"><span>ディープ</span><div class="score-bar"><i style="--w:92%;width:92%"></i></div><b>92</b></div>
-          <div class="bar-item"><span>キングカメ</span><div class="score-bar"><i style="width:84%"></i></div><b>84</b></div>
-          <div class="bar-item"><span>ステイ</span><div class="score-bar"><i style="width:76%"></i></div><b>76</b></div>
-          <div class="bar-item"><span>ハーツ</span><div class="score-bar"><i style="width:71%"></i></div><b>71</b></div>
-        </div>
-      </section>
-
-      <section class="chart-card">
-        <h3>AI展開予測</h3>
-        <svg class="line-chart" viewBox="0 0 320 120" aria-hidden="true">
-          <polyline fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="1" points="0,20 320,20"/>
-          <polyline fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="1" points="0,60 320,60"/>
-          <polyline fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="1" points="0,100 320,100"/>
-          <polyline fill="none" stroke="#c1a26d" stroke-width="2.5" stroke-linejoin="round"
-            points="10,88 60,70 110,74 160,48 210,42 260,28 310,22"/>
-          <circle cx="210" cy="42" r="4" fill="#d4b37d"/>
-        </svg>
+      <section class="chart-card" aria-labelledby="favAiTitle">
+        <h3 id="favAiTitle">お気に入りレースのAI評価</h3>
+        <p class="analysis-lead">登録中のレースごとにパラメータを円グラフ表示します。</p>
+        <div class="fav-ai-grid" id="favAiGrid"></div>
       </section>
     </div>
 
@@ -99,14 +57,196 @@
 
     <div data-expect-nav></div>
   </div>
+  <script src="assets/favorites.js"></script>
   <script src="assets/shell.js"></script>
+  <script src="assets/reminders.js"></script>
   <script src="assets/partials-nav.js"></script>
   <script>
-    ExpectShell.initChips("#analysisTabs");
-    ExpectShell.initMascotTalk([
-      "中盤からペースが<br>上がりやすい展開だよ！",
-      "総合評価 92%。<br>自信を持っていける内容！"
-    ]);
+    (function () {
+      var COLORS = ["#c1a26d", "#7eb8a8", "#d4a574", "#8fa4d4", "#c98989"];
+      var PARAM_KEYS = ["pedigree", "pace", "jockey", "form", "odds"];
+      var LABELS = (window.ExpectFavorites && ExpectFavorites.AI_PARAM_LABELS) || {
+        pedigree: "血統適性",
+        pace: "展開予測",
+        jockey: "騎手相性",
+        form: "近走内容",
+        odds: "オッズ妙味"
+      };
+
+      function escapeHtml(s) {
+        return String(s)
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;");
+      }
+
+      function conicFromScores(ai) {
+        var values = PARAM_KEYS.map(function (k) { return Number(ai[k]) || 0; });
+        var total = values.reduce(function (a, b) { return a + b; }, 0) || 1;
+        var cursor = 0;
+        var parts = [];
+        values.forEach(function (v, i) {
+          var start = (cursor / total) * 100;
+          cursor += v;
+          var end = (cursor / total) * 100;
+          parts.push(COLORS[i] + " " + start.toFixed(2) + "% " + end.toFixed(2) + "%");
+        });
+        return "conic-gradient(from -90deg, " + parts.join(", ") + ")";
+      }
+
+      function donutConfidence(score) {
+        var s = Math.max(0, Math.min(100, Number(score) || 0));
+        return (
+          "conic-gradient(from -90deg, #d4b37d 0% " +
+          s +
+          "%, rgba(255,255,255,0.08) " +
+          s +
+          "% 100%)"
+        );
+      }
+
+      function avgParams(list) {
+        if (!list.length) {
+          return { overall: 0, pedigree: 0, pace: 0, jockey: 0, form: 0, odds: 0 };
+        }
+        var acc = { overall: 0, pedigree: 0, pace: 0, jockey: 0, form: 0, odds: 0 };
+        list.forEach(function (item) {
+          var ai = item.ai || ExpectFavorites.getAi(item.id);
+          Object.keys(acc).forEach(function (k) {
+            acc[k] += Number(ai[k]) || 0;
+          });
+        });
+        Object.keys(acc).forEach(function (k) {
+          acc[k] = Math.round(acc[k] / list.length);
+        });
+        return acc;
+      }
+
+      function renderSummary(list) {
+        var ai = avgParams(list);
+        var pie = document.getElementById("summaryPie");
+        var overall = document.getElementById("summaryOverall");
+        var legend = document.getElementById("summaryLegend");
+        if (!pie || !overall || !legend) return;
+
+        if (!list.length) {
+          pie.style.background = "conic-gradient(from -90deg, rgba(255,255,255,0.08) 0 100%)";
+          overall.textContent = "—";
+          legend.innerHTML =
+            '<li class="pie-legend-empty">お気に入りレースを登録すると、<br>総評パラメータが円グラフで表示されます。</li>';
+          return;
+        }
+
+        pie.style.background = conicFromScores(ai);
+        overall.textContent = ai.overall + "%";
+        legend.innerHTML = PARAM_KEYS.map(function (key, i) {
+          return (
+            '<li><i style="background:' +
+            COLORS[i] +
+            '"></i><span>' +
+            escapeHtml(LABELS[key] || key) +
+            '</span><b>' +
+            ai[key] +
+            "%</b></li>"
+          );
+        }).join("");
+      }
+
+      function renderFavorites(list) {
+        var grid = document.getElementById("favAiGrid");
+        if (!grid) return;
+
+        if (!list.length) {
+          grid.innerHTML =
+            '<div class="fav-ai-empty">' +
+            "<p>まだお気に入りがありません。</p>" +
+            '<a href="races.html">レース一覧で ★ 登録する ›</a>' +
+            "</div>";
+          return;
+        }
+
+        grid.innerHTML = list
+          .map(function (item) {
+            var ai = item.ai || ExpectFavorites.getAi(item.id);
+            var href = "race.html?race_id=" + encodeURIComponent(item.id);
+            var legend = PARAM_KEYS.map(function (key, i) {
+              return (
+                '<li><i style="background:' +
+                COLORS[i] +
+                '"></i><span>' +
+                escapeHtml(LABELS[key] || key) +
+                "</span><b>" +
+                ai[key] +
+                "%</b></li>"
+              );
+            }).join("");
+
+            return (
+              '<article class="fav-ai-card">' +
+              '<div class="fav-ai-card-top">' +
+              '<div class="pie-chart pie-chart--md" style="background:' +
+              conicFromScores(ai) +
+              '" role="img" aria-label="' +
+              escapeHtml(item.place) +
+              'のAI評価円グラフ">' +
+              '<div class="pie-chart-center">' +
+              "<strong>" +
+              ai.overall +
+              "%</strong>" +
+              "<small>総合</small>" +
+              "</div></div>" +
+              '<div class="fav-ai-meta">' +
+              "<h4>" +
+              escapeHtml(item.place) +
+              "</h4>" +
+              "<p>" +
+              escapeHtml(item.name || "") +
+              (item.badge ? " · " + escapeHtml(item.badge) : "") +
+              "</p>" +
+              '<div class="pie-chart pie-chart--sm" style="background:' +
+              donutConfidence(ai.overall) +
+              '" title="AI信頼度"></div>' +
+              '<p class="fav-ai-conf">AI信頼度 ' +
+              ai.overall +
+              "%</p>" +
+              '<a href="' +
+              href +
+              '">詳細を見る ›</a>' +
+              "</div></div>" +
+              '<ul class="pie-legend pie-legend--compact">' +
+              legend +
+              "</ul>" +
+              "</article>"
+            );
+          })
+          .join("");
+      }
+
+      function render() {
+        var list = ExpectFavorites.list();
+        renderSummary(list);
+        renderFavorites(list);
+
+        var top = list[0];
+        var lines = [
+          "お気に入りのAI評価を<br>円グラフでまとめたよ！",
+          "パラメータのバランスを<br>見て買い目を考えよう♪"
+        ];
+        if (top && top.ai) {
+          lines.unshift(
+            "いま一番の注目は<br><strong>" +
+              top.place +
+              "</strong><br>総合 <strong>" +
+              top.ai.overall +
+              "%</strong> だよ！"
+          );
+        }
+        ExpectShell.initMascotTalk(lines);
+      }
+
+      render();
+    })();
   </script>
 </body>
 </html>

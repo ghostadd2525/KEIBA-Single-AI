@@ -15,8 +15,10 @@
       place: "東京 11R",
       name: "函館記念",
       badge: "GIII",
+      postTime: "15:45",
       image: "assets/images/race-bg-1.png",
-      bg: 1
+      bg: 1,
+      ai: { overall: 88, pedigree: 90, pace: 86, jockey: 84, form: 91, odds: 79 }
     },
     "20260719_hanshin_11": {
       id: "20260719_hanshin_11",
@@ -25,8 +27,10 @@
       place: "阪神 11R",
       name: "メインレース",
       badge: "GIII",
+      postTime: "15:40",
       image: "assets/images/race-bg-2.png",
-      bg: 2
+      bg: 2,
+      ai: { overall: 92, pedigree: 94, pace: 90, jockey: 88, form: 93, odds: 82 }
     },
     "20260719_fukushima_11": {
       id: "20260719_fukushima_11",
@@ -35,8 +39,10 @@
       place: "福島 11R",
       name: "ラジオNIKKEI賞",
       badge: "GIII",
+      postTime: "15:25",
       image: "assets/images/race-bg-3.png",
-      bg: 3
+      bg: 3,
+      ai: { overall: 76, pedigree: 78, pace: 74, jockey: 80, form: 72, odds: 70 }
     },
     "20260719_hakodate_11": {
       id: "20260719_hakodate_11",
@@ -45,8 +51,10 @@
       place: "函館 11R",
       name: "函館2歳S",
       badge: "GIII",
+      postTime: "15:10",
       image: "assets/images/race-bg-4.png",
-      bg: 4
+      bg: 4,
+      ai: { overall: 81, pedigree: 83, pace: 79, jockey: 77, form: 85, odds: 74 }
     },
     "20260720_nakayama_11": {
       id: "20260720_nakayama_11",
@@ -55,10 +63,29 @@
       place: "中山 11R",
       name: "中山ダート戦",
       badge: "L",
+      postTime: "15:30",
       image: "assets/images/race-bg-1.png",
-      bg: 1
+      bg: 1,
+      ai: { overall: 79, pedigree: 76, pace: 82, jockey: 75, form: 80, odds: 78 }
     }
   };
+
+  var AI_PARAM_LABELS = {
+    pedigree: "血統適性",
+    pace: "展開予測",
+    jockey: "騎手相性",
+    form: "近走内容",
+    odds: "オッズ妙味"
+  };
+
+  function defaultAi() {
+    return { overall: 70, pedigree: 70, pace: 70, jockey: 70, form: 70, odds: 70 };
+  }
+
+  function getAi(id) {
+    var base = CATALOG[id] && CATALOG[id].ai;
+    return Object.assign(defaultAi(), base || {});
+  }
 
   function storage() {
     try {
@@ -106,8 +133,10 @@
       place: entry.place || base.place || "レース",
       name: entry.name || base.name || "",
       badge: entry.badge || base.badge || "",
+      postTime: entry.postTime || base.postTime || "",
       image: image,
       bg: bg,
+      ai: getAi(entry.id),
       addedAt: entry.addedAt || Date.now()
     };
   }
@@ -238,23 +267,41 @@
     if (ok) ok.focus();
   }
 
-  function cardHtml(item) {
+  var homeEditMode = false;
+
+  function cardHtml(item, editing) {
     var badge = item.badge
       ? '<span class="fav-badge">' + escapeHtml(item.badge) + "</span>"
       : "";
     var bgClass = "fav-card--bg" + (item.bg || 1);
+    var time = item.postTime ? String(item.postTime).trim() : "";
+    var metaLine = escapeHtml(item.dateLabel || "");
+    if (time) {
+      metaLine +=
+        (metaLine ? '<span class="fav-meta-sep"> · </span>' : "") +
+        '<span class="fav-time">' +
+        escapeHtml(time) +
+        "発走</span>";
+    }
+    var removeBtn = editing
+      ? '<button type="button" class="fav-card-remove" data-fav-remove="' +
+        escapeAttr(item.id) +
+        '" aria-label="お気に入りから削除">×</button>'
+      : "";
     return (
       '<a class="fav-card ' +
       bgClass +
+      (editing ? " is-editing" : "") +
       '" href="race.html?race_id=' +
       encodeURIComponent(item.id) +
       '" style="background-image:url(\'' +
       escapeAttr(item.image) +
       "')\">" +
+      removeBtn +
       '<div class="fav-card-shade" aria-hidden="true"></div>' +
       '<div class="fav-card-text">' +
       '<p class="fav-meta">' +
-      escapeHtml(item.dateLabel) +
+      metaLine +
       "</p>" +
       '<p class="fav-place">' +
       escapeHtml(item.place) +
@@ -280,17 +327,96 @@
     return escapeHtml(s).replace(/'/g, "&#39;");
   }
 
+  function syncEditButton() {
+    var btn = document.getElementById("favEditBtn");
+    if (!btn) return;
+    var items = list();
+    btn.disabled = !items.length && !homeEditMode;
+    btn.textContent = homeEditMode ? "完了" : "編集";
+    btn.setAttribute("aria-pressed", homeEditMode ? "true" : "false");
+    btn.classList.toggle("is-active", homeEditMode);
+  }
+
   function renderHome(railEl, emptyEl) {
     if (!railEl) return;
     var items = list();
     if (!items.length) {
+      homeEditMode = false;
+      railEl.classList.remove("is-editing");
       railEl.innerHTML =
         '<div class="fav-empty">レース詳細の ★ からお気に入りに追加できます（最大3件）</div>';
       if (emptyEl) emptyEl.hidden = false;
+      syncEditButton();
       return;
     }
-    railEl.innerHTML = items.map(cardHtml).join("");
+    railEl.classList.toggle("is-editing", homeEditMode);
+    railEl.innerHTML = items
+      .map(function (item) {
+        return cardHtml(item, homeEditMode);
+      })
+      .join("");
     if (emptyEl) emptyEl.hidden = true;
+    syncEditButton();
+  }
+
+  function bindHomeEdit() {
+    var btn = document.getElementById("favEditBtn");
+    var rail = document.getElementById("favoritesRail");
+    if (!btn || !rail || btn.dataset.favEditBound === "1") return;
+    btn.dataset.favEditBound = "1";
+
+    btn.addEventListener("click", function () {
+      if (!list().length && !homeEditMode) return;
+      homeEditMode = !homeEditMode;
+      renderHome(rail);
+      global.dispatchEvent(
+        new CustomEvent("expect:favorites-edit-mode", {
+          detail: { editing: homeEditMode }
+        })
+      );
+    });
+
+    rail.addEventListener("click", function (e) {
+      var removeBtn = e.target.closest("[data-fav-remove]");
+      if (removeBtn) {
+        e.preventDefault();
+        e.stopPropagation();
+        var id = removeBtn.getAttribute("data-fav-remove");
+        if (!id) return;
+        remove(id);
+        renderHome(rail);
+        global.dispatchEvent(
+          new CustomEvent("expect:favorites-changed", {
+            detail: { id: id, list: list() }
+          })
+        );
+        return;
+      }
+      if (homeEditMode) {
+        var card = e.target.closest(".fav-card");
+        if (card) {
+          e.preventDefault();
+          e.stopPropagation();
+        }
+      }
+    });
+
+    syncEditButton();
+  }
+
+  /** レース一覧・詳細などの ★ 表示を localStorage と同期 */
+  function syncStarButtons(root) {
+    var scope = root || document;
+    scope.querySelectorAll("[data-fav-toggle]").forEach(function (el) {
+      var id = el.getAttribute("data-fav-toggle");
+      if (!id) return;
+      var on = has(id);
+      el.classList.toggle("is-active", on);
+      el.setAttribute("aria-pressed", on ? "true" : "false");
+      el.setAttribute("aria-label", on ? "お気に入り解除" : "お気に入りに追加");
+      var t = el.querySelector("[data-fav-label]");
+      if (t) t.textContent = on ? "お気に入り済" : "お気に入り";
+    });
   }
 
   function bindButtons(root) {
@@ -299,31 +425,9 @@
       if (btn.dataset.favBound === "1") return;
       btn.dataset.favBound = "1";
 
-      function sync() {
-        var id = btn.getAttribute("data-fav-toggle");
-        var on = has(id);
-        btn.classList.toggle("is-active", on);
-        btn.setAttribute("aria-pressed", on ? "true" : "false");
-        var label = on ? "お気に入り解除" : "お気に入りに追加";
-        btn.setAttribute("aria-label", label);
-        var text = btn.querySelector("[data-fav-label]");
-        if (text) text.textContent = on ? "お気に入り済" : "お気に入り";
-      }
-
-      function syncAll(id) {
-        document.querySelectorAll('[data-fav-toggle="' + id + '"]').forEach(function (el) {
-          var on = has(id);
-          el.classList.toggle("is-active", on);
-          el.setAttribute("aria-pressed", on ? "true" : "false");
-          el.setAttribute("aria-label", on ? "お気に入り解除" : "お気に入りに追加");
-          var t = el.querySelector("[data-fav-label]");
-          if (t) t.textContent = on ? "お気に入り済" : "お気に入り";
-        });
-      }
-
       function applyToggle(id, meta) {
         toggle(id, meta);
-        syncAll(id);
+        syncStarButtons(document);
         global.dispatchEvent(
           new CustomEvent("expect:favorites-changed", { detail: { id: id, list: list() } })
         );
@@ -337,7 +441,8 @@
           place: btn.getAttribute("data-fav-place") || undefined,
           name: btn.getAttribute("data-fav-name") || undefined,
           badge: btn.getAttribute("data-fav-badge") || undefined,
-          dateLabel: btn.getAttribute("data-fav-date") || undefined
+          dateLabel: btn.getAttribute("data-fav-date") || undefined,
+          postTime: btn.getAttribute("data-fav-time") || undefined
         };
 
         // 解除はそのまま
@@ -357,23 +462,40 @@
 
         applyToggle(id, meta);
       });
-
-      sync();
     });
+
+    syncStarButtons(scope);
   }
+
+  // ホーム編集削除 ↔ レース★ の双方向同期
+  global.addEventListener("expect:favorites-changed", function () {
+    syncStarButtons(document);
+  });
+
+  // 別タブ／bfcache 復帰時も同期
+  global.addEventListener("storage", function (e) {
+    if (e.key === KEY) syncStarButtons(document);
+  });
+  global.addEventListener("pageshow", function () {
+    syncStarButtons(document);
+  });
 
   global.ExpectFavorites = {
     MAX: MAX,
     CATALOG: CATALOG,
+    AI_PARAM_LABELS: AI_PARAM_LABELS,
     list: list,
     has: has,
     add: add,
     remove: remove,
     toggle: toggle,
     getMeta: getMeta,
+    getAi: getAi,
     willEvictOnAdd: willEvictOnAdd,
     confirmReplace: confirmReplace,
     renderHome: renderHome,
-    bindButtons: bindButtons
+    bindHomeEdit: bindHomeEdit,
+    bindButtons: bindButtons,
+    syncStarButtons: syncStarButtons
   };
 })(window);

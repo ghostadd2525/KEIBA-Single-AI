@@ -22,15 +22,9 @@
           </div>
         </div>
         <div class="topbar-tools">
-          <button type="button" class="icon-btn" aria-label="通知">
+          <button type="button" class="icon-btn" id="brightnessBtn" aria-label="明るさ設定" aria-pressed="false" title="明るさ設定">
             <svg class="nav-ico" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-              <path d="M12 3a5.5 5.5 0 0 0-5.5 5.5v2.2c0 .9-.3 1.8-.9 2.5L4.2 15.2c-.4.5-.1 1.3.6 1.3h14.4c.7 0 1-.8.6-1.3l-1.4-2c-.6-.7-.9-1.6-.9-2.5V8.5A5.5 5.5 0 0 0 12 3Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
-              <path d="M10 18.5a2 2 0 0 0 4 0" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
-            </svg>
-          </button>
-          <button type="button" class="icon-btn" aria-label="設定">
-            <svg class="nav-ico" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-              <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.6"/>
+              <circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="1.6"/>
               <path d="M12 3.5v2.2M12 18.3v2.2M3.5 12h2.2M18.3 12h2.2M5.8 5.8l1.6 1.6M16.6 16.6l1.6 1.6M5.8 18.2l1.6-1.6M16.6 7.4l1.6-1.6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
             </svg>
           </button>
@@ -59,8 +53,8 @@
       </section>
 
       <nav class="menu-list" aria-label="マイページメニュー">
-        <a href="saved.html">予想履歴 <span>›</span></a>
-        <a href="saved.html">購入履歴 <span>›</span></a>
+        <a href="saved.html">今月の成績 <span>›</span></a>
+        <a href="analysis.html">購入履歴 <span>›</span></a>
         <a href="analysis.html">年間成績レポート <span>›</span></a>
         <a href="chat.html">KAOBAチャット履歴 <span>›</span></a>
         <a href="#settings">設定 <span>›</span></a>
@@ -77,7 +71,9 @@
 
     <div data-expect-nav></div>
   </div>
+  <script src="assets/favorites.js"></script>
   <script src="assets/shell.js"></script>
+  <script src="assets/reminders.js"></script>
   <script src="assets/partials-nav.js"></script>
   <script>
     ExpectShell.initMascotTalk([
@@ -89,6 +85,15 @@
       ExpectAuth.logout();
       location.href = "login.html";
     });
+    (function () {
+      var btn = document.getElementById("brightnessBtn");
+      if (!btn || !window.ExpectShell) return;
+      ExpectShell.syncBrightnessButton(btn);
+      btn.addEventListener("click", function () {
+        ExpectShell.toggleBrightness();
+        ExpectShell.syncBrightnessButton(btn);
+      });
+    })();
   </script>
 </body>
 </html>

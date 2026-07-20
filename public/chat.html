@@ -11,42 +11,27 @@
   <link rel="stylesheet" href="assets/screens.css" />
   <script src="assets/auth.js"></script>
   <script>ExpectAuth.requireAuth();</script>
+  <script src="assets/favorites.js" defer></script>
+  <script src="assets/shell.js" defer></script>
+  <script src="assets/reminders.js" defer></script>
 </head>
 <body class="page-screen page-chat" data-nav="mypage">
   <div class="app">
     <header class="topbar">
       <div class="topbar-inner">
         <div class="topbar-left chat-head">
-          <a class="back-btn" href="mypage.html" aria-label="戻る">‹</a>
+          <a class="back-btn" id="chatBack" href="mypage.html" aria-label="戻る">‹</a>
           <img src="assets/images/mascot-ka0ba.png?v=10" alt="" />
           <div class="brand-block topbar-text topbar-title-only">
             <h1 class="brand-name">KAOBA</h1>
           </div>
         </div>
+        <div class="topbar-tools" aria-hidden="true"></div>
       </div>
     </header>
 
     <div class="screen chat-shell">
-      <div class="chat-log" id="chatLog">
-        <div class="msg msg-ai">
-          <img src="assets/images/mascot-ka0ba.png?v=10" alt="" />
-          <div class="msg-bubble">こんにちは！今日のレース、何が気になる？展開・血統・買い目、なんでも聞いてね。</div>
-        </div>
-        <div class="msg msg-user">
-          <div class="msg-bubble">阪神11Rの本命は？</div>
-        </div>
-        <div class="msg msg-ai">
-          <img src="assets/images/mascot-ka0ba.png?v=10" alt="" />
-          <div class="msg-bubble">AI本命は <strong>7番 エンプレスリターン</strong>（信頼度92%）。差し有利の展開見込みで、血統・近走の評価も高いよ！</div>
-        </div>
-        <div class="msg msg-user">
-          <div class="msg-bubble">対抗と穴は？</div>
-        </div>
-        <div class="msg msg-ai">
-          <img src="assets/images/mascot-ka0ba.png?v=10" alt="" />
-          <div class="msg-bubble">対抗は <strong>3番</strong>、穴は <strong>9番</strong> を推奨。三連単は 7-3-9 / 7-9-3 の軸流しがバランスいいよ。</div>
-        </div>
-      </div>
+      <div class="chat-log" id="chatLog"></div>
 
       <div class="chat-composer">
         <div class="chat-quick chip-row" id="quickChips">
@@ -71,6 +56,12 @@
       var log = document.getElementById("chatLog");
       var form = document.getElementById("chatForm");
       var input = document.getElementById("chatInput");
+      var back = document.getElementById("chatBack");
+      var params = new URLSearchParams(location.search);
+      var fromStrategy = params.get("from") === "strategy";
+      var raceId = params.get("race_id") || "";
+      var strategyCtx = null;
+
       var replies = [
         "いい質問！データ上は差し馬の評価が伸びてるよ。",
         "いまのところ本命評価に大きな変動はないよ。安心して見てて！",
@@ -79,40 +70,172 @@
       ];
       var r = 0;
 
-      function addMsg(text, who) {
+      function addMsg(text, who, asHtml) {
         var row = document.createElement("div");
         row.className = "msg msg-" + who;
         if (who === "ai") {
           row.innerHTML = '<img src="assets/images/mascot-ka0ba.png?v=10" alt="" /><div class="msg-bubble"></div>';
-          row.querySelector(".msg-bubble").textContent = text;
         } else {
           row.innerHTML = '<div class="msg-bubble"></div>';
-          row.querySelector(".msg-bubble").textContent = text;
         }
+        var bubble = row.querySelector(".msg-bubble");
+        if (asHtml) bubble.innerHTML = text;
+        else bubble.textContent = text;
         log.appendChild(row);
         log.scrollTop = log.scrollHeight;
+        return row;
       }
 
-      function send(text) {
+      function buildStrategyReview(ctx) {
+        var ai = ctx.ai || {};
+        var axis = ctx.axis || {};
+        var overall = Number(ai.overall) || 0;
+        var grade =
+          overall >= 90 ? "かなり自信あり" : overall >= 80 ? "前向きに狙える" : overall >= 70 ? "様子見しつつ少点数" : "抑えめが安心";
+        var topTicket = (ctx.tickets && ctx.tickets[0]) || null;
+        var rival = (ctx.rivals && ctx.rivals[0]) || null;
+
+        var html =
+          "受け取ったよ！詳細戦略を評価するね。<br><br>" +
+          "<strong>" +
+          (ctx.place || "対象レース") +
+          (ctx.name ? " " + ctx.name : "") +
+          "</strong> の戦略、総合は <strong>" +
+          grade +
+          "</strong>（AI " +
+          (ai.overall || "—") +
+          "%）。<br><br>" +
+          "■ 評価ポイント<br>" +
+          "・軸の <strong>" +
+          (axis.num || "") +
+          " " +
+          (axis.name || "本命") +
+          "</strong> は明確で良いよ<br>" +
+          "・パラメータは血統" +
+          (ai.pedigree || "—") +
+          " / 展開" +
+          (ai.pace || "—") +
+          " / 近走" +
+          (ai.form || "—") +
+          " が特に効いてる<br>";
+
+        if (rival) {
+          html +=
+            "・相手筆頭の <strong>" +
+            rival.num +
+            " " +
+            rival.name +
+            "</strong>（" +
+            rival.role +
+            "）も妥当<br>";
+        }
+
+        html += "<br>■ 改善アドバイス<br>";
+        if (overall >= 85) {
+          html += "・主軸配分を少し厚めにして、三連単は今の点数のままでOK<br>";
+        } else {
+          html += "・三連単は抑えめにして、ワイド〜馬連中心に寄せると安定するよ<br>";
+        }
+        if (topTicket) {
+          html +=
+            "・いちばん優先すべきは <strong>" +
+            topTicket.type +
+            "</strong>（" +
+            topTicket.legs +
+            "）<br>";
+        }
+        html +=
+          "・波乱シナリオ用の穴は1頭までに限定して点数を守ろう<br><br>" +
+          "■ 最終おすすめ<br>" +
+          "このままの軸で進めて大丈夫。資金は合計 " +
+          ((ctx.bankroll && ctx.bankroll.total) || "推奨額") +
+          " を上限に、<strong>主軸 → 保険 → 一発</strong> の順で入れてね！";
+
+        return html;
+      }
+
+      function send(text, options) {
+        options = options || {};
         text = (text || "").trim();
         if (!text) return;
         addMsg(text, "user");
-        input.value = "";
+        if (!options.keepInput) input.value = "";
+
         setTimeout(function () {
-          addMsg(replies[r % replies.length], "ai");
-          r += 1;
-        }, 450);
+          if (options.strategyReply && strategyCtx) {
+            addMsg(buildStrategyReview(strategyCtx), "ai", true);
+          } else {
+            addMsg(replies[r % replies.length], "ai");
+            r += 1;
+          }
+        }, options.delay != null ? options.delay : 450);
+      }
+
+      function readStrategyContext() {
+        try {
+          var raw = sessionStorage.getItem("expect_chat_context_v1");
+          if (!raw) return null;
+          var data = JSON.parse(raw);
+          sessionStorage.removeItem("expect_chat_context_v1");
+          if (!data || data.type !== "strategy_review") return null;
+          return data;
+        } catch (e) {
+          return null;
+        }
+      }
+
+      // 初期表示
+      if (fromStrategy) {
+        strategyCtx = readStrategyContext();
+        if (back && raceId) {
+          back.href = "strategy.html?race_id=" + encodeURIComponent(raceId);
+        } else if (back) {
+          back.href = "races.html";
+        }
+
+        addMsg(
+          "買い目戦略の詳細データを受け取ったよ。内容を確認して評価するね！",
+          "ai"
+        );
+
+        if (strategyCtx && strategyCtx.summaryText) {
+          setTimeout(function () {
+            send(strategyCtx.summaryText, { strategyReply: true, delay: 700 });
+          }, 350);
+        } else {
+          setTimeout(function () {
+            addMsg(
+              "戦略データの読み込みに失敗したみたい。戦略画面からもう一度「KAOBAに相談する」を押してみてね。",
+              "ai"
+            );
+          }, 400);
+        }
+      } else {
+        addMsg(
+          "こんにちは！今日のレース、何が気になる？展開・血統・買い目、なんでも聞いてね。",
+          "ai"
+        );
       }
 
       form.addEventListener("submit", function (e) {
         e.preventDefault();
-        send(input.value);
+        var text = input.value;
+        // 戦略相談の続きなら、評価トーンで返す
+        if (strategyCtx && /評価|買い目|戦略|どう思う|改善/.test(text)) {
+          send(text, { strategyReply: true });
+        } else {
+          send(text);
+        }
       });
 
       document.getElementById("quickChips").addEventListener("click", function (e) {
         var chip = e.target.closest("[data-q]");
         if (!chip) return;
-        send(chip.getAttribute("data-q"));
+        if (strategyCtx && chip.getAttribute("data-q") === "買い目を提案して") {
+          send("この戦略の買い目をもう少し最適化して", { strategyReply: true });
+        } else {
+          send(chip.getAttribute("data-q"));
+        }
       });
     })();
   </script>
