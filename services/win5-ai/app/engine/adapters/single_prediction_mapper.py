@@ -39,14 +39,21 @@ _ORDERED_BETS = {"exacta", "trifecta"}
 
 def ensure_ai_platform_path() -> bool:
     """ai_platform を import できるよう sys.path を補正する。"""
+    return locate_ai_platform_root() is not None
+
+
+def locate_ai_platform_root() -> Path | None:
+    """Return platform root that contains ai_platform/, or None."""
     if "ai_platform" in sys.modules:
-        return True
+        mod = sys.modules["ai_platform"]
+        root = Path(getattr(mod, "__file__", "")).resolve().parent.parent
+        if (root / "ai_platform").is_dir():
+            return root
     candidates: list[Path] = []
     env_root = (os.environ.get("AI_PLATFORM_ROOT") or "").strip()
     if env_root:
         candidates.append(Path(env_root))
     here = Path(__file__).resolve()
-    # .../KEIBA-Single-AI/services/win5-ai/app/engine/adapters → parents[6] == platform root
     for idx in (6, 5, 4, 3):
         if idx < len(here.parents):
             candidates.append(here.parents[idx])
@@ -57,8 +64,42 @@ def ensure_ai_platform_path() -> bool:
             s = str(root)
             if s not in sys.path:
                 sys.path.insert(0, s)
-            return True
-    return False
+            return root
+    return None
+
+
+def classify_feature_availability(core_race_id: str) -> str | None:
+    """
+    Core race の特徴量有無を分類。
+    Returns None if loadable; otherwise a fallback_reason code.
+    """
+    root = locate_ai_platform_root()
+    if root is None:
+        return "platform_missing"
+    data = root / "data"
+    candidates = (
+        data / "demo_daily_outputs" / str(core_race_id)[:10] / "demo_runners_pace_market_features.csv",
+        data / "demo_daily_outputs" / str(core_race_id)[:10] / "Demo_runners_pace_market_features.csv",
+        data / "demo_runners_pace_market_features.csv",
+        data / "Demo_runners_pace_market_features.csv",
+        data / "runners_pace_market_features.csv",
+        data / "Runners_pace_market_features.csv",
+    )
+    existing = [p for p in candidates if p.exists()]
+    if not existing:
+        return "feature_csv_missing"
+    try:
+        import csv
+
+        for path in existing:
+            with path.open(encoding="utf-8-sig", newline="") as fh:
+                for row in csv.DictReader(fh):
+                    if str(row.get("race_id") or "") == str(core_race_id):
+                        return None
+        # ファイルはあるが当該 race 行が無い → market features 不足
+        return "market_feature_missing"
+    except Exception:
+        return "feature_missing"
 
 
 def _now() -> str:
@@ -419,11 +460,102 @@ def prediction_response_to_bundle(
 
 def run_single_prediction(core_race_id: str) -> dict[str, Any] | None:
     """Single AI 公開入口 get_prediction を呼び、エラー応答なら None。"""
-    from ai_platform.single.api import get_prediction
-
-    resp = get_prediction(core_race_id)
-    if not isinstance(resp, dict):
-        return None
-    if resp.get("error_code"):
-        return None
+    resp, _reason = run_single_prediction_detailed(core_race_id)
     return resp
+
+
+def run_single_prediction_detailed(
+    core_race_id: str,
+) -> tuple[dict[str, Any] | None, str | None]:
+    """
+    Returns (response, fallback_reason_if_failed).
+    fallback_reason is None on success.
+    """
+    try:
+        from ai_platform.single.api import get_prediction
+    except Exception:
+        return None, "model_not_loaded"
+
+    try:
+        resp = get_prediction(core_race_id)
+    except TimeoutError:
+        return None, "timeout"
+    except Exception:
+        return None, "exception"
+
+    if not isinstance(resp, dict):
+        return None, "prediction_failed"
+    if resp.get("error_code"):
+        code = str(resp.get("error_code") or "")
+        if code in ("race_not_resolved", "missing_race_id"):
+            return None, "race_not_found"
+        return None, "prediction_failed"
+    return resp, None
+
+
+def diagnose_inference(
+    public_race_id: str,
+    race_meta: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    """
+    実推論診断。成功時 engine_source=real_ai、失敗時は fallback_reason 付き。
+    """
+    out: dict[str, Any] = {
+        "race_id": public_race_id,
+        "ok": False,
+        "engine_source": "mock_fallback",
+        "fallback_reason": "unknown",
+        "core_race_id": None,
+        "detail": None,
+        "bundle": None,
+    }
+    if locate_ai_platform_root() is None:
+        out["fallback_reason"] = "platform_missing"
+        out["detail"] = "ai_platform not found on sys.path / AI_PLATFORM_ROOT"
+        return out
+
+    try:
+        core_id = resolve_core_race_id(public_race_id, race_meta)
+    except Exception as exc:
+        out["fallback_reason"] = "exception"
+        out["detail"] = f"resolve_core_race_id: {exc}"
+        return out
+
+    if not core_id:
+        out["fallback_reason"] = "race_not_found"
+        out["detail"] = "no resolvable core race_id"
+        return out
+
+    out["core_race_id"] = core_id
+    feat_reason = classify_feature_availability(core_id)
+    if feat_reason:
+        out["fallback_reason"] = feat_reason
+        out["detail"] = f"features unavailable for {core_id}"
+        return out
+
+    try:
+        response, fail_reason = run_single_prediction_detailed(core_id)
+        if not response:
+            out["fallback_reason"] = fail_reason or "prediction_failed"
+            out["detail"] = f"get_prediction failed for {core_id}"
+            return out
+        bundle = prediction_response_to_bundle(
+            response,
+            public_race_id=public_race_id,
+            core_race_id=core_id,
+            race_meta=race_meta,
+        )
+        out.update(
+            {
+                "ok": True,
+                "engine_source": "real_ai",
+                "fallback_reason": None,
+                "detail": None,
+                "bundle": bundle,
+            }
+        )
+        return out
+    except Exception as exc:
+        out["fallback_reason"] = "exception"
+        out["detail"] = str(exc)
+        return out

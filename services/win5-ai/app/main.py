@@ -1,5 +1,6 @@
 """
 WIN5 AI — PredictionBundle を共通契約とするドメイン HTTP API
++ Conversation Layer / Diagnostics / DB health
 """
 from __future__ import annotations
 
@@ -10,6 +11,9 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from typing import Any
 from urllib.parse import parse_qs, urlparse
 
+from . import conversation
+from .data import db as app_db
+from .diagnostics import FALLBACK_REASONS, REASON_HELP, collect_missing_report
 from .engine import data as engine
 from .engine import domains
 from .engine.adapters import analysis_adapter, kaoba_adapter, prediction_adapter
@@ -17,7 +21,6 @@ from .engine.adapters import analysis_adapter, kaoba_adapter, prediction_adapter
 AI_API_KEY = os.environ.get("AI_API_KEY", "")
 HOST = os.environ.get("AI_HOST", "127.0.0.1")
 PORT = int(os.environ.get("AI_PORT", "8000"))
-# Phase9-A: 既定は loopback のみ。0.0.0.0 公開は明示オプトインが必要
 AI_ALLOW_PUBLIC_BIND = (os.environ.get("AI_ALLOW_PUBLIC_BIND") or "0").lower() in (
     "1",
     "true",
@@ -38,7 +41,7 @@ def err(code: str, message: str, status: int = 400) -> tuple[int, dict[str, Any]
 
 
 class Handler(BaseHTTPRequestHandler):
-    server_version = "WIN5-AI/0.3"
+    server_version = "WIN5-AI/0.4"
 
     def log_message(self, fmt: str, *args: Any) -> None:
         print("[%s] %s" % (self.log_date_time_string(), fmt % args))
@@ -71,7 +74,14 @@ class Handler(BaseHTTPRequestHandler):
         qs = parse_qs(parsed.query)
 
         if path == "/health":
-            self._send(200, {"status": "ok"})
+            self._send(
+                200,
+                {
+                    "status": "ok",
+                    "db": str(app_db.db_path()),
+                    "fallback_reasons": list(FALLBACK_REASONS),
+                },
+            )
             return
 
         bad = self._check_key()
@@ -79,7 +89,6 @@ class Handler(BaseHTTPRequestHandler):
             self._send(bad[0], bad[1])
             return
 
-        # PredictionService — list of PredictionBundle（Adapter 経由 + provenance meta）
         if path == "/v1/predictions":
             date = (qs.get("date") or [""])[0] or ""
             venue = (qs.get("venue") or [""])[0] or ""
@@ -95,6 +104,26 @@ class Handler(BaseHTTPRequestHandler):
                 self._send(*err("NOT_FOUND", "PredictionBundle not found", 404))
                 return
             self._send(200, ok(bundle, meta))
+            return
+
+        if path == "/v1/diagnostics/fallback-reasons":
+            self._send(
+                200,
+                ok(
+                    {
+                        "reasons": list(FALLBACK_REASONS),
+                        "help": REASON_HELP,
+                    }
+                ),
+            )
+            return
+
+        if path == "/v1/diagnostics/missing":
+            # 最新 list を実行してレポート再生成
+            _, meta = prediction_adapter.list_with_meta()
+            items = meta.get("items") or []
+            report = collect_missing_report(items)
+            self._send(200, ok(report, {"service": "Diagnostics"}))
             return
 
         m = re.fullmatch(r"/v1/analysis/([^/]+)", path)
@@ -154,10 +183,35 @@ class Handler(BaseHTTPRequestHandler):
             self._send(200, ok(kaoba_adapter.generate_reply(body if isinstance(body, dict) else {})))
             return
 
+        if path in ("/v1/conversation/chat", "/v1/conversation"):
+            result = conversation.chat(body if isinstance(body, dict) else {})
+            self._send(
+                200,
+                ok(
+                    result,
+                    {
+                        "service": "ConversationService",
+                        "layer": "conversation",
+                    },
+                ),
+            )
+            return
+
+        if path == "/v1/admin/migrate":
+            applied = app_db.migrate()
+            self._send(200, ok({"applied": applied, "db": str(app_db.db_path())}))
+            return
+
         self._send(*err("NOT_FOUND", "unknown path", 404))
 
 
 def main() -> None:
+    # ensure DB schema on boot
+    try:
+        app_db.migrate()
+    except Exception as exc:
+        print(f"db migrate warning: {exc}")
+
     host = HOST
     if host in ("0.0.0.0", "::", "[::]") and not AI_ALLOW_PUBLIC_BIND:
         raise SystemExit(
@@ -166,7 +220,7 @@ def main() -> None:
             "or set AI_ALLOW_PUBLIC_BIND=1 only for controlled labs."
         )
     server = ThreadingHTTPServer((host, PORT), Handler)
-    print(f"WIN5 AI (PredictionBundle contract) on http://{host}:{PORT}")
+    print(f"WIN5 AI (PredictionBundle + Conversation + DB) on http://{host}:{PORT}")
     server.serve_forever()
 
 

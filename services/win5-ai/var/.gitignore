@@ -1,0 +1,5 @@
+*.db
+*.db-*
+logs/*.jsonl
+reports/missing_*.csv
+reports/missing_report.json

@@ -1,7 +1,8 @@
-"""Mock / sample data loaders for the WIN5 AI HTTP service."""
+"""Mock / sample data loaders — Repository 優先、JSON フォールバック。"""
 from __future__ import annotations
 
 import json
+import os
 from functools import lru_cache
 from pathlib import Path
 from typing import Any
@@ -10,8 +11,25 @@ ROOT = Path(__file__).resolve().parents[4]  # KEIBA-Single-AI/
 MOCK_DIR = ROOT / "public" / "data" / "mocks"
 
 
+def _use_db_catalog() -> bool:
+    return (os.environ.get("EXPECT_AI_USE_DB_CATALOG") or "1").lower() in (
+        "1",
+        "true",
+        "yes",
+    )
+
+
 @lru_cache(maxsize=1)
 def load_races() -> dict[str, Any]:
+    if _use_db_catalog():
+        try:
+            from ..data.repository import RaceRepository
+
+            catalog = RaceRepository().as_catalog()
+            if catalog.get("races"):
+                return catalog
+        except Exception:
+            pass
     path = MOCK_DIR / "races.json"
     return json.loads(path.read_text(encoding="utf-8"))
 
@@ -19,6 +37,8 @@ def load_races() -> dict[str, Any]:
 @lru_cache(maxsize=1)
 def load_home() -> dict[str, Any]:
     path = MOCK_DIR / "home.json"
+    if not path.exists():
+        return {"ok": True, "items": []}
     return json.loads(path.read_text(encoding="utf-8"))
 
 
@@ -43,6 +63,12 @@ def load_bundle(race_id: str) -> dict[str, Any] | None:
         info["race_id"] = race_id
         data["race_info"] = info
     return data
+
+
+def clear_caches() -> None:
+    load_races.cache_clear()
+    load_home.cache_clear()
+    load_analysis_all.cache_clear()
 
 
 def build_view(bundle: dict[str, Any], race_id: str) -> dict[str, Any]:

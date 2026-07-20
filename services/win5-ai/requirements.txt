@@ -1,6 +1,8 @@
-# Optional third-party deps.
-# Current runtime is Python 3.11+ stdlib only (ThreadingHTTPServer).
-# No FastAPI/uvicorn required for v1.0.0-beta AI host.
+# Optional third-party deps for AI Core on the same host.
+# HTTP service itself remains stdlib-only.
 #
-# Install (empty set is OK):
-#   python3 -m venv .venv && .venv/bin/pip install -r requirements.txt
+#   python3 -m pip install -r requirements.txt
+#
+# pandas/numpy are required when AI_ENGINE=real and ai_platform is linked.
+pandas>=2.0
+numpy>=1.24

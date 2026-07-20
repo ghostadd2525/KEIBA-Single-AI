@@ -37,6 +37,7 @@ function bffMockItem(bundle) {
   return {
     race_id: bundle.race_id,
     engine_source: "bff_mock",
+    fallback_reason: "bff_assets_only",
     model_version: bundle.model_version ?? null,
     inference_generated_at: bundle.generated_at ?? null,
   };
@@ -162,6 +163,7 @@ function asMockFallback(mockResult) {
     ? mockResult.provenanceMeta.items.map((it) => ({
         ...it,
         engine_source: "mock_fallback",
+        fallback_reason: it.fallback_reason || "ai_unavailable",
       }))
     : [];
   return {
@@ -186,6 +188,7 @@ function asMockFallbackGet(mockResult) {
       ...(mockResult.provenanceMeta || {}),
       engine: "real",
       engine_source: "mock_fallback",
+      fallback_reason: "ai_unavailable",
       ai_proxy: "fallback",
     },
   };
