@@ -128,6 +128,23 @@ class ConversationService:
             intent, reason, ctx=ctx, meta=meta, tool_data=tool_data
         )
 
+        user_id = body.get("_user_id")
+        if user_id:
+            from ..user import get_service
+
+            get_service().persist_chat_turn(
+                user_id=str(user_id),
+                session_id=session_id,
+                user_message=message,
+                assistant_reply=built.get("reply") or "",
+                race_id=intent.race_id,
+                intent=intent.intent,
+                meta={
+                    "engine_source": (meta or {}).get("engine_source"),
+                    "fallback_reason": (meta or {}).get("fallback_reason"),
+                },
+            )
+
         self.history.append(
             session_id=session_id,
             role="assistant",

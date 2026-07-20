@@ -52,6 +52,11 @@
         <div class="stat-cell"><span>的中数</span><b>23R</b></div>
       </section>
 
+      <section class="chart-card" id="userProfilePanel">
+        <h3>プロフィール（User Domain）</h3>
+        <div id="userProfileBody"><p class="muted">読み込み中…</p></div>
+      </section>
+
       <section class="chart-card" id="supplyPanel">
         <h3>Data Supply / Coverage</h3>
         <div id="supplyPanelBody"><p class="muted">読み込み中…</p></div>
@@ -78,6 +83,7 @@
   </div>
   <script src="assets/api/auth.js"></script>
   <script src="assets/api/supply.js"></script>
+  <script src="assets/api/user.js"></script>
   <script src="assets/favorites.js"></script>
   <script src="assets/shell.js"></script>
   <script src="assets/reminders.js"></script>
@@ -93,6 +99,49 @@
         location.href = "login.html";
       });
     });
+    (function () {
+      var profileEl = document.getElementById("userProfileBody");
+      if (profileEl && window.ExpectApi && ExpectApi.User) {
+        Promise.all([
+          ExpectApi.User.me().catch(function () {
+            return null;
+          }),
+          ExpectApi.User.history().catch(function () {
+            return null;
+          }),
+          ExpectApi.User.chat().catch(function () {
+            return null;
+          }),
+        ]).then(function (parts) {
+          var me = parts[0];
+          var hist = parts[1];
+          var chat = parts[2];
+          if (!me) {
+            profileEl.innerHTML =
+              "<p class='muted'>ログイン後に User Service からプロフィールを表示します。</p>";
+            return;
+          }
+          var p = me.profile || {};
+          profileEl.innerHTML =
+            "<p><strong>" +
+            (p.display_name || me.login_id) +
+            "</strong> · " +
+            me.status +
+            "</p>" +
+            "<p class='muted'>login_id: " +
+            me.login_id +
+            "</p>" +
+            "<p>予測履歴: " +
+            ((hist && hist.count) || 0) +
+            " 件 · チャット: " +
+            ((chat && chat.count) || 0) +
+            " セッション</p>" +
+            (me.subscription
+              ? "<p>プラン: " + me.subscription.plan_id + " (" + me.subscription.status + ")</p>"
+              : "<p class='muted'>サブスクリプション未設定</p>");
+        });
+      }
+    })();
     (function () {
       var el = document.getElementById("supplyPanelBody");
       if (!el || !window.ExpectApi || !ExpectApi.Supply) return;
@@ -131,6 +180,15 @@
           html += "<p><strong>Diagnostics</strong> " + diag.summary + "</p>";
         }
         el.innerHTML = html || "<p class='muted'>Supply API 未接続（AI_BASE_URL 設定時に表示）</p>";
+      });
+    })();
+    (function () {
+      var btn = document.getElementById("brightnessBtn");
+      if (!btn || !window.ExpectShell) return;
+      ExpectShell.syncBrightnessButton(btn);
+      btn.addEventListener("click", function () {
+        ExpectShell.toggleBrightness();
+        ExpectShell.syncBrightnessButton(btn);
       });
     })();
   </script>

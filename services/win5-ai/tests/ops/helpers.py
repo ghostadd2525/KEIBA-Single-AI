@@ -103,14 +103,17 @@ def http_json(
     *,
     method: str = "GET",
     body: dict[str, Any] | None = None,
+    headers: dict[str, str] | None = None,
     timeout: float = 30,
 ) -> tuple[int, dict[str, Any]]:
     data = None
-    headers = {"Accept": "application/json"}
+    req_headers = {"Accept": "application/json"}
+    if headers:
+        req_headers.update(headers)
     if body is not None:
         data = json.dumps(body, ensure_ascii=False).encode("utf-8")
-        headers["Content-Type"] = "application/json; charset=utf-8"
-    req = urllib.request.Request(url, data=data, headers=headers, method=method)
+        req_headers["Content-Type"] = "application/json; charset=utf-8"
+    req = urllib.request.Request(url, data=data, headers=req_headers, method=method)
     try:
         with urllib.request.urlopen(req, timeout=timeout) as resp:
             raw = resp.read().decode("utf-8")

@@ -26,6 +26,8 @@ from .engine import domains
 from .engine.adapters import analysis_adapter, kaoba_adapter, prediction_adapter
 from .ops.monitoring import MonitoringService
 from .ops.performance import record_timing
+from .user import get_service as get_user_service
+from .user.auth import UserAuth
 
 AI_API_KEY = os.environ.get("AI_API_KEY", "")
 HOST = os.environ.get("AI_HOST", "127.0.0.1")
@@ -69,7 +71,7 @@ class Handler(BaseHTTPRequestHandler):
         self.send_header("Content-Length", str(len(raw)))
         self.send_header("Access-Control-Allow-Origin", "*")
         self.send_header("Access-Control-Allow-Headers", "Content-Type, X-AI-Key, Authorization")
-        self.send_header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+        self.send_header("Access-Control-Allow-Methods", "GET, POST, PATCH, OPTIONS")
         self.end_headers()
         if status != 204:
             self.wfile.write(raw)
@@ -85,6 +87,13 @@ class Handler(BaseHTTPRequestHandler):
 
     def do_OPTIONS(self) -> None:  # noqa: N802
         self._send(204, {})
+
+    def _user_auth(self) -> tuple[Any | None, tuple[int, dict[str, Any]] | None]:
+        auth = UserAuth()
+        ctx = auth.authenticate(self.headers.get("Authorization"))
+        if not ctx:
+            return None, err("UNAUTHORIZED", "Bearer token required", 401)
+        return ctx, None
 
     def do_GET(self) -> None:  # noqa: N802
         parsed = urlparse(self.path)
@@ -122,6 +131,16 @@ class Handler(BaseHTTPRequestHandler):
             if not bundle:
                 self._send(*err("NOT_FOUND", "PredictionBundle not found", 404))
                 return
+            auth = UserAuth()
+            ctx = auth.authenticate(self.headers.get("Authorization"))
+            if ctx:
+                get_user_service().record_prediction_view(
+                    ctx.user_id,
+                    race_id=race_id,
+                    engine_source=(meta or {}).get("engine_source"),
+                    feature_source=(meta or {}).get("feature_source"),
+                    meta={"source": "prediction_get"},
+                )
             self._send(200, ok(bundle, meta))
             return
 
@@ -232,6 +251,66 @@ class Handler(BaseHTTPRequestHandler):
             self._send(200, ok(domains.project_tickets(bundle)))
             return
 
+        if path == "/v1/users/me":
+            ctx, denied = self._user_auth()
+            if denied:
+                self._send(*denied)
+                return
+            assert ctx is not None
+            svc = get_user_service()
+            self._send(200, ok(svc.get_me(ctx.user_id), {"service": "UserService"}))
+            return
+
+        if path == "/v1/favorites":
+            ctx, denied = self._user_auth()
+            if denied:
+                self._send(*denied)
+                return
+            assert ctx is not None
+            svc = get_user_service()
+            self._send(200, ok(svc.list_favorites(ctx.user_id), {"service": "UserService"}))
+            return
+
+        if path == "/v1/history":
+            ctx, denied = self._user_auth()
+            if denied:
+                self._send(*denied)
+                return
+            assert ctx is not None
+            limit = int((qs.get("limit") or ["50"])[0])
+            svc = get_user_service()
+            self._send(
+                200,
+                ok(svc.list_history(ctx.user_id, limit=limit), {"service": "UserService"}),
+            )
+            return
+
+        if path == "/v1/chat":
+            ctx, denied = self._user_auth()
+            if denied:
+                self._send(*denied)
+                return
+            assert ctx is not None
+            session_id = (qs.get("session_id") or [""])[0] or None
+            svc = get_user_service()
+            self._send(
+                200,
+                ok(
+                    svc.list_chat(ctx.user_id, session_id=session_id),
+                    {"service": "UserService"},
+                ),
+            )
+            return
+
+        if path == "/v1/admin/users":
+            ctx, denied = self._user_auth()
+            if denied:
+                self._send(*denied)
+                return
+            svc = get_user_service()
+            self._send(200, ok(svc.admin_summary(), {"service": "UserService"}))
+            return
+
         self._send(*err("NOT_FOUND", "unknown path", 404))
 
     def do_POST(self) -> None:  # noqa: N802
@@ -257,6 +336,11 @@ class Handler(BaseHTTPRequestHandler):
             return
 
         if path in ("/v1/conversation/chat", "/v1/conversation"):
+            auth = UserAuth()
+            ctx = auth.authenticate(self.headers.get("Authorization"))
+            if ctx:
+                body = dict(body if isinstance(body, dict) else {})
+                body["_user_id"] = ctx.user_id
             result = conversation.chat(body if isinstance(body, dict) else {})
             self._send(
                 200,
@@ -268,6 +352,45 @@ class Handler(BaseHTTPRequestHandler):
                     },
                 ),
             )
+            return
+
+        if path == "/v1/auth/login":
+            login_id = str(body.get("login_id") or body.get("id") or "")
+            password = str(body.get("password") or "")
+            try:
+                payload = get_user_service().login(login_id, password)
+                self._send(200, ok(payload, {"service": "UserService"}))
+            except PermissionError:
+                self._send(*err("UNAUTHORIZED", "invalid credentials", 401))
+            return
+
+        if path == "/v1/auth/logout":
+            payload = get_user_service().logout(self.headers.get("Authorization"))
+            self._send(200, ok(payload, {"service": "UserService"}))
+            return
+
+        if path == "/v1/auth/setup":
+            try:
+                payload = get_user_service().setup_user(
+                    login_id=str(body.get("login_id") or ""),
+                    password=str(body.get("password") or ""),
+                    display_name=body.get("display_name"),
+                    invite_id=body.get("invite_id"),
+                    terms_version=body.get("terms_version"),
+                )
+                self._send(200, ok(payload, {"service": "UserService"}))
+            except ValueError as exc:
+                self._send(*err("BAD_REQUEST", str(exc), 400))
+            return
+
+        if path == "/v1/favorites":
+            ctx, denied = self._user_auth()
+            if denied:
+                self._send(*denied)
+                return
+            assert ctx is not None
+            svc = get_user_service()
+            self._send(200, ok(svc.add_favorite(ctx.user_id, body), {"service": "UserService"}))
             return
 
         if path == "/v1/admin/migrate":
@@ -317,6 +440,39 @@ class Handler(BaseHTTPRequestHandler):
             race_date = str(body.get("date") or body.get("race_date") or "").strip() or None
             validation = validate_all_races(race_date=race_date)
             self._send(200, ok(validation, {"service": "AutoValidation"}))
+            return
+
+        self._send(*err("NOT_FOUND", "unknown path", 404))
+
+    def do_PATCH(self) -> None:  # noqa: N802
+        parsed = urlparse(self.path)
+        path = parsed.path
+        self._begin_request(path)
+
+        bad = self._check_key()
+        if bad:
+            self._send(bad[0], bad[1])
+            return
+
+        length = int(self.headers.get("Content-Length") or "0")
+        raw = self.rfile.read(length) if length else b"{}"
+        try:
+            body = json.loads(raw.decode("utf-8") or "{}")
+        except json.JSONDecodeError:
+            self._send(*err("BAD_REQUEST", "JSON body required", 400))
+            return
+
+        if path == "/v1/users/me":
+            ctx, denied = self._user_auth()
+            if denied:
+                self._send(*denied)
+                return
+            assert ctx is not None
+            svc = get_user_service()
+            self._send(
+                200,
+                ok(svc.patch_me(ctx.user_id, body if isinstance(body, dict) else {}), {"service": "UserService"}),
+            )
             return
 
         self._send(*err("NOT_FOUND", "unknown path", 404))
