@@ -12,10 +12,10 @@ from pathlib import Path
 from typing import Any
 
 from ...engine import data as engine_data
-from ..coverage import compute_coverage
 from ..repository.supply import SupplyRepository
 from ..sources import DownloadResult, get_source, resolve_sources
 from ..validation import validate_all_races
+from .csv_export import export_features_for_date
 from .feature_builder import FeatureBuilder
 from .normalizer import CsvNormalizer
 from .pipeline import EtlPipeline, EtlResult
@@ -30,7 +30,10 @@ STEPS = (
     "feature_builder",
     "repository",
     "db",
+    "csv_export",
     "validation",
+    "core_validation",
+    "deployment_gate",
 )
 
 
@@ -98,11 +101,22 @@ class EtlScheduler:
                     },
                 )
 
-            etl_result = self._step_etl(run_id, download)
+            etl_result = self._step_etl(run_id, download, race_date)
             result.etl = etl_result.as_dict()
 
             validation = self._step_validation(run_id, race_date)
             result.validation = validation
+            if not validation.get("deployment_gate", {}).get("ok", True):
+                return self._fail(
+                    result,
+                    "deployment_gate",
+                    validation["deployment_gate"].get("reason", "real_ai_rate_regressed"),
+                    {
+                        "deployment_gate": validation.get("deployment_gate"),
+                        "core_validation": validation.get("core_validation"),
+                    },
+                )
+
             result.status = "success"
             result.steps = self.supply.steps_for_run(run_id)
 
@@ -159,7 +173,7 @@ class EtlScheduler:
                     return alt
         return download
 
-    def _step_etl(self, run_id: int, download: DownloadResult) -> EtlResult:
+    def _step_etl(self, run_id: int, download: DownloadResult, race_date: str) -> EtlResult:
         total = EtlResult()
 
         # normalize + resolver + feature_builder + repository + db
@@ -187,6 +201,13 @@ class EtlScheduler:
             {"races": total.races, "features": total.features},
         )
         self.supply.add_step(run_id, "db", "success", total.as_dict())
+        export = export_features_for_date(race_date)
+        self.supply.add_step(
+            run_id,
+            "csv_export",
+            "success" if export.get("ok") else "skipped",
+            export,
+        )
         return total
 
     def _ingest_rows(self, run_id: int, download: DownloadResult) -> EtlResult:
@@ -235,6 +256,19 @@ class EtlScheduler:
             "validation",
             "success",
             {"coverage": validation.get("coverage"), "validation_id": validation.get("validation_id")},
+        )
+        self.supply.add_step(
+            run_id,
+            "core_validation",
+            "success",
+            validation.get("core_validation") or {},
+        )
+        gate = validation.get("deployment_gate") or {}
+        self.supply.add_step(
+            run_id,
+            "deployment_gate",
+            "success" if gate.get("ok", True) else "failed",
+            gate,
         )
         return validation
 

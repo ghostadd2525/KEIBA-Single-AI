@@ -16,4 +16,9 @@ if not _platform.is_dir():
             break
 if _platform.is_dir() and str(_platform) not in sys.path:
     sys.path.insert(0, str(_platform))
+# Register FeatureRepository → FeatureLoader bridge before Core imports
+try:
+    import app.core  # noqa: F401
+except ImportError:
+    pass
 runpy.run_module("app.main", run_name="__main__")

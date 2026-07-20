@@ -70,46 +70,12 @@ def locate_ai_platform_root() -> Path | None:
 
 def classify_feature_availability(core_race_id: str) -> str | None:
     """
-    Core race の特徴量有無を分類。
+    Core race の特徴量有無を分類（FeatureLoader 経由）。
     Returns None if loadable; otherwise a fallback_reason code.
-    DB features を優先し、なければ platform CSV を参照。
     """
-    try:
-        from ...data.repository import FeatureRepository
+    from ai_platform.core.features import FeatureLoader
 
-        rows = FeatureRepository().list_for_race(str(core_race_id))
-        if rows:
-            return None
-    except Exception:
-        pass
-
-    root = locate_ai_platform_root()
-    if root is None:
-        return "platform_missing"
-    data = root / "data"
-    candidates = (
-        data / "demo_daily_outputs" / str(core_race_id)[:10] / "demo_runners_pace_market_features.csv",
-        data / "demo_daily_outputs" / str(core_race_id)[:10] / "Demo_runners_pace_market_features.csv",
-        data / "demo_runners_pace_market_features.csv",
-        data / "Demo_runners_pace_market_features.csv",
-        data / "runners_pace_market_features.csv",
-        data / "Runners_pace_market_features.csv",
-    )
-    existing = [p for p in candidates if p.exists()]
-    if not existing:
-        return "feature_csv_missing"
-    try:
-        import csv
-
-        for path in existing:
-            with path.open(encoding="utf-8-sig", newline="") as fh:
-                for row in csv.DictReader(fh):
-                    if str(row.get("race_id") or "") == str(core_race_id):
-                        return None
-        # ファイルはあるが当該 race 行が無い → market features 不足
-        return "market_feature_missing"
-    except Exception:
-        return "feature_missing"
+    return FeatureLoader().classify_unavailable(str(core_race_id))
 
 
 def _now() -> str:
@@ -384,6 +350,7 @@ def prediction_response_to_bundle(
     public_race_id: str,
     core_race_id: str,
     race_meta: dict[str, Any] | None = None,
+    feature_source: str | None = None,
 ) -> dict[str, Any]:
     """ai_platform.single.models.prediction_response dict → PredictionBundle."""
     ranking = list(response.get("ranking") or [])
@@ -425,9 +392,12 @@ def prediction_response_to_bundle(
     if core_race_id != public_race_id:
         warnings.append(f"core_race_id={core_race_id}")
 
+    feature_source = feature_source or response.get("feature_source")
+
     bundle = {
         "schema_version": domains.BUNDLE_SCHEMA,
         "race_id": public_race_id,
+        "feature_source": feature_source,
         "generated_at": response.get("GeneratedAt") or _now(),
         "model_version": response.get("ModelVersion") or "core-delegated",
         "core_version": response.get("CoreVersion"),
@@ -462,6 +432,7 @@ def prediction_response_to_bundle(
                 "core_race_id": core_race_id,
                 "confidence_band": _band(overall),
                 "product_version": response.get("ProductVersion"),
+                "feature_source": feature_source,
             },
             "reasons": reasons,
             "narrative": narrative,
@@ -570,6 +541,7 @@ def diagnose_inference(
             public_race_id=public_race_id,
             core_race_id=core_id,
             race_meta=race_meta,
+            feature_source=response.get("feature_source"),
         )
         out.update(
             {

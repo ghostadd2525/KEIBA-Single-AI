@@ -41,6 +41,7 @@ def provenance_item(
     core_race_id: str | None = None,
     fallback_reason: str | None = None,
     detail: str | None = None,
+    feature_source: str | None = None,
 ) -> dict[str, Any]:
     item: dict[str, Any] = {
         "race_id": bundle.get("race_id"),
@@ -51,6 +52,12 @@ def provenance_item(
     cid = core_race_id or _core_race_id_from_bundle(bundle)
     if cid:
         item["core_race_id"] = cid
+    src = feature_source or bundle.get("feature_source")
+    if not src:
+        explain_meta = ((bundle.get("explain") or {}).get("meta") or {})
+        src = explain_meta.get("feature_source")
+    if src:
+        item["feature_source"] = src
     if engine_source == "mock_fallback" and fallback_reason:
         item["fallback_reason"] = fallback_reason
     if detail:

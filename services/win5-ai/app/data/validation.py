@@ -6,6 +6,7 @@ from typing import Any
 
 from ..diagnostics.missing_collector import collect_missing_report
 from ..engine.adapters import prediction_adapter
+from .core_validation import check_deployment_gate, validate_core
 from .coverage import compute_coverage
 from .repository.supply import SupplyRepository
 
@@ -38,6 +39,12 @@ def validate_all_races(
 
     missing_report = collect_missing_report(items)
 
+    core_validation = validate_core(run_id=run_id, race_date=race_date or date_filter or None)
+    deployment_gate = check_deployment_gate(
+        core_validation,
+        race_date=race_date or date_filter or None,
+    )
+
     validation_id = SupplyRepository().save_validation(
         run_id=run_id,
         race_date=race_date or "",
@@ -52,4 +59,6 @@ def validate_all_races(
         "by_reason": by_reason,
         "items": detailed_items,
         "missing_report_summary": missing_report.get("summary"),
+        "core_validation": core_validation,
+        "deployment_gate": deployment_gate,
     }

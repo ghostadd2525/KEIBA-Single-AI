@@ -13,6 +13,7 @@ from typing import Any
 from urllib.parse import parse_qs, urlparse
 
 from . import conversation
+from . import core as _core_bridge  # noqa: F401 — FeatureLoader DB bridge
 from .data import db as app_db
 from .data.coverage import get_coverage
 from .data.dashboard import DashboardService
