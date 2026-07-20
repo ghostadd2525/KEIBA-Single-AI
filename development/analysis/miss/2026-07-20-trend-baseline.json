@@ -1,0 +1,26 @@
+{
+  "schema_version": "expect-root-cause/0.1-draft",
+  "event_type": "miss",
+  "analysis_id": "miss-trend-2026-07-20",
+  "corpus_events": 0,
+  "mode": "structural_baseline",
+  "hypotheses": [
+    {
+      "id": "M-T1-NEAR",
+      "summary": "miss_top1 dominates when winner is near pool",
+      "priority": 1
+    },
+    {
+      "id": "M-CONF-HIGH",
+      "summary": "high confidence with miss_top1 indicates calibration gap",
+      "priority": 2
+    },
+    {
+      "id": "M-FEAT-CO",
+      "summary": "miss with feature_missing should not drive Core change first",
+      "priority": 0,
+      "defer_to": "feature_missing"
+    }
+  ],
+  "proposal_ids": ["IMP-20260720-miss-001"]
+}

@@ -1,0 +1,16 @@
+{
+  "schema_version": "expect-canary-report/1.0",
+  "proposal_id": "IMP-20260720-feature_missing-001",
+  "status": "pending",
+  "metrics_delta": {},
+  "side_effects": [],
+  "gates": {
+    "feature_missing_non_increasing": false,
+    "mock_fallback_feature_rate_non_increasing": false,
+    "no_silent_mock_policy": false
+  },
+  "evidence_sample": [],
+  "rollback_triggered": false,
+  "evaluated_at": null,
+  "notes": "Plan only. Core out of scope. No RC until pass."
+}

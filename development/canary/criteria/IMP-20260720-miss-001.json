@@ -1,0 +1,47 @@
+{
+  "schema_version": "expect-canary-criteria/1.0",
+  "proposal_id": "IMP-20260720-miss-001",
+  "success": {
+    "description": "Offline ranking-calibration experiment passes only if hit_at_1 does not regress and miss_top1 does not increase.",
+    "gates": [
+      {
+        "id": "no_hit_at_1_regression",
+        "rule": "hit_at_1 rate >= baseline on canary set",
+        "metric": "hit_at_1_rate",
+        "threshold": ">= baseline"
+      },
+      {
+        "id": "no_miss_top1_increase",
+        "rule": "miss_top1 count or rate <= baseline",
+        "metric": "miss_top1_rate",
+        "threshold": "<= baseline"
+      },
+      {
+        "id": "no_feature_cooccurrence_worsening",
+        "rule": "Share of miss with feature_missing co-occurrence must not rise due to the change",
+        "metric": "miss_feature_co_rate",
+        "threshold": "<= baseline"
+      }
+    ]
+  },
+  "rollback": {
+    "description": "Any trigger aborts canary; no RC; no Core PR.",
+    "triggers": [
+      {
+        "id": "severe_hit_drop",
+        "rule": "hit_at_1 drops by more than 2pp vs baseline",
+        "action": "abort_canary_and_revise_proposal"
+      },
+      {
+        "id": "miss_top5_spike",
+        "rule": "miss_top5 rate increases vs baseline",
+        "action": "abort_canary_and_revise_proposal"
+      },
+      {
+        "id": "core_touched_pre_pass",
+        "rule": "Production Prediction Core changed before status=pass",
+        "action": "abort_and_revert"
+      }
+    ]
+  }
+}

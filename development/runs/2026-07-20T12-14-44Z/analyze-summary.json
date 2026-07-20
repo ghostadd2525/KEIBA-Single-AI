@@ -1,0 +1,18 @@
+{
+  "schema_version": "expect-analyzer-run/1.0",
+  "phase": "I-2",
+  "run_id": "2026-07-20T12-14-44Z",
+  "generated_at": "2026-07-20T12:14:44.371Z",
+  "corpus_status": "empty",
+  "evidence_count": 0,
+  "analyzers_registered": [
+    "miss",
+    "feature_missing",
+    "prediction_failed",
+    "result_sync_failed"
+  ],
+  "analyses": {},
+  "notes": [
+    "No evidence — Analyzer not executed. No Proposal created (I-2 scope)."
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://expect.keiba/contracts/expect-improvement-evidence/1.0/schema.json",
+  "title": "ImprovementEvidence",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "event_type",
+    "event_id",
+    "timestamp",
+    "race_date",
+    "fingerprint",
+    "payload",
+    "version"
+  ],
+  "properties": {
+    "schema_version": { "const": "expect-improvement-evidence/1.0" },
+    "event_type": {
+      "type": "string",
+      "enum": ["miss", "feature_missing", "prediction_failed", "result_sync_failed"]
+    },
+    "event_id": { "type": "string" },
+    "timestamp": { "type": "string" },
+    "race_id": { "type": ["string", "null"] },
+    "race_date": { "type": "string" },
+    "fingerprint": { "type": "string" },
+    "payload": { "type": "object" },
+    "version": { "type": "object" }
+  }
+}

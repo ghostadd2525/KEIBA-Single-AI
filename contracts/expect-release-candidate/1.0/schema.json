@@ -1,0 +1,67 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://expect.keiba/contracts/expect-release-candidate/1.0/schema.json",
+  "title": "ReleaseCandidate",
+  "description": "Canary PASS 後のみ出力。Human Review 前のデプロイ候補パッケージ。",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "proposal_id",
+    "result_id",
+    "manifest_id",
+    "status",
+    "canary_status",
+    "canary_verdict",
+    "links",
+    "created_at"
+  ],
+  "additionalProperties": true,
+  "properties": {
+    "schema_version": { "const": "expect-release-candidate/1.0" },
+    "proposal_id": { "type": "string" },
+    "result_id": {
+      "type": "string",
+      "description": "Canary Result result_id — mutual trace with manifest"
+    },
+    "manifest_id": {
+      "type": "string",
+      "description": "RC Manifest id — mutual trace"
+    },
+    "status": {
+      "type": "string",
+      "enum": ["pending_review", "approved", "rejected", "deployed", "rolled_back"]
+    },
+    "canary_status": {
+      "type": "string",
+      "enum": ["pass", "pass_with_warning"],
+      "description": "RC 出力時は pass または pass_with_warning（I-4）。FAIL は RC 禁止。"
+    },
+    "canary_verdict": {
+      "type": "string",
+      "enum": ["PASS", "PASS_WITH_WARNING"],
+      "description": "Canary Result verdict（I-4 根拠）"
+    },
+    "links": {
+      "type": "object",
+      "required": ["proposal", "canary_config", "canary_report", "canary_criteria", "canary_result", "manifest"],
+      "properties": {
+        "proposal": { "type": "string" },
+        "canary_config": { "type": "string" },
+        "canary_report": { "type": "string" },
+        "canary_result": { "type": "string" },
+        "canary_criteria": { "type": "string" },
+        "manifest": { "type": "string" },
+        "human_review": { "type": "string" },
+        "analysis": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "risk_summary": { "type": "string" },
+    "deploy_notes": { "type": "string" },
+    "created_at": { "type": "string" },
+    "reviewed_at": { "type": ["string", "null"] },
+    "reviewed_by": { "type": ["string", "null"] }
+  }
+}

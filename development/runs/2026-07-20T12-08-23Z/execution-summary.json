@@ -1,0 +1,40 @@
+{
+  "schema_version": "expect-ai-core-execution/1.0",
+  "phase": "AI-Core Operational Cycle",
+  "run_id": "2026-07-20T12-08-23Z",
+  "generated_at": "2026-07-20T12:08:23.605Z",
+  "verdict": "Improvement Pipeline — Pending Human Review",
+  "evidence_count": 1,
+  "evidence_by_type": {
+    "miss": 1,
+    "feature_missing": 0,
+    "prediction_failed": 0,
+    "result_sync_failed": 0
+  },
+  "proposal_count": 1,
+  "proposal_ids": [
+    "IMP-20260719-miss-001"
+  ],
+  "canary": [
+    {
+      "proposal_id": "IMP-20260719-miss-001",
+      "status": "pending_human_review",
+      "pass": false
+    }
+  ],
+  "release_candidate_count": 0,
+  "release_candidate_new": [],
+  "steps_executed": [
+    "evidence_scan",
+    "evidence_index",
+    "analyzer",
+    "proposal_create",
+    "canary",
+    "release_candidate"
+  ],
+  "notes": [
+    "Human Review: development/reviews/{proposal_id}.json status=approved required before Canary evaluates.",
+    "Prediction Core unchanged by this cycle.",
+    "No RC emitted — approve proposals and re-run, or fix Canary failures."
+  ]
+}

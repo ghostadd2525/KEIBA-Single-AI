@@ -22,6 +22,15 @@ dist/
 # β監査ログ（JSONL）。ディレクトリ自体は残す
 logs/audit/*.jsonl
 
+# OPS-Monitor 実行時ログ（EC2 / ローカル）
+var/ops/
+var/ops-dev/
+
+# Production Miss Evidence 作業領域（Git 同期先は evidence/miss/）
+services/win5-ai/var/miss-evidence/*/
+!services/win5-ai/var/miss-evidence/.gitignore
+services/win5-ai/var/improvement-evidence/
+
 # Python
 __pycache__/
 *.py[cod]

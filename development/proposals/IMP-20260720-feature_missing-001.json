@@ -1,0 +1,29 @@
+{
+  "schema_version": "expect-improvement-proposal/1.0",
+  "proposal_id": "IMP-20260720-feature_missing-001",
+  "status": "ready_for_canary",
+  "event_types": ["feature_missing"],
+  "fingerprints": ["F-ETL-LATE", "F-MARKET", "F-META-NONE"],
+  "evidence_refs": [],
+  "purpose": "Reduce feature_missing via data-supply and metadata design; keep Core out of scope.",
+  "target": "ETL/feature completion gates and fallback_reason/feature_source normalization — not Prediction Core.",
+  "expected_effect": "Fewer feature_missing events vs baseline; mock_fallback feature-driven rate non-increasing.",
+  "side_effects": [
+    "Stricter gates may delay public open",
+    "Label normalization may break historical comparisons",
+    "Short-term monitor alert noise"
+  ],
+  "evaluation_method": "Offline/canary on feature_missing signals; criteria IMP-20260720-feature_missing-001; Core metrics reference-only.",
+  "non_goals": [
+    "Prediction Core ranking changes",
+    "Silent mock success as permanent fix",
+    "Disabling OPS-Monitor or Result Automation"
+  ],
+  "analysis_refs": [
+    "development/analysis/feature_missing/2026-07-20-root-cause.md"
+  ],
+  "code_artifacts": [],
+  "created_at": "2026-07-20T11:35:00.000Z",
+  "updated_at": null,
+  "author": "ai-core-improvement"
+}

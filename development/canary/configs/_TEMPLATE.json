@@ -1,0 +1,21 @@
+{
+  "schema_version": "expect-canary-config/1.0",
+  "proposal_id": "IMP-YYYYMMDD-type-001",
+  "baseline": {
+    "description": "Compare against pre-change offline metrics on listed evidence dates",
+    "evidence_dates": ["YYYY-MM-DD"],
+    "metrics_snapshot": {}
+  },
+  "scope": {
+    "event_types": ["miss"],
+    "race_dates": ["YYYY-MM-DD"],
+    "notes": "Development / offline only. Do not mutate Production Prediction Core."
+  },
+  "forbidden": [
+    "production_core_mutation",
+    "live_db_write",
+    "disable_ops_monitor",
+    "skip_human_review"
+  ],
+  "created_at": null
+}

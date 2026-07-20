@@ -1,0 +1,25 @@
+{
+  "schema_version": "expect-canary-config/1.0",
+  "proposal_id": "IMP-20260720-feature_missing-001",
+  "baseline": {
+    "description": "Proxy: GameDay feature_missing scenario (feature_source=missing, fallback_reason=feature_missing). Replace with synced evidence dates.",
+    "evidence_dates": [],
+    "metrics_snapshot": {
+      "corpus": "empty",
+      "proxy": "gameday_feature_missing"
+    }
+  },
+  "scope": {
+    "event_types": ["feature_missing"],
+    "race_dates": [],
+    "notes": "Data-supply and metadata design canary. Prediction Core is out of scope for this proposal."
+  },
+  "forbidden": [
+    "production_core_mutation",
+    "live_db_write",
+    "disable_ops_monitor",
+    "silent_mock_success_as_fix",
+    "skip_human_review"
+  ],
+  "created_at": "2026-07-20T11:35:00.000Z"
+}

@@ -1,0 +1,25 @@
+{
+  "schema_version": "expect-canary-config/1.0",
+  "proposal_id": "IMP-20260720-miss-001",
+  "baseline": {
+    "description": "Until Production evidence is synced, use GameDay miss_top1 fixture semantics (winner at model_rank=2). Replace with evidence/improvement/miss dates when available.",
+    "evidence_dates": [],
+    "metrics_snapshot": {
+      "corpus": "empty",
+      "proxy": "gameday_miss_top1"
+    }
+  },
+  "scope": {
+    "event_types": ["miss"],
+    "race_dates": [],
+    "notes": "Exclude races with co-occurring feature_missing. Development/offline only. No Production Core mutation during canary."
+  },
+  "forbidden": [
+    "production_core_mutation",
+    "live_db_write",
+    "disable_ops_monitor",
+    "skip_human_review",
+    "include_feature_missing_races"
+  ],
+  "created_at": "2026-07-20T11:35:00.000Z"
+}

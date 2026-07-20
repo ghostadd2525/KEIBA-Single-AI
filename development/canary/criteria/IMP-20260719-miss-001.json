@@ -1,0 +1,49 @@
+{
+  "schema_version": "expect-canary-criteria/1.0",
+  "proposal_id": "IMP-20260719-miss-001",
+  "success": {
+    "description": "Offline structural canary on evidence baseline (Development only)",
+    "gates": [
+      {
+        "id": "corpus_documented",
+        "rule": "Baseline events captured from evidence",
+        "severity": "critical"
+      },
+      {
+        "id": "no_core_change_in_canary",
+        "rule": "No Core mutation during canary phase",
+        "severity": "critical"
+      },
+      {
+        "id": "proposal_evidence_linked",
+        "rule": "Proposal evidence_refs align with evaluated corpus",
+        "severity": "critical"
+      },
+      {
+        "id": "analysis_refs_present",
+        "rule": "Proposal cites Analyzer output via analysis_refs",
+        "severity": "warning"
+      },
+      {
+        "id": "miss_categories_enumerated",
+        "rule": "Miss categories present in evidence payload",
+        "severity": "critical"
+      }
+    ]
+  },
+  "rollback": {
+    "description": "Critical gate failure → FAIL; warning-only → PASS_WITH_WARNING",
+    "triggers": [
+      {
+        "id": "critical_gate_fail",
+        "rule": "Any critical gate false",
+        "action": "fail_canary"
+      },
+      {
+        "id": "warning_gate_fail",
+        "rule": "Warning gate false with critical pass",
+        "action": "pass_with_warning"
+      }
+    ]
+  }
+}

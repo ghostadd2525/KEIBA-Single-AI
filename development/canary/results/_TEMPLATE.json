@@ -1,0 +1,36 @@
+{
+  "schema_version": "expect-canary-result/1.0",
+  "result_id": "CAN-IMP-YYYYMMDD-type-001-RUN_ID",
+  "proposal_id": "IMP-YYYYMMDD-type-001",
+  "run_id": "RUN_ID",
+  "verdict": "PASS",
+  "evaluation_status": "completed",
+  "gates": {
+    "corpus_documented": { "pass": true, "severity": "critical", "message": "events=1" },
+    "no_core_change_in_canary": { "pass": true, "severity": "critical", "message": "offline evaluation — Core unchanged" },
+    "proposal_evidence_linked": { "pass": true, "severity": "critical", "message": "linked_refs=1/1" },
+    "analysis_refs_present": { "pass": true, "severity": "warning", "message": "analysis_refs=1" }
+  },
+  "warnings": [],
+  "metrics": { "baseline_event_count": 1, "linked_evidence_refs": 1 },
+  "rollback_triggered": false,
+  "refs": {
+    "proposal_path": "development/proposals/IMP-YYYYMMDD-type-001.json",
+    "config_path": "development/canary/configs/IMP-YYYYMMDD-type-001.json",
+    "criteria_path": "development/canary/criteria/IMP-YYYYMMDD-type-001.json",
+    "canary_result_path": "development/canary/results/IMP-YYYYMMDD-type-001/latest.json",
+    "evidence_sample": ["evidence/improvement/miss/YYYY-MM-DD/race.json"]
+  },
+  "lifecycle_applied": {
+    "from_status": "APPROVED",
+    "to_status": "CANARY_PASS",
+    "transitions": [],
+    "basis": "canary_result"
+  },
+  "evaluated_at": "2026-07-20T12:00:00.000Z",
+  "notes": ["Offline canary PASS on evidence baseline."],
+  "metadata": {
+    "event_types": ["miss"],
+    "confidence_policy": "canary_verdict_from_gates_not_analyzer_confidence"
+  }
+}

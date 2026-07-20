@@ -1,0 +1,29 @@
+{
+  "schema_version": "expect-release-candidate/1.0",
+  "proposal_id": "IMP-YYYYMMDD-type-001",
+  "result_id": "CAN-IMP-YYYYMMDD-type-001-RUN_ID",
+  "manifest_id": "RCM-IMP-YYYYMMDD-type-001-RUN_ID",
+  "status": "pending_review",
+  "canary_status": "pass",
+  "canary_verdict": "PASS",
+  "links": {
+    "proposal": "development/proposals/IMP-YYYYMMDD-type-001.json",
+    "canary_config": "development/canary/configs/IMP-YYYYMMDD-type-001.json",
+    "canary_report": "development/canary/reports/IMP-YYYYMMDD-type-001.json",
+    "canary_result": "development/canary/results/IMP-YYYYMMDD-type-001/latest.json",
+    "canary_criteria": "development/canary/criteria/IMP-YYYYMMDD-type-001.json",
+    "manifest": "development/release-candidates/IMP-YYYYMMDD-type-001/manifest.json",
+    "human_review": "development/reviews/IMP-YYYYMMDD-type-001.json",
+    "analysis": []
+  },
+  "gate_summary": {
+    "rc_eligible": true,
+    "structural_gates": [],
+    "kpi_regression_enabled": false
+  },
+  "risk_summary": "Summarize residual risk after canary pass.",
+  "deploy_notes": "Human-approved deploy only. Do not hot-patch Production Prediction Core.",
+  "created_at": null,
+  "reviewed_at": null,
+  "reviewed_by": null
+}

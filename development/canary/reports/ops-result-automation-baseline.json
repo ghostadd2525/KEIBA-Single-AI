@@ -1,0 +1,13 @@
+{
+  "schema_version": "expect-canary-report/1.0",
+  "proposal_id": "ops-result-automation-baseline",
+  "status": "pass",
+  "gates": {
+    "state_machine_transitions": true,
+    "evidence_registry_complete": true,
+    "prediction_core_untouched": true,
+    "dual_write_miss_and_improvement": true,
+    "manifest_run_summary_index": true
+  },
+  "notes": "Structural canary for OPS-ResultAutomation. Re-run: python -m unittest tests.ops.test_result_automation.ResultAutomationCanaryTest"
+}

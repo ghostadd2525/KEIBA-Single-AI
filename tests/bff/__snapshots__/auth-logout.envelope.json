@@ -1,0 +1,16 @@
+{
+  "ok": true,
+  "meta": {
+    "generated_at": "2026-07-20T00:00:00.000Z",
+    "source": "stub-auth",
+    "cache": "bypass",
+    "service": "AuthService",
+    "contract": "AuthLogoutResponse",
+    "contract_validated": true,
+    "contract_ok": true
+  },
+  "data": {
+    "schema_version": "expect-auth/1.0",
+    "logged_out": true
+  }
+}

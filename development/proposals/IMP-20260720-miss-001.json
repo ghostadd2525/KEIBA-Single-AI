@@ -1,0 +1,29 @@
+{
+  "schema_version": "expect-improvement-proposal/1.0",
+  "proposal_id": "IMP-20260720-miss-001",
+  "status": "ready_for_canary",
+  "event_types": ["miss"],
+  "fingerprints": ["M-T1-NEAR", "M-CONF-HIGH"],
+  "evidence_refs": [],
+  "purpose": "Reduce miss_top1 rate via ranking calibration design; Core change only after canary pass.",
+  "target": "Top1 selection design for near-miss cluster; exclude feature_missing co-occurring races.",
+  "expected_effect": "hit_at_1 non-decreasing; miss_top1 non-increasing vs baseline on offline canary set.",
+  "side_effects": [
+    "Explain/confidence tone may appear more conservative",
+    "miss_top3 distribution may shift",
+    "Applying under feature_missing may hide data issues — gated out"
+  ],
+  "evaluation_method": "Offline canary on miss evidence (or GameDay fixture until sync); gates in canary/criteria/IMP-20260720-miss-001.json",
+  "non_goals": [
+    "Immediate Production Core mutation",
+    "Apply on feature_missing co-occurring races",
+    "Code generation in this proposal"
+  ],
+  "analysis_refs": [
+    "development/analysis/miss/2026-07-20-trend-baseline.md"
+  ],
+  "code_artifacts": [],
+  "created_at": "2026-07-20T11:35:00.000Z",
+  "updated_at": null,
+  "author": "ai-core-improvement"
+}

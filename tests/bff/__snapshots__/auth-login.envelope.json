@@ -1,0 +1,40 @@
+{
+  "ok": true,
+  "meta": {
+    "generated_at": "2026-07-20T00:00:00.000Z",
+    "source": "stub-auth",
+    "cache": "bypass",
+    "service": "AuthService",
+    "contract": "AuthLoginResponse",
+    "contract_validated": true,
+    "contract_ok": true
+  },
+  "data": {
+    "schema_version": "expect-auth/1.0",
+    "access_token": "stub.eyJzdWIiOiJmaXh0dXJlLXVzZXIiLCJleHAiOjk5OTk5OTk5OTl9.9999999999",
+    "token_type": "bearer",
+    "expires_in": 86400,
+    "user": {
+      "id": "fixture-user",
+      "display_name": "fixture-user"
+    },
+    "favorites": {
+      "schema_version": "expect-favorites/1.0",
+      "race_ids": [
+        "20260719_hanshin_11"
+      ],
+      "items": [
+        {
+          "race_id": "20260719_hanshin_11",
+          "place": "阪神 11R",
+          "name": "メインレース",
+          "badge": "GIII",
+          "post_time": "15:40",
+          "date_label": "7/19（土）",
+          "added_at": 1721376000000
+        }
+      ],
+      "synced_at": "2026-07-20T00:00:00.000Z"
+    }
+  }
+}

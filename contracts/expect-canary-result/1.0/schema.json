@@ -1,0 +1,104 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://expect.keiba/contracts/expect-canary-result/1.0/schema.json",
+  "title": "CanaryResult",
+  "description": "Independent Canary evaluation outcome (Development). Basis for Proposal Lifecycle transitions — does not replace Proposal content.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "result_id",
+    "proposal_id",
+    "run_id",
+    "verdict",
+    "gates",
+    "refs",
+    "evaluated_at"
+  ],
+  "additionalProperties": true,
+  "properties": {
+    "schema_version": { "const": "expect-canary-result/1.0" },
+    "result_id": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Unique result id e.g. CAN-IMP-20260719-miss-001-20260720T120000Z"
+    },
+    "proposal_id": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Mutual trace key back to Proposal"
+    },
+    "run_id": { "type": "string", "minLength": 1 },
+    "verdict": {
+      "type": ["string", "null"],
+      "enum": ["PASS", "PASS_WITH_WARNING", "FAIL", null],
+      "description": "PASS | PASS_WITH_WARNING | FAIL; null when evaluation skipped"
+    },
+    "evaluation_status": {
+      "type": "string",
+      "enum": ["completed", "pending_human_review", "skipped", "error"],
+      "description": "Whether evaluation ran to completion"
+    },
+    "gates": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["pass"],
+        "properties": {
+          "pass": { "type": "boolean" },
+          "severity": { "type": "string", "enum": ["critical", "warning"] },
+          "message": { "type": "string" }
+        }
+      }
+    },
+    "warnings": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "metrics": { "type": "object" },
+    "rollback_triggered": { "type": "boolean" },
+    "refs": {
+      "type": "object",
+      "required": ["proposal_path"],
+      "properties": {
+        "proposal_path": { "type": "string" },
+        "config_path": { "type": "string" },
+        "criteria_path": { "type": "string" },
+        "report_path": { "type": "string" },
+        "evidence_sample": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "lifecycle_applied": {
+      "type": ["object", "null"],
+      "description": "Lifecycle transition driven by this result (Proposal status/lifecycle only)",
+      "properties": {
+        "from_status": { "type": "string" },
+        "to_status": { "type": "string" },
+        "transitions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "from": { "type": "string" },
+              "to": { "type": "string" },
+              "at": { "type": "string" },
+              "note": { "type": "string" }
+            }
+          }
+        },
+        "basis": { "const": "canary_result" }
+      }
+    },
+    "evaluated_at": { "type": ["string", "null"] },
+    "notes": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "metadata": {
+      "type": "object",
+      "additionalProperties": true
+    }
+  }
+}

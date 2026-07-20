@@ -1,0 +1,96 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://expect.keiba/contracts/expect-rc-manifest/1.0/schema.json",
+  "title": "RcManifest",
+  "description": "Release Candidate gate outcome and cross-reference manifest (Development). Basis for RC package — Canary Result is authoritative for canary verdict.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "manifest_id",
+    "proposal_id",
+    "result_id",
+    "run_id",
+    "rc_eligible",
+    "gates",
+    "refs",
+    "created_at"
+  ],
+  "additionalProperties": true,
+  "properties": {
+    "schema_version": { "const": "expect-rc-manifest/1.0" },
+    "manifest_id": {
+      "type": "string",
+      "minLength": 1,
+      "description": "RCM-{proposal_id}-{run_id}"
+    },
+    "proposal_id": { "type": "string", "minLength": 1 },
+    "result_id": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Canary Result result_id — mutual trace key"
+    },
+    "run_id": { "type": "string", "minLength": 1 },
+    "rc_eligible": {
+      "type": "boolean",
+      "description": "All enabled structural critical gates passed"
+    },
+    "canary_verdict": {
+      "type": ["string", "null"],
+      "enum": ["PASS", "PASS_WITH_WARNING", "FAIL", null],
+      "description": "Copied from Canary Result only — not inferred from Proposal"
+    },
+    "gates": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["pass", "phase", "severity"],
+        "properties": {
+          "pass": { "type": "boolean" },
+          "phase": {
+            "type": "string",
+            "enum": ["structural", "kpi_regression"]
+          },
+          "severity": { "type": "string", "enum": ["critical", "warning"] },
+          "enabled": { "type": "boolean" },
+          "skipped": { "type": "boolean" },
+          "message": { "type": "string" }
+        }
+      }
+    },
+    "gate_policy": {
+      "type": "object",
+      "properties": {
+        "structural_required": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "kpi_regression_enabled": { "type": "boolean" },
+        "kpi_gates": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "refs": {
+      "type": "object",
+      "required": ["proposal_path", "canary_result_path"],
+      "properties": {
+        "proposal_path": { "type": "string" },
+        "canary_result_path": { "type": "string" },
+        "human_review_path": { "type": "string" },
+        "candidate_path": { "type": "string" },
+        "manifest_path": { "type": "string" },
+        "links_path": { "type": "string" }
+      }
+    },
+    "rejection_reasons": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "created_at": { "type": "string" },
+    "metadata": {
+      "type": "object",
+      "additionalProperties": true
+    }
+  }
+}

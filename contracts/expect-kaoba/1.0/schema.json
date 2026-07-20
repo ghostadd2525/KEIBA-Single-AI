@@ -1,0 +1,77 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://expect.keiba/contracts/expect-kaoba/1.0/schema.json",
+  "title": "KaobaService",
+  "description": "KAOBA AI Concierge。PredictionBundle / Analysis を race_id で参照。LLM 差し替え可能。",
+  "$defs": {
+    "ChatHistoryItem": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["role", "content"],
+      "properties": {
+        "role": {
+          "type": "string",
+          "enum": ["user", "assistant", "system"]
+        },
+        "content": { "type": "string" }
+      }
+    },
+    "KaobaChatRequest": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["message"],
+      "properties": {
+        "message": { "type": "string", "minLength": 1 },
+        "history": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/ChatHistoryItem" }
+        },
+        "race_id": {
+          "type": ["string", "null"],
+          "description": "PredictionBundle.race_id。指定時のみ PB / Analysis を内部参照"
+        },
+        "context": {
+          "type": "object",
+          "additionalProperties": true,
+          "description": "UI 文脈（strategy 等）。LLM プロンプト拡張用"
+        }
+      }
+    },
+    "KaobaChatResponse": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": [
+        "schema_version",
+        "reply",
+        "suggestions",
+        "emotion",
+        "referenced_race_id"
+      ],
+      "properties": {
+        "schema_version": { "const": "expect-kaoba/1.0" },
+        "reply": { "type": "string", "minLength": 1 },
+        "suggestions": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "emotion": {
+          "type": "string",
+          "description": "joy | fun | anger | sorrow | tantrum | neutral 等"
+        },
+        "referenced_race_id": {
+          "type": ["string", "null"],
+          "description": "実際に参照した PredictionBundle.race_id。未指定時は null"
+        },
+        "live2d": {
+          "type": "object",
+          "additionalProperties": true,
+          "description": "任意。将来 Live2D 連携用"
+        },
+        "provider": {
+          "type": "string",
+          "description": "応答生成元: rule | llm | mock 等（観測用）"
+        }
+      }
+    }
+  }
+}

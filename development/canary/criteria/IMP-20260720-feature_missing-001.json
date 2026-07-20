@@ -1,0 +1,47 @@
+{
+  "schema_version": "expect-canary-criteria/1.0",
+  "proposal_id": "IMP-20260720-feature_missing-001",
+  "success": {
+    "description": "Feature supply design reduces feature_missing without hiding failures via silent mock.",
+    "gates": [
+      {
+        "id": "feature_missing_non_increasing",
+        "rule": "feature_missing event count <= baseline on comparable dates",
+        "metric": "feature_missing_count",
+        "threshold": "<= baseline"
+      },
+      {
+        "id": "mock_fallback_feature_rate_non_increasing",
+        "rule": "Share of mock_fallback attributed to feature reasons <= baseline",
+        "metric": "mock_feature_rate",
+        "threshold": "<= baseline"
+      },
+      {
+        "id": "no_silent_mock_policy",
+        "rule": "Design must not introduce silent mock-as-success",
+        "metric": null,
+        "threshold": "policy_check"
+      }
+    ]
+  },
+  "rollback": {
+    "description": "Abort if coverage or monitor health worsens, or if Core was mutated under this proposal.",
+    "triggers": [
+      {
+        "id": "coverage_drop",
+        "rule": "prediction coverage drops vs baseline",
+        "action": "abort_canary_and_revise_proposal"
+      },
+      {
+        "id": "monitor_etl_red",
+        "rule": "ETL probe unhealthy in evaluation window",
+        "action": "abort_canary"
+      },
+      {
+        "id": "core_touched",
+        "rule": "Prediction Core changed as part of this proposal",
+        "action": "abort_and_revert"
+      }
+    ]
+  }
+}

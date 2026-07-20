@@ -1,0 +1,101 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://expect.keiba/contracts/expect-evidence-index/1.0/schema.json",
+  "title": "EvidenceIndex",
+  "description": "Development Evidence Index — aggregates evidence/improvement only. Production does not write here.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "generated_at",
+    "source_root",
+    "corpus_status",
+    "counts_by_event_type",
+    "event_total",
+    "events",
+    "clusters"
+  ],
+  "additionalProperties": true,
+  "properties": {
+    "schema_version": { "const": "expect-evidence-index/1.0" },
+    "generated_at": { "type": "string" },
+    "source_root": { "type": "string", "const": "evidence/improvement" },
+    "filter_date": { "type": ["string", "null"] },
+    "corpus_status": {
+      "type": "string",
+      "enum": ["empty", "populated"]
+    },
+    "counts_by_event_type": {
+      "type": "object",
+      "additionalProperties": { "type": "integer", "minimum": 0 }
+    },
+    "counts_by_model_version": {
+      "type": "object",
+      "additionalProperties": { "type": "integer", "minimum": 0 },
+      "description": "Optional dimension — enables by-model-version slices"
+    },
+    "dimensions": {
+      "type": "object",
+      "description": "Declared index dimensions (extensible)",
+      "properties": {
+        "by_date": { "type": "boolean" },
+        "by_event_type": { "type": "boolean" },
+        "by_model_version": { "type": "boolean" },
+        "clusters": { "type": "boolean" }
+      }
+    },
+    "event_total": { "type": "integer", "minimum": 0 },
+    "dates": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "events": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["event_id", "event_type", "race_date", "path"],
+        "additionalProperties": true,
+        "properties": {
+          "event_id": { "type": "string" },
+          "event_type": { "type": "string" },
+          "race_date": { "type": "string" },
+          "race_id": { "type": ["string", "null"] },
+          "fingerprint": {
+            "type": ["string", "null"],
+            "description": "Preserved for Proposal evidence_refs traceability"
+          },
+          "model_version": {
+            "type": ["string", "null"],
+            "description": "Optional — powers by-model-version dimension"
+          },
+          "path": {
+            "type": "string",
+            "description": "Repo-relative path under evidence/improvement — Proposal evidence_refs use this"
+          }
+        }
+      }
+    },
+    "clusters": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["cluster_id", "event_type", "count", "event_ids"],
+        "properties": {
+          "cluster_id": { "type": "string" },
+          "fingerprint": { "type": ["string", "null"] },
+          "event_type": { "type": "string" },
+          "count": { "type": "integer", "minimum": 1 },
+          "event_ids": {
+            "type": "array",
+            "items": { "type": "string" },
+            "minItems": 1
+          },
+          "sample_path": { "type": "string" },
+          "race_dates": {
+            "type": "array",
+            "items": { "type": "string" }
+          }
+        }
+      }
+    }
+  }
+}

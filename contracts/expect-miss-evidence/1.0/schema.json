@@ -1,0 +1,108 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://expect.keiba/contracts/expect-miss-evidence/1.0/schema.json",
+  "title": "MissEvidence",
+  "description": "Production Miss Evidence — improvement analysis input only. No full CSV.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "race_id",
+    "timestamp",
+    "winner",
+    "prediction_bundle",
+    "candidate_pool",
+    "miss_category",
+    "explain",
+    "version"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "expect-miss-evidence/1.0"
+    },
+    "race_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "winner": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["horse_number"],
+      "properties": {
+        "horse_number": {
+          "type": ["integer", "null"]
+        },
+        "horse_name": {
+          "type": ["string", "null"]
+        }
+      }
+    },
+    "prediction_bundle": {
+      "type": "object",
+      "description": "Truncated PredictionBundle summary (top runners only)",
+      "properties": {
+        "race_id": { "type": ["string", "null"] },
+        "race_info": { "type": ["object", "null"] },
+        "evaluation": { "type": ["object", "null"] },
+        "ai_confidence": { "type": ["object", "null"] }
+      }
+    },
+    "candidate_pool": {
+      "type": "array",
+      "maxItems": 8,
+      "items": { "type": "object" }
+    },
+    "repick": {
+      "description": "Betting recommendation summary"
+    },
+    "delete": {
+      "description": "Reserved for excluded candidates",
+      "type": ["object", "array", "null"]
+    },
+    "confidence": {
+      "type": ["number", "null"],
+      "minimum": 0,
+      "maximum": 100
+    },
+    "engine_source": {
+      "type": ["string", "null"]
+    },
+    "feature_source": {
+      "type": ["string", "null"]
+    },
+    "fallback_reason": {
+      "type": ["string", "null"]
+    },
+    "miss_category": {
+      "type": "string",
+      "enum": ["miss_top1", "miss_top3", "miss_top5"]
+    },
+    "explain": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "narrative": { "type": ["string", "null"] },
+        "reasons": {
+          "type": "array",
+          "maxItems": 5,
+          "items": {}
+        }
+      }
+    },
+    "model_version": {
+      "type": ["string", "null"]
+    },
+    "version": {
+      "type": "object",
+      "properties": {
+        "model_version": { "type": ["string", "null"] },
+        "core_version": { "type": ["string", "null"] },
+        "schema_version": { "type": ["string", "null"] }
+      }
+    }
+  }
+}

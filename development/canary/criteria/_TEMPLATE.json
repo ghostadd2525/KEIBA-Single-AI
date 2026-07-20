@@ -1,0 +1,47 @@
+{
+  "schema_version": "expect-canary-criteria/1.0",
+  "proposal_id": "IMP-YYYYMMDD-type-001",
+  "success": {
+    "description": "All gates must be true; no rollback trigger fired.",
+    "gates": [
+      {
+        "id": "no_hit_at_1_regression",
+        "rule": "hit_at_1 rate must not decrease vs baseline",
+        "metric": "hit_at_1_rate",
+        "threshold": ">= baseline"
+      },
+      {
+        "id": "no_coverage_regression",
+        "rule": "prediction coverage must not decrease vs baseline",
+        "metric": "coverage",
+        "threshold": ">= baseline"
+      },
+      {
+        "id": "ops_monitor_green",
+        "rule": "referenced monitor checks remain healthy in staging/offline simulation",
+        "metric": null,
+        "threshold": null
+      }
+    ]
+  },
+  "rollback": {
+    "description": "Any trigger → Canary fail and do not emit Release Candidate.",
+    "triggers": [
+      {
+        "id": "severe_hit_drop",
+        "rule": "hit_at_1 drops more than agreed delta",
+        "action": "abort_canary_and_revise_proposal"
+      },
+      {
+        "id": "new_feature_missing_spike",
+        "rule": "feature_missing events increase vs baseline on same dates",
+        "action": "abort_canary_and_revise_proposal"
+      },
+      {
+        "id": "monitor_red",
+        "rule": "critical dependency unhealthy in evaluation environment",
+        "action": "abort_canary"
+      }
+    ]
+  }
+}

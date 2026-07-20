@@ -1,0 +1,8 @@
+{
+  "proposal": "../proposals/IMP-YYYYMMDD-type-001.md",
+  "proposal_json": "../proposals/IMP-YYYYMMDD-type-001.json",
+  "canary_config": "../canary/configs/IMP-YYYYMMDD-type-001.json",
+  "canary_report": "../canary/reports/IMP-YYYYMMDD-type-001.json",
+  "canary_criteria": "../canary/criteria/IMP-YYYYMMDD-type-001.json",
+  "analysis": []
+}

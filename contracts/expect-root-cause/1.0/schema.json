@@ -1,0 +1,60 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://expect.keiba/contracts/expect-root-cause/1.0/schema.json",
+  "title": "RootCauseAnalysis",
+  "description": "Analyzer output contract (Development). Each analyzer returns root_cause, confidence, reason.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "event_type",
+    "analysis_id",
+    "event_count",
+    "root_cause",
+    "confidence",
+    "reason"
+  ],
+  "additionalProperties": true,
+  "properties": {
+    "schema_version": { "const": "expect-root-cause/1.0" },
+    "event_type": { "type": "string" },
+    "analysis_id": { "type": "string" },
+    "event_count": { "type": "integer", "minimum": 0 },
+    "root_cause": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Primary root-cause code or short label"
+    },
+    "confidence": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1,
+      "description": "Analyzer confidence in root_cause (0–1)"
+    },
+    "reason": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Human-readable explanation of root_cause"
+    },
+    "status": {
+      "type": "string",
+      "enum": ["ok", "unsupported", "empty"]
+    },
+    "findings": { "type": "object" },
+    "evidence_refs": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["event_id", "event_type", "path"],
+        "properties": {
+          "event_id": { "type": "string" },
+          "event_type": { "type": "string" },
+          "path": { "type": "string" },
+          "fingerprint": { "type": ["string", "null"] },
+          "race_date": { "type": ["string", "null"] },
+          "race_id": { "type": ["string", "null"] }
+        }
+      }
+    },
+    "recommendation": { "type": "string" }
+  }
+}

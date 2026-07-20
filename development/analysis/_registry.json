@@ -1,0 +1,40 @@
+{
+  "schema_version": "expect-analyzer-registry/1.0",
+  "description": "Root Cause Analyzer registration. Only the four Production event_types are implemented in I-2.",
+  "analyzers": [
+    {
+      "event_type": "miss",
+      "analyzer_id": "miss_root_cause",
+      "module": "scripts/ops/improvement/lib/analyzers.mjs#analyzeMiss",
+      "output_dir": "development/analysis/miss",
+      "status": "implemented",
+      "returns": ["root_cause", "confidence", "reason"]
+    },
+    {
+      "event_type": "feature_missing",
+      "analyzer_id": "feature_missing_root_cause",
+      "module": "scripts/ops/improvement/lib/analyzers.mjs#analyzeFeatureMissing",
+      "output_dir": "development/analysis/feature_missing",
+      "status": "implemented",
+      "returns": ["root_cause", "confidence", "reason"]
+    },
+    {
+      "event_type": "prediction_failed",
+      "analyzer_id": "prediction_failed_root_cause",
+      "module": "scripts/ops/improvement/lib/analyzers.mjs#analyzePredictionFailed",
+      "output_dir": "development/analysis/prediction_failed",
+      "status": "implemented",
+      "returns": ["root_cause", "confidence", "reason"]
+    },
+    {
+      "event_type": "result_sync_failed",
+      "analyzer_id": "result_sync_failed_root_cause",
+      "module": "scripts/ops/improvement/lib/analyzers.mjs#analyzeResultSyncFailed",
+      "output_dir": "development/analysis/result_sync_failed",
+      "status": "implemented",
+      "returns": ["root_cause", "confidence", "reason"]
+    }
+  ],
+  "contract": "contracts/expect-root-cause/1.0/schema.json",
+  "unknown_event_type_policy": "index_only_skip_analysis"
+}

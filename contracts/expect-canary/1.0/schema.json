@@ -1,0 +1,146 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://expect.keiba/contracts/expect-canary/1.0/schema.json",
+  "title": "CanaryArtifacts",
+  "description": "Canary Config / Report / Criteria（Development only）",
+  "$defs": {
+    "CanaryConfig": {
+      "type": "object",
+      "required": [
+        "schema_version",
+        "proposal_id",
+        "baseline",
+        "scope",
+        "forbidden"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": { "const": "expect-canary-config/1.0" },
+        "proposal_id": { "type": "string" },
+        "baseline": {
+          "type": "object",
+          "required": ["description"],
+          "properties": {
+            "description": { "type": "string" },
+            "evidence_dates": {
+              "type": "array",
+              "items": { "type": "string" }
+            },
+            "metrics_snapshot": { "type": "object" }
+          }
+        },
+        "scope": {
+          "type": "object",
+          "required": ["event_types"],
+          "properties": {
+            "event_types": {
+              "type": "array",
+              "items": { "type": "string" }
+            },
+            "race_dates": {
+              "type": "array",
+              "items": { "type": "string" }
+            },
+            "notes": { "type": "string" }
+          }
+        },
+        "forbidden": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "例: production_core_mutation, live_db_write"
+        },
+        "created_at": { "type": ["string", "null"] }
+      }
+    },
+    "CanaryReport": {
+      "type": "object",
+      "required": [
+        "schema_version",
+        "proposal_id",
+        "status",
+        "gates",
+        "metrics_delta"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": { "const": "expect-canary-report/1.0" },
+        "proposal_id": { "type": "string" },
+        "status": {
+          "type": "string",
+          "enum": ["pending", "pass", "pass_with_warning", "fail", "aborted"]
+        },
+        "metrics_delta": { "type": "object" },
+        "side_effects": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "gates": {
+          "type": "object",
+          "additionalProperties": { "type": "boolean" }
+        },
+        "evidence_sample": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "rollback_triggered": { "type": "boolean" },
+        "evaluated_at": { "type": ["string", "null"] },
+        "notes": { "type": "string" }
+      }
+    },
+    "CanaryCriteria": {
+      "type": "object",
+      "required": [
+        "schema_version",
+        "proposal_id",
+        "success",
+        "rollback"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": { "const": "expect-canary-criteria/1.0" },
+        "proposal_id": { "type": "string" },
+        "success": {
+          "type": "object",
+          "required": ["description", "gates"],
+          "properties": {
+            "description": { "type": "string" },
+            "gates": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "type": "object",
+                "required": ["id", "rule"],
+                "properties": {
+                  "id": { "type": "string" },
+                  "rule": { "type": "string" },
+                  "metric": { "type": ["string", "null"] },
+                  "threshold": { "type": ["number", "string", "null"] }
+                }
+              }
+            }
+          }
+        },
+        "rollback": {
+          "type": "object",
+          "required": ["description", "triggers"],
+          "properties": {
+            "description": { "type": "string" },
+            "triggers": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "type": "object",
+                "required": ["id", "rule"],
+                "properties": {
+                  "id": { "type": "string" },
+                  "rule": { "type": "string" },
+                  "action": { "type": "string" }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

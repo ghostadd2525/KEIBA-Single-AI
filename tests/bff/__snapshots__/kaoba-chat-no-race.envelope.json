@@ -1,0 +1,27 @@
+{
+  "ok": true,
+  "meta": {
+    "generated_at": "2026-07-20T00:00:00.000Z",
+    "source": "mock",
+    "cache": "bypass",
+    "service": "KaobaService",
+    "contract": "KaobaChatResponse",
+    "race_id": null,
+    "contract_ref": null,
+    "provider": "rule",
+    "contract_validated": true,
+    "contract_ok": true
+  },
+  "data": {
+    "schema_version": "expect-kaoba/1.0",
+    "reply": "いい質問！レースを指定してもらえると、予想データに沿ってもっと具体的に答えられるよ。",
+    "suggestions": [
+      "展開予想を教えて",
+      "血統について教えて",
+      "買い目を提案して"
+    ],
+    "emotion": "joy",
+    "referenced_race_id": null,
+    "provider": "rule"
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "schema_version": "expect-canary-report/1.0",
+  "proposal_id": "IMP-20260720-miss-001",
+  "status": "pending",
+  "metrics_delta": {},
+  "side_effects": [],
+  "gates": {
+    "no_hit_at_1_regression": false,
+    "no_miss_top1_increase": false,
+    "no_feature_cooccurrence_worsening": false
+  },
+  "evidence_sample": [],
+  "rollback_triggered": false,
+  "evaluated_at": null,
+  "notes": "Experiment plan ready. Awaiting Production miss evidence sync (or explicit fixture canary run). Core must not change until status=pass + Human Review."
+}

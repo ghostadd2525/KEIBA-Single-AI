@@ -1,0 +1,29 @@
+{
+  "schema_version": "expect-root-cause/1.0",
+  "event_type": "miss",
+  "analysis_id": "miss-2026-07-20T12-08-23Z",
+  "event_count": 1,
+  "findings": {
+    "by_miss_category": {
+      "miss_top1": 1
+    },
+    "by_engine_source": {
+      "real_ai": 1
+    },
+    "high_confidence_miss_count": 1,
+    "dominant_category": "miss_top1"
+  },
+  "hypotheses": [
+    {
+      "id": "M-T1-NEAR",
+      "active": true,
+      "summary": "Top1 near-miss cluster dominates"
+    },
+    {
+      "id": "M-CONF-HIGH",
+      "active": true,
+      "summary": "High confidence misses present — calibration review"
+    }
+  ],
+  "recommendation": "Prioritize Top1 calibration proposal; exclude feature_missing co-occurring races."
+}

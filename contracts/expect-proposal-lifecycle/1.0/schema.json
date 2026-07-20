@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://expect.keiba/contracts/expect-proposal-lifecycle/1.0/schema.json",
+  "title": "ProposalLifecycle",
+  "description": "Proposal state machine (Development only). Used from I-3 onward.",
+  "type": "object",
+  "required": ["schema_version", "proposal_id", "status", "updated_at"],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": { "const": "expect-proposal-lifecycle/1.0" },
+    "proposal_id": { "type": "string" },
+    "status": {
+      "type": "string",
+      "enum": [
+        "DRAFT",
+        "UNDER_REVIEW",
+        "APPROVED",
+        "CANARY_RUNNING",
+        "CANARY_PASS",
+        "CANARY_FAIL",
+        "RC_CREATED",
+        "DEPLOYED",
+        "REJECTED",
+        "ARCHIVED"
+      ]
+    },
+    "previous_status": {
+      "type": ["string", "null"]
+    },
+    "updated_at": { "type": "string" },
+    "updated_by": { "type": ["string", "null"] },
+    "note": { "type": ["string", "null"] },
+    "history": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["status", "at"],
+        "properties": {
+          "status": { "type": "string" },
+          "at": { "type": "string" },
+          "by": { "type": ["string", "null"] },
+          "note": { "type": ["string", "null"] }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "schema_version": "expect-canary-report/1.0",
+  "proposal_id": "IMP-20260719-miss-001",
+  "status": "pending",
+  "verdict": null,
+  "result_id": "CAN-IMP-20260719-miss-001-2026-07-20T12-55-49Z",
+  "canary_result_path": "development/canary/results/IMP-20260719-miss-001/latest.json",
+  "metrics_delta": {},
+  "side_effects": [],
+  "gates": {},
+  "evidence_sample": [],
+  "rollback_triggered": false,
+  "evaluated_at": null,
+  "notes": "Canary skipped until development/reviews/IMP-20260719-miss-001.json status=approved",
+  "warnings": []
+}

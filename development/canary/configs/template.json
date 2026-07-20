@@ -1,0 +1,18 @@
+# Canary gate template — Development only (legacy pointer)
+# Prefer: development/canary/reports/_TEMPLATE.json
+# Schema: contracts/expect-canary/1.0/schema.json
+{
+  "schema_version": "expect-canary-report/1.0",
+  "proposal_id": "REPLACE",
+  "status": "pending",
+  "metrics_delta": {},
+  "side_effects": [],
+  "gates": {
+    "no_hit_at_1_regression": false,
+    "no_coverage_regression": false,
+    "ops_monitor_green": false
+  },
+  "evidence_sample": [],
+  "rollback_triggered": false,
+  "notes": "Fill after canary run. Production deploy requires status=pass."
+}

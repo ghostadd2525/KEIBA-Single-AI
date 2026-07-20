@@ -1,0 +1,166 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://expect.keiba/contracts/expect-auth/1.0/schema.json",
+  "title": "AuthService",
+  "description": "AuthService 契約。PredictionBundle とは独立。",
+  "$defs": {
+    "AuthUser": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["id"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "display_name": { "type": ["string", "null"] }
+      }
+    },
+    "FavoriteItem": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["race_id"],
+      "properties": {
+        "race_id": { "type": "string", "minLength": 1 },
+        "place": { "type": ["string", "null"] },
+        "name": { "type": ["string", "null"] },
+        "badge": { "type": ["string", "null"] },
+        "post_time": { "type": ["string", "null"] },
+        "date_label": { "type": ["string", "null"] },
+        "added_at": { "type": ["number", "null"] }
+      }
+    },
+    "FavoritesState": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["race_ids", "items"],
+      "properties": {
+        "schema_version": { "const": "expect-favorites/1.0" },
+        "race_ids": {
+          "type": "array",
+          "items": { "type": "string" },
+          "maxItems": 3
+        },
+        "items": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/FavoriteItem" },
+          "maxItems": 3
+        },
+        "synced_at": { "type": ["string", "null"] }
+      }
+    },
+    "AuthLoginRequest": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["id"],
+      "properties": {
+        "id": { "type": "string", "minLength": 4 },
+        "password": { "type": ["string", "null"] },
+        "favorites": { "$ref": "#/$defs/FavoritesState" }
+      }
+    },
+    "AuthLoginResponse": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["schema_version", "access_token", "token_type", "expires_in", "user"],
+      "properties": {
+        "schema_version": { "const": "expect-auth/1.0" },
+        "access_token": { "type": "string", "minLength": 1 },
+        "token_type": { "const": "bearer" },
+        "expires_in": { "type": "integer", "minimum": 1 },
+        "user": { "$ref": "#/$defs/AuthUser" },
+        "favorites": { "$ref": "#/$defs/FavoritesState" }
+      }
+    },
+    "AuthMeResponse": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["schema_version", "user"],
+      "properties": {
+        "schema_version": { "const": "expect-auth/1.0" },
+        "user": { "$ref": "#/$defs/AuthUser" },
+        "favorites": { "$ref": "#/$defs/FavoritesState" }
+      }
+    },
+    "AuthLogoutResponse": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["schema_version", "logged_out"],
+      "properties": {
+        "schema_version": { "const": "expect-auth/1.0" },
+        "logged_out": { "const": true }
+      }
+    },
+    "AuthFavoritesResponse": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["schema_version", "favorites"],
+      "properties": {
+        "schema_version": { "const": "expect-auth/1.0" },
+        "favorites": { "$ref": "#/$defs/FavoritesState" }
+      }
+    },
+    "AuthInviteStartRequest": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["invite_id"],
+      "properties": {
+        "invite_id": { "type": "string", "minLength": 4 }
+      }
+    },
+    "AuthInviteStartResponse": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["schema_version", "invite_id", "setup_token", "token_type", "expires_in", "next"],
+      "properties": {
+        "schema_version": { "const": "expect-auth/1.0" },
+        "invite_id": { "type": "string", "minLength": 4 },
+        "setup_token": { "type": "string", "minLength": 1 },
+        "token_type": { "const": "bearer" },
+        "expires_in": { "type": "integer", "minimum": 1 },
+        "next": { "const": "setup" }
+      }
+    },
+    "AuthSetupRequest": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["login_id", "password", "terms_accepted"],
+      "properties": {
+        "setup_token": { "type": "string" },
+        "login_id": { "type": "string", "minLength": 4, "maxLength": 32 },
+        "password": { "type": "string", "minLength": 8 },
+        "terms_accepted": { "type": "boolean" },
+        "favorites": { "$ref": "#/$defs/FavoritesState" }
+      }
+    },
+    "InvitationRecord": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["invite_id", "status"],
+      "properties": {
+        "invite_id": { "type": "string", "minLength": 4 },
+        "status": {
+          "type": "string",
+          "enum": ["issued", "activated", "disabled", "expired"]
+        },
+        "issued_at": { "type": ["string", "null"] },
+        "expires_at": { "type": ["string", "null"] },
+        "activated_at": { "type": ["string", "null"] },
+        "activated_user_id": { "type": ["string", "null"] },
+        "note": { "type": ["string", "null"] }
+      }
+    },
+    "UserRecord": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["user_id", "password_hash", "status"],
+      "properties": {
+        "user_id": { "type": "string", "minLength": 4 },
+        "password_hash": { "type": "string", "minLength": 1 },
+        "display_name": { "type": ["string", "null"] },
+        "invite_id": { "type": ["string", "null"] },
+        "status": { "type": "string", "enum": ["active", "disabled"] },
+        "created_at": { "type": ["string", "null"] },
+        "terms_version": { "type": ["string", "null"] },
+        "terms_accepted_at": { "type": ["string", "null"] }
+      }
+    }
+  }
+}

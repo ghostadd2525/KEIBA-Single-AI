@@ -1,0 +1,16 @@
+{
+  "schema_version": "expect-canary-report/1.0",
+  "proposal_id": "IMP-YYYYMMDD-type-001",
+  "status": "pending",
+  "metrics_delta": {},
+  "side_effects": [],
+  "gates": {
+    "no_hit_at_1_regression": false,
+    "no_coverage_regression": false,
+    "ops_monitor_green": false
+  },
+  "evidence_sample": [],
+  "rollback_triggered": false,
+  "evaluated_at": null,
+  "notes": "Fill after canary evaluation. RC requires status=pass."
+}

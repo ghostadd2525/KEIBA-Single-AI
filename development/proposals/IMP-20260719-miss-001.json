@@ -1,0 +1,85 @@
+{
+  "schema_version": "expect-improvement-proposal/1.0",
+  "proposal_id": "IMP-20260719-miss-001",
+  "status": "DRAFT",
+  "event_types": [
+    "miss"
+  ],
+  "fingerprints": [
+    "sha256:testmiss"
+  ],
+  "evidence_refs": [
+    {
+      "event_id": "miss:2026-07-19-04-11:t1",
+      "event_type": "miss",
+      "path": "evidence/improvement/miss/2026-07-19/2026-07-19-04-11.json",
+      "race_date": "2026-07-19",
+      "race_id": "2026-07-19-04-11",
+      "fingerprint": "sha256:testmiss",
+      "cluster_id": null
+    }
+  ],
+  "purpose": "Reduce miss_top1 events (1 in corpus) via ranking calibration design.",
+  "target": "Top1 selection / calibration design — applicable only after Canary pass on non-feature-co-occurring races.",
+  "expected_effect": "miss_top1 rate non-increasing; hit_at_1 non-decreasing vs baseline on canary set.",
+  "side_effects": [
+    "Proposal contains no executable code",
+    "Analyzer confidence is advisory; Human Review decides acceptance",
+    "Core calibration may shift explain/confidence tone",
+    "Must not apply on feature_missing co-occurring races"
+  ],
+  "evaluation_method": "Human review then Canary per development/canary/criteria/IMP-20260719-miss-001.json",
+  "non_goals": [
+    "Code generation in proposal",
+    "Production Prediction Core change before Canary pass",
+    "Accept or reject solely by Analyzer confidence"
+  ],
+  "analysis_refs": [
+    {
+      "analysis_id": "miss-2026-07-20T12-55-49Z",
+      "event_type": "miss",
+      "path": "development/analysis/miss/2026-07-20T12-55-49Z.json",
+      "root_cause": "calibration_high_confidence_near_miss",
+      "confidence": 0.97,
+      "reason": "Dominant miss_top1 (1/1): winner near candidate pool but Top1 wrong. Prefer Top1 calibration; exclude feature_missing co-occurring races. High-confidence misses=1.",
+      "schema_version": "expect-root-cause/1.0"
+    }
+  ],
+  "metadata": {
+    "confidence_policy": {
+      "role": "advisory_only",
+      "acceptance_requires": [
+        "evidence_refs",
+        "human_review",
+        "lifecycle_transition"
+      ],
+      "note": "Analyzer confidence may inform review priority; it must not alone decide accept or reject."
+    },
+    "analyzer_confidence": 0.97,
+    "analyzer_root_cause": "calibration_high_confidence_near_miss",
+    "analyzer_status": "ok",
+    "review_priority_hint": "high_review_attention"
+  },
+  "code_artifacts": [],
+  "run_id": "2026-07-20T12-55-49Z",
+  "created_at": "2026-07-20T12:55:49.999Z",
+  "updated_at": "2026-07-20T12:55:49.999Z",
+  "author": "improve:propose",
+  "lifecycle": {
+    "schema_version": "expect-proposal-lifecycle/1.0",
+    "proposal_id": "IMP-20260719-miss-001",
+    "status": "DRAFT",
+    "previous_status": null,
+    "updated_at": "2026-07-20T12:55:49.999Z",
+    "updated_by": "improve:propose",
+    "note": "I-3 generated DRAFT — Human Review required; analyzer confidence is advisory only",
+    "history": [
+      {
+        "status": "DRAFT",
+        "at": "2026-07-20T12:55:49.999Z",
+        "by": "improve:propose",
+        "note": "I-3 generated DRAFT — Human Review required; analyzer confidence is advisory only"
+      }
+    ]
+  }
+}

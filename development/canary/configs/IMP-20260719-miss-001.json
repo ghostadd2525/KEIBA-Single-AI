@@ -1,0 +1,35 @@
+{
+  "schema_version": "expect-canary-config/1.0",
+  "proposal_id": "IMP-20260719-miss-001",
+  "baseline": {
+    "description": "Evidence corpus baseline from Proposal evidence_refs / index",
+    "evidence_dates": [
+      "2026-07-19"
+    ],
+    "metrics_snapshot": {
+      "miss": 1,
+      "feature_missing": 0,
+      "prediction_failed": 0,
+      "result_sync_failed": 0
+    },
+    "evidence_ref_count": 1
+  },
+  "scope": {
+    "event_types": [
+      "miss"
+    ],
+    "race_dates": [
+      "2026-07-19"
+    ],
+    "fingerprints": [
+      "sha256:testmiss"
+    ]
+  },
+  "forbidden": [
+    "production_core_mutation",
+    "live_db_write",
+    "disable_ops_monitor",
+    "skip_human_review"
+  ],
+  "created_at": "2026-07-20T12:55:50.001Z"
+}
