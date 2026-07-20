@@ -20,3 +20,10 @@ compatibility_date = "2026-07-19"
 # AI_ENGINE                = auto | mock | real（観測用）
 # VALIDATE_CONTRACTS       = soft | strict | off
 # EXPECT_ENV               = development | staging | production
+
+# Non-secret defaults (override in Dashboard / secrets as needed)
+[vars]
+AUTH_MODE = "stub"
+VALIDATE_CONTRACTS = "soft"
+KAOBA_PROVIDER = "auto"
+AI_ENGINE = "real"

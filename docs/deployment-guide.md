@@ -105,6 +105,7 @@ sudo tee /opt/expect-ai/shared/.env >/dev/null <<'EOF'
 AI_HOST=127.0.0.1
 AI_PORT=8000
 AI_ALLOW_PUBLIC_BIND=0
+AI_ENGINE=real
 EOF
 sudo chown expect-ai:expect-ai /opt/expect-ai/shared/.env
 sudo chmod 640 /opt/expect-ai/shared/.env
@@ -158,8 +159,12 @@ npm run dev:ai   # Pages + AI_BASE_URL=http://127.0.0.1:8000
 ## 6. 確認チェックリスト
 
 - [ ] GitHub に `services/win5-ai/` がある
+- [ ] GitHub に `functions/` がある（`1b8bea5` 以降）
 - [ ] `requirements.txt` がある
 - [ ] `curl 127.0.0.1:8000/health` が ok
 - [ ] `ss` 等で listen が `127.0.0.1:8000` のみ
 - [ ] cloudflared が Connected
-- [ ] Pages の `AI_BASE_URL` が Tunnel ホストを指す
+- [ ] Pages の `AI_BASE_URL` が Tunnel ホストを指す（無いと `bff_mock`）
+- [ ] `/api/predictions` の `engine_source` が `real_ai` または `mock_fallback`
+
+同期詳細: [`ops/sync-github-cloudflare-ec2.md`](./ops/sync-github-cloudflare-ec2.md)

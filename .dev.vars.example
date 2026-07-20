@@ -1,0 +1,17 @@
+# wrangler pages dev 用（このファイルを .dev.vars にコピー）
+# 詳細: infra/cloudflare/env/development.env.example
+
+EXPECT_ENV=development
+
+# 必須（ローカル）: これが無いと BFF は bff_mock のみ
+AI_BASE_URL=http://127.0.0.1:8000
+AI_API_KEY=
+
+# Phase9-A staging/production のみ
+CF_ACCESS_CLIENT_ID=
+CF_ACCESS_CLIENT_SECRET=
+
+AUTH_MODE=stub
+VALIDATE_CONTRACTS=soft
+KAOBA_PROVIDER=auto
+AI_ENGINE=auto

@@ -6,12 +6,13 @@ Thumbs.db
 .vscode/
 .idea/
 
-# Node（将来 Functions/ツール導入時）
+# Node
 node_modules/
 npm-debug.log*
 .wrangler/
 .dev.vars
 .wrangler-functions-build/
+# NOTE: functions/ は Pages BFF 本体。絶対に ignore しないこと。
 
 # Build/temp
 dist/

@@ -9,6 +9,7 @@
  */
 import { aiFetch, loadAssetJson } from "../aiProxy.js";
 import { catalogToPredictionBundle, normalizePredictionBundle } from "../domain.js";
+import { getEnv, useAiProxy } from "../env.js";
 
 /**
  * @typedef {{
@@ -154,17 +155,67 @@ async function fetchFromMockGet(context, raceId) {
   };
 }
 
-/** 一覧: Python AI → Mock */
+/** AI_BASE_URL 設定済みだが Python 不通時 → ASSETS。engine_source は mock_fallback（bff_mock にしない） */
+function asMockFallback(mockResult) {
+  if (!mockResult || !mockResult.ok) return mockResult;
+  const items = Array.isArray(mockResult.provenanceMeta && mockResult.provenanceMeta.items)
+    ? mockResult.provenanceMeta.items.map((it) => ({
+        ...it,
+        engine_source: "mock_fallback",
+      }))
+    : [];
+  return {
+    ...mockResult,
+    source: "single-ai",
+    provider: "python",
+    provenanceMeta: {
+      engine: "real",
+      items,
+      ai_proxy: "fallback",
+    },
+  };
+}
+
+function asMockFallbackGet(mockResult) {
+  if (!mockResult || !mockResult.ok) return mockResult;
+  return {
+    ...mockResult,
+    source: "single-ai",
+    provider: "python",
+    provenanceMeta: {
+      ...(mockResult.provenanceMeta || {}),
+      engine: "real",
+      engine_source: "mock_fallback",
+      ai_proxy: "fallback",
+    },
+  };
+}
+
+/** 一覧: Python AI →（不通時）mock_fallback →（AI_BASE_URL なし）bff_mock */
 export async function adaptPredictionList(context, query = {}) {
-  const fromPy = await fetchFromPythonList(context, query);
-  if (fromPy) return fromPy;
+  const env = getEnv(context);
+  if (useAiProxy(env)) {
+    const fromPy = await fetchFromPythonList(context, query);
+    if (fromPy && fromPy.ok) return fromPy;
+    const mock = await fetchFromMockList(context, query);
+    if (mock && mock.ok) return asMockFallback(mock);
+    if (fromPy && fromPy.errorResponse) return fromPy;
+    return mock;
+  }
   return fetchFromMockList(context, query);
 }
 
-/** 1件: Python AI → Mock */
+/** 1件: Python AI →（不通時）mock_fallback →（AI_BASE_URL なし）bff_mock */
 export async function adaptPredictionGet(context, raceId) {
-  const fromPy = await fetchFromPythonGet(context, raceId);
-  if (fromPy) return fromPy;
+  const env = getEnv(context);
+  if (useAiProxy(env)) {
+    const fromPy = await fetchFromPythonGet(context, raceId);
+    if (fromPy && fromPy.ok) return fromPy;
+    const mock = await fetchFromMockGet(context, raceId);
+    if (mock && mock.ok) return asMockFallbackGet(mock);
+    if (fromPy && fromPy.errorResponse) return fromPy;
+    return mock;
+  }
   return fetchFromMockGet(context, raceId);
 }
 
