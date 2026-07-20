@@ -11,6 +11,7 @@ node_modules/
 npm-debug.log*
 .wrangler/
 .dev.vars
+.wrangler-functions-build/
 
 # Build/temp
 dist/

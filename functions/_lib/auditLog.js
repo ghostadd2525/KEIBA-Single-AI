@@ -2,7 +2,7 @@
  * Phase10 — 監査ログ（JSONL 1行1イベント）
  *
  * Workers: console に JSON 1行（Logpush / wrangler tail で収集）
- * CLI / Node: logs/audit/beta-audit.jsonl へ追記可能な形（writeAuditLineLocal）
+ * CLI ファイル追記は scripts/beta-admin.mjs 側で実施（node:fs を Functions にバンドルしない）
  */
 
 export const AuditEvent = {
@@ -41,25 +41,14 @@ export function writeAudit(context, evt) {
       null,
   };
 
-  // JSONL: 1行の JSON
   console.log(JSON.stringify({ audit: true, ...line }));
   return line;
 }
 
-/** Node CLI 用ファイル追記（Workers では使わない） */
-export async function appendAuditJsonl(filePath, evt) {
-  const { appendFileSync, mkdirSync } = await import("node:fs");
-  const { dirname } = await import("node:path");
-  const line = {
-    ts: new Date().toISOString(),
-    type: String(evt.type || "unknown"),
-    ok: evt.ok !== false,
-    actor: evt.actor != null ? String(evt.actor) : "cli",
-    target: evt.target != null ? String(evt.target) : null,
-    detail: evt.detail && typeof evt.detail === "object" ? evt.detail : {},
-    source: "cli",
-  };
-  mkdirSync(dirname(filePath), { recursive: true });
-  appendFileSync(filePath, JSON.stringify(line) + "\n", "utf8");
-  return line;
+/**
+ * CLI 向けプレースホルダ（Workers では呼ばない）。
+ * ファイル追記が必要な場合は scripts/beta-admin.mjs の audit() を使う。
+ */
+export async function appendAuditJsonl(_filePath, evt) {
+  return writeAudit(null, { ...evt, actor: evt.actor != null ? evt.actor : "cli" });
 }

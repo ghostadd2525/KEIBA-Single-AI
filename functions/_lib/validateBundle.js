@@ -9,7 +9,7 @@
  * Schema 正本: contracts/single-prediction-bundle/2.0/schema.json
  * BFF 同梱:   functions/_lib/schemas/single-prediction-bundle-2.0.json
  */
-import schema from "./schemas/single-prediction-bundle-2.0.json";
+import schema from "./schemas/single-prediction-bundle-2.0.js";
 import { jsonError } from "./errors.js";
 
 const SCHEMA_VERSION = "single-prediction-bundle/2.0";
