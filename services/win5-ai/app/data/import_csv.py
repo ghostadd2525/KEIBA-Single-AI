@@ -7,7 +7,8 @@ import json
 from pathlib import Path
 
 from .db import migrate
-from .etl import EtlPipeline, import_day
+from .etl import EtlPipeline, import_day, run_scheduled_etl
+from .validation import validate_all_races
 from .repository import RaceRepository
 
 
@@ -43,6 +44,14 @@ def main(argv: list[str] | None = None) -> int:
     p_d.add_argument("data_dir")
     p_d.add_argument("--date", default="", help="YYYY-MM-DD subdir (optional)")
 
+    p_s = sub.add_parser("schedule")
+    p_s.add_argument("race_date", help="YYYY-MM-DD")
+    p_s.add_argument("--source", default="", help="csv|database|api|jra")
+    p_s.add_argument("--data-dir", default="")
+
+    p_v = sub.add_parser("validate")
+    p_v.add_argument("--date", default="", help="YYYY-MM-DD filter (optional)")
+
     p_e = sub.add_parser("export-races")
     p_e.add_argument("json_out")
 
@@ -68,6 +77,20 @@ def main(argv: list[str] | None = None) -> int:
     if args.cmd == "import-day":
         result = import_day(Path(args.data_dir), race_date=args.date or None)
         print(json.dumps(result.as_dict(), ensure_ascii=False))
+        return 0
+    if args.cmd == "schedule":
+        from pathlib import Path as P
+
+        result = run_scheduled_etl(
+            args.race_date,
+            source_type=args.source or None,
+            data_dir=P(args.data_dir) if args.data_dir else None,
+        )
+        print(json.dumps(result.as_dict(), ensure_ascii=False))
+        return 0
+    if args.cmd == "validate":
+        out = validate_all_races(race_date=args.date or None)
+        print(json.dumps(out, ensure_ascii=False))
         return 0
     if args.cmd == "export-races":
         n = export_races_json(Path(args.json_out))

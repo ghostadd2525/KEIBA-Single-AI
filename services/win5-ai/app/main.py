@@ -13,7 +13,10 @@ from urllib.parse import parse_qs, urlparse
 
 from . import conversation
 from .data import db as app_db
-from .data.etl import import_day as etl_import_day
+from .data.coverage import get_coverage
+from .data.dashboard import DashboardService
+from .data.etl import run_scheduled_etl
+from .data.validation import validate_all_races
 from .data.race_resolver import resolve_identity
 from .diagnostics import FALLBACK_REASONS, REASON_HELP, collect_missing_report
 from .engine import data as engine
@@ -129,6 +132,46 @@ class Handler(BaseHTTPRequestHandler):
             self._send(200, ok(ident.as_meta(), {"service": "RaceResolver"}))
             return
 
+        if path == "/v1/data/coverage":
+            race_date = (qs.get("date") or qs.get("race_date") or [""])[0] or None
+            cov = get_coverage(race_date=race_date)
+            self._send(200, ok(cov, {"service": "Coverage"}))
+            return
+
+        if path == "/v1/admin/dashboard":
+            race_date = (qs.get("date") or qs.get("race_date") or [""])[0] or None
+            dash = DashboardService().summary(race_date=race_date)
+            self._send(200, ok(dash, {"service": "Dashboard"}))
+            return
+
+        if path == "/v1/admin/etl/status":
+            race_date = (qs.get("date") or qs.get("race_date") or [""])[0] or None
+            status = DashboardService().etl_status(race_date=race_date)
+            self._send(200, ok(status, {"service": "EtlScheduler"}))
+            return
+
+        if path == "/v1/admin/etl/history":
+            limit = int((qs.get("limit") or ["20"])[0])
+            hist = DashboardService().import_history(limit=limit)
+            self._send(200, ok(hist, {"service": "ImportHistory"}))
+            return
+
+        if path == "/v1/admin/dashboard/fallback":
+            fb = DashboardService().fallback_reasons()
+            self._send(200, ok(fb, {"service": "FallbackReasons"}))
+            return
+
+        if path == "/v1/admin/dashboard/missing":
+            missing = DashboardService().missing_data()
+            self._send(200, ok(missing, {"service": "MissingData"}))
+            return
+
+        if path == "/v1/admin/data/sources":
+            from .data.sources import list_sources
+
+            self._send(200, ok(list_sources(), {"service": "DataSources"}))
+            return
+
         if path == "/v1/diagnostics/missing":
             _, meta = prediction_adapter.list_with_meta()
             items = meta.get("items") or []
@@ -220,9 +263,40 @@ class Handler(BaseHTTPRequestHandler):
                 return
             from pathlib import Path
 
+            from .data.etl import import_day as etl_import_day
+
             result = etl_import_day(Path(data_dir), race_date=race_date)
             engine.clear_caches()
-            self._send(200, ok(result.as_dict(), {"service": "EtlPipeline"}))
+            if race_date:
+                validation = validate_all_races(race_date=race_date)
+                payload = {"etl": result.as_dict(), "validation": validation}
+            else:
+                payload = result.as_dict()
+            self._send(200, ok(payload, {"service": "EtlPipeline"}))
+            return
+
+        if path == "/v1/admin/etl/schedule":
+            race_date = str(body.get("date") or body.get("race_date") or "").strip()
+            if not race_date:
+                self._send(*err("BAD_REQUEST", "race_date required", 400))
+                return
+            source_type = str(body.get("source_type") or body.get("source") or "").strip() or None
+            data_dir = str(body.get("data_dir") or "").strip() or None
+            from pathlib import Path
+
+            result = run_scheduled_etl(
+                race_date,
+                source_type=source_type,
+                data_dir=Path(data_dir) if data_dir else None,
+            )
+            engine.clear_caches()
+            self._send(200, ok(result.as_dict(), {"service": "EtlScheduler"}))
+            return
+
+        if path == "/v1/admin/validate":
+            race_date = str(body.get("date") or body.get("race_date") or "").strip() or None
+            validation = validate_all_races(race_date=race_date)
+            self._send(200, ok(validation, {"service": "AutoValidation"}))
             return
 
         self._send(*err("NOT_FOUND", "unknown path", 404))
