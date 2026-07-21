@@ -1,11 +1,13 @@
 # Backlog — Version 1.1
 
-**基準:** Stable Baseline `v1.0.0-stable`（`08c7986`）  
-**フェーズ:** 運用中の次期開発候補  
-**更新:** 2026-07-21
+**基準:** Stable Baseline `v1.0.0-stable`（`08c7986`）— **FROZEN**（[`v1.0-freeze-declaration.md`](./v1.0-freeze-declaration.md)）  
+**フェーズ:** Version 1.0 クローズ後の次期開発候補  
+**更新:** 2026-07-21  
+**引継ぎ元:** [`v1.0-completion-report.md`](./v1.0-completion-report.md)
 
-Version 1.1 は **本番安定を維持したまま** 既知課題を潰すリリース。  
-RePick 製品 ON や予想ロジック既定変更は、別ゲートなしでは入れない。
+Version 1.1 は **本番安定（1.0 Freeze）を維持したまま** 既知課題を潰すリリース。  
+RePick 製品 ON や予想ロジック既定変更は、別ゲートなしでは入れない。  
+**`v1.0.0-stable` への直接改変は禁止。** 作業は本 Backlog / `research/*` のみ。
 
 ---
 

@@ -1,7 +1,7 @@
 # 運用 Runbook — Expect KEIBA AI（v1.0.0-stable）
 
-**Baseline:** tag `v1.0.0-stable` / commit `08c7986`  
-**関連:** [`stable-baseline-v1.0.0.md`](./stable-baseline-v1.0.0.md) · [`known-issues-v1.0.0-stable.md`](./known-issues-v1.0.0-stable.md) · [`rollback-runbook.md`](../rollback-runbook.md)
+**Baseline:** tag `v1.0.0-stable` / commit `08c7986`（**FROZEN**）  
+**関連:** [`stable-baseline-v1.0.0.md`](./stable-baseline-v1.0.0.md) · [`v1.0-freeze-declaration.md`](./v1.0-freeze-declaration.md) · [`known-issues-v1.0.0-stable.md`](./known-issues-v1.0.0-stable.md) · [`rollback-runbook.md`](../rollback-runbook.md)
 
 本番ホスト例:
 

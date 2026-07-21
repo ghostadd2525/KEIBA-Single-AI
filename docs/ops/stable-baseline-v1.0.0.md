@@ -1,8 +1,9 @@
 # Stable Baseline — v1.0.0-stable
 
-**Status:** CONFIRMED  
-**Phase:** 開発フェーズ終了 → **運用フェーズ**  
-**Date:** 2026-07-21
+**Status:** **CLOSED / FROZEN**  
+**Phase:** Version 1.0 正式クローズ → **運用継続**（新機能は 1.1 / research）  
+**Date:** 2026-07-21  
+**Freeze:** [`v1.0-freeze-declaration.md`](./v1.0-freeze-declaration.md)
 
 ---
 
@@ -10,10 +11,12 @@
 
 | 項目 | 値 |
 |------|-----|
-| Git tag | `v1.0.0-stable` |
+| Git tag | `v1.0.0-stable`（**変更禁止**） |
 | Commit | `08c7986904103d34b4570e013d628f7d3270d96c`（短縮 `08c7986`） |
-| Branch | `main` |
+| Branch | `main`（tip は docs 等で進みうる。本番は本 tag） |
 | Release GO | 2026-07-21（本番スモーク後） |
+| Completion | [`v1.0-completion-report.md`](./v1.0-completion-report.md) |
+| Architecture | [`v1.0-architecture-snapshot.md`](./v1.0-architecture-snapshot.md) |
 
 ## Scope（本番採用）
 
@@ -34,6 +37,9 @@
 
 | 文書 | パス |
 |------|------|
+| Completion Report | [`v1.0-completion-report.md`](./v1.0-completion-report.md) |
+| Architecture Snapshot | [`v1.0-architecture-snapshot.md`](./v1.0-architecture-snapshot.md) |
+| Freeze 宣言 | [`v1.0-freeze-declaration.md`](./v1.0-freeze-declaration.md) |
 | 運用 Runbook | [`operations-runbook.md`](./operations-runbook.md) |
 | 運用監視設計（v1.0） | [`v1.0-ops-monitoring-design.md`](./v1.0-ops-monitoring-design.md) |
 | 月次レポートテンプレ | [`monthly-ops-report-template.md`](./monthly-ops-report-template.md) |
@@ -42,9 +48,10 @@
 | Release notes | [`release-notes-2026-07-21-stable.md`](./release-notes-2026-07-21-stable.md) |
 | リリース前チェック | [`release-checklist.md`](./release-checklist.md) |
 
-## Change policy（運用フェーズ）
+## Change policy（Freeze）
 
-1. 本番は **tag `v1.0.0-stable`（= `08c7986`）** を基準にデプロイ・rollback する
-2. 予想ロジック / Feature Flag の既定 ON は **Version 1.1 以降の明示リリース**でのみ
-3. Hotfix は最小差分 + 新タグ（例: `v1.0.1-stable`）を切る
-4. 研究・実験は `research/` および docs に留め、本番 Flag を上げない
+1. **`v1.0.0-stable` は変更禁止**（詳細は Freeze 宣言）
+2. 新機能は **Version 1.1** または **`research/*`** のみ
+3. 本番デプロイ・rollback は本 tag（Hotfix は `v1.0.x-stable` 新タグ）
+4. 予想ロジック / Feature Flag 既定 ON は 1.1 以降の明示リリースのみ
+5. Real KeibaNet HOLD / RePick OFF を維持
