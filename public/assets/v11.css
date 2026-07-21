@@ -1,0 +1,249 @@
+/**
+ * Version 1.1 additive UI — only active when body has matching Flag classes.
+ * Flag OFF = no visual change (selectors require .v11-* classes).
+ */
+
+/* —— Loading / errors —— */
+body.v11-loading-errors .is-loading {
+  position: relative;
+  min-height: 72px;
+}
+
+body.v11-loading-errors .expect-state {
+  margin: 12px 0;
+}
+
+body.v11-loading-errors .ai-cards.is-loading::after,
+body.v11-loading-errors #raceList[aria-busy="true"]::before {
+  content: "";
+  display: block;
+  height: 4px;
+  border-radius: 2px;
+  margin: 8px 0 12px;
+  background: linear-gradient(
+    90deg,
+    rgba(193, 162, 109, 0.15),
+    rgba(193, 162, 109, 0.55),
+    rgba(193, 162, 109, 0.15)
+  );
+  background-size: 200% 100%;
+  animation: expect-shimmer 1.1s ease-in-out infinite;
+}
+
+/* —— Mobile —— */
+body.v11-mobile .app {
+  padding-bottom: calc(72px + env(safe-area-inset-bottom, 0px));
+}
+
+body.v11-mobile .topbar-inner,
+body.v11-mobile .screen,
+body.v11-mobile .home-chrome {
+  padding-left: max(12px, env(safe-area-inset-left, 0px));
+  padding-right: max(12px, env(safe-area-inset-right, 0px));
+}
+
+body.v11-mobile .ai-card,
+body.v11-mobile .race-card,
+body.v11-mobile .chip,
+body.v11-mobile .fav-btn,
+body.v11-mobile .expect-btn {
+  min-height: 44px;
+}
+
+body.v11-mobile .favorites-rail,
+body.v11-mobile .heatmap-scroll {
+  -webkit-overflow-scrolling: touch;
+  scroll-snap-type: x proximity;
+}
+
+body.v11-mobile .favorites-rail > *,
+body.v11-mobile .heatmap-scroll > * {
+  scroll-snap-align: start;
+}
+
+/* —— Home —— */
+body.v11-home .home-chrome {
+  gap: 14px;
+}
+
+body.v11-home .dash-stack {
+  border-radius: 16px;
+  border: 1px solid rgba(193, 162, 109, 0.22);
+  background: rgba(16, 18, 24, 0.55);
+  padding: 12px;
+}
+
+body.v11-home .ai-cards {
+  gap: 12px;
+}
+
+body.v11-home .ai-card {
+  border-radius: 18px;
+}
+
+body.v11-home .v11-status-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0 0 8px;
+}
+
+/* —— Races —— */
+body.v11-races .race-item {
+  border-radius: 14px;
+  transition: border-color 0.15s ease, transform 0.15s ease;
+}
+
+body.v11-races .race-item:active {
+  transform: scale(0.99);
+}
+
+body.v11-races .v11-engine-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  letter-spacing: 0.02em;
+  padding: 2px 8px;
+  border-radius: 999px;
+  border: 1px solid rgba(193, 162, 109, 0.35);
+  color: var(--gold-soft, #e5c78f);
+  background: rgba(20, 24, 32, 0.85);
+}
+
+body.v11-races .v11-engine-badge.is-real {
+  border-color: rgba(120, 190, 140, 0.45);
+  color: #b8e0c0;
+}
+
+body.v11-races .v11-engine-badge.is-fallback {
+  border-color: rgba(180, 160, 120, 0.35);
+  color: #cbb896;
+  opacity: 0.9;
+}
+
+/* —— Race detail —— */
+body.v11-race-detail .chart-card,
+body.v11-race-detail .honmei-card,
+body.v11-race-detail .pace-card {
+  border-radius: 16px;
+}
+
+body.v11-race-detail .race-provenance-wrap:not([hidden]) {
+  margin-bottom: 10px;
+}
+
+body.v11-race-detail .race-provenance {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+body.v11-race-detail .race-provenance-pill {
+  font-size: 11px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(193, 162, 109, 0.4);
+  color: var(--gold-soft, #e5c78f);
+}
+
+body.v11-race-detail .race-provenance.is-fallback .race-provenance-pill {
+  border-color: rgba(180, 140, 100, 0.4);
+}
+
+body.v11-explain #reasonsSection,
+body.v11-confidence #confidenceSection {
+  outline: 1px solid rgba(193, 162, 109, 0.2);
+}
+
+body.v11-explain .v11-explain-narrative {
+  margin: 0 0 10px;
+  line-height: 1.55;
+  color: var(--gold-soft, #e5c78f);
+}
+
+body.v11-confidence .v11-conf-meter {
+  height: 8px;
+  border-radius: 999px;
+  background: rgba(40, 46, 58, 0.95);
+  overflow: hidden;
+  margin: 8px 0 10px;
+}
+
+body.v11-confidence .v11-conf-meter > i {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, #8a7040, #e5c78f);
+}
+
+/* —— Status chips —— */
+.v11-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  padding: 5px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(193, 162, 109, 0.3);
+  background: rgba(18, 20, 28, 0.9);
+  color: #d8c39a;
+}
+
+.v11-chip[data-ok="1"] {
+  border-color: rgba(120, 190, 140, 0.45);
+  color: #b8e0c0;
+}
+
+.v11-chip[data-ok="0"] {
+  border-color: rgba(220, 120, 100, 0.45);
+  color: #f0d0c8;
+}
+
+.v11-chip-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+/* —— Ops dashboard —— */
+.page-ops .ops-grid {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  margin: 12px 0 18px;
+}
+
+.page-ops .ops-card {
+  padding: 14px;
+  border-radius: 14px;
+  border: 1px solid rgba(193, 162, 109, 0.28);
+  background: rgba(16, 18, 24, 0.75);
+}
+
+.page-ops .ops-card h3 {
+  margin: 0 0 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #a89878;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.page-ops .ops-card .ops-value {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--gold-soft, #e5c78f);
+}
+
+.page-ops .ops-note {
+  font-size: 12px;
+  color: #9a8b6e;
+  line-height: 1.5;
+}
+
+.page-ops .ops-denied {
+  padding: 24px 16px;
+}

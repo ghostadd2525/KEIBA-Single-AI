@@ -16,6 +16,19 @@ const DEFAULTS = {
   invitation_required: true,
   max_concurrent_sessions: null,
   audit: { enabled: true, sink: "jsonl" },
+  /** Version 1.1 UI Feature Flags（未知キー無視・後方互換） */
+  ui_features: {
+    v11_loading_errors: true,
+    v11_mobile: false,
+    v11_home: false,
+    v11_races: false,
+    v11_race_detail: false,
+    v11_explain: false,
+    v11_confidence: false,
+    v11_collector_status: false,
+    v11_system_health: false,
+    v11_ops_dashboard: false,
+  },
 };
 
 let cache = null;
@@ -29,6 +42,12 @@ export async function getBetaConfig(context) {
     audit: {
       ...DEFAULTS.audit,
       ...(doc && doc.audit && typeof doc.audit === "object" ? doc.audit : {}),
+    },
+    ui_features: {
+      ...DEFAULTS.ui_features,
+      ...(doc && doc.ui_features && typeof doc.ui_features === "object"
+        ? doc.ui_features
+        : {}),
     },
   };
   return cache;

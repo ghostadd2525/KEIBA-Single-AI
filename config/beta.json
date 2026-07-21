@@ -12,5 +12,17 @@
     "enabled": true,
     "sink": "jsonl"
   },
-  "notes": "Phase10 運営設定。public/config/beta.json と同期すること。"
+  "ui_features": {
+    "v11_loading_errors": true,
+    "v11_mobile": false,
+    "v11_home": false,
+    "v11_races": false,
+    "v11_race_detail": false,
+    "v11_explain": false,
+    "v11_confidence": false,
+    "v11_collector_status": false,
+    "v11_system_health": false,
+    "v11_ops_dashboard": false
+  },
+  "notes": "Phase10 運営設定。canonical は config/beta.json。ui_features は Version 1.1 Flag。"
 }
