@@ -35,6 +35,8 @@
 | 文書 | パス |
 |------|------|
 | 運用 Runbook | [`operations-runbook.md`](./operations-runbook.md) |
+| 運用監視設計（v1.0） | [`v1.0-ops-monitoring-design.md`](./v1.0-ops-monitoring-design.md) |
+| 月次レポートテンプレ | [`monthly-ops-report-template.md`](./monthly-ops-report-template.md) |
 | Known Issues | [`known-issues-v1.0.0-stable.md`](./known-issues-v1.0.0-stable.md) |
 | Version 1.1 Backlog | [`backlog-v1.1.md`](./backlog-v1.1.md) |
 | Release notes | [`release-notes-2026-07-21-stable.md`](./release-notes-2026-07-21-stable.md) |

@@ -234,12 +234,15 @@ ps aux | grep -iE 'collect|keibanet' | grep -v grep || echo "OK: no collector pr
 
 ## 8. 日常監視（要約）
 
+**正本（v1.0 運用監視設計）:** [`v1.0-ops-monitoring-design.md`](./v1.0-ops-monitoring-design.md)  
+**月次テンプレ:** [`monthly-ops-report-template.md`](./monthly-ops-report-template.md)
+
 - Pages: Deployment Success / `/api/health`
 - AI: `/health` + `journalctl -u expect-ai`
 - 予想: `provider=python`、意図しない全面断を監視（`mock_fallback` 比率は Known Issues 参照）
 - 招待: 発行は `npm run beta`、seed 反映は Pages デプロイ
 
-詳細: [`ops-monitor.md`](./ops-monitor.md) · [`monitoring.md`](./monitoring.md)
+詳細（既存実装）: [`ops-monitor.md`](./ops-monitor.md) · [`monitoring.md`](./monitoring.md)
 
 ---
 
