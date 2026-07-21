@@ -10,6 +10,7 @@ const PUBLIC_PATHS = new Set([
   "/api/auth/setup",
   "/api/health",
   "/api/ops/monitor",
+  "/api/ops/public-status",
 ]);
 
 export function getBearer(request) {

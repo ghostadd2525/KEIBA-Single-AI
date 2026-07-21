@@ -226,8 +226,16 @@
           var data = parsed.data;
           var meta = parsed.meta || {};
           var items = Array.isArray(data) ? data : (data && data.items) || [];
+          var metaItems = Array.isArray(meta.items) ? meta.items : [];
           return items.map(function (b) {
-            return attachContract(attachMeta(normalizeBundle(b, b.race_id), meta));
+            var itemMeta = Object.assign({}, meta);
+            for (var i = 0; i < metaItems.length; i++) {
+              if (metaItems[i] && b && metaItems[i].race_id === b.race_id) {
+                itemMeta = Object.assign({}, meta, metaItems[i]);
+                break;
+              }
+            }
+            return attachContract(attachMeta(normalizeBundle(b, b.race_id), itemMeta));
           });
         })
         .catch(function (err) {

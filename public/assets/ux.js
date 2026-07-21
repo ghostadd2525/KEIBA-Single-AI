@@ -31,9 +31,12 @@
     var message = opts.message || "";
     var retry = opts.retryLabel || "再読み込み";
     var showRetry = !!opts.onRetry;
+    var kindClass =
+      kind === "error" ? "error" : kind === "warn" ? "empty" : "empty";
     var root = el(
       '<div class="expect-state expect-state--' +
-        (kind === "error" ? "error" : "empty") +
+        kindClass +
+        (kind === "warn" ? " expect-state--warn" : "") +
         '" role="' +
         (kind === "error" ? "alert" : "status") +
         '">' +

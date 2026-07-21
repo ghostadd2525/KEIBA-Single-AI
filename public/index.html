@@ -11,7 +11,10 @@
   <link rel="stylesheet" href="assets/screens.css" />
   <link rel="stylesheet" href="assets/ux.css" />
   <link rel="stylesheet" href="assets/vqa.css" />
+  <link rel="stylesheet" href="assets/v11.css?v=11" />
   <link rel="stylesheet" href="assets/onboarding.css" />
+  <script src="assets/api/calendar-weekend.js?v=11"></script>
+  <script src="assets/auto-maintenance.js?v=11"></script>
   <script src="assets/auth.js"></script>
   <script>ExpectAuth.requireAuth();</script>
 </head>
@@ -240,6 +243,8 @@
   <script src="assets/api/user.js"></script>
   <script src="assets/api/real-data-bind.js"></script>
   <script src="assets/ux.js"></script>
+  <script src="assets/api/ui-features.js?v=11"></script>
+  <script src="assets/v11.js?v=11"></script>
   <script src="assets/app.js"></script>
   <script src="assets/favorites.js"></script>
   <script src="assets/shell.js"></script>
@@ -358,6 +363,8 @@
             : { ok: bundles || [], rejected: [] };
           if (filtered.ok.length) {
             if (window.ExpectContractGuard) ExpectContractGuard.clearErrorCard(mount);
+            var sk = mount && mount.querySelector(".v11-home-skel");
+            if (sk) sk.remove();
             ExpectPredictionBind.applyHomeHonmeiCard(
               ExpectPredictionBind.pickTopByConfidence(filtered.ok)
             );
@@ -368,7 +375,25 @@
 
         function fail(msg) {
           if (predictCard) predictCard.classList.remove("is-updating");
-          if (mount) mount.classList.remove("is-loading");
+          if (mount) {
+            mount.classList.remove("is-loading");
+            var sk = mount.querySelector(".v11-home-skel");
+            if (sk) sk.remove();
+          }
+          if (window.ExpectUiFeatures && ExpectUiFeatures.enabled("v11_loading_errors") && window.ExpectUx && mount) {
+            ExpectUx.showIn(
+              mount,
+              ExpectUx.stateCard({
+                kind: "error",
+                title: "データを更新できません",
+                message: msg || "Prediction API に接続できません。",
+                onRetry: function () {
+                  location.reload();
+                },
+              })
+            );
+            return;
+          }
           if (window.ExpectContractGuard && mount) {
             ExpectContractGuard.showErrorCard(mount, {
               title: "データを更新できません",

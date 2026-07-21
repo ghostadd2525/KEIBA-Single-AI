@@ -50,19 +50,25 @@ RePick 製品 ON や予想ロジック既定変更は、別ゲートなしでは
 
 ### B1.1-04 — UI 改善（P2）
 
-- **候補:** 一時ID URL の自動入力、fallback 理由の利用者向け表示、メンテナンス/エラーの分かりやすさ、モバイル VQA 残件
-- **制約:** Auth / 招待契約を壊さない。デザインシステム既存トーンを維持
-- **完了条件:** 対象画面の受け入れチェック + 回帰（ログイン/setup/予想一覧）
+- **問題:** ホーム / 一覧 / 詳細 / モバイル / ローディングの段階改善
+- **計画:** [`v1.1-implementation-plan.md`](./v1.1-implementation-plan.md)
+- **実装:** `feature/v1.1-ui-ops` · Flag `ui_features.*`
+- **制約:** Auth / 招待契約を壊さない。Prediction Core 非変更
+- **完了条件:** Flag OFF で v1.0 同等 + Flag ON での受け入れ
 
 ### B1.1-05 — 運用監視・デプロイ耐性（P0/P2）
 
-- **問題:** KI-02。overlay 手作業漏れで AI ダウンしうる
-- **作業例:**
-  - デプロイ手順のチェックリスト化（Runbook 準拠）の徹底
-  - overlay 同期を含むデプロイスクリプト（ops のみ、承認後）
-  - `mock_fallback` 比率・health・Pages deploy の監視アラート
-  - OPS Monitor / Result Automation の定常運用
-- **完了条件:** 手順どおりの再デプロイで overlay 起因の起動失敗が再発しないこと
+- **問題:** KI-02 overlay、監視可視化
+- **計画:** [`v1.1-implementation-plan.md`](./v1.1-implementation-plan.md) Wave3 · `public/ops.html`
+- **作業例:** Ops ダッシュボード（クライアント計測）、Runbook 遵守
+- **完了条件:** Flag `v11_ops_dashboard` で指標表示、一般 nav 非掲載
+
+### B1.1-06 — 開催日自動公開 / 平日メンテナンス（P2）
+
+- **設計:** [`v1.1-auto-maintenance-design.md`](./v1.1-auto-maintenance-design.md)
+- **実装:** Flag `v11_auto_maintenance`（既定 false）· CalendarProvider · `maintenance.html`
+- **制約:** 手動 `maintenance_mode` / `ops_mode` 最優先。Prediction Core / Collector / RePick 非変更
+- **完了条件:** Flag OFF で現行同等 + Flag ON で平日 CLOSED / 土日 PUBLIC
 
 ---
 

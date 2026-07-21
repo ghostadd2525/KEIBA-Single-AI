@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Expect ～ KEIBA AI ～ · Ops</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Noto+Sans+JP:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="assets/styles.css" />
+  <link rel="stylesheet" href="assets/screens.css" />
+  <link rel="stylesheet" href="assets/ux.css" />
+  <link rel="stylesheet" href="assets/v11.css?v=11" />
+  <script src="assets/auth.js"></script>
+  <script>ExpectAuth.requireAuth();</script>
+</head>
+<body class="page-screen page-ops" data-nav="home">
+  <div class="app">
+    <header class="topbar">
+      <div class="topbar-inner">
+        <div class="topbar-left">
+          <a class="back-btn" href="index.html" aria-label="戻る">‹</a>
+          <div class="brand-block topbar-text">
+            <p class="brand-name">Expect</p>
+            <p class="brand-sub">～ KEIBA AI ～</p>
+            <h1 class="page-title">運用ダッシュボード</h1>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <div class="screen" id="opsScreen">
+      <p class="ops-note" id="opsGateNote">Feature Flag `v11_ops_dashboard` と管理者設定を確認しています…</p>
+      <div id="opsDenied" class="ops-denied" hidden>
+        <div class="expect-state expect-state--empty" role="status">
+          <p class="expect-state__title">この画面は利用できません</p>
+          <p class="expect-state__msg">運用ダッシュボードは Flag OFF、または管理者以外は表示しません。一般 nav にも掲載しません。</p>
+          <div class="expect-state__actions"><a class="expect-btn" href="index.html">ホームへ</a></div>
+        </div>
+      </div>
+      <div id="opsMain" hidden>
+        <p class="ops-note">Baseline: v1.0.0-stable Freeze 維持 · Prediction Core 非変更 · mock_fallback 高比率は KI-01（データ不足）</p>
+        <div class="ops-grid" id="opsGrid" aria-live="polite"></div>
+        <p class="ops-note" id="opsLatencyNote"></p>
+      </div>
+    </div>
+    <div data-expect-nav></div>
+  </div>
+
+  <script src="assets/api/auth.js"></script>
+  <script src="assets/api/ui-features.js?v=11"></script>
+  <script src="assets/api/prediction.js"></script>
+  <script src="assets/ux.js"></script>
+  <script src="assets/partials-nav.js"></script>
+  <script>
+    (function () {
+      function card(title, value) {
+        return (
+          '<article class="ops-card"><h3>' +
+          title +
+          '</h3><p class="ops-value">' +
+          value +
+          "</p></article>"
+        );
+      }
+
+      function isAdmin(cfg, me) {
+        var ids = (cfg && cfg.admin_user_ids) || [];
+        if (!ids.length) {
+          /* 未設定時は Flag ON のみで閲覧可（キーは埋め込まない） */
+          return true;
+        }
+        var uid = me && (me.user_id || me.id || me.login_id);
+        return !!(uid && ids.indexOf(uid) >= 0);
+      }
+
+      ExpectUiFeatures.ready(function (features) {
+        var note = document.getElementById("opsGateNote");
+        var denied = document.getElementById("opsDenied");
+        var main = document.getElementById("opsMain");
+        if (!features.v11_ops_dashboard) {
+          if (note) note.hidden = true;
+          if (denied) denied.hidden = false;
+          return;
+        }
+
+        Promise.all([
+          fetch("/config/beta.json", { cache: "no-store" }).then(function (r) {
+            return r.json();
+          }),
+          window.ExpectApi && ExpectApi.Auth && ExpectApi.Auth.me
+            ? ExpectApi.Auth.me().catch(function () {
+                return null;
+              })
+            : Promise.resolve(null),
+        ]).then(function (parts) {
+          var cfg = parts[0] || {};
+          var me = parts[1] && (parts[1].data || parts[1]);
+          if (!isAdmin(cfg, me)) {
+            if (note) note.hidden = true;
+            if (denied) denied.hidden = false;
+            return;
+          }
+          if (note) note.hidden = true;
+          if (main) main.hidden = false;
+          runMetrics();
+        });
+      });
+
+      function runMetrics() {
+        var grid = document.getElementById("opsGrid");
+        var latNote = document.getElementById("opsLatencyNote");
+        var t0 = performance.now();
+        var healthMs = null;
+        var predMs = null;
+        var healthOk = false;
+        var total = 0;
+        var real = 0;
+        var fallback = 0;
+        var predErr = false;
+
+        var healthP = fetch("/api/health", { cache: "no-store" })
+          .then(function (res) {
+            healthMs = Math.round(performance.now() - t0);
+            return res.json().then(function (body) {
+              healthOk = !!(res.ok && body && (body.ok || (body.data && body.data.status === "ok")));
+            });
+          })
+          .catch(function () {
+            healthMs = Math.round(performance.now() - t0);
+            healthOk = false;
+          });
+
+        var t1 = performance.now();
+        var predP =
+          window.ExpectApi && ExpectApi.Prediction
+            ? ExpectApi.Prediction.list({})
+                .then(function (bundles) {
+                  predMs = Math.round(performance.now() - t1);
+                  var list = bundles || [];
+                  total = list.length;
+                  list.forEach(function (b) {
+                    var eng = (b && b.__meta && b.__meta.engine_source) || "";
+                    if (eng === "real_ai") real += 1;
+                    else if (eng === "mock_fallback") fallback += 1;
+                  });
+                })
+                .catch(function () {
+                  predMs = Math.round(performance.now() - t1);
+                  predErr = true;
+                })
+            : Promise.resolve();
+
+        Promise.all([healthP, predP]).then(function () {
+          var fbRate = total ? Math.round((fallback / total) * 1000) / 10 : 0;
+          var aiRate = total ? Math.round((real / total) * 1000) / 10 : 0;
+          if (grid) {
+            grid.innerHTML = [
+              card("Health", healthOk ? "OK" : "NG"),
+              card("API応答 (health)", (healthMs != null ? healthMs : "—") + " ms"),
+              card("API応答 (predictions)", (predMs != null ? predMs : "—") + " ms"),
+              card("Prediction件数", String(total)),
+              card("mock_fallback率", fbRate + "%"),
+              card("AI成功率 (real_ai)", aiRate + "%"),
+              card("Collector", "HOLD"),
+              card("Predictions取得", predErr ? "エラー" : "OK"),
+            ].join("");
+          }
+          if (latNote) {
+            latNote.textContent =
+              "Latency / Errors はクライアント計測。サーバ新規メトリクス API は追加していません。";
+          }
+        });
+      }
+    })();
+  </script>
+</body>
+</html>

@@ -106,6 +106,9 @@
     var post = info.post_time || "";
     var bg = bgClass(info, info.race_no);
     var nameDisp = name + (grade && grade !== "—" ? "（" + grade + "）" : "");
+    var eng =
+      (bundle && bundle.__meta && bundle.__meta.engine_source) ||
+      "";
 
     return (
       '<a class="race-item race-item--bg' +
@@ -124,7 +127,9 @@
       escapeHtml(post) +
       '" data-race-place="' +
       escapeHtml(place) +
-      '">' +
+      '"' +
+      (eng ? ' data-engine-source="' + escapeHtml(eng) + '"' : "") +
+      ">" +
       '<button type="button" class="fav-btn fav-btn--icon" data-fav-toggle="' +
       escapeHtml(rid) +
       '" data-fav-place="' +
