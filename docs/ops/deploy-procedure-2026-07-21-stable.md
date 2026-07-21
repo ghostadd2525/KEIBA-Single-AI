@@ -1,5 +1,8 @@
 # デプロイ手順 — Stable 2026-07-21
 
+> **運用フェーズ正本:** [`operations-runbook.md`](./operations-runbook.md)（overlay / migrate / restart / rollback / Flag / KeibaNet HOLD）  
+> **Baseline tag:** `v1.0.0-stable`（`08c7986`）
+
 対象: Collector RC-1 + GUI + 一時ID + 運用機能  
 **禁止:** `WIN5_REPICK_V2_ENABLED` の ON、予想ロジック Flag 変更
 

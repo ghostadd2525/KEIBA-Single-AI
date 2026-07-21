@@ -1,8 +1,11 @@
 # Release Notes — Stable Production Package (2026-07-21)
 
-**Tag / 通称:** `stable-2026-07-21`（Collector RC-1 + GUI + 一時ID + 運用）  
+**Git tag:** `v1.0.0-stable`（commit `08c7986`）  
+**通称:** Stable Baseline（Collector RC-1 + GUI + 一時ID + 運用）  
 **リポジトリ:** `KEIBA-Single-AI` (`main`)  
-**予想ロジック変更:** **なし**（RePick V2 Feature Flag **OFF** 維持）
+**フェーズ:** 開発終了 → **運用**（[`stable-baseline-v1.0.0.md`](./stable-baseline-v1.0.0.md)）  
+**予想ロジック変更:** **なし**（RePick V2 Feature Flag **OFF** 維持）  
+**運用正本:** [`operations-runbook.md`](./operations-runbook.md) · [`known-issues-v1.0.0-stable.md`](./known-issues-v1.0.0-stable.md) · [`backlog-v1.1.md`](./backlog-v1.1.md)
 
 ---
 
