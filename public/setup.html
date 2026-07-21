@@ -10,6 +10,8 @@
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Noto+Sans+JP:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="assets/styles.css" />
   <link rel="stylesheet" href="assets/login.css" />
+  <script src="assets/api/calendar-weekend.js?v=11.2"></script>
+  <script src="assets/auto-maintenance.js?v=11.3"></script>
   <script src="assets/api/auth.js"></script>
   <script src="assets/favorites.js"></script>
   <script src="assets/auth.js"></script>
@@ -117,7 +119,7 @@
           terms_accepted: true,
         })
           .then(function () {
-            location.href = "index.html";
+            return ExpectAutoMaintenance.goPostAuthLanding();
           })
           .catch(function (e2) {
             err.textContent = (e2 && e2.message) || "設定に失敗しました";

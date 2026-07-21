@@ -10,6 +10,8 @@
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Noto+Sans+JP:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="assets/styles.css" />
   <link rel="stylesheet" href="assets/login.css" />
+  <script src="assets/api/calendar-weekend.js?v=11.2"></script>
+  <script src="assets/auto-maintenance.js?v=11.3"></script>
   <script src="assets/auth.js"></script>
   <script>
     (function () {
@@ -19,7 +21,7 @@
         return;
       }
       if (ExpectAuth.hasAcceptedTerms()) {
-        location.replace("index.html");
+        ExpectAutoMaintenance.goPostAuthLanding();
       }
     })();
   </script>
@@ -126,7 +128,7 @@
           err.textContent = "同意状態を保存できませんでした。再度お試しください";
           return;
         }
-        location.href = "index.html";
+        ExpectAutoMaintenance.goPostAuthLanding();
       });
     })();
   </script>

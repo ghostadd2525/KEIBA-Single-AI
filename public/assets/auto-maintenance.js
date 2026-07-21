@@ -1,12 +1,13 @@
 /**
- * Version 1.1 — auto maintenance gate
- * Flag OFF = no-op. Flag ON + CLOSED → maintenance.html（ADMIN は bypass）
+ * Version 1.1 — auto maintenance gate（認証完了後のみ）
+ * Flag OFF = no-op. Flag ON + CLOSED + 認証済み非 bypass → maintenance.html
+ * 未ログインでは maintenance へ飛ばさない（login は ExpectAuth.requireAuth に任せる）
  */
 (function (global) {
   "use strict";
 
   // Pages pretty URL（/login）と *.html の両方を除外
-  var SKIP_RE = /(^|\/)(maintenance|login|setup|ops)(\.html)?\/?$/i;
+  var SKIP_RE = /(^|\/)(maintenance|login|setup|ops|terms)(\.html)?\/?$/i;
   var BYPASS_ROLES = { ADMIN: 1, OPS: 1, DEVELOPER: 1 };
 
   function pagePath() {
@@ -34,10 +35,20 @@
 
   function getAccessToken() {
     try {
+      if (global.ExpectAuth && typeof ExpectAuth.getAccessToken === "function") {
+        return ExpectAuth.getAccessToken() || "";
+      }
       return localStorage.getItem("expect_access_token_v1") || "";
     } catch (e) {
       return "";
     }
+  }
+
+  function isAuthenticated() {
+    if (global.ExpectAuth && typeof ExpectAuth.isLoggedIn === "function") {
+      return !!ExpectAuth.isLoggedIn();
+    }
+    return !!getAccessToken();
   }
 
   function getLocalUserId() {
@@ -63,9 +74,15 @@
       })
       .then(function (body) {
         var data = body && (body.data || body);
-        var role = String((data && data.role) || "").toUpperCase();
+        var user = (data && data.user) || data || {};
+        var role = String((user && user.role) || (data && data.role) || "").toUpperCase();
         if (BYPASS_ROLES[role]) return true;
-        var uid = String((data && (data.id || data.user_id)) || getLocalUserId() || "");
+        var uid = String(
+          (user && (user.id || user.user_id)) ||
+            (data && (data.id || data.user_id)) ||
+            getLocalUserId() ||
+            ""
+        );
         return fetch("/config/beta.json", { cache: "no-store" })
           .then(function (r) {
             return r.ok ? r.json() : null;
@@ -129,6 +146,10 @@
     if (String(status.ops_mode).toUpperCase() !== "CLOSED") {
       return Promise.resolve(status);
     }
+    // 未認証では maintenance へ飛ばさない
+    if (!getAccessToken()) {
+      return Promise.resolve(status);
+    }
     return isOpsBypassUser().then(function (bypass) {
       if (!bypass) redirectToMaintenance();
       return status;
@@ -154,8 +175,12 @@
       });
   }
 
+  /**
+   * 保護ページ用ゲート。認証済みのときのみ CLOSED → maintenance。
+   */
   function run() {
     if (shouldSkip()) return Promise.resolve(null);
+    if (!getAccessToken()) return Promise.resolve(null);
 
     return loadAutoFlag().then(function (on) {
       if (!on) return null;
@@ -170,9 +195,51 @@
   }
 
   /**
-   * maintenance.html 用: Flag OFF / PUBLIC / ADMIN bypass ならホームへ
+   * ログイン / setup / 規約同意直後の遷移先を決定する。
+   * @returns {Promise<"maintenance.html"|"index.html">}
+   */
+  function resolvePostAuthLanding() {
+    if (!getAccessToken()) {
+      return Promise.resolve("index.html");
+    }
+    return loadAutoFlag().then(function (on) {
+      if (!on) return "index.html";
+      return fetchStatus()
+        .catch(function () {
+          return fallbackStatus();
+        })
+        .then(function (status) {
+          global.ExpectPublicStatus = status;
+          if (!status || String(status.ops_mode).toUpperCase() !== "CLOSED") {
+            return "index.html";
+          }
+          return isOpsBypassUser().then(function (bypass) {
+            return bypass ? "index.html" : "maintenance.html";
+          });
+        });
+    });
+  }
+
+  function goPostAuthLanding() {
+    return resolvePostAuthLanding().then(function (dest) {
+      try {
+        location.replace(dest);
+      } catch (e) {
+        location.href = dest;
+      }
+      return dest;
+    });
+  }
+
+  /**
+   * maintenance.html 用: 未ログインは login。Flag OFF / PUBLIC / ADMIN はホームへ。
    */
   function bindMaintenancePage() {
+    if (!isAuthenticated() || !getAccessToken()) {
+      location.replace("login.html");
+      return Promise.resolve(null);
+    }
+
     return loadAutoFlag().then(function (on) {
       if (!on) {
         location.replace("index.html");
@@ -233,11 +300,14 @@
 
   global.ExpectAutoMaintenance = {
     run: run,
+    resolvePostAuthLanding: resolvePostAuthLanding,
+    goPostAuthLanding: goPostAuthLanding,
     bindMaintenancePage: bindMaintenancePage,
     fillMaintenanceDom: fillMaintenanceDom,
     isOpsBypassUser: isOpsBypassUser,
   };
 
+  // 自動実行は残すが、無トークン時は no-op（login への競合を消す）
   if (!shouldSkip()) {
     if (document.readyState === "loading") {
       document.addEventListener("DOMContentLoaded", function () {

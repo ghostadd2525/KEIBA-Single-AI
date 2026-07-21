@@ -124,13 +124,19 @@
     </section>
   </div>
 
+  <script src="assets/api/calendar-weekend.js?v=11.2"></script>
+  <script src="assets/auto-maintenance.js?v=11.3"></script>
   <script src="assets/api/auth.js"></script>
   <script src="assets/favorites.js"></script>
   <script src="assets/auth.js"></script>
   <script>
     (function () {
       if (ExpectAuth.isLoggedIn()) {
-        location.replace(ExpectAuth.hasAcceptedTerms() ? "index.html" : "terms.html");
+        if (!ExpectAuth.hasAcceptedTerms()) {
+          location.replace("terms.html");
+          return;
+        }
+        ExpectAutoMaintenance.goPostAuthLanding();
         return;
       }
 
@@ -170,7 +176,7 @@
         }
         ExpectAuth.loginWithApi(id, password)
           .then(function () {
-            location.href = "index.html";
+            return ExpectAutoMaintenance.goPostAuthLanding();
           })
           .catch(function (e2) {
             err.textContent = (e2 && e2.message) || "ログインに失敗しました";

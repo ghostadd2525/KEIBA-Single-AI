@@ -12,9 +12,13 @@
   <link rel="stylesheet" href="assets/ux.css" />
   <link rel="stylesheet" href="assets/vqa.css" />
   <script src="assets/api/calendar-weekend.js?v=11"></script>
-  <script src="assets/auto-maintenance.js?v=11.1"></script>
+  <script src="assets/auto-maintenance.js?v=11.3"></script>
   <script src="assets/auth.js"></script>
-  <script>ExpectAuth.requireAuth();</script>
+  <script>
+    if (ExpectAuth.requireAuth() && window.ExpectAutoMaintenance) {
+      ExpectAutoMaintenance.run();
+    }
+  </script>
 </head>
 <body class="page-screen page-analysis" data-nav="analysis">
   <div class="app">
