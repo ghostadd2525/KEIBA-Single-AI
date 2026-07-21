@@ -1,0 +1,33 @@
+{
+  "comment": "Cloudflare Tunnel ingress for ai.expect-keiba.com (EC2 origin). Apply via CF API PUT /accounts/{id}/cfd_tunnel/{tunnel_id}/configurations",
+  "config": {
+    "ingress": [
+      {
+        "hostname": "ai.expect-keiba.com",
+        "path": "/v1/races/resolve",
+        "service": "http://127.0.0.1:8000",
+        "originRequest": { "connectTimeout": 10 }
+      },
+      {
+        "hostname": "ai.expect-keiba.com",
+        "path": "/v1/races",
+        "service": "http://127.0.0.1:8081",
+        "originRequest": { "connectTimeout": 10 }
+      },
+      {
+        "hostname": "ai.expect-keiba.com",
+        "path": "/v1/predictions",
+        "service": "http://127.0.0.1:8081",
+        "originRequest": { "connectTimeout": 10 }
+      },
+      {
+        "hostname": "ai.expect-keiba.com",
+        "service": "http://127.0.0.1:8000",
+        "originRequest": { "connectTimeout": 10 }
+      },
+      {
+        "service": "http_status:404"
+      }
+    ]
+  }
+}

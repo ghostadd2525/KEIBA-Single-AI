@@ -1,0 +1,51 @@
+{
+  "race_id": "2026-07-25-01-06",
+  "race_date": "2026-07-25",
+  "date": "2026-07-25",
+  "course": "新潟",
+  "venue": "新潟",
+  "race_number": 6,
+  "race_no": 6,
+  "race_label": "新潟6R",
+  "race_name": "豊栄特別",
+  "numeric_race_id": "202604020106",
+  "status": "published",
+  "prediction_available": true,
+  "prediction": {
+    "race_id": "2026-07-25-01-06",
+    "candidates": [
+      {
+        "Rank": 1,
+        "HorseNumber": "4",
+        "CandidateID": "コルドンブルー",
+        "Confidence": 0.09771316412070961
+      },
+      {
+        "Rank": 2,
+        "HorseNumber": "7",
+        "CandidateID": "シャンソンドール",
+        "Confidence": 0.09328950748908332
+      },
+      {
+        "Rank": 3,
+        "HorseNumber": "13",
+        "CandidateID": "ホウオウタイタン",
+        "Confidence": 0.05493793828232772
+      },
+      {
+        "Rank": 4,
+        "HorseNumber": "9",
+        "CandidateID": "ソニックライン",
+        "Confidence": 0.053152933802795066
+      }
+    ],
+    "world": "turf",
+    "sub_world": "default",
+    "overall_confidence": 0.055035747726160086,
+    "core_version": "ai-core-migrated/1.0",
+    "meta": {
+      "model_version": "core-delegated",
+      "generated_at": "2026-07-21T10:00:00+09:00"
+    }
+  }
+}

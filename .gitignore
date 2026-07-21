@@ -18,6 +18,7 @@ npm-debug.log*
 dist/
 .cache/
 *.log
+tmp-*
 
 # β監査ログ（JSONL）。ディレクトリ自体は残す
 logs/audit/*.jsonl

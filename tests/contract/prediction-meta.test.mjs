@@ -14,7 +14,7 @@ import {
 } from "../bff/build-envelope.mjs";
 import { loadSchemas, readJson } from "../helpers/load.mjs";
 
-const ENGINE_SOURCES = new Set(["real_ai", "mock_fallback", "mock", "bff_mock"]);
+const ENGINE_SOURCES = new Set(["real_ai", "real", "pi", "mock_fallback", "mock", "bff_mock"]);
 const ENGINES = new Set(["real", "mock", "n/a"]);
 
 function assertListItem(item) {
