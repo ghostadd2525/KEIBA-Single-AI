@@ -3,7 +3,8 @@
 Phase F 運用監視の参照ドキュメント。  
 **Phase OPS-Monitor（BFF / EC2 統合監視）:** [`ops-monitor.md`](./ops-monitor.md)  
 **Phase P-1（Prod / Dev 分離）:** [`p1-production-development-separation.md`](./p1-production-development-separation.md)  
-**Phase OPS-ResultAutomation:** [`ops-result-automation.md`](./ops-result-automation.md)
+**Phase OPS-ResultAutomation:** [`ops-result-automation.md`](./ops-result-automation.md)  
+**Collector Weekday Dispersion（設計）:** [`collector-weekday-dispersion.md`](./collector-weekday-dispersion.md)
 
 ---
 
@@ -112,4 +113,6 @@ GET /v1/admin/dashboard
 | 毎時 | `/health`, `/v1/admin/monitoring` alerts |
 | 開催日 AM | ETL schedule + coverage |
 | 開催日 PM | fallback_reason 推移 |
-| 週次 | DB サイズ, baseline 再測定 |
+| 月〜金 AM | Collect 日次（設計: [`collector-weekday-dispersion.md`](./collector-weekday-dispersion.md)） |
+| 金曜 18:00 | Friday Gate — Prediction Ready / Complete Ready |
+| 週次 | DB サイズ, baseline 再測定, Weekly Manifest |

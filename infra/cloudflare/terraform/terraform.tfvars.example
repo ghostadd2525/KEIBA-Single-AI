@@ -1,0 +1,30 @@
+# コピーして terraform.tfvars を作成（gitignore 推奨）。管理者が値を埋める。
+
+account_id  = "YOUR_CLOUDFLARE_ACCOUNT_ID"
+zone_id     = "" # 独自ドメインがある場合のみ
+environment = "staging"
+
+pages_hostnames = [
+  "keiba-single-ai.pages.dev",
+  # "expect-staging.example.com",
+]
+
+# β許可（いずれか必須推奨）
+allowed_emails = [
+  # "you@example.com",
+]
+allowed_email_domains = [
+  # "example.com",
+]
+
+# WARP posture ルール未整備の間は false → ダッシュボードで後付け可
+require_warp = false
+
+ai_tunnel_name       = "expect-win5-ai"
+ai_private_hostname  = "ai-staging.expect-internal.example.com"
+ai_origin_service    = "http://127.0.0.1:8000"
+
+# AI ホストを公開 DNS に載せない運用なら false のまま
+create_dns_for_ai_hostname = false
+
+session_duration = "24h"

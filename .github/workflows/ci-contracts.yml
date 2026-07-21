@@ -1,0 +1,28 @@
+name: contracts
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+
+jobs:
+  contract-qa:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Validate fixtures against Schema
+        run: npm run validate:fixtures
+
+      - name: Contract tests (PB / Analysis / Auth / Kaoba)
+        run: npm run test:contract
+
+      - name: BFF response snapshot tests (incl. Auth / Kaoba)
+        run: npm run test:snapshot
+
+      - name: Full test suite
+        run: npm test

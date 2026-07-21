@@ -1,0 +1,16 @@
+# Copy to terraform.tfvars (do not commit secrets)
+
+aws_region   = "ap-northeast-1"
+name_prefix  = "expect-ai"
+instance_type = "t3.medium"
+root_volume_gb = 40
+
+vpc_id    = "vpc-REPLACE"
+subnet_id = "subnet-REPLACE"
+
+# Prefer SSM: leave enable_ssh=false and omit key_name
+enable_ssh         = false
+allowed_ssh_cidrs  = []
+# key_name = "my-admin-key"
+
+enable_cloudwatch_logs = true

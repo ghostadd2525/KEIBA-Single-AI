@@ -1,0 +1,9 @@
+{
+  "message": "本命を教えて",
+  "history": [
+    { "role": "user", "content": "こんにちは" },
+    { "role": "assistant", "content": "こんにちは！今日のレース、何が気になる？" }
+  ],
+  "race_id": "20260719_hanshin_11",
+  "context": { "ui": "chat" }
+}

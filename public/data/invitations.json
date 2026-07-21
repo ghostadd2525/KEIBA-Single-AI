@@ -9,6 +9,15 @@
       "activated_at": null,
       "activated_user_id": null,
       "note": "Browser login test"
+    },
+    {
+      "invite_id": "BETA-F6D1-E07E",
+      "status": "issued",
+      "issued_at": "2026-07-21T01:42:38.454Z",
+      "expires_at": null,
+      "activated_at": null,
+      "activated_user_id": null,
+      "note": "issued-on-request-2026-07-21"
     }
   ]
 }

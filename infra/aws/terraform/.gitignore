@@ -1,0 +1,6 @@
+# Ignore local overrides and state
+terraform.tfvars
+.terraform/
+*.tfstate
+*.tfstate.*
+crash.log

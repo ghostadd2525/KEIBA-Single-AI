@@ -1,0 +1,10 @@
+{
+  "user_id": "fixture-user",
+  "password_hash": "sha256$expect-beta-v1$82b4f1d5e3730116f86a621c94241c6b63623f2e911a9ead4a6799c7864d6558",
+  "display_name": "fixture-user",
+  "invite_id": "FIXTURE-INVITE-USED",
+  "status": "active",
+  "created_at": "2026-07-10T12:00:00+09:00",
+  "terms_version": "2026-07-19",
+  "terms_accepted_at": "2026-07-10T12:00:00+09:00"
+}

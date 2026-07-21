@@ -1,0 +1,12 @@
+[Unit]
+Description=Expect Result Automation — OPS-Monitor recovery retry
+After=expect-ops-monitor.service
+
+[Service]
+Type=oneshot
+User=expect
+Group=expect
+WorkingDirectory=/opt/expect-ai/current/services/win5-ai
+EnvironmentFile=-/etc/expect-ai/result-automation.env
+Environment=EXPECT_RA_AUTO_MODE=recovery
+ExecStart=/usr/bin/python3 -m app.ops.result_automation_runner --mode auto

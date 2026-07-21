@@ -1,0 +1,42 @@
+{
+  "$comment": "論理定義（ダッシュボード手作業用）。Terraform 正本は terraform/access.tf",
+  "pages_application": {
+    "name": "expect-pages-staging",
+    "destinations": ["keiba-single-ai.pages.dev"],
+    "session_duration": "24h",
+    "policies": [
+      {
+        "name": "beta-allow-staging",
+        "decision": "allow",
+        "include": {
+          "emails": ["beta-user@example.com"],
+          "email_domains": []
+        },
+        "require_manual": {
+          "warp": "ダッシュボードで Require → WARP を追加（推奨）"
+        }
+      },
+      {
+        "name": "deny-all-staging",
+        "decision": "deny",
+        "include": { "everyone": true }
+      }
+    ]
+  },
+  "ai_application": {
+    "name": "expect-ai-staging",
+    "destinations": ["ai-staging.expect-internal.example.com"],
+    "policies": [
+      {
+        "name": "bff-service-token-staging",
+        "decision": "non_identity / Service Auth",
+        "include": { "service_token": "expect-bff-ai-staging" }
+      },
+      {
+        "name": "ai-deny-all-staging",
+        "decision": "deny",
+        "include": { "everyone": true }
+      }
+    ]
+  }
+}

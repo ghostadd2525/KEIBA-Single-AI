@@ -1,0 +1,16 @@
+[Unit]
+Description=Expect OPS Monitor — production health checks (Phase OPS-Monitor)
+After=network-online.target expect-ai.service
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=expect
+Group=expect
+WorkingDirectory=/opt/expect-ai/current
+EnvironmentFile=-/etc/expect-ai/ops-monitor.env
+ExecStart=/usr/bin/node /opt/expect-ai/current/scripts/ops/monitor-prod.mjs
+# 非ゼロ = 障害検知（timer 側で journal に記録）
+
+[Install]
+WantedBy=multi-user.target

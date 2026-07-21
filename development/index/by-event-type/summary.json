@@ -1,55 +1,32 @@
 {
   "schema_version": "expect-evidence-index/1.0",
-  "generated_at": "2026-07-20T12:55:49.995Z",
+  "generated_at": "2026-07-20T11:35:00.000Z",
   "source_root": "evidence/improvement",
-  "filter_date": "2026-07-19",
-  "corpus_status": "populated",
+  "corpus_status": "empty",
+  "notes": "Production evidence/improvement にイベントファイルが未同期。本 Index は空集合を記録し、分析は構造ベースライン（検出ルール・GameDay 既知パターン）で補完する。実 Evidence 同期後に再 Index すること。",
   "counts_by_event_type": {
-    "miss": 1,
+    "miss": 0,
     "feature_missing": 0,
     "prediction_failed": 0,
     "result_sync_failed": 0
   },
-  "counts_by_model_version": {
-    "unknown": 1
-  },
-  "event_total": 1,
-  "dates": [
-    "2026-07-19"
-  ],
-  "events": [
+  "events": [],
+  "clusters": [],
+  "supplemental_sources": [
     {
-      "event_id": "miss:2026-07-19-04-11:t1",
-      "event_type": "miss",
-      "race_date": "2026-07-19",
-      "race_id": "2026-07-19-04-11",
-      "fingerprint": "sha256:testmiss",
-      "path": "evidence/improvement/miss/2026-07-19/2026-07-19-04-11.json",
-      "model_version": null
-    }
-  ],
-  "clusters": [
+      "kind": "production_detector",
+      "path": "services/win5-ai/app/ops/result_automation.py",
+      "use": "feature_missing / miss 検出条件の構造分析"
+    },
     {
-      "cluster_id": "fp-miss-testmiss",
-      "fingerprint": "sha256:testmiss",
-      "event_type": "miss",
-      "count": 1,
-      "event_ids": [
-        "miss:2026-07-19-04-11:t1"
-      ],
-      "sample_path": "evidence/improvement/miss/2026-07-19/2026-07-19-04-11.json",
-      "race_dates": [
-        "2026-07-19"
-      ],
-      "model_versions": [
-        "unknown"
-      ]
+      "kind": "production_builder",
+      "path": "services/win5-ai/app/ops/evidence/",
+      "use": "payload 形状・分類軸"
+    },
+    {
+      "kind": "gameday_harness",
+      "path": "services/win5-ai/scripts/ops/validate_gameday.py",
+      "use": "再現可能な miss / feature_missing シナリオ"
     }
-  ],
-  "dimensions": {
-    "by_date": true,
-    "by_event_type": true,
-    "by_model_version": true,
-    "clusters": true
-  }
+  ]
 }

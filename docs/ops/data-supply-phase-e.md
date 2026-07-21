@@ -182,3 +182,22 @@ POST /v1/admin/validate
 | P4 | JRA Source 実装（Phase 将来） | 手動 CSV 不要化 |
 
 **確認:** `GET /v1/data/coverage` → `coverage` % 上昇、`GET /v1/admin/dashboard` で ETL 状態・不足一覧を監視。
+
+---
+
+## 9. 後継設計 — Weekday Collector（設計のみ）
+
+KeibaNet 日次上限（100〜200 req）を前提に、取得を **月〜金へ分散**し、Collector と ETL を分離する正式設計:
+
+→ [`collector-weekday-dispersion.md`](./collector-weekday-dispersion.md)
+
+| 現行 Phase E | Collector 設計 |
+|--------------|----------------|
+| 開催日 AM に ETL 一体実行 | Planner → Priority Queue → Collector → Validator → Raw → 既存 ETL |
+| 単一 download | STATIC_CORE / PROFILE / HISTORY + DYNAMIC |
+| なし | Priority P1〜P3（予算枯渇時も P1 保証） |
+| ETL 後 validation | Collect 直後 Validator + Friday Gate（Prediction Ready / Complete Ready） |
+| etl_runs | Weekly Manifest（OPS-Monitor の週次正本） |
+
+**Prediction Core / FeatureLoader / PredictionAdapter / Result Automation は変更しない。**
+実装は未着手（設計承認後）。

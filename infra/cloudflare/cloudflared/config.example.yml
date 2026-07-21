@@ -1,0 +1,20 @@
+# cloudflared 設定例（Python AI ホスト上）
+# トークン運用（推奨）の場合は本ファイル不要:
+#   cloudflared tunnel run --token <TUNNEL_TOKEN>
+#
+# ファイル運用する場合のみ tunnel / credentials-file を埋める。
+
+tunnel: REPLACE_TUNNEL_ID
+credentials-file: /etc/cloudflared/credentials.json
+
+# Python は必ず 127.0.0.1 のみ LISTEN（AI_HOST=127.0.0.1）
+ingress:
+  - hostname: ai-staging.expect-internal.example.com
+    service: http://127.0.0.1:8000
+    originRequest:
+      connectTimeout: 10s
+      noTLSVerify: true
+  - service: http_status:404
+
+# メトリクス（任意）
+# metrics: 127.0.0.1:2000

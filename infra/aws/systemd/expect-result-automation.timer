@@ -1,0 +1,12 @@
+[Unit]
+Description=Expect Result Automation — post-meeting + morning catch-up
+
+[Timer]
+# 開催日終了後の目安（21:00 JST ≈ 12:00 UTC）と翌日 06:00 JST（21:00 UTC 前日）
+OnCalendar=*-*-* 12:00:00
+OnCalendar=*-*-* 21:00:00
+Persistent=true
+AccuracySec=1min
+
+[Install]
+WantedBy=timers.target

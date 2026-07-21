@@ -1,0 +1,12 @@
+{
+  "schema_version": "expect-kaoba/1.0",
+  "reply": "阪神 11R についてね。本命は 7番 サンプルホースA（AI信頼度 62%）。根拠は上位確率の分離と総合評価だよ。",
+  "suggestions": ["展開を詳しく", "買い目を提案して", "リスクを教えて"],
+  "emotion": "joy",
+  "referenced_race_id": "20260719_hanshin_11",
+  "provider": "rule",
+  "live2d": {
+    "motion": "talk_happy",
+    "expression": "smile"
+  }
+}

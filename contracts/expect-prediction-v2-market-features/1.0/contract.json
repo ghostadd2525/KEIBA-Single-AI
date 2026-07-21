@@ -1,0 +1,115 @@
+{
+  "schema_version": "expect-prediction-v2-market-features/1.0",
+  "contract_id": "PV2-F01",
+  "status": "archived",
+  "archived_at": "2026-07-21",
+  "version2_scope": "excluded",
+  "roi_validation": {
+    "report": "docs/ops/prediction-v2-f01-roi-validation.md",
+    "decision": "ARCHIVED_EXCLUDE_FROM_V2",
+    "odds_improvable_misses": 13,
+    "miss_total": 69,
+    "rate_pct": 18.84,
+    "threshold": "n>=10 AND rate>=20%",
+    "reason": "Go threshold unmet; market features cannot fix Candidate Pool-out / deep longshot misses"
+  },
+  "implementation_ticket": null,
+  "flag": {
+    "name": "PREDICTION_V2_MARKET_FEATURES",
+    "default": false
+  },
+  "strict_flag": {
+    "name": "PREDICTION_V2_MARKET_STRICT",
+    "default": false
+  },
+  "v1_protection": {
+    "feature_count": 28,
+    "feature_generator_mutable": false,
+    "feature_loader_mutable": false,
+    "collector_mutable": false,
+    "etl_mutable": false
+  },
+  "features": [
+    {
+      "name": "v2_log_odds",
+      "dtype": "float64",
+      "source": "odds",
+      "inputs": ["odds"]
+    },
+    {
+      "name": "v2_odds_rank_in_race",
+      "dtype": "float64",
+      "source": "odds",
+      "inputs": ["odds"]
+    },
+    {
+      "name": "v2_odds_gap_to_favorite",
+      "dtype": "float64",
+      "source": "odds",
+      "inputs": ["odds"]
+    },
+    {
+      "name": "v2_implied_prob",
+      "dtype": "float64",
+      "source": "odds",
+      "inputs": ["odds"]
+    },
+    {
+      "name": "v2_track_condition_code",
+      "dtype": "float64",
+      "source": "track",
+      "inputs": ["track_condition", "condition", "baba", "track"]
+    },
+    {
+      "name": "v2_market_missing",
+      "dtype": "float64",
+      "source": "odds",
+      "inputs": []
+    },
+    {
+      "name": "v2_track_missing",
+      "dtype": "float64",
+      "source": "track",
+      "inputs": []
+    }
+  ],
+  "normalization": {
+    "eps": 1e-6,
+    "odds_clip_min": 1.01,
+    "odds_clip_max": 999.0,
+    "gap_clip_max": 20.0,
+    "log": "natural",
+    "implied_prob": "inverse_odds_renormalized"
+  },
+  "track_condition_codes": {
+    "良": 1,
+    "firm": 1,
+    "稍重": 2,
+    "稍": 2,
+    "yielding": 2,
+    "重": 3,
+    "soft": 3,
+    "不良": 4,
+    "heavy": 4,
+    "default": 0
+  },
+  "v2a_correction": {
+    "alpha_default": 0.03,
+    "alpha_hard_max_abs": 0.05,
+    "beta_default": 1.0,
+    "beta_range": [0.5, 2.0],
+    "gamma_default": 0.0,
+    "gamma_hard_max_abs": 0.02,
+    "delta_per_horse_max_abs": 0.05,
+    "delta_race_range_max": 0.08,
+    "top1_forced_swap": false
+  },
+  "ab_gates": {
+    "hit_at_1": "non_decreasing",
+    "miss_top1": "non_increasing",
+    "ece_abs_worsen_max": 0.02,
+    "rank_churn_max": 0.15,
+    "delta_saturation_rate_max": 0.05,
+    "min_races_recommended": 30
+  }
+}

@@ -102,12 +102,35 @@ class Handler(BaseHTTPRequestHandler):
         self._begin_request(path)
 
         if path == "/health":
+            from .ops.run_recovery import collect_result_automation_health
+
+            ra_health = collect_result_automation_health()
             self._send(
                 200,
                 {
                     "status": "ok",
                     "db": str(app_db.db_path()),
                     "fallback_reasons": list(FALLBACK_REASONS),
+                    "result_automation": {
+                        "ok": ra_health.get("ok"),
+                        "status": ra_health.get("status"),
+                        "issues": ra_health.get("issues") or [],
+                        "stale_active": len(
+                            (ra_health.get("detail") or {}).get("stale_active") or []
+                        ),
+                        "failed_latest": len(
+                            (ra_health.get("detail") or {}).get("failed_latest") or []
+                        ),
+                        "degraded_latest": len(
+                            (ra_health.get("detail") or {}).get("degraded_latest") or []
+                        ),
+                        "manifest_missing": len(
+                            (ra_health.get("detail") or {}).get("manifest_missing") or []
+                        ),
+                        "summary_missing": len(
+                            (ra_health.get("detail") or {}).get("summary_missing") or []
+                        ),
+                    },
                 },
             )
             return
@@ -181,6 +204,47 @@ class Handler(BaseHTTPRequestHandler):
             race_date = (qs.get("date") or qs.get("race_date") or [""])[0] or None
             status = DashboardService().etl_status(race_date=race_date)
             self._send(200, ok(status, {"service": "EtlScheduler"}))
+            return
+
+        if path == "/v1/admin/results/status":
+            from .ops.run_recovery import collect_result_automation_health
+
+            race_date = (qs.get("date") or qs.get("race_date") or [""])[0] or None
+            health = collect_result_automation_health()
+            if race_date:
+                health = {
+                    **health,
+                    "filter_date": race_date,
+                    "detail": {
+                        **(health.get("detail") or {}),
+                        "stale_active": [
+                            x
+                            for x in ((health.get("detail") or {}).get("stale_active") or [])
+                            if x.get("race_date") == race_date
+                        ],
+                        "failed_latest": [
+                            x
+                            for x in ((health.get("detail") or {}).get("failed_latest") or [])
+                            if x.get("race_date") == race_date
+                        ],
+                        "degraded_latest": [
+                            x
+                            for x in ((health.get("detail") or {}).get("degraded_latest") or [])
+                            if x.get("race_date") == race_date
+                        ],
+                        "manifest_missing": [
+                            x
+                            for x in ((health.get("detail") or {}).get("manifest_missing") or [])
+                            if x.get("race_date") == race_date
+                        ],
+                        "summary_missing": [
+                            x
+                            for x in ((health.get("detail") or {}).get("summary_missing") or [])
+                            if x.get("race_date") == race_date
+                        ],
+                    },
+                }
+            self._send(200, ok(health, {"service": "ResultAutomationHealth"}))
             return
 
         if path == "/v1/admin/etl/history":
@@ -440,6 +504,30 @@ class Handler(BaseHTTPRequestHandler):
             race_date = str(body.get("date") or body.get("race_date") or "").strip() or None
             validation = validate_all_races(race_date=race_date)
             self._send(200, ok(validation, {"service": "AutoValidation"}))
+            return
+
+        if path == "/v1/admin/results/run":
+            race_date = str(body.get("date") or body.get("race_date") or "").strip()
+            if not race_date:
+                self._send(*err("BAD_REQUEST", "race_date required", 400))
+                return
+            from .ops.result_automation import get_result_automation
+
+            trigger = str(body.get("trigger") or body.get("trigger_source") or "manual")
+            parent = body.get("parent_run_id")
+            parent_run_id = int(parent) if parent is not None and str(parent).isdigit() else None
+            force = bool(body.get("force"))
+            skip_sync = bool(body.get("skip_result_sync"))
+            evidence_only = bool(body.get("evidence_only"))
+            result = get_result_automation().run(
+                race_date,
+                trigger=trigger,
+                parent_run_id=parent_run_id,
+                force=force,
+                skip_result_sync=skip_sync,
+                evidence_only=evidence_only,
+            )
+            self._send(200, ok(result, {"service": "ResultAutomation"}))
             return
 
         self._send(*err("NOT_FOUND", "unknown path", 404))

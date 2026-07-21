@@ -1,0 +1,9 @@
+{
+  "invite_id": "FIXTURE-INVITE-01",
+  "status": "issued",
+  "issued_at": "2026-07-20T00:00:00+09:00",
+  "expires_at": null,
+  "activated_at": null,
+  "activated_user_id": null,
+  "note": "contract fixture only — not a production invite"
+}

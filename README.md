@@ -1,11 +1,18 @@
-# KEIBA-Single-AI — Web Prototype (Static)
+# KEIBA-Single-AI — Expect UI + API BFF
 
-競馬予想パッケージ **PredictionBundle** を「開催 → レース → 詳細」で閲覧する静的 Web プロトタイプです。  
-AI・API・DB は含みません。表示のみ。
+競馬予想 UI（Expect）と **Cloudflare Pages Functions（BFF）**、**Python WIN5 AI** を JSON API で疎結合した構成です。
 
-- レース詳細は **1レース分の PredictionBundle**（ダミー JSON）を読み込んで描画します。
-- ローカル（`file://`）でも Cloudflare Pages でも動作します。
-- **このリポジトリ直下**が Cloudflare Pages の Root です（ネストした `single-10-cloudflare-deploy/` はありません）。
+```
+UI → PredictionBundle（PredictionService）
+      ├─ race_id → Analysis / Confidence / Ticket / Kaoba
+      └─ Bundle 内投影（ai_confidence / betting_recommendations）
+```
+
+- **共通契約は PredictionBundle**（`single-prediction-bundle/2.0`）。
+- 他サービスは `race_id` キーで参照。フロント入口も Bundle のみ。
+- ブラウザは Python を直接呼びません（同オリジン `/api` のみ）。
+- API 仕様: [`docs/api.md`](./docs/api.md)
+- **このリポジトリ直下**が Cloudflare Pages の Root です。
 
 ---
 
@@ -33,23 +40,34 @@ Cloudflare は本リポジトリを **Worker ではなく Pages** として認�
 
 ## クイックスタート
 
-### 手元で見る（最短）
+### API 付きローカル（推奨）
 
-`public/index.html` をブラウザで開くだけ。
+```bash
+# 1) Python WIN5 AI
+python services/win5-ai/run.py
 
-### HTTP で見る
+# 2) Pages + Functions（別ターミナル）
+npm install
+copy .dev.vars.example .dev.vars   # Windows
+npm run dev
+# http://localhost:8788/ など（wrangler が表示する URL）
+```
+
+### 静的のみ（Functions なし）
 
 ```bash
 cd public
 python -m http.server 8080
-# http://localhost:8080/
 ```
+
+`ExpectApi` は `/api` 不通時に `public/data/mocks/` へフォールバックします。
 
 ### Web に公開する
 
-1. 本リポジトリを GitHub に配置（直下に `public/` があること）
+1. 本リポジトリを GitHub に配置（直下に `public/` と `functions/` があること）
 2. Cloudflare → Workers & Pages → Create → Pages → Connect to Git
 3. 上記「Cloudflare Pages 設定」どおりに入力 → Save and Deploy
+4. Pages の環境変数に `AI_BASE_URL` / `AI_API_KEY` を設定（Python サービス URL）
 
 ---
 
@@ -73,44 +91,28 @@ python -m http.server 8080
 ## ディレクトリ構成
 
 ```text
-KEIBA-Single-AI/                 # ← リポジトリ Root（= Pages Root）
-├─ public/                       # 配信対象（Build output directory）
-│  ├─ index.html
-│  ├─ race.html
-│  ├─ assets/{styles.css, app.js}
-│  ├─ data/{sample_prediction_bundle.json, sample_data.js}
-│  ├─ _headers
-│  └─ _redirects
-├─ functions/                    # 将来 API（現在は文書のみ）
-├─ .gitignore
-├─ README.md
-├─ deployment_guide.md
-├─ github_structure.md
-└─ cloudflare_pages_setup.md
+KEIBA-Single-AI/
+├─ public/                 # UI（Pages 配信）
+│  ├─ assets/api/          # ExpectApi / adapters
+│  └─ data/mocks/          # BFF・静的フォールバック用 JSON
+├─ functions/              # Pages Functions BFF（/api/*）
+├─ services/win5-ai/       # Python WIN5 AI（/v1/*）
+├─ docs/api.md             # API 仕様
+├─ wrangler.toml
+└─ package.json
 ```
 
-詳細は [`github_structure.md`](./github_structure.md)。
+詳細は [`docs/api.md`](./docs/api.md) / [`github_structure.md`](./github_structure.md)。
 
 ---
 
 ## データについて
 
-- 入力契約は **PredictionBundle**（SINGLE-07）。
-- `public/data/sample_prediction_bundle.json` がダミーデータ。
-- `public/data/sample_data.js` は `file://` 用の同一内容フォールバック。
-- 取得順:
-  1. `fetch("data/sample_prediction_bundle.json")`（HTTP 環境）
-  2. 失敗時 `window.SAMPLE_PREDICTION_BUNDLE`（`file://` 環境）
-
-JSON を更新したら `sample_data.js` を再生成（[`deployment_guide.md`](./deployment_guide.md) §6）。
-
----
-
-## 将来の API 追加
-
-`functions/` に Cloudflare Pages Functions を置くと、同一プロジェクトで `/api/*` が使えます。  
-フロントの取得先を静的 JSON から `/api/predictions/{race_id}` に差し替えるだけ（レスポンスは PredictionBundle 契約を維持）。  
-詳細は `functions/README.md`。
+- 契約の中核は **PredictionBundle**（`single-prediction-bundle/2.0`）。
+- 本番経路: `ExpectApi.race(id)` → `/api/race/:id` → Python `/v1/races/{id}/bundle`
+- 開発フォールバック: `public/data/mocks/` および `sample_prediction_bundle.json`
+- **招待制β:** `public/data/users.json` / `invitations.json` は空 seed。招待は `npm run beta -- issue`（[`docs/invitation-operation.md`](./docs/invitation-operation.md)）
+- **公開判定:** [`docs/release-readiness.md`](./docs/release-readiness.md)
 
 ---
 

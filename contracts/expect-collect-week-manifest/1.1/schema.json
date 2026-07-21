@@ -1,0 +1,134 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://expect.keiba/contracts/expect-collect-week-manifest/1.1/schema.json",
+  "title": "CollectWeekManifest",
+  "description": "Weekly Collector supply manifest — C-0 contract. Source of Truth for expected race counts is 開催カレンダー (Planner), not Collector/ETL row counts.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "week_id",
+    "calendar_version",
+    "planner_run_id",
+    "generated_at",
+    "races",
+    "collect",
+    "budget",
+    "status"
+  ],
+  "additionalProperties": true,
+  "properties": {
+    "schema_version": { "const": "expect-collect-week-manifest/1.1" },
+    "week_id": {
+      "type": "string",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+      "description": "Week anchor (Saturday)"
+    },
+    "calendar_version": {
+      "type": "string",
+      "minLength": 1,
+      "description": "開催カレンダー正本バージョン / snapshot id"
+    },
+    "planner_run_id": {
+      "type": "string",
+      "minLength": 1,
+      "description": "collect_runs.planner_run_id"
+    },
+    "generated_at": {
+      "type": "string",
+      "minLength": 1,
+      "description": "ISO-8601 timestamp"
+    },
+    "data_scope": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "venues": { "type": "string" },
+        "race_numbers": { "type": "string" },
+        "note": { "type": "string" }
+      }
+    },
+    "races": {
+      "type": "object",
+      "required": [
+        "total_races_expected",
+        "total_races_ready",
+        "venue_count",
+        "race_count_per_venue",
+        "prediction_ready_races"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "total_races_expected": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "From 開催カレンダー via collect_targets count — not from Collector/ETL"
+        },
+        "total_races_ready": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Race-level STATIC_CORE READY progress"
+        },
+        "venue_count": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Unique venues on target weekend — from calendar"
+        },
+        "race_count_per_venue": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "object",
+            "additionalProperties": { "type": "integer", "minimum": 0 }
+          },
+          "description": "race_date -> venue -> R count"
+        },
+        "prediction_ready_races": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Races meeting Prediction Ready criteria"
+        }
+      }
+    },
+    "collect": {
+      "type": "object",
+      "required": ["ready", "partial", "failed", "retry"],
+      "additionalProperties": true,
+      "properties": {
+        "ready": { "type": "integer", "minimum": 0 },
+        "partial": { "type": "integer", "minimum": 0 },
+        "failed": { "type": "integer", "minimum": 0 },
+        "retry": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "budget": {
+      "type": "object",
+      "required": ["daily_limit", "used", "remaining"],
+      "additionalProperties": true,
+      "properties": {
+        "daily_limit": { "type": "integer", "minimum": 0 },
+        "used": { "type": "integer", "minimum": 0 },
+        "remaining": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "status": {
+      "type": "object",
+      "required": ["prediction_ready", "complete_ready", "dynamic_ready", "dynamic_stale"],
+      "additionalProperties": true,
+      "properties": {
+        "prediction_ready": { "type": "boolean" },
+        "complete_ready": { "type": "boolean" },
+        "dynamic_ready": {
+          "type": "boolean",
+          "description": "All DYNAMIC jobs READY (independent of prediction_ready)"
+        },
+        "dynamic_stale": {
+          "type": "boolean",
+          "description": "Any DYNAMIC job STALE or mid-refresh (independent of prediction_ready)"
+        }
+      }
+    },
+    "notes": {
+      "type": "array",
+      "items": { "type": "string" }
+    }
+  }
+}

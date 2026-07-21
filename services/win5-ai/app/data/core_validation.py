@@ -2,6 +2,9 @@
 """Core validation and deployment gate for real_ai_rate."""
 from __future__ import annotations
 
+import json
+import os
+from pathlib import Path
 from typing import Any
 
 from ..engine.adapters import prediction_adapter
@@ -88,4 +91,47 @@ def check_deployment_gate(
         "previous_real_ai_rate": previous_rate,
         "min_required_rate": floor,
         "deployment": "ok" if ok else "ng",
+    }
+
+
+def check_benchmark_gate(
+    *,
+    baseline_path: Path | None = None,
+    race_ids: list[str] | None = None,
+) -> dict[str, Any]:
+    """
+    Optional KPI regression gate — enabled when CORE_KPI_BASELINE_PATH is set.
+    """
+    from .core_benchmark import compare_to_baseline, run_core_benchmark
+
+    env_path = (os.environ.get("CORE_KPI_BASELINE_PATH") or "").strip()
+    path = baseline_path or (Path(env_path) if env_path else None)
+    if path is None or not path.exists():
+        return {
+            "ok": True,
+            "skipped": True,
+            "reason": "baseline_not_configured",
+            "deployment": "ok",
+        }
+
+    baseline = json.loads(path.read_text(encoding="utf-8"))
+    summary = run_core_benchmark(race_ids=race_ids)
+    cmp = compare_to_baseline(summary, baseline)
+    return {
+        "ok": bool(cmp["ok"]),
+        "skipped": False,
+        "reason": "ok" if cmp["ok"] else "kpi_regressed",
+        "deployment": "ok" if cmp["ok"] else "ng",
+        "kpi": {
+            "hit_at_1": summary.hit_at_1,
+            "hit_at_3": summary.hit_at_3,
+            "hit_at_5": summary.hit_at_5,
+            "mrr": summary.mrr,
+            "ndcg_at_5": summary.ndcg_at_5,
+            "brier_score": summary.brier_score,
+            "log_loss": summary.log_loss,
+            "ece": summary.ece,
+            "races_evaluated": summary.races_evaluated,
+        },
+        "checks": cmp.get("checks") or {},
     }

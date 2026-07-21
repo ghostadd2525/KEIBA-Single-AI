@@ -237,27 +237,35 @@ class EntryRepository:
     def upsert(self, row: dict[str, Any]) -> None:
         conn = connect()
         try:
+            extra = row.get("extra")
+            if extra is None and row.get("weight") is not None:
+                extra = {"weight": row.get("weight")}
+            extra_json = json.dumps(extra, ensure_ascii=False) if extra is not None else None
             conn.execute(
                 """
                 INSERT INTO entries(
                   race_id, horse_id, horse_number, horse_name,
-                  jockey, odds, popularity
-                ) VALUES (?,?,?,?,?,?,?)
+                  frame_number, jockey, odds, popularity, extra_json
+                ) VALUES (?,?,?,?,?,?,?,?,?)
                 ON CONFLICT(race_id, horse_number) DO UPDATE SET
                   horse_id=excluded.horse_id,
                   horse_name=excluded.horse_name,
+                  frame_number=excluded.frame_number,
                   jockey=excluded.jockey,
                   odds=excluded.odds,
-                  popularity=excluded.popularity
+                  popularity=excluded.popularity,
+                  extra_json=COALESCE(excluded.extra_json, entries.extra_json)
                 """,
                 (
                     row["race_id"],
                     row.get("horse_id"),
                     row.get("horse_number"),
                     row.get("horse_name"),
+                    row.get("frame_number") if row.get("frame_number") is not None else row.get("frame"),
                     row.get("jockey"),
                     row.get("odds"),
                     row.get("popularity"),
+                    extra_json,
                 ),
             )
             conn.commit()

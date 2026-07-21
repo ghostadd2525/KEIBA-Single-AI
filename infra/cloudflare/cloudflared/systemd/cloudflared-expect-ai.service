@@ -1,0 +1,17 @@
+[Unit]
+Description=cloudflared tunnel for Expect Python AI (Phase9-A)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=notify
+User=cloudflared
+EnvironmentFile=-/etc/cloudflared/env
+# TUNNEL_TOKEN を EnvironmentFile に置く（terraform output tunnel_token）
+ExecStart=/usr/bin/cloudflared tunnel run --token ${TUNNEL_TOKEN}
+Restart=on-failure
+RestartSec=5
+LimitNOFILE=65536
+
+[Install]
+WantedBy=multi-user.target

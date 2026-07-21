@@ -1,0 +1,13 @@
+{
+  "schema_version": "expect-analysis/1.0",
+  "race_id": "20260719_hanshin_11",
+  "charts": [
+    { "key": "pedigree", "label": "血統", "value": 90 },
+    { "key": "pace", "label": "展開", "value": 86 },
+    { "key": "jockey", "label": "騎手", "value": 84 },
+    { "key": "form", "label": "近走", "value": 88 },
+    { "key": "odds", "label": "オッズ", "value": 79 }
+  ],
+  "overall": 92,
+  "narrative": "本命7は上位確率がやや分離。差し有利の気配で軸は明確。"
+}

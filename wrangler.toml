@@ -20,6 +20,11 @@ compatibility_date = "2026-07-19"
 # AI_ENGINE                = auto | mock | real（観測用）
 # VALIDATE_CONTRACTS       = soft | strict | off
 # EXPECT_ENV               = development | staging | production
+# OPS_MONITOR_KEY          = GET /api/ops/monitor 保護（本番推奨）
+#
+# 本番: Pages デプロイ + EC2 systemd monitor。wrangler dev は開発専用。
+# 監視: npm run monitor:prod（EC2） / npm run monitor:dev（ローカル）
+# 詳細: docs/ops/ops-monitor.md
 
 # Non-secret defaults (override in Dashboard / secrets as needed)
 [vars]
