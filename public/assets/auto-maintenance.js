@@ -1,11 +1,13 @@
 /**
  * Version 1.1 — auto maintenance gate
- * Flag OFF = no-op. Flag ON + CLOSED → maintenance.html
+ * Flag OFF = no-op. Flag ON + CLOSED → maintenance.html（ADMIN は bypass）
  */
 (function (global) {
   "use strict";
 
-  var SKIP_RE = /(^|\/)(maintenance|login|setup|ops)\.html$/i;
+  // Pages pretty URL（/login）と *.html の両方を除外
+  var SKIP_RE = /(^|\/)(maintenance|login|setup|ops)(\.html)?\/?$/i;
+  var BYPASS_ROLES = { ADMIN: 1, OPS: 1, DEVELOPER: 1 };
 
   function pagePath() {
     try {
@@ -28,6 +30,57 @@
     if (!json) return null;
     if (json.data && typeof json.data === "object") return json.data;
     return json;
+  }
+
+  function getAccessToken() {
+    try {
+      return localStorage.getItem("expect_access_token_v1") || "";
+    } catch (e) {
+      return "";
+    }
+  }
+
+  function getLocalUserId() {
+    try {
+      var raw = localStorage.getItem("expect_auth_v1");
+      var auth = raw ? JSON.parse(raw) : null;
+      return (auth && auth.id) || "";
+    } catch (e) {
+      return "";
+    }
+  }
+
+  /** ADMIN / OPS / DEVELOPER は UI でも通常利用（API bypass と揃える） */
+  function isOpsBypassUser() {
+    var token = getAccessToken();
+    if (!token) return Promise.resolve(false);
+
+    var headers = { Accept: "application/json", Authorization: "Bearer " + token };
+    return fetch("/api/auth/me", { cache: "no-store", headers: headers })
+      .then(function (res) {
+        if (!res.ok) return false;
+        return res.json();
+      })
+      .then(function (body) {
+        var data = body && (body.data || body);
+        var role = String((data && data.role) || "").toUpperCase();
+        if (BYPASS_ROLES[role]) return true;
+        var uid = String((data && (data.id || data.user_id)) || getLocalUserId() || "");
+        return fetch("/config/beta.json", { cache: "no-store" })
+          .then(function (r) {
+            return r.ok ? r.json() : null;
+          })
+          .then(function (beta) {
+            var list = (beta && Array.isArray(beta.admin_user_ids) && beta.admin_user_ids) || [];
+            return !!uid && list.map(String).indexOf(uid) >= 0;
+          })
+          .catch(function () {
+            return false;
+          });
+      })
+      .catch(function () {
+        return false;
+      });
   }
 
   function fallbackStatus() {
@@ -62,7 +115,7 @@
   function redirectToMaintenance() {
     var dest = "maintenance.html";
     try {
-      if (!/maintenance\.html$/i.test(pagePath())) {
+      if (!/\/maintenance(\.html)?\/?$/i.test(pagePath())) {
         location.replace(dest);
       }
     } catch (e) {
@@ -71,11 +124,15 @@
   }
 
   function applyGate(status) {
-    if (!status) return;
+    if (!status) return Promise.resolve(status);
     global.ExpectPublicStatus = status;
-    if (String(status.ops_mode).toUpperCase() === "CLOSED") {
-      redirectToMaintenance();
+    if (String(status.ops_mode).toUpperCase() !== "CLOSED") {
+      return Promise.resolve(status);
     }
+    return isOpsBypassUser().then(function (bypass) {
+      if (!bypass) redirectToMaintenance();
+      return status;
+    });
   }
 
   function loadAutoFlag() {
@@ -107,14 +164,13 @@
           return fallbackStatus();
         })
         .then(function (status) {
-          applyGate(status);
-          return status;
+          return applyGate(status);
         });
     });
   }
 
   /**
-   * maintenance.html 用: Flag OFF ならホームへ戻す / status を埋める
+   * maintenance.html 用: Flag OFF / PUBLIC / ADMIN bypass ならホームへ
    */
   function bindMaintenancePage() {
     return loadAutoFlag().then(function (on) {
@@ -132,8 +188,14 @@
             location.replace("index.html");
             return status;
           }
-          fillMaintenanceDom(status);
-          return status;
+          return isOpsBypassUser().then(function (bypass) {
+            if (bypass) {
+              location.replace("index.html");
+              return status;
+            }
+            fillMaintenanceDom(status);
+            return status;
+          });
         });
     });
   }
@@ -173,9 +235,9 @@
     run: run,
     bindMaintenancePage: bindMaintenancePage,
     fillMaintenanceDom: fillMaintenanceDom,
+    isOpsBypassUser: isOpsBypassUser,
   };
 
-  // Auto-run gate on normal pages
   if (!shouldSkip()) {
     if (document.readyState === "loading") {
       document.addEventListener("DOMContentLoaded", function () {
