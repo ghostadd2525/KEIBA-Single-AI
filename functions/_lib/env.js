@@ -3,6 +3,8 @@ export function getEnv(context) {
   const env = context.env || {};
   return {
     AI_BASE_URL: String(env.AI_BASE_URL || "").replace(/\/$/, ""),
+    /** PI KeibaNet API（GET /v1/races 等）。末尾スラッシュなし。 */
+    PI_BASE_URL: String(env.PI_BASE_URL || "").replace(/\/$/, ""),
     AI_API_KEY: String(env.AI_API_KEY || ""),
     AUTH_MODE: String(env.AUTH_MODE || "stub"),
     /** Kaoba 応答: auto | python | rule（契約は不変） */

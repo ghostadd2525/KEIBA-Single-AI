@@ -12,6 +12,7 @@ compatibility_date = "2026-07-19"
 # IaC:         infra/cloudflare/terraform/
 # -----------------------------------------------------------------------------
 # AI_BASE_URL              = Tunnel 上の AI ホスト（例 https://ai-staging....）※公開 Origin 禁止
+# PI_BASE_URL              = PI KeibaNet API（例 http://127.0.0.1:8081 または Tunnel 経由）
 # AI_API_KEY               = BFF→Python 共有鍵（X-AI-Key）
 # CF_ACCESS_CLIENT_ID      = Access Service Token（Tunnel AI 用）
 # CF_ACCESS_CLIENT_SECRET  = Access Service Token secret
@@ -32,3 +33,4 @@ AUTH_MODE = "stub"
 VALIDATE_CONTRACTS = "soft"
 KAOBA_PROVIDER = "auto"
 AI_ENGINE = "real"
+PI_BASE_URL = ""

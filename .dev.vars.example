@@ -5,6 +5,8 @@ EXPECT_ENV=development
 
 # 必須（ローカル）: これが無いと BFF は bff_mock のみ
 AI_BASE_URL=http://127.0.0.1:8000
+# Race Catalog プロキシ先（PI KeibaNet API）
+PI_BASE_URL=http://127.0.0.1:8081
 AI_API_KEY=
 
 # Phase9-A staging/production のみ

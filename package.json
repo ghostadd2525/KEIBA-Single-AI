@@ -4,7 +4,7 @@
   "description": "Expect KEIBA AI — Cloudflare Pages UI + Functions BFF",
   "scripts": {
     "dev": "wrangler pages dev public --compatibility-date=2026-07-19",
-    "dev:ai": "wrangler pages dev public --compatibility-date=2026-07-19 --binding AI_BASE_URL=http://127.0.0.1:8000",
+    "dev:ai": "wrangler pages dev public --compatibility-date=2026-07-19 --binding AI_BASE_URL=http://127.0.0.1:8000 --binding PI_BASE_URL=http://127.0.0.1:8081",
     "ai": "python services/win5-ai/run.py",
     "monitor:dev": "node scripts/ops/monitor-dev.mjs",
     "monitor:prod": "node scripts/ops/monitor-prod.mjs",
@@ -17,6 +17,7 @@
     "test:snapshot": "node --test tests/bff/snapshots.test.mjs",
     "test:ops": "cd services/win5-ai && python -m unittest discover -s tests/ops -p test_*.py -v",
     "test": "node --test tests/contract/*.test.mjs tests/bff/snapshots.test.mjs",
+    "test:race-catalog": "node --test tests/contract/race-catalog.test.mjs",
     "test:monitor": "node --test tests/contract/ops-monitor.test.mjs",
     "test:ops1a": "node --test tests/contract/ops-1a-admin-bypass.test.mjs",
     "improve:cycle": "node scripts/ops/improvement/run-cycle.mjs",

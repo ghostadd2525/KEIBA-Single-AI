@@ -97,8 +97,10 @@
   function raceCardHtml(bundle) {
     var info = (bundle && bundle.race_info) || {};
     var rid = (bundle && bundle.race_id) || info.race_id || "";
-    var place = (info.venue || "") + (info.race_no != null ? " " + info.race_no + "R" : "");
-    var name = info.class_label || "レース";
+    var place =
+      info.race_label ||
+      (info.venue || "") + (info.race_no != null ? " " + info.race_no + "R" : "");
+    var name = info.race_name || info.class_label || "レース";
     var grade = info.grade || "";
     var conf = scorePercent(bundle) || 0;
     var dLabel = dateLabel(info);
