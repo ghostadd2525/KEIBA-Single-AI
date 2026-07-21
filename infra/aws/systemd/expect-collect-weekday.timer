@@ -2,8 +2,8 @@
 Description=Expect Collector — Mon-Fri 06:30 JST (weekday auto collect)
 
 [Timer]
+# EC2 は timedatectl set-timezone Asia/Tokyo 推奨（JST 06:30）
 OnCalendar=Mon..Fri *-*-* 06:30:00
-Timezone=Asia/Tokyo
 Persistent=true
 AccuracySec=5min
 
