@@ -210,23 +210,78 @@ test ! -f /opt/expect-ai/platform/v2_repick_v2.py && echo "OK: not wired on plat
 
 ---
 
-## 7. Collector / Real KeibaNet — HOLD
+## 7. Collector / Real KeibaNet — 平日自動収集（Production）
 
-**方針（v1.0.0-stable）: Real KeibaNet 本接続は HOLD**
+**方針（2026-07-21〜）:** Real KeibaNet 平日自動収集を **有効化**。O-1 検証完了 + 明示 GO を前提とする。
 
-| やってよい | やってはいけない |
-|------------|------------------|
-| RC-1 コードの保持・単体/Controlled 検証の計画 | `EXPECT_KEIBANET_BASE_URL` を本番 `.env` に入れて常時収集 |
-| docs 上の O-1 検証プラン整備 | systemd で本番 Collector を Real 向けに enable |
-| | Go-Live 宣言（Real 接続検証完了前） |
+| コンポーネント | パス |
+|----------------|------|
+| Runner | `python -m app.ops.collect_weekday_runner --mode auto` |
+| systemd service | `infra/aws/systemd/expect-collect-weekday.service` |
+| systemd timer | `infra/aws/systemd/expect-collect-weekday.timer`（月〜金 06:30 JST） |
+| env 例 | `infra/aws/systemd/collect.env.example` |
+| 開催カレンダー | `config/collect-calendars/week_YYYY_MM_DD.json` |
 
-確認:
+### 初回セットアップ（EC2）
 
 ```bash
-grep -iE 'KEIBANET|COLLECT' /opt/expect-ai/shared/.env || echo "OK: no KeibaNet collect config"
-systemctl list-timers --all | grep -iE 'collect|result' || true
-ps aux | grep -iE 'collect|keibanet' | grep -v grep || echo "OK: no collector process"
+sudo mkdir -p /var/lib/expect-ai/collect/{manifests,raw,coverage}
+sudo chown -R expect:expect /var/lib/expect-ai/collect
+
+sudo cp /opt/expect-ai/current/infra/aws/systemd/collect.env.example /etc/expect-ai/collect.env
+# EXPECT_KEIBANET_BASE_URL を編集
+
+sudo cp /opt/expect-ai/current/infra/aws/systemd/expect-collect-weekday.service /etc/systemd/system/
+sudo cp /opt/expect-ai/current/infra/aws/systemd/expect-collect-weekday.timer /etc/systemd/system/
+sudo systemctl daemon-reload
+sudo systemctl enable --now expect-collect-weekday.timer
 ```
+
+### 手動実行（確認）
+
+```bash
+cd /opt/expect-ai/current/services/win5-ai
+set -a && source /etc/expect-ai/collect.env && set +a
+python3 -m app.ops.collect_weekday_runner --mode auto
+python3 -m app.ops.collect_weekday_runner --date 2026-07-21 --force
+```
+
+### 確認
+
+```bash
+systemctl list-timers expect-collect-weekday.timer
+journalctl -u expect-collect-weekday.service -n 50 --no-pager
+ls -la /var/lib/expect-ai/collect/coverage/
+cat /var/lib/expect-ai/collect/coverage/coverage_*_latest.json
+grep -i KEIBANET /etc/expect-ai/collect.env
+```
+
+### PI 接続制限
+
+- `EXPECT_COLLECT_DAILY_LIMIT=200`（SoT: CollectBudget）
+- 超過分は `scheduled_for` 翌営業日へ自動繰越（Weekday Distribution）
+- 未取得（`scheduled_for <= 今日`）を dequeue 優先
+
+### ロールバック
+
+```bash
+sudo systemctl disable --now expect-collect-weekday.timer
+sudo systemctl stop expect-collect-weekday.service
+# collect.env から EXPECT_KEIBANET_BASE_URL を除去またはコメントアウト
+```
+
+詳細: [`collector-production-weekday-runbook.md`](./collector-production-weekday-runbook.md)
+
+---
+
+## 7-legacy. Collector HOLD（v1.0.0-stable 以前の方針・参考）
+
+**旧方針:** Real KeibaNet 本接続 HOLD — 以下は解除済み。監査用に残す。
+
+| やってはいけない（旧） | 現状 |
+|------------------------|------|
+| 無計画な timer enable | timer は `expect-collect-weekday.timer` で管理 |
+| O-1 未完了での Go-Live | O-1 + 本 runbook 承認後に有効化 |
 
 解除条件: [`collector-o1-real-keibanet-validation-plan.md`](./collector-o1-real-keibanet-validation-plan.md) 完了 + 明示 GO。
 

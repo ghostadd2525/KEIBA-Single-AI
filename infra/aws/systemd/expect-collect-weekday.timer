@@ -1,0 +1,11 @@
+[Unit]
+Description=Expect Collector — Mon-Fri 06:30 JST (weekday auto collect)
+
+[Timer]
+OnCalendar=Mon..Fri *-*-* 06:30:00
+Timezone=Asia/Tokyo
+Persistent=true
+AccuracySec=5min
+
+[Install]
+WantedBy=timers.target

@@ -1,0 +1,21 @@
+{
+  "calendar_version": "jra-calendar-2026-w30-prod",
+  "week_id": "2026-07-25",
+  "days": [
+    {
+      "race_date": "2026-07-25",
+      "venues": {
+        "新潟": 12,
+        "中京": 12
+      }
+    },
+    {
+      "race_date": "2026-07-26",
+      "venues": {
+        "新潟": 12,
+        "中京": 12
+      }
+    }
+  ],
+  "notes": "Production weekday collect calendar — update from JRA official schedule before each week."
+}

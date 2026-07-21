@@ -1,0 +1,17 @@
+[Unit]
+Description=Expect Collector — weekday KeibaNet fetch + ETL (STATIC_CORE P1)
+After=network-online.target expect-ai.service
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=ubuntu
+Group=ubuntu
+WorkingDirectory=/home/ubuntu/KEIBA-Single-AI/services/win5-ai
+EnvironmentFile=-/opt/expect-ai/shared/.env
+EnvironmentFile=-/etc/expect-ai/collect.env
+Environment=PYTHONPATH=/opt/expect-ai/platform
+ExecStart=/usr/bin/python3 -m app.ops.collect_weekday_runner --mode auto
+
+[Install]
+WantedBy=multi-user.target
