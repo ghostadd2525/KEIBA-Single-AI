@@ -12,6 +12,30 @@
       "terms_version": "2026-07-19",
       "terms_accepted_at": "2026-07-20T12:00:00.000Z",
       "note": "UI review account. Role REVIEWER is advisory; auth privilege matrix maps unknown roles to USER."
+    },
+    {
+      "user_id": "admin-smoke",
+      "display_name": "admin-smoke",
+      "password_hash": "sha256$expect-beta-v1$79631d1dcfd5649ce3a37c8fe66dd89335e1bb04aa60fed275d09f6502b61c48",
+      "invite_id": null,
+      "status": "active",
+      "role": "ADMIN",
+      "created_at": "2026-07-21T05:46:40.982Z",
+      "terms_version": "2026-07-19",
+      "terms_accepted_at": "2026-07-21T05:46:40.983Z",
+      "note": "prod smoke ADMIN for Auto Maintenance verify"
+    },
+    {
+      "user_id": "admin-20260721",
+      "display_name": "Expect Admin",
+      "password_hash": "sha256$expect-beta-v1$103256ae68e13a280ef941c64caf158538fd89495fb915a1ac494bdb7dba71bf",
+      "invite_id": null,
+      "status": "active",
+      "role": "ADMIN",
+      "created_at": "2026-07-21T12:10:00.000Z",
+      "terms_version": "2026-07-19",
+      "terms_accepted_at": "2026-07-21T12:10:00.000Z",
+      "note": "issued admin account 2026-07-21"
     }
   ]
 }

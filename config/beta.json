@@ -4,7 +4,7 @@
   "maintenance_mode": false,
   "maintenance_message": "ただいまメンテナンス中です。しばらくしてから再度お試しください。",
   "ops_mode": null,
-  "admin_user_ids": [],
+  "admin_user_ids": ["admin-20260721"],
   "terms_version": "2026-07-19",
   "invitation_required": true,
   "max_concurrent_sessions": null,
