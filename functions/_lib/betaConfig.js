@@ -28,6 +28,7 @@ const DEFAULTS = {
     v11_collector_status: false,
     v11_system_health: false,
     v11_ops_dashboard: false,
+    v11_auto_maintenance: false,
   },
 };
 

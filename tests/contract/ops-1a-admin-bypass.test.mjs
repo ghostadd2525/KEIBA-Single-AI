@@ -54,7 +54,7 @@ describe("Phase OPS-1A opsMode evaluateOpsAccess", () => {
 
   it("OPS-Monitor / health は CLOSED でも exempt", async () => {
     const { OpsMode, evaluateOpsAccess } = await load("functions/_lib/opsMode.js");
-    for (const path of ["/api/ops/monitor", "/api/health", "/api/auth/login"]) {
+    for (const path of ["/api/ops/monitor", "/api/health", "/api/auth/login", "/api/ops/public-status"]) {
       const r = evaluateOpsAccess({
         pathname: path,
         opsMode: OpsMode.CLOSED,

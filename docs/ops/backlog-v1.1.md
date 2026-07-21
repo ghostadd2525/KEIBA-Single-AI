@@ -63,6 +63,13 @@ RePick 製品 ON や予想ロジック既定変更は、別ゲートなしでは
 - **作業例:** Ops ダッシュボード（クライアント計測）、Runbook 遵守
 - **完了条件:** Flag `v11_ops_dashboard` で指標表示、一般 nav 非掲載
 
+### B1.1-06 — 開催日自動公開 / 平日メンテナンス（P2）
+
+- **設計:** [`v1.1-auto-maintenance-design.md`](./v1.1-auto-maintenance-design.md)
+- **実装:** Flag `v11_auto_maintenance`（既定 false）· CalendarProvider · `maintenance.html`
+- **制約:** 手動 `maintenance_mode` / `ops_mode` 最優先。Prediction Core / Collector / RePick 非変更
+- **完了条件:** Flag OFF で現行同等 + Flag ON で平日 CLOSED / 土日 PUBLIC
+
 ---
 
 ## 1.1 に入れないもの（明示）

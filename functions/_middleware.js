@@ -3,7 +3,7 @@ import { requireAuth } from "./_lib/auth.js";
 import { resolveAuthorization } from "./_lib/authorization.js";
 import { getBetaConfig } from "./_lib/betaConfig.js";
 import { jsonError } from "./_lib/errors.js";
-import { evaluateOpsAccess, resolveOpsMode } from "./_lib/opsMode.js";
+import { evaluateOpsAccess, resolveOpsModeDetailed } from "./_lib/opsMode.js";
 
 /**
  * Phase OPS-1A — 認可フロー
@@ -34,7 +34,8 @@ export async function onRequest(context) {
 
   // 権限判定は公開制御より先
   const authz = await resolveAuthorization(context, beta);
-  const opsMode = resolveOpsMode(beta);
+  const resolved = await resolveOpsModeDetailed(beta);
+  const opsMode = resolved.ops_mode;
   const access = evaluateOpsAccess({
     pathname: url.pathname,
     opsMode,
@@ -52,6 +53,7 @@ export async function onRequest(context) {
         ops_mode: access.ops_mode,
         role: access.role,
         reason: access.reason,
+        resolve_reason: resolved.reason,
       },
     });
     return jsonError(
@@ -70,6 +72,7 @@ export async function onRequest(context) {
         path: url.pathname,
         ops_mode: opsMode,
         role: access.role,
+        resolve_reason: resolved.reason,
       },
     });
   }
