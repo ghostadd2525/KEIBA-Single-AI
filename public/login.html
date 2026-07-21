@@ -111,6 +111,11 @@
 
       <p class="login-error" id="loginError" role="alert"></p>
 
+      <p class="login-session" id="loginSession" hidden>
+        <span id="loginSessionLabel"></span>
+        <button type="button" class="login-session-out" id="loginLogoutBtn">ログアウトして切り替え</button>
+      </p>
+
       <div class="login-notice">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
           <path d="M12 3 5 6v6c0 4.5 2.9 7.8 7 9 4.1-1.2 7-4.5 7-9V6l-7-3Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
@@ -125,26 +130,53 @@
   </div>
 
   <script src="assets/api/calendar-weekend.js?v=11.2"></script>
-  <script src="assets/auto-maintenance.js?v=11.3"></script>
+  <script src="assets/auto-maintenance.js?v=11.4"></script>
   <script src="assets/api/auth.js"></script>
   <script src="assets/favorites.js"></script>
   <script src="assets/auth.js"></script>
   <script>
     (function () {
-      if (ExpectAuth.isLoggedIn()) {
-        if (!ExpectAuth.hasAcceptedTerms()) {
-          location.replace("terms.html");
-          return;
-        }
-        ExpectAutoMaintenance.goPostAuthLanding();
-        return;
-      }
-
+      // login /login: Auto Maintenance は SKIP。既ログインでも自動遷移しない（アカウント切替テスト用）
       var err = document.getElementById("loginError");
+      var sessionEl = document.getElementById("loginSession");
+      var sessionLabel = document.getElementById("loginSessionLabel");
+      var logoutBtn = document.getElementById("loginLogoutBtn");
       var paneAccount = document.getElementById("paneAccount");
       var paneInvite = document.getElementById("paneInvite");
       var tabAccount = document.getElementById("tabAccount");
       var tabInvite = document.getElementById("tabInvite");
+
+      function syncSessionBanner() {
+        if (!sessionEl || !sessionLabel) return;
+        var cur = ExpectAuth.current && ExpectAuth.current();
+        if (ExpectAuth.isLoggedIn() && cur && cur.id) {
+          sessionLabel.textContent = "現在: " + cur.id + " でサインイン中";
+          sessionEl.hidden = false;
+        } else {
+          sessionEl.hidden = true;
+          sessionLabel.textContent = "";
+        }
+      }
+
+      syncSessionBanner();
+
+      if (logoutBtn) {
+        logoutBtn.addEventListener("click", function () {
+          err.textContent = "";
+          var done = ExpectAuth.logout && ExpectAuth.logout();
+          Promise.resolve(done)
+            .catch(function () { /* ignore */ })
+            .then(function () {
+              syncSessionBanner();
+            });
+        });
+      }
+
+      var inviteFromUrl = new URLSearchParams(location.search).get("id");
+      if (inviteFromUrl) {
+        var tempInput = document.getElementById("tempId");
+        if (tempInput) tempInput.value = inviteFromUrl.trim();
+      }
 
       function showTab(name) {
         var isAccount = name === "account";
