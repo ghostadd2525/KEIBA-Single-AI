@@ -53,9 +53,14 @@
         <h3 id="favAiTitle">お気に入りレースのAI評価</h3>
         <p class="analysis-lead">登録中のレースごとにパラメータを円グラフ表示します。</p>
         <div class="fav-ai-grid" id="favAiGrid" aria-busy="true">
-          <div class="expect-skeleton" id="favAiSkeleton">
-            <div class="expect-skel expect-skel--card"></div>
-            <div class="expect-skel expect-skel--card"></div>
+          <div class="expect-loading expect-loading--compact" role="status" aria-live="polite" aria-busy="true" data-expect-loading="1">
+            <div class="expect-loading__spinner" aria-hidden="true"></div>
+            <p class="expect-loading__title">ロード中...</p>
+            <p class="expect-loading__msg">しばらくお待ちください。</p>
+            <div class="expect-loading__progress" data-expect-load-track role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+              <div class="expect-loading__bar"><span class="expect-loading__fill" data-expect-load-fill></span></div>
+              <p class="expect-loading__meta" data-expect-load-meta>経過 0.0秒</p>
+            </div>
           </div>
         </div>
       </section>
@@ -269,7 +274,10 @@
         var summary = document.getElementById("analysisSummary");
         var grid = document.getElementById("favAiGrid");
         if (summary) summary.classList.remove("is-loading");
-        if (grid) grid.setAttribute("aria-busy", "false");
+        if (grid) {
+          if (window.ExpectUx && ExpectUx.hideLoading) ExpectUx.hideLoading(grid);
+          else grid.setAttribute("aria-busy", "false");
+        }
       }
 
       function enrichFromApi(list) {

@@ -5,6 +5,12 @@
 (function (global) {
   "use strict";
 
+  var DEFAULT_LOADING_TITLE = "ロード中...";
+  var DEFAULT_LOADING_MSG = "しばらくお待ちください。";
+  var LOAD_AVG_KEY = "expect_ux_load_avg_ms";
+  var DEFAULT_EXPECTED_MS = 2800;
+  var _loadTimers = [];
+
   function el(html) {
     var t = document.createElement("template");
     t.innerHTML = String(html).trim();
@@ -22,6 +28,203 @@
     for (var i = 0; i < n; i++) parts.push('<div class="' + cls + '"></div>');
     parts.push("</div>");
     return parts.join("");
+  }
+
+  function readExpectedMs() {
+    try {
+      var v = parseFloat(sessionStorage.getItem(LOAD_AVG_KEY) || "");
+      if (isFinite(v) && v >= 600 && v <= 30000) return v;
+    } catch (e) {}
+    return DEFAULT_EXPECTED_MS;
+  }
+
+  function rememberLoadMs(ms) {
+    if (!isFinite(ms) || ms < 80) return;
+    ms = Math.min(30000, Math.max(200, ms));
+    try {
+      var prev = parseFloat(sessionStorage.getItem(LOAD_AVG_KEY) || "");
+      var next = isFinite(prev) && prev > 0 ? prev * 0.65 + ms * 0.35 : ms;
+      sessionStorage.setItem(LOAD_AVG_KEY, String(Math.round(next)));
+    } catch (e) {}
+  }
+
+  function formatSec(ms) {
+    var s = Math.max(0, ms) / 1000;
+    if (s < 10) return s.toFixed(1) + "秒";
+    return Math.round(s) + "秒";
+  }
+
+  function stopProgress(panel) {
+    if (!panel) return;
+    var tid = panel._expectLoadTimer;
+    if (tid) {
+      clearInterval(tid);
+      panel._expectLoadTimer = null;
+    }
+    _loadTimers = _loadTimers.filter(function (p) {
+      return p !== panel;
+    });
+  }
+
+  /**
+   * 経過時間＋横バー（APIは実進捗なし → 目安時間に漸近する推定バー）
+   */
+  function startProgress(panel, opts) {
+    opts = opts || {};
+    if (!panel || panel._expectLoadTimer) return;
+    var expected = opts.expectedMs > 0 ? opts.expectedMs : readExpectedMs();
+    var started = Date.now();
+    panel._expectLoadStarted = started;
+    panel._expectLoadExpected = expected;
+
+    var fill = panel.querySelector("[data-expect-load-fill]");
+    var meta = panel.querySelector("[data-expect-load-meta]");
+    var track = panel.querySelector("[data-expect-load-track]");
+    if (!fill || !meta) return;
+
+    if (track) {
+      track.setAttribute("aria-valuemin", "0");
+      track.setAttribute("aria-valuemax", "100");
+    }
+
+    function tick(forcePct) {
+      var elapsed = Date.now() - started;
+      var pct;
+      if (forcePct != null) {
+        pct = forcePct;
+      } else {
+        // 目安時間で ~90% 付近まで漸近（完了まで 100% にしない）
+        pct = (1 - Math.exp(-elapsed / Math.max(400, expected))) * 92;
+        if (pct > 92) pct = 92;
+      }
+      fill.style.width = pct.toFixed(1) + "%";
+      if (track) {
+        track.setAttribute("aria-valuenow", String(Math.round(pct)));
+        track.setAttribute(
+          "aria-label",
+          "読み込み進捗 約" + Math.round(pct) + "%、経過 " + formatSec(elapsed)
+        );
+      }
+      meta.textContent =
+        "経過 " +
+        formatSec(elapsed) +
+        " ／ 目安 " +
+        formatSec(expected);
+    }
+
+    tick();
+    panel._expectLoadTimer = setInterval(tick, 80);
+    _loadTimers.push(panel);
+    panel._expectLoadComplete = function () {
+      var elapsed = Date.now() - started;
+      rememberLoadMs(elapsed);
+      tick(100);
+      stopProgress(panel);
+    };
+  }
+
+  /**
+   * @param {{
+   *   title?: string,
+   *   message?: string,
+   *   compact?: boolean,
+   *   overlay?: boolean,
+   *   expectedMs?: number,
+   *   progress?: boolean
+   * }} [opts]
+   */
+  function loadingPanel(opts) {
+    opts = opts || {};
+    var title = opts.title != null ? opts.title : DEFAULT_LOADING_TITLE;
+    var message = opts.message != null ? opts.message : DEFAULT_LOADING_MSG;
+    var showProgress = opts.progress !== false;
+    var cls = "expect-loading";
+    if (opts.compact) cls += " expect-loading--compact";
+    if (opts.overlay) cls += " expect-loading--overlay";
+    var root = el(
+      '<div class="' +
+        cls +
+        '" role="status" aria-live="polite" aria-busy="true" data-expect-loading="1">' +
+        '<div class="expect-loading__spinner" aria-hidden="true"></div>' +
+        '<p class="expect-loading__title"></p>' +
+        '<p class="expect-loading__msg"></p>' +
+        (showProgress
+          ? '<div class="expect-loading__progress" data-expect-load-track role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">' +
+            '<div class="expect-loading__bar"><span class="expect-loading__fill" data-expect-load-fill></span></div>' +
+            '<p class="expect-loading__meta" data-expect-load-meta>経過 0.0秒</p>' +
+            "</div>"
+          : "") +
+        "</div>"
+    );
+    root.querySelector(".expect-loading__title").textContent = title;
+    root.querySelector(".expect-loading__msg").textContent = message;
+    if (showProgress) startProgress(root, opts);
+    return root;
+  }
+
+  function loadingHtml(opts) {
+    return loadingPanel(opts).outerHTML;
+  }
+
+  /**
+   * mount 内にローディング画面を差し込む。
+   * replace=true（既定）で中身を置換、false でオーバーレイ追加。
+   */
+  function showLoading(mount, opts) {
+    opts = opts || {};
+    if (!mount) return null;
+    var replace = opts.replace !== false;
+    mount.setAttribute("aria-busy", "true");
+    mount.classList.add("is-api-loading");
+    if (replace) {
+      clearChildren(mount);
+      var panel = loadingPanel(opts);
+      mount.appendChild(panel);
+      return panel;
+    }
+    hideLoading(mount, { keepBusy: true });
+    var overlay = loadingPanel(Object.assign({}, opts, { overlay: true }));
+    if (getComputedStyle(mount).position === "static") {
+      mount.style.position = "relative";
+    }
+    mount.appendChild(overlay);
+    return overlay;
+  }
+
+  function hideLoading(mount, opts) {
+    opts = opts || {};
+    if (!mount) return;
+    mount.querySelectorAll("[data-expect-loading='1']").forEach(function (n) {
+      if (!opts.keepBusy && typeof n._expectLoadComplete === "function") {
+        try {
+          n._expectLoadComplete();
+        } catch (e) {}
+      } else {
+        stopProgress(n);
+      }
+      n.remove();
+    });
+    if (!opts.keepBusy) {
+      mount.setAttribute("aria-busy", "false");
+      mount.classList.remove("is-api-loading");
+    }
+  }
+
+  /** 静的HTMLのローディング枠にも進捗バーを付ける */
+  function bootStaticLoading() {
+    document.querySelectorAll("[data-expect-loading='1']").forEach(function (panel) {
+      if (panel._expectLoadTimer) return;
+      if (!panel.querySelector("[data-expect-load-fill]")) {
+        var wrap = el(
+          '<div class="expect-loading__progress" data-expect-load-track role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">' +
+            '<div class="expect-loading__bar"><span class="expect-loading__fill" data-expect-load-fill></span></div>' +
+            '<p class="expect-loading__meta" data-expect-load-meta>経過 0.0秒</p>' +
+            "</div>"
+        );
+        panel.appendChild(wrap);
+      }
+      startProgress(panel);
+    });
   }
 
   function stateCard(opts) {
@@ -99,11 +302,24 @@
 
   global.ExpectUx = {
     skeletonCards: skeletonCards,
+    loadingPanel: loadingPanel,
+    loadingHtml: loadingHtml,
+    showLoading: showLoading,
+    hideLoading: hideLoading,
+    bootStaticLoading: bootStaticLoading,
     stateCard: stateCard,
     showIn: showIn,
     setLoadingClass: setLoadingClass,
     typingRow: typingRow,
     removeTyping: removeTyping,
     scrollLogToBottom: scrollLogToBottom,
+    DEFAULT_LOADING_TITLE: DEFAULT_LOADING_TITLE,
+    DEFAULT_LOADING_MSG: DEFAULT_LOADING_MSG,
   };
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", bootStaticLoading);
+  } else {
+    bootStaticLoading();
+  }
 })(window);

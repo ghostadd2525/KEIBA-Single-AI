@@ -66,7 +66,14 @@
     if (!ExpectUiFeatures.enabled("v11_loading_errors")) return;
     var mount = document.getElementById("aiCards");
     if (mount && mount.classList.contains("is-loading") && window.ExpectUx) {
-      if (!mount.querySelector(".expect-skeleton")) {
+      if (ExpectUx.showLoading && !mount.querySelector("[data-expect-loading='1']")) {
+        ExpectUx.showLoading(mount, {
+          replace: false,
+          compact: true,
+          title: "ロード中...",
+          message: "しばらくお待ちください。",
+        });
+      } else if (!mount.querySelector(".expect-skeleton") && !mount.querySelector("[data-expect-loading='1']")) {
         var sk = document.createElement("div");
         sk.className = "v11-home-skel";
         sk.innerHTML = ExpectUx.skeletonCards(3, "ai");

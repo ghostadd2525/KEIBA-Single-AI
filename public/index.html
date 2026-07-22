@@ -393,13 +393,19 @@
             );
           }
           if (predictCard) predictCard.classList.remove("is-updating");
-          if (mount) mount.classList.remove("is-loading");
+          if (mount) {
+            mount.classList.remove("is-loading");
+            if (window.ExpectUx && ExpectUx.hideLoading) ExpectUx.hideLoading(mount);
+            var sk = mount.querySelector(".v11-home-skel");
+            if (sk) sk.remove();
+          }
         }
 
         function fail(msg) {
           if (predictCard) predictCard.classList.remove("is-updating");
           if (mount) {
             mount.classList.remove("is-loading");
+            if (window.ExpectUx && ExpectUx.hideLoading) ExpectUx.hideLoading(mount);
             var sk = mount.querySelector(".v11-home-skel");
             if (sk) sk.remove();
           }
@@ -426,7 +432,17 @@
         }
 
         if (predictCard) predictCard.classList.add("is-updating");
-        if (mount) mount.classList.add("is-loading");
+        if (mount) {
+          mount.classList.add("is-loading");
+          if (window.ExpectUx && ExpectUx.showLoading) {
+            ExpectUx.showLoading(mount, {
+              replace: false,
+              compact: true,
+              title: "ロード中...",
+              message: "しばらくお待ちください。",
+            });
+          }
+        }
 
         var listDate =
           window.ExpectRealDataBind && ExpectRealDataBind.resolveHomeDate

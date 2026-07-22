@@ -95,13 +95,15 @@
       </div>
 
       <div class="race-list" id="raceList" aria-busy="true">
-        <div class="expect-skeleton" id="raceListSkeleton" role="status" aria-label="レース読み込み中">
-          <div class="expect-skel expect-skel--card"></div>
-          <div class="expect-skel expect-skel--card"></div>
-          <div class="expect-skel expect-skel--card"></div>
-          <div class="expect-skel expect-skel--card"></div>
+        <div class="expect-loading" role="status" aria-live="polite" aria-busy="true" data-expect-loading="1">
+          <div class="expect-loading__spinner" aria-hidden="true"></div>
+          <p class="expect-loading__title">ロード中...</p>
+          <p class="expect-loading__msg">しばらくお待ちください。</p>
+          <div class="expect-loading__progress" data-expect-load-track role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+            <div class="expect-loading__bar"><span class="expect-loading__fill" data-expect-load-fill></span></div>
+            <p class="expect-loading__meta" data-expect-load-meta>経過 0.0秒</p>
+          </div>
         </div>
-        <p class="race-list-empty" id="raceListEmpty" hidden>レースを読み込み中…</p>
       </div>
     </div>
 
@@ -495,6 +497,7 @@
       if (!list) return;
 
       function renderError(message) {
+        if (window.ExpectUx && ExpectUx.hideLoading) ExpectUx.hideLoading(list);
         list.setAttribute("aria-busy", "false");
         list.innerHTML = "";
         if (window.ExpectUx) {
@@ -541,6 +544,7 @@
       }
 
       function renderV1Bundles(bundles) {
+        if (window.ExpectUx && ExpectUx.hideLoading) ExpectUx.hideLoading(list);
         var filtered = window.ExpectContractGuard
           ? ExpectContractGuard.filterValidBundles(bundles)
           : { ok: bundles || [], rejected: [] };
@@ -576,6 +580,7 @@
       }
 
       function renderV2Cards(payload) {
+        if (window.ExpectUx && ExpectUx.hideLoading) ExpectUx.hideLoading(list);
         var cards = (payload && payload.race_cards) || [];
         var listDate = (payload && payload.date) || "";
         raceListController.loadedDate = listDate;
@@ -613,6 +618,9 @@
           renderError("API クライアントが読み込めていません。");
           return;
         }
+        if (window.ExpectUx && ExpectUx.showLoading) {
+          ExpectUx.showLoading(list);
+        }
         ExpectApi.Prediction.list({})
           .then(renderV1Bundles)
           .catch(function () {
@@ -626,7 +634,11 @@
           renderError("RaceCardSummary クライアントが読み込めていません。");
           return;
         }
-        list.setAttribute("aria-busy", "true");
+        if (window.ExpectUx && ExpectUx.showLoading) {
+          ExpectUx.showLoading(list);
+        } else {
+          list.setAttribute("aria-busy", "true");
+        }
         ExpectApi.RaceCards.list({ date: dateOpt || undefined })
           .then(renderV2Cards)
           .catch(function (err) {

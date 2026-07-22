@@ -190,6 +190,7 @@
     var chartCard = document.getElementById("chartCard");
 
     function markReady() {
+      if (window.ExpectUx && ExpectUx.hideLoading) ExpectUx.hideLoading(detailMount);
       if (honmeiCard) {
         honmeiCard.classList.remove("is-loading");
         honmeiCard.classList.add("is-ready");
@@ -199,6 +200,13 @@
 
     if (window.ExpectApi && ExpectApi.Prediction && window.ExpectPredictionBind) {
       var startDetail = function () {
+      if (window.ExpectUx && ExpectUx.showLoading) {
+        ExpectUx.showLoading(detailMount, {
+          replace: false,
+          title: "ロード中...",
+          message: "しばらくお待ちください。",
+        });
+      }
       ExpectApi.Prediction.getWithMeta(id)
         .then(function (result) {
           var bundle = result.bundle;

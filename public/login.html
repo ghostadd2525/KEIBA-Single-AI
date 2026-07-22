@@ -347,6 +347,8 @@
         if (missing) return;
 
         if (getFailCount(FAIL_KEY_ACCOUNT) >= FAIL_LIMIT) {
+          if (loginIdInput) loginIdInput.value = "";
+          if (passwordInput) passwordInput.value = "";
           showFieldHint(loginIdInput, MSG_LOCKED, "is-hint-locked");
           showFieldHint(passwordInput, MSG_LOCKED, "is-hint-locked");
           return;
@@ -375,6 +377,7 @@
         }
 
         if (getFailCount(FAIL_KEY_INVITE) >= FAIL_LIMIT) {
+          if (tempIdInput) tempIdInput.value = "";
           showFieldHint(tempIdInput, MSG_LOCKED, "is-hint-locked");
           return;
         }

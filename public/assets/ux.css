@@ -3,6 +3,127 @@
  * Figma モックのトークン（gold / dark）を維持。契約・API 非依存。
  */
 
+@keyframes expect-spin {
+  to { transform: rotate(360deg); }
+}
+
+.expect-loading {
+  display: grid;
+  justify-items: center;
+  align-content: center;
+  gap: 14px;
+  min-height: 220px;
+  padding: 28px 16px;
+  border-radius: 16px;
+  border: 1px solid rgba(193, 162, 109, 0.28);
+  background:
+    radial-gradient(ellipse 80% 60% at 50% 0%, rgba(193, 162, 109, 0.1), transparent 60%),
+    rgba(14, 18, 26, 0.92);
+  text-align: center;
+  color: var(--gold-soft, #e5c78f);
+  animation: expect-fade-up 0.28s ease both;
+}
+
+.expect-loading__spinner {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: 3px solid rgba(193, 162, 109, 0.22);
+  border-top-color: var(--gold-soft, #e5c78f);
+  animation: expect-spin 0.85s linear infinite;
+}
+
+.expect-loading__title {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: #fff;
+}
+
+.expect-loading__msg {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.55;
+  color: var(--muted, #9aa3b2);
+  max-width: 16em;
+}
+
+.expect-loading__progress {
+  width: min(100%, 260px);
+  margin-top: 4px;
+  display: grid;
+  gap: 8px;
+  justify-items: stretch;
+}
+
+.expect-loading__bar {
+  height: 8px;
+  border-radius: 999px;
+  overflow: hidden;
+  background: rgba(193, 162, 109, 0.16);
+  border: 1px solid rgba(193, 162, 109, 0.28);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.35);
+}
+
+.expect-loading__fill {
+  display: block;
+  height: 100%;
+  width: 0%;
+  border-radius: inherit;
+  background: linear-gradient(
+    90deg,
+    rgba(193, 162, 109, 0.55),
+    var(--gold-soft, #e5c78f) 45%,
+    #f3e2b8 100%
+  );
+  box-shadow: 0 0 12px rgba(229, 199, 143, 0.35);
+  transition: width 0.08s linear;
+}
+
+.expect-loading__meta {
+  margin: 0;
+  font-size: 11px;
+  letter-spacing: 0.02em;
+  color: var(--muted, #9aa3b2);
+  font-variant-numeric: tabular-nums;
+}
+
+.expect-loading--compact {
+  min-height: 140px;
+  padding: 20px 14px;
+  gap: 10px;
+}
+
+.expect-loading--compact .expect-loading__spinner {
+  width: 32px;
+  height: 32px;
+}
+
+.expect-loading--compact .expect-loading__progress {
+  width: min(100%, 220px);
+}
+
+.expect-loading--compact .expect-loading__bar {
+  height: 6px;
+}
+
+.expect-loading--overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 40;
+  min-height: 0;
+  border-radius: inherit;
+  background: rgba(8, 10, 14, 0.78);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+
+.is-api-loading {
+  position: relative;
+  min-height: 180px;
+}
+
 /* —— Skeleton —— */
 @keyframes expect-shimmer {
   0% { background-position: 100% 0; }
