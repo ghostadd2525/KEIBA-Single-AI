@@ -350,6 +350,11 @@ body.is-race-search {
   min-height: 96px;
 }
 
+.race-item[hidden],
+.race-item.is-filtered-out {
+  display: none !important;
+}
+
 .race-item--bg1 { background-image: url("./images/race-bg-1.png"); }
 .race-item--bg2 { background-image: url("./images/race-bg-2.png"); }
 .race-item--bg3 { background-image: url("./images/race-bg-3.png"); }

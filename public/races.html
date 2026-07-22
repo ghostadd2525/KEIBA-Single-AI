@@ -231,12 +231,14 @@
 
       function applyFilters() {
         var shown = 0;
+        var emptyNow = document.getElementById("raceListEmpty");
         items().forEach(function (item) {
           var ok = match(item);
           item.hidden = !ok;
+          item.classList.toggle("is-filtered-out", !ok);
           if (ok) shown += 1;
         });
-        if (emptyEl) emptyEl.hidden = shown > 0;
+        if (emptyNow) emptyNow.hidden = shown > 0;
         if (countEl) {
           countEl.textContent =
             shown + "件のレースが見つかりました（全" + items().length + "件中）";
@@ -363,12 +365,18 @@
       document.getElementById("venueChips").addEventListener("click", function (e) {
         var btn = e.target.closest("[data-venue]");
         if (!btn) return;
+        e.preventDefault();
         state.venue = btn.getAttribute("data-venue") || "all";
+        setActive(this, "data-venue", state.venue);
         applyFilters();
       });
 
       syncDateFromUrl({ normalize: true });
       applyFilters();
+
+      global.addEventListener("expect:race-filters-ready", function () {
+        applyFilters();
+      });
 
       if (window.ExpectRaceListUrl && ExpectRaceListUrl.bindPopState) {
         ExpectRaceListUrl.bindPopState(function () {

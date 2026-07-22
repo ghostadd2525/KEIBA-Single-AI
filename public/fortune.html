@@ -10,7 +10,7 @@
   <link rel="stylesheet" href="assets/styles.css" />
   <link rel="stylesheet" href="assets/screens.css" />
   <script src="assets/api/calendar-weekend.js?v=11"></script>
-  <script src="assets/auto-maintenance.js?v=11.3"></script>
+  <script src="assets/auto-maintenance.js?v=11.5"></script>
   <script src="assets/auth.js"></script>
   <script>
     if (ExpectAuth.requireAuth() && window.ExpectAutoMaintenance) {
@@ -18,7 +18,7 @@
     }
   </script>
 </head>
-<body class="page-screen page-fortune" data-nav="home">
+<body class="page-screen page-fortune page-tab" data-nav="home">
   <div class="app">
     <header class="topbar">
       <div class="topbar-inner">
@@ -52,7 +52,13 @@
 
       <section class="chart-card fortune-card">
         <h3>ラッキー項目</h3>
-        <ul class="fortune-lucky" id="fortuneLucky"></ul>
+        <ul class="fortune-lucky" id="fortuneLucky">
+          <li><span>ラッキー会場</span><b>—</b></li>
+          <li><span>ラッキー脚質</span><b>—</b></li>
+          <li><span>ラッキー番号</span><b>—</b></li>
+          <li><span>ラッキー券種</span><b>—</b></li>
+          <li><span>ラッキーカラー</span><b>—</b></li>
+        </ul>
       </section>
 
       <section class="chart-card fortune-card">
@@ -61,25 +67,30 @@
       </section>
 
       <button type="button" class="fortune-draw" id="fortuneDraw">運試しカードを引く</button>
-      <p class="fortune-note">※娯楽用の占いです。馬券は自己責任で楽しんでね。</p>
+      <p class="fortune-note" id="fortuneNote">※娯楽用の占いです。馬券は自己責任で楽しんでね。1日1回まで。</p>
     </div>
 
     <aside class="mascot-ka0ba" id="mascotKa0ba" data-mascot-mode="png">
       <div class="mascot-bubble" id="mascotBubble" role="status" aria-live="polite"></div>
-      <button type="button" class="mascot-figure" id="mascotTalkBtn" aria-label="KA0BAに話しかける">
+      <button type="button" class="mascot-figure" id="mascotTalkBtn" aria-label="KAOBAに話しかける">
         <img data-mascot-fallback src="assets/images/mascot-ka0ba.png?v=10" alt="" height="140" draggable="false" />
       </button>
     </aside>
 
     <div data-expect-nav></div>
   </div>
+  <script src="assets/api/mock-gate.js"></script>
+  <script src="assets/api/auth.js"></script>
+  <script src="assets/api/race-list-url.js?v=12"></script>
+  <script src="assets/api/prediction.js"></script>
+  <script src="assets/api/real-data-bind.js"></script>
   <script src="assets/favorites.js"></script>
   <script src="assets/shell.js"></script>
   <script src="assets/reminders.js"></script>
   <script src="assets/partials-nav.js"></script>
   <script>
     (function () {
-      /* 5分割スタンプ（喜・怒・哀・楽・駄々っ子）を結果ごとに1枚ずつ */
+      var FORTUNE_KEY = "expect_fortune_daily_v1";
       var EMOTIONS = {
         joy:     { src: "assets/images/kaoba-emotion-joy.png?v=3",     label: "喜（よろこび）" },
         anger:   { src: "assets/images/kaoba-emotion-anger.png?v=3",   label: "怒（いかり）" },
@@ -95,10 +106,15 @@
         { rank: "末吉", score: 52, emotion: "tantrum", msg: "焦らず様子見も吉。気になる1鞍だけに絞ると◎。" }
       ];
       var COLORS = ["赤", "金", "紺", "緑", "紫", "白"];
-      var VENUES = ["函館", "阪神", "中山", "東京", "福島"];
-      var STYLES = ["差し", "先行", "逃げ", "追込"];
-      var BETS = ["ワイド", "馬連", "単勝", "三連複"];
-      var NUMS = ["3", "5", "7", "8", "1", "4", "6", "9"];
+      var STYLE_FALLBACK = ["逃げ", "先行", "差し", "追込"];
+      var BET_FALLBACK = ["単勝", "複勝", "馬連", "ワイド", "三連複"];
+      var STYLE_FROM_ROUTE = {
+        midupper_route: "先行",
+        midupper_world: "先行",
+        front_route: "逃げ",
+        closer_route: "差し",
+        deep_closer_route: "追込",
+      };
       var ADVICE = [
         "本命は1頭に絞り、相手は最大3頭まで。深追いは今日は控えめに。",
         "午前中の気配を見てから午後の勝負レースへ。焦らないのが勝ち。",
@@ -107,35 +123,158 @@
         "回収より的中率を意識。少点数のフォーメーションが今日の鍵。"
       ];
 
-      function hashDay(d) {
-        var key = d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate();
+      var drawBtn = document.getElementById("fortuneDraw");
+      var racePools = null;
+      var raceDateIso = "";
+      var dateLabel = "—";
+
+      function hashStr(s) {
         var h = 0;
-        for (var i = 0; i < key.length; i++) h = (h * 31 + key.charCodeAt(i)) >>> 0;
+        var str = String(s || "");
+        for (var i = 0; i < str.length; i++) h = (h * 31 + str.charCodeAt(i)) >>> 0;
         return h;
       }
 
       function pick(arr, n) {
+        if (!arr || !arr.length) return "";
         return arr[n % arr.length];
       }
 
-      function buildFortune(seed) {
-        var rank = pick(RANKS, seed);
+      function unique(list) {
+        var seen = {};
+        var out = [];
+        (list || []).forEach(function (v) {
+          var key = String(v == null ? "" : v).trim();
+          if (!key || seen[key]) return;
+          seen[key] = true;
+          out.push(key);
+        });
+        return out;
+      }
+
+      function jstDateIso() {
+        if (window.ExpectRealDataBind && ExpectRealDataBind.resolveHomeDate) {
+          var d = ExpectRealDataBind.resolveHomeDate();
+          if (d) return d;
+        }
+        if (window.ExpectWeekendCalendar && ExpectWeekendCalendar.decide) {
+          var cal = ExpectWeekendCalendar.decide(new Date());
+          if (cal && cal.is_race_day && cal.date_jst) return cal.date_jst;
+          if (cal && cal.next_open_date_jst) return cal.next_open_date_jst;
+        }
+        var fmt = new Intl.DateTimeFormat("en-CA", {
+          timeZone: "Asia/Tokyo",
+          year: "numeric",
+          month: "2-digit",
+          day: "2-digit",
+        });
+        return fmt.format(new Date());
+      }
+
+      function formatDateLabel(iso) {
+        var m = String(iso || "").match(/^(\d{4})-(\d{2})-(\d{2})$/);
+        if (!m) return String(iso || "—");
+        var week = ["日", "月", "火", "水", "木", "金", "土"];
+        var dt = new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]));
+        return (
+          Number(m[1]) +
+          "年" +
+          Number(m[2]) +
+          "月" +
+          Number(m[3]) +
+          "日（" +
+          week[dt.getDay()] +
+          "）"
+        );
+      }
+
+      function readStored() {
+        try {
+          return JSON.parse(localStorage.getItem(FORTUNE_KEY) || "null");
+        } catch (e) {
+          return null;
+        }
+      }
+
+      function writeStored(payload) {
+        try {
+          localStorage.setItem(FORTUNE_KEY, JSON.stringify(payload));
+        } catch (e) { /* ignore */ }
+      }
+
+      function extractPools(bundles) {
+        var venues = [];
+        var numbers = [];
+        var styles = [];
+        var bets = [];
+        var styleRe = /(逃げ|先行|差し|追込|好位)/g;
+
+        (bundles || []).forEach(function (b) {
+          var info = (b && b.race_info) || {};
+          if (info.venue) venues.push(info.venue);
+
+          var runners = (b && b.evaluation && b.evaluation.runners) || [];
+          runners.forEach(function (r) {
+            if (r && r.horse_number != null) numbers.push(String(r.horse_number));
+            if (r && r.running_style) styles.push(String(r.running_style));
+          });
+
+          var sub = b && b.evaluation && b.evaluation.sub_world;
+          var world = b && b.evaluation && b.evaluation.world;
+          if (sub && STYLE_FROM_ROUTE[sub]) styles.push(STYLE_FROM_ROUTE[sub]);
+          if (world && STYLE_FROM_ROUTE[world]) styles.push(STYLE_FROM_ROUTE[world]);
+
+          var narrative = (b && b.explain && b.explain.narrative) || "";
+          var hit;
+          styleRe.lastIndex = 0;
+          while ((hit = styleRe.exec(narrative))) {
+            styles.push(hit[1] === "好位" ? "先行" : hit[1]);
+          }
+
+          var br = (b && b.betting_recommendations) || {};
+          var byType = br.by_bet_type || {};
+          Object.keys(byType).forEach(function (k) {
+            if (k) bets.push(k);
+          });
+          (br.items || []).forEach(function (it) {
+            if (it && it.bet_type) bets.push(it.bet_type);
+            if (it && it.type) bets.push(it.type);
+          });
+        });
+
         return {
-          rank: rank.rank,
-          score: rank.score - (seed % 7),
-          emotion: rank.emotion,
-          message: rank.msg,
-          color: pick(COLORS, seed >> 3),
-          venue: pick(VENUES, seed >> 5),
-          style: pick(STYLES, seed >> 7),
-          bet: pick(BETS, seed >> 9),
-          number: pick(NUMS, seed >> 11),
-          advice: pick(ADVICE, seed >> 2)
+          venues: unique(venues),
+          numbers: unique(numbers).sort(function (a, b) {
+            return Number(a) - Number(b);
+          }),
+          styles: unique(styles).length ? unique(styles) : STYLE_FALLBACK.slice(),
+          bets: unique(bets).length ? unique(bets) : BET_FALLBACK.slice(),
         };
       }
 
-      function render(f, dateLabel) {
-        document.getElementById("fortuneDate").textContent = dateLabel;
+      function buildFortune(seed, pools) {
+        var rank = pick(RANKS, seed);
+        var venue = pick(pools.venues, seed >> 5) || "—";
+        var style = pick(pools.styles, seed >> 7) || pick(STYLE_FALLBACK, seed >> 7);
+        var number = pick(pools.numbers, seed >> 11) || "—";
+        var bet = pick(pools.bets, seed >> 9) || pick(BET_FALLBACK, seed >> 9);
+        return {
+          rank: rank.rank,
+          score: Math.max(40, rank.score - (seed % 7)),
+          emotion: rank.emotion,
+          message: rank.msg,
+          color: pick(COLORS, seed >> 3),
+          venue: venue,
+          style: style,
+          bet: bet,
+          number: number,
+          advice: pick(ADVICE, seed >> 2),
+        };
+      }
+
+      function render(f, label, opts) {
+        opts = opts || {};
+        document.getElementById("fortuneDate").textContent = label;
         document.getElementById("fortuneRank").textContent = f.rank;
         document.getElementById("fortuneScore").textContent = "運気スコア " + f.score;
         document.getElementById("fortuneMessage").textContent = f.message;
@@ -143,7 +282,7 @@
         document.getElementById("fortuneLucky").innerHTML =
           "<li><span>ラッキー会場</span><b>" + f.venue + "</b></li>" +
           "<li><span>ラッキー脚質</span><b>" + f.style + "</b></li>" +
-          "<li><span>ラッキー番号</span><b>" + f.number + "</b></li>" +
+          "<li><span>ラッキー番号</span><b>" + f.number + "番</b></li>" +
           "<li><span>ラッキー券種</span><b>" + f.bet + "</b></li>" +
           "<li><span>ラッキーカラー</span><b>" + f.color + "</b></li>";
 
@@ -158,20 +297,56 @@
         hero.classList.remove("is-reveal");
         void hero.offsetWidth;
         hero.classList.add("is-reveal");
+
+        if (opts.locked) {
+          drawBtn.disabled = true;
+          drawBtn.textContent = "本日の運試しは完了";
+          document.getElementById("fortuneNote").textContent =
+            "※本日分はすでに引いています。また明日チャレンジしてね。";
+        }
       }
 
-      var now = new Date();
-      var week = ["日", "月", "火", "水", "木", "金", "土"];
-      var dateLabel =
-        now.getFullYear() + "年" + (now.getMonth() + 1) + "月" + now.getDate() + "日（" + week[now.getDay()] + "）";
-      var seed = hashDay(now);
-      var fortune = buildFortune(seed);
-      var drawn = false;
+      function renderIdle(label) {
+        document.getElementById("fortuneDate").textContent = label;
+        document.getElementById("fortuneRank").textContent = "？";
+        document.getElementById("fortuneScore").textContent = "";
+        document.getElementById("fortuneMessage").textContent =
+          "カードを引いて、当日レースに基づく今日の運勢を見てみよう";
+        document.getElementById("fortuneAdvice").textContent =
+          "1日1回だけ引けるよ。会場・番号は当日の出走データから選ばれるよ。";
+        document.getElementById("fortuneLucky").innerHTML =
+          "<li><span>ラッキー会場</span><b>—</b></li>" +
+          "<li><span>ラッキー脚質</span><b>—</b></li>" +
+          "<li><span>ラッキー番号</span><b>—</b></li>" +
+          "<li><span>ラッキー券種</span><b>—</b></li>" +
+          "<li><span>ラッキーカラー</span><b>—</b></li>";
+        document.getElementById("fortuneEmotionLabel").textContent = "";
+        drawBtn.disabled = false;
+        drawBtn.textContent = "運試しカードを引く";
+      }
 
-      function draw() {
-        drawn = true;
-        render(fortune, dateLabel);
-        document.getElementById("fortuneDraw").textContent = "今日の運勢を見直す";
+      function setLoading(on) {
+        drawBtn.disabled = !!on;
+        if (on) drawBtn.textContent = "当日レースを読込中…";
+      }
+
+      function drawOnce() {
+        if (!racePools || !racePools.venues.length) {
+          document.getElementById("fortuneMessage").textContent =
+            "当日のレースデータがまだありません。開催日にもう一度試してね。";
+          return;
+        }
+        var stored = readStored();
+        if (stored && stored.date === raceDateIso && stored.result) {
+          render(stored.result, dateLabel, { locked: true });
+          return;
+        }
+
+        var user = ExpectAuth.current && ExpectAuth.current();
+        var seed = hashStr(raceDateIso + "|" + ((user && user.id) || "guest"));
+        var fortune = buildFortune(seed, racePools);
+        writeStored({ date: raceDateIso, result: fortune, at: Date.now() });
+        render(fortune, dateLabel, { locked: true });
         if (ExpectShell.speakMascot) {
           ExpectShell.speakMascot(
             "今日の運勢は<br><strong>" +
@@ -184,18 +359,59 @@
         }
       }
 
-      document.getElementById("fortuneDraw").addEventListener("click", draw);
+      function bootWithBundles(bundles) {
+        racePools = extractPools(bundles || []);
+        var stored = readStored();
+        if (stored && stored.date === raceDateIso && stored.result) {
+          render(stored.result, dateLabel, { locked: true });
+          return;
+        }
+        renderIdle(dateLabel);
+        if (!racePools.venues.length) {
+          drawBtn.disabled = true;
+          drawBtn.textContent = "レースデータ待ち";
+          document.getElementById("fortuneMessage").textContent =
+            "当日の開催レースがまだ取れません。開催日に再度お試しください。";
+        }
+      }
 
-      // 初回は自動で表示（占いっぽくすぐ結果が見える）
-      render(fortune, dateLabel);
-      drawn = true;
-      document.getElementById("fortuneDraw").textContent = "もう一度気配を見る";
+      raceDateIso = jstDateIso();
+      dateLabel = formatDateLabel(raceDateIso);
+      document.getElementById("fortuneDate").textContent = dateLabel;
+
+      drawBtn.addEventListener("click", function () {
+        drawOnce();
+      });
 
       ExpectShell.initMascotTalk([
-        "今日の運試し、<br>楽しんでいってね！",
-        "占いは参考程度に。<br>最後はキミの直感だよ♪",
-        "ラッキー会場のレースから<br>覗いてみるのもあり！"
+        "今日の運試しは<br>1日1回だよ！",
+        "ラッキー会場・番号は<br>当日レースから選ぶよ♪",
+        "占いは参考程度に。<br>最後はキミの直感だよ！"
       ]);
+
+      var existing = readStored();
+      if (existing && existing.date === raceDateIso && existing.result) {
+        render(existing.result, dateLabel, { locked: true });
+      } else {
+        renderIdle(dateLabel);
+      }
+
+      setLoading(true);
+      if (!window.ExpectApi || !ExpectApi.Prediction) {
+        setLoading(false);
+        bootWithBundles([]);
+        return;
+      }
+
+      ExpectApi.Prediction.list({ date: raceDateIso })
+        .then(function (bundles) {
+          setLoading(false);
+          bootWithBundles(bundles || []);
+        })
+        .catch(function () {
+          setLoading(false);
+          bootWithBundles([]);
+        });
     })();
   </script>
 </body>

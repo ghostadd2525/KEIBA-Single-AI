@@ -87,10 +87,14 @@
    */
   function matchRaceSearch(fields, state) {
     state = state || {};
-    var date = fields.date || "";
-    var venue = fields.venue || "";
+    var date = String(fields.date || "").trim();
+    var venue = String(fields.venue || "").trim();
+    var place = String(fields.place || "").trim();
+    var wantVenue = String(state.venue || "").trim();
     if (state.date && state.date !== "all" && date !== state.date) return false;
-    if (state.venue && state.venue !== "all" && venue !== state.venue) return false;
+    if (wantVenue && wantVenue !== "all") {
+      if (venue !== wantVenue && place.indexOf(wantVenue) < 0) return false;
+    }
     var q = (state.q || "").trim();
     if (!q) return true;
     var hay = buildSearchHaystack(fields);

@@ -482,6 +482,10 @@
         chips.venues.length +
         " · お気に入りは最大3件";
     }
+    // チップ再描画後に現在の絞り込みを再適用（会場選択を維持）
+    try {
+      global.dispatchEvent(new CustomEvent("expect:race-filters-ready"));
+    } catch (e) { /* ignore */ }
   }
 
   function bindMypageProfile(me, history, chat) {
