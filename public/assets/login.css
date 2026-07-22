@@ -48,12 +48,13 @@ body.page-login {
 
 .login-brand {
   text-align: center;
+  flex: 0 0 auto;
 }
 
 .login-brand .brand-name {
   margin: 0;
   font-family: var(--display);
-  font-size: clamp(52px, 14vw, 68px);
+  font-size: clamp(52px, 14vw, 68px) !important;
   font-weight: 600;
   line-height: 0.95;
   color: #fff;
@@ -105,11 +106,13 @@ body.page-login {
 .login-hero-label {
   position: absolute;
   z-index: 2;
-  left: 0;
-  bottom: 18%;
+  left: 50%;
+  bottom: 14%;
+  transform: translateX(-50%);
   display: grid;
   gap: 2px;
-  text-align: left;
+  justify-items: center;
+  text-align: center;
   pointer-events: none;
 }
 
@@ -138,10 +141,11 @@ body.page-login {
 }
 
 .login-block-head {
-  display: grid;
-  grid-template-columns: 36px 1fr;
-  gap: 10px;
+  display: flex;
+  flex-direction: column;
   align-items: center;
+  gap: 8px;
+  text-align: center;
   margin-bottom: 12px;
 }
 
@@ -244,7 +248,8 @@ body.page-login {
   color: var(--gold-soft);
   font: inherit;
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 500;
+  letter-spacing: 0.02em;
   text-align: center;
   text-decoration: underline;
   text-underline-offset: 3px;
@@ -252,7 +257,7 @@ body.page-login {
 }
 
 .login-mode-switch:hover {
-  color: #fff;
+  color: #f0d78c;
 }
 
 .login-field input::placeholder {
@@ -309,10 +314,12 @@ body.page-login {
   margin: 10px 0 0;
   display: flex;
   align-items: flex-start;
+  justify-content: center;
   gap: 6px;
   font-size: 11px;
   line-height: 1.4;
   color: var(--muted);
+  text-align: center;
 }
 
 .login-tip svg {
@@ -332,15 +339,17 @@ body.page-login {
   color: var(--muted);
   display: flex;
   flex-direction: column;
+  align-items: center;
   gap: 8px;
+  text-align: center;
 }
 
 .login-session-out {
-  align-self: flex-start;
+  align-self: center;
   padding: 0;
   border: none;
   background: none;
-  color: var(--gold);
+  color: var(--gold-soft);
   font: inherit;
   font-size: 12px;
   cursor: pointer;
@@ -349,7 +358,7 @@ body.page-login {
 }
 
 .login-session-out:hover {
-  color: #fff;
+  color: #f0d78c;
 }
 
 .login-or {
@@ -398,15 +407,16 @@ body.page-login {
   border-radius: 12px;
   background: rgba(8, 10, 14, 0.72);
   border: 1px solid rgba(193, 162, 109, 0.18);
-  display: grid;
-  grid-template-columns: 22px 1fr;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   gap: 8px;
-  align-items: start;
+  text-align: center;
 }
 
 .login-notice svg {
   color: var(--gold-soft);
-  margin-top: 1px;
+  margin-top: 0;
 }
 
 .login-notice strong {
