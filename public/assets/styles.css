@@ -1654,6 +1654,15 @@ details.fold > summary::-webkit-details-marker { display: none; }
   overflow-x: hidden;
   -webkit-overflow-scrolling: touch;
   overscroll-behavior-y: contain;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.page-tab .screen::-webkit-scrollbar,
+.page-tab .home-chrome::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
 }
 
 .page-tab .bottom-nav {
@@ -1676,7 +1685,15 @@ body.v11-mobile.page-tab .app {
   overflow-y: auto;
   overflow-x: hidden;
   -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
   display: block;
+}
+
+.page-home.is-catalog-view .main.is-catalog::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
 }
 
 @media (max-width: 360px) {
