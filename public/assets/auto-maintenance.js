@@ -10,6 +10,41 @@
   var SKIP_RE = /(^|\/)(maintenance|login|setup|ops|terms)(\.html)?\/?$/i;
   var BYPASS_ROLES = { ADMIN: 1, OPS: 1, DEVELOPER: 1 };
 
+  function parseStubToken(token) {
+    if (!token || token.indexOf("stub.") !== 0) return null;
+    try {
+      var parts = token.split(".");
+      if (parts.length < 3) return null;
+      var b64 = parts[1].replace(/-/g, "+").replace(/_/g, "/");
+      var json = decodeURIComponent(escape(atob(b64)));
+      return JSON.parse(json);
+    } catch (e) {
+      return null;
+    }
+  }
+
+  function roleFromAccessToken() {
+    var payload = parseStubToken(getAccessToken());
+    if (!payload) return "";
+    return String(payload.role || "").toUpperCase();
+  }
+
+  function isLocalAdminAllowlisted() {
+    var uid = getLocalUserId();
+    if (!uid) return Promise.resolve(false);
+    return fetch("/config/beta.json", { cache: "no-store" })
+      .then(function (res) {
+        return res.ok ? res.json() : null;
+      })
+      .then(function (beta) {
+        var list = (beta && Array.isArray(beta.admin_user_ids) && beta.admin_user_ids) || [];
+        return list.map(String).indexOf(String(uid)) >= 0;
+      })
+      .catch(function () {
+        return false;
+      });
+  }
+
   function pagePath() {
     try {
       return String(location.pathname || "");
@@ -63,41 +98,48 @@
 
   /** ADMIN / OPS / DEVELOPER は UI でも通常利用（API bypass と揃える） */
   function isOpsBypassUser() {
-    var token = getAccessToken();
-    if (!token) return Promise.resolve(false);
+    var tokenRole = roleFromAccessToken();
+    if (BYPASS_ROLES[tokenRole]) return Promise.resolve(true);
 
-    var headers = { Accept: "application/json", Authorization: "Bearer " + token };
-    return fetch("/api/auth/me", { cache: "no-store", headers: headers })
-      .then(function (res) {
-        if (!res.ok) return false;
-        return res.json();
-      })
-      .then(function (body) {
-        var data = body && (body.data || body);
-        var user = (data && data.user) || data || {};
-        var role = String((user && user.role) || (data && data.role) || "").toUpperCase();
-        if (BYPASS_ROLES[role]) return true;
-        var uid = String(
-          (user && (user.id || user.user_id)) ||
-            (data && (data.id || data.user_id)) ||
-            getLocalUserId() ||
-            ""
-        );
-        return fetch("/config/beta.json", { cache: "no-store" })
-          .then(function (r) {
-            return r.ok ? r.json() : null;
-          })
-          .then(function (beta) {
-            var list = (beta && Array.isArray(beta.admin_user_ids) && beta.admin_user_ids) || [];
-            return !!uid && list.map(String).indexOf(uid) >= 0;
-          })
-          .catch(function () {
-            return false;
-          });
-      })
-      .catch(function () {
-        return false;
-      });
+    return isLocalAdminAllowlisted().then(function (localAdmin) {
+      if (localAdmin) return true;
+
+      var token = getAccessToken();
+      if (!token) return false;
+
+      var headers = { Accept: "application/json", Authorization: "Bearer " + token };
+      return fetch("/api/auth/me", { cache: "no-store", headers: headers })
+        .then(function (res) {
+          if (!res.ok) return false;
+          return res.json();
+        })
+        .then(function (body) {
+          var data = body && (body.data || body);
+          var user = (data && data.user) || data || {};
+          var role = String((user && user.role) || (data && data.role) || "").toUpperCase();
+          if (BYPASS_ROLES[role]) return true;
+          var uid = String(
+            (user && (user.id || user.user_id)) ||
+              (data && (data.id || data.user_id)) ||
+              getLocalUserId() ||
+              ""
+          );
+          return fetch("/config/beta.json", { cache: "no-store" })
+            .then(function (r) {
+              return r.ok ? r.json() : null;
+            })
+            .then(function (beta) {
+              var list = (beta && Array.isArray(beta.admin_user_ids) && beta.admin_user_ids) || [];
+              return !!uid && list.map(String).indexOf(uid) >= 0;
+            })
+            .catch(function () {
+              return false;
+            });
+        })
+        .catch(function () {
+          return false;
+        });
+    });
   }
 
   function fallbackStatus() {

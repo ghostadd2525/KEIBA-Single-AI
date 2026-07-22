@@ -29,6 +29,7 @@ export const OPS_MODE_EXEMPT_PATHS = new Set([
   "/api/health",
   "/api/ops/monitor",
   "/api/ops/public-status",
+  "/api/auth/me",
   "/api/v1/stats/heatmap",
 ]);
 

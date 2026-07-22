@@ -110,18 +110,20 @@ describe("V1.1 resolveOpsModeDetailed auto maintenance", () => {
     );
   });
 
-  it("stats heatmap は exempt（admin 平日確認用）", async () => {
+  it("auth/me と stats heatmap は exempt", async () => {
     const { OpsMode, evaluateOpsAccess, OPS_MODE_EXEMPT_PATHS } = await load(
       "functions/_lib/opsMode.js"
     );
-    assert.equal(OPS_MODE_EXEMPT_PATHS.has("/api/v1/stats/heatmap"), true);
-    const r = evaluateOpsAccess({
-      pathname: "/api/v1/stats/heatmap",
-      opsMode: OpsMode.CLOSED,
-      role: "USER",
-    });
-    assert.equal(r.allow, true);
-    assert.equal(r.reason, "exempt_path");
+    for (const path of ["/api/auth/me", "/api/v1/stats/heatmap"]) {
+      assert.equal(OPS_MODE_EXEMPT_PATHS.has(path), true, path);
+      const r = evaluateOpsAccess({
+        pathname: path,
+        opsMode: OpsMode.CLOSED,
+        role: "USER",
+      });
+      assert.equal(r.allow, true, path);
+      assert.equal(r.reason, "exempt_path", path);
+    }
   });
 
   it("public-status は exempt", async () => {

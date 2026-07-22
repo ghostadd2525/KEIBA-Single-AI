@@ -64,7 +64,10 @@ export async function onRequestPost(context) {
     favorites = setFavorites(user.user_id, mergeFavorites(favorites, body.favorites));
   }
 
-  const token = makeStubToken(user.user_id, ACCESS_TTL, { purpose: "access" });
+  const token = makeStubToken(user.user_id, ACCESS_TTL, {
+    purpose: "access",
+    role: user.role || "USER",
+  });
 
   writeAudit(context, {
     type: AuditEvent.LOGIN_SUCCESS,
