@@ -9,6 +9,7 @@
   var TOKEN_KEY = "expect_access_token_v1";
   var TERMS_KEY = "expect_terms_v1";
   var ONBOARD_KEY = "expect_onboard_v1";
+  var ACCOUNT_READY_KEY = "expect_account_ready_v1";
   var TERMS_VERSION = "2026-07-19";
   var ONBOARD_VERSION = "2026-07-19";
 
@@ -106,12 +107,26 @@
     return { schema_version: "expect-favorites/1.0", race_ids: [], items: [] };
   }
 
+  function hasAccountReady() {
+    var s = readJson(ACCOUNT_READY_KEY);
+    return !!(s && s.ready === true);
+  }
+
+  function markAccountReady(loginId) {
+    return writeJson(ACCOUNT_READY_KEY, {
+      ready: true,
+      login_id: loginId ? String(loginId) : "",
+      at: Date.now(),
+    });
+  }
+
   function finishLogin(data, fallbackId) {
     var user = (data && data.user) || { id: fallbackId };
     login(user.id || fallbackId, {
       access_token: data && data.access_token,
       display_name: user.display_name,
     });
+    markAccountReady(user.id || fallbackId);
     if (data && data.access_token) {
       acceptTerms();
     }
@@ -276,5 +291,7 @@
     current: readAuth,
     getAccessToken: getAccessToken,
     setAccessToken: setAccessToken,
+    hasAccountReady: hasAccountReady,
+    markAccountReady: markAccountReady,
   };
 })(window);

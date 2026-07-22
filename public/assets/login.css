@@ -179,6 +179,12 @@ body.page-login {
   border: 1px solid rgba(193, 162, 109, 0.22);
 }
 
+.login-field + .login-field,
+.login-field + .login-field--password,
+.login-field--password + .login-field {
+  margin-top: 10px;
+}
+
 .login-field:focus-within {
   border-color: rgba(193, 162, 109, 0.55);
 }
@@ -198,6 +204,55 @@ body.page-login {
   color: #fff;
   font: inherit;
   font-size: 14px;
+}
+
+.login-field--password {
+  padding-right: 6px;
+}
+
+.login-eye {
+  flex: 0 0 auto;
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--gold-soft);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.login-eye:hover,
+.login-eye:focus-visible {
+  background: rgba(193, 162, 109, 0.12);
+  outline: none;
+}
+
+.login-eye[aria-pressed="true"] {
+  color: #f0d78c;
+}
+
+.login-mode-switch {
+  display: block;
+  width: 100%;
+  margin: 14px 0 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--gold-soft);
+  font: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  text-align: center;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+.login-mode-switch:hover {
+  color: #fff;
 }
 
 .login-field input::placeholder {
