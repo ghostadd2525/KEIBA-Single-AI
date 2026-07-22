@@ -259,6 +259,30 @@ body.page-login {
   color: #6e7685;
 }
 
+.login-field input.is-hint-empty::placeholder,
+.login-field input.is-hint-error::placeholder,
+.login-field input.is-hint-locked::placeholder {
+  color: rgba(193, 162, 109, 0.55);
+  font-size: 13px;
+}
+
+.login-field.is-invalid {
+  border-color: rgba(193, 162, 109, 0.55);
+}
+
+.login-error {
+  margin: 8px 0 0;
+  font-size: 12px;
+  color: #e07a7a;
+  min-height: 0;
+}
+
+.login-error:empty {
+  display: none;
+  margin: 0;
+  min-height: 0;
+}
+
 .login-submit {
   margin-top: 12px;
   width: 100%;
@@ -397,13 +421,6 @@ body.page-login {
   font-size: 11px;
   line-height: 1.45;
   color: var(--muted);
-}
-
-.login-error {
-  margin: 8px 0 0;
-  font-size: 12px;
-  color: #e07a7a;
-  min-height: 1.2em;
 }
 
 .login-invite-panel[hidden] {

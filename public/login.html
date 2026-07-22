@@ -152,6 +152,13 @@
   <script>
     (function () {
       // login /login: Auto Maintenance は SKIP。既ログインでも自動遷移しない（アカウント切替テスト用）
+      var MSG_EMPTY = "入力してください";
+      var MSG_WRONG = "入力が間違っています";
+      var MSG_LOCKED = "管理者にご確認の上、再度ご入力ください";
+      var FAIL_LIMIT = 5;
+      var FAIL_KEY_ACCOUNT = "expect_login_fail_account_v1";
+      var FAIL_KEY_INVITE = "expect_login_fail_invite_v1";
+
       var err = document.getElementById("loginError");
       var sessionEl = document.getElementById("loginSession");
       var sessionLabel = document.getElementById("loginSessionLabel");
@@ -161,7 +168,72 @@
       var toAccountBtn = document.getElementById("toAccountBtn");
       var toInviteBtn = document.getElementById("toInviteBtn");
       var togglePassword = document.getElementById("togglePassword");
+      var loginIdInput = document.getElementById("loginId");
       var passwordInput = document.getElementById("loginPassword");
+      var tempIdInput = document.getElementById("tempId");
+
+      function storeGet(key) {
+        try {
+          return sessionStorage.getItem(key) || "";
+        } catch (e) {
+          return "";
+        }
+      }
+
+      function storeSet(key, value) {
+        try {
+          sessionStorage.setItem(key, String(value));
+        } catch (e) { /* ignore */ }
+      }
+
+      function getFailCount(key) {
+        var n = Number(storeGet(key) || "0");
+        return Number.isFinite(n) && n > 0 ? Math.floor(n) : 0;
+      }
+
+      function setFailCount(key, n) {
+        storeSet(key, Math.max(0, Math.floor(n)));
+      }
+
+      function fieldWrap(input) {
+        return input && input.closest ? input.closest(".login-field") : null;
+      }
+
+      function rememberDefaultPlaceholder(input) {
+        if (!input || input.dataset.defaultPlaceholder != null) return;
+        input.dataset.defaultPlaceholder = input.getAttribute("placeholder") || "";
+      }
+
+      function clearFieldHint(input) {
+        if (!input) return;
+        rememberDefaultPlaceholder(input);
+        input.classList.remove("is-hint-empty", "is-hint-error", "is-hint-locked");
+        input.setAttribute("placeholder", input.dataset.defaultPlaceholder || "");
+        var wrap = fieldWrap(input);
+        if (wrap) wrap.classList.remove("is-invalid");
+      }
+
+      function showFieldHint(input, message, kind) {
+        if (!input) return;
+        rememberDefaultPlaceholder(input);
+        input.classList.remove("is-hint-empty", "is-hint-error", "is-hint-locked");
+        input.classList.add(kind || "is-hint-error");
+        input.setAttribute("placeholder", message);
+        var wrap = fieldWrap(input);
+        if (wrap) wrap.classList.add("is-invalid");
+      }
+
+      function bindClearOnInput(input) {
+        if (!input || input.dataset.hintBound === "1") return;
+        input.dataset.hintBound = "1";
+        rememberDefaultPlaceholder(input);
+        input.addEventListener("input", function () {
+          clearFieldHint(input);
+          if (err) err.textContent = "";
+        });
+      }
+
+      [loginIdInput, passwordInput, tempIdInput].forEach(bindClearOnInput);
 
       function syncSessionBanner() {
         if (!sessionEl || !sessionLabel) return;
@@ -179,7 +251,7 @@
 
       if (logoutBtn) {
         logoutBtn.addEventListener("click", function () {
-          err.textContent = "";
+          if (err) err.textContent = "";
           var done = ExpectAuth.logout && ExpectAuth.logout();
           Promise.resolve(done)
             .catch(function () { /* ignore */ })
@@ -190,22 +262,19 @@
       }
 
       var inviteFromUrl = new URLSearchParams(location.search).get("id");
-      if (inviteFromUrl) {
-        var tempInput = document.getElementById("tempId");
-        if (tempInput) tempInput.value = inviteFromUrl.trim();
+      if (inviteFromUrl && tempIdInput) {
+        tempIdInput.value = inviteFromUrl.trim();
       }
 
       function showMode(name) {
         var isAccount = name === "account";
         paneAccount.hidden = !isAccount;
         paneInvite.hidden = isAccount;
-        err.textContent = "";
+        if (err) err.textContent = "";
         if (isAccount) {
-          var idInput = document.getElementById("loginId");
-          if (idInput) idInput.focus();
-        } else {
-          var inviteInput = document.getElementById("tempId");
-          if (inviteInput) inviteInput.focus();
+          if (loginIdInput) loginIdInput.focus();
+        } else if (tempIdInput) {
+          tempIdInput.focus();
         }
       }
 
@@ -243,42 +312,80 @@
         });
       }
 
+      function applyAuthFailHints(inputs, failKey) {
+        var count = getFailCount(failKey) + 1;
+        setFailCount(failKey, count);
+        var message = count >= FAIL_LIMIT ? MSG_LOCKED : MSG_WRONG;
+        var kind = count >= FAIL_LIMIT ? "is-hint-locked" : "is-hint-error";
+        inputs.forEach(function (input) {
+          if (!input) return;
+          input.value = "";
+          showFieldHint(input, message, kind);
+        });
+      }
+
       document.getElementById("accountForm").addEventListener("submit", function (e) {
         e.preventDefault();
-        err.textContent = "";
-        var id = (document.getElementById("loginId").value || "").trim();
-        var password = document.getElementById("loginPassword").value || "";
-        if (id.length < 4) {
-          err.textContent = "ログインIDを入力してください";
-          return;
+        if (err) err.textContent = "";
+        clearFieldHint(loginIdInput);
+        clearFieldHint(passwordInput);
+
+        var id = (loginIdInput && loginIdInput.value || "").trim();
+        var password = (passwordInput && passwordInput.value) || "";
+        var missing = false;
+
+        if (!id) {
+          if (loginIdInput) loginIdInput.value = "";
+          showFieldHint(loginIdInput, MSG_EMPTY, "is-hint-empty");
+          missing = true;
         }
         if (!password) {
-          err.textContent = "パスワードを入力してください";
+          if (passwordInput) passwordInput.value = "";
+          showFieldHint(passwordInput, MSG_EMPTY, "is-hint-empty");
+          missing = true;
+        }
+        if (missing) return;
+
+        if (getFailCount(FAIL_KEY_ACCOUNT) >= FAIL_LIMIT) {
+          showFieldHint(loginIdInput, MSG_LOCKED, "is-hint-locked");
+          showFieldHint(passwordInput, MSG_LOCKED, "is-hint-locked");
           return;
         }
+
         ExpectAuth.loginWithApi(id, password)
           .then(function () {
+            setFailCount(FAIL_KEY_ACCOUNT, 0);
             return ExpectAutoMaintenance.goPostAuthLanding();
           })
-          .catch(function (e2) {
-            err.textContent = (e2 && e2.message) || "ログインに失敗しました";
+          .catch(function () {
+            applyAuthFailHints([loginIdInput, passwordInput], FAIL_KEY_ACCOUNT);
           });
       });
 
       document.getElementById("inviteForm").addEventListener("submit", function (e) {
         e.preventDefault();
-        err.textContent = "";
-        var inviteId = (document.getElementById("tempId").value || "").trim();
-        if (inviteId.length < 4) {
-          err.textContent = "一時IDを入力してください";
+        if (err) err.textContent = "";
+        clearFieldHint(tempIdInput);
+
+        var inviteId = (tempIdInput && tempIdInput.value || "").trim();
+        if (!inviteId) {
+          if (tempIdInput) tempIdInput.value = "";
+          showFieldHint(tempIdInput, MSG_EMPTY, "is-hint-empty");
           return;
         }
+
+        if (getFailCount(FAIL_KEY_INVITE) >= FAIL_LIMIT) {
+          showFieldHint(tempIdInput, MSG_LOCKED, "is-hint-locked");
+          return;
+        }
+
         ExpectAuth.startInvite(inviteId)
           .then(function () {
+            setFailCount(FAIL_KEY_INVITE, 0);
             location.href = "setup.html";
           })
-          .catch(function (e2) {
-            err.textContent = (e2 && e2.message) || "一時IDを確認できませんでした";
+          .catch(function () {
+            applyAuthFailHints([tempIdInput], FAIL_KEY_INVITE);
           });
       });
     })();
