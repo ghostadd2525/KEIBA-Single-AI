@@ -2,8 +2,9 @@
 
 **Date:** 2026-07-22  
 **Status:** **COMPLETE** — EC2 Core 残課題 + Git `main` ≡ Production  
-**Git SHA (main / Production Pages):** `03e7a4f57bfe18a7d3fd7f6e6d7daff044230dd4`  
-**Pages Deployment:** `https://66913935.keiba-single-ai.pages.dev`（Source=`03e7a4f` · branch=`main`）  
+**Git SHA (main / Production Pages):** `dfaea6af6351fc54295e6962a36ceed246bb8737`  
+**V2 code sync commit:** `03e7a4f57bfe18a7d3fd7f6e6d7daff044230dd4`  
+**Pages Deployment (Active):** `https://b16768db.keiba-single-ai.pages.dev`（Source=`dfaea6a` · branch=`main`）  
 **本番:** https://expect-keiba.com  
 
 本レポートは Version 2 残課題（EC2 Core 設定 / Git 運用整理）のみを対象とする。新機能追加なし。
@@ -87,23 +88,24 @@ ssh -i expect-beta-tokyo.pem ubuntu@13.231.5.5
 | 項目 | 値 |
 |------|-----|
 | 旧 `origin/main` | `7732f06`（V2 未追従 · 自動デプロイ上書きリスクあり） |
-| 新 `origin/main` | **`03e7a4f`** `Release Version 2 to main for production parity.` |
-| 差分規模 | 225 files · +39108 / −307 |
+| 新 `origin/main` | **`dfaea6a`**（V2 本体は `03e7a4f` · 本レポート追記） |
+| 差分規模（V2 本体） | 225 files · +39108 / −307 |
 | ローカル | `main...origin/main`（ahead/behind なし） |
 
 ### Production と main が一致している証跡
 
-1. **Git:** `git rev-parse HEAD` = `git rev-parse origin/main` = `03e7a4f57bfe18a7d3fd7f6e6d7daff044230dd4`
-2. **Cloudflare Pages:** Production 最新 Deployment Source = **`03e7a4f`** · Branch = **`main`** · URL `https://66913935.keiba-single-ai.pages.dev`
+1. **Git:** `git rev-parse HEAD` = `git rev-parse origin/main` = `dfaea6af6351fc54295e6962a36ceed246bb8737`
+2. **Cloudflare Pages:** Production Active Deployment Source = **`dfaea6a`** · Branch = **`main`** · URL `https://b16768db.keiba-single-ai.pages.dev`
 3. **Live flags:** `/config/beta.json` の `v2_race_cards` / `v2_race_list_ui` / `v2_explain` / `v2_ops_dashboard` / `v11_ops_dashboard` がすべて **true**（main の本番設定と一致）
-4. **自動デプロイ:** push 直後に Pages が `03e7a4f` を Production へ取り込み → **今後の Git 自動デプロイは V2 main を配信し、V1（7732f06）へ戻らない**
+4. **自動デプロイ:** push 直後に Pages が V2 `main` を Production へ取り込み → **今後の Git 自動デプロイは V2 main を配信し、V1（7732f06）へ戻らない**
+5. **事後スモーク:** Health 200 · Admin Prediction 200 · `explain=single-explain/2.1` · `explain_source=core-explain-payload/1.0`
 
 ---
 
 ## 5. Version 2 最終構成（本番）
 
 ```text
-Pages / BFF (main = 03e7a4f)
+Pages / BFF (main = dfaea6a)
 ├─ Web Flags: v2_race_cards / v2_race_list_ui / v2_explain / v2_ops_dashboard ON
 ├─ BFF: EXPECT_ENV=production · EXPLAIN_V2_ENABLED=true
 └─ EC2 Core
