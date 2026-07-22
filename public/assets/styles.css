@@ -1626,6 +1626,58 @@ details.fold > summary::-webkit-details-marker { display: none; }
   color: #d4af37;
 }
 
+/* ホーム: 上ヘッダー・下ナビを固定し、中央だけ縦スクロール */
+.page-home {
+  height: 100dvh;
+  overflow: hidden;
+}
+
+.page-home .app {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  max-height: 100dvh;
+  min-height: 0;
+  overflow: hidden;
+  padding-bottom: 0;
+}
+
+.page-home .topbar {
+  flex-shrink: 0;
+}
+
+.page-home .home-chrome {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: contain;
+}
+
+.page-home.is-catalog-view .home-chrome {
+  display: none;
+}
+
+.page-home.is-catalog-view .main.is-catalog {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  display: block;
+}
+
+.page-home .bottom-nav {
+  position: relative;
+  flex-shrink: 0;
+  width: 100%;
+}
+
+body.v11-mobile.page-home .app {
+  padding-bottom: 0;
+}
+
 @media (max-width: 360px) {
   .dash-stats {
     gap: 8px;
