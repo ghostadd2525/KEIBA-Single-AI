@@ -5,6 +5,17 @@ from __future__ import annotations
 from typing import Any
 
 
+def normalize_going(value: Any) -> str:
+    s = str(value or "").strip()
+    if not s:
+        return ""
+    if s in {"稍", "稍重"}:
+        return "稍重"
+    if s in {"良", "重", "不良"}:
+        return s
+    return s
+
+
 def distance_bucket(distance: Any) -> str:
     try:
         d = int(distance)
@@ -17,6 +28,35 @@ def distance_bucket(distance: Any) -> str:
     if d < 2200:
         return "intermediate"
     return "long"
+
+
+DISTANCE_BUCKETS_UI = (1200, 1600, 2000, 2400)
+
+
+def surface_ja(surface: Any) -> str:
+    s = str(surface or "").lower()
+    if "turf" in s or s == "芝":
+        return "芝"
+    if "dirt" in s or s in {"ダ", "ダート"}:
+        return "ダ"
+    return "芝"
+
+
+def distance_bucket_ui(distance: Any) -> int:
+    try:
+        d = int(distance)
+    except (TypeError, ValueError):
+        return 1600
+    if d <= 0:
+        return 1600
+    best = DISTANCE_BUCKETS_UI[0]
+    diff = abs(d - best)
+    for bucket in DISTANCE_BUCKETS_UI[1:]:
+        nd = abs(d - bucket)
+        if nd < diff:
+            diff = nd
+            best = bucket
+    return best
 
 
 def evaluate_bundle_against_result(

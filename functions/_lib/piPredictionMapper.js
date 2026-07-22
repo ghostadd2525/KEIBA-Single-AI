@@ -3,6 +3,7 @@
  */
 import { normalizePredictionBundle } from "./domain.js";
 import { buildExplainV21, isExplainV2Enabled } from "./explainBuilder.js";
+import { applySegmentConfidenceBlend } from "./segmentConfidence.js";
 
 const MARK_BY_RANK = {
   1: ["honmei", 1],
@@ -77,6 +78,10 @@ export function mapPiPredictionToBundle(piPayload, catalogRace = null, options =
   const raceNo = asInt(raceRow.race_number ?? raceRow.race_no);
   const raceName = String(raceRow.race_name || "");
   const raceLabel = String(raceRow.race_label || (course && raceNo ? `${course}${raceNo}R` : ""));
+  const surface = String(
+    raceRow.surface || raceRow.target_surface || pred.surface || ""
+  ).trim();
+  const distance = asInt(raceRow.distance ?? raceRow.target_distance ?? pred.distance);
 
   const candidates = Array.isArray(pred.candidates) ? pred.candidates : [];
   const runners = candidates
@@ -95,10 +100,30 @@ export function mapPiPredictionToBundle(piPayload, catalogRace = null, options =
     score_unit: "normalized",
     band: confidenceBand(overall),
     factors: [],
-    component_scores: {},
+    component_scores: overall != null ? { model_score: overall } : {},
     notes: "pi-keibanet-api",
     computed_at: generatedAt,
   };
+
+  if (overall != null) {
+    const blended = applySegmentConfidenceBlend(overall, raceRow);
+    if (blended) {
+      aiConfidence.score = blended.score;
+      aiConfidence.band = blended.band;
+      aiConfidence.component_scores = {
+        model_score: blended.model_score,
+        segment_hit_rate: blended.segment_hit_rate,
+        segment_scope: blended.segment_scope,
+        segment_key: blended.segment_key,
+        segment_samples: blended.segment_samples,
+        blend_weights: { model: 0.6, segment: 0.4 },
+      };
+      aiConfidence.factors = [
+        `segment_scope=${blended.segment_scope}`,
+        `segment_hit_rate=${Number(blended.segment_hit_rate).toFixed(4)}`,
+      ];
+    }
+  }
 
   const baseExplainMeta = {
     source: "pi-keibanet-api",
@@ -140,6 +165,8 @@ export function mapPiPredictionToBundle(piPayload, catalogRace = null, options =
       race_name: raceName,
       race_status: String(raceRow.status || "published"),
       field_size: asInt(raceRow.field_size) ?? runners.length,
+      surface: surface || null,
+      distance: distance,
     },
     evaluation: {
       status: runners.length ? "ok" : "empty",

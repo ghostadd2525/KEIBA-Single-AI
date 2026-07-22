@@ -160,7 +160,12 @@ class ResultAutomationIntegrationTest(unittest.TestCase):
                 "real_ai",
                 json.dumps(
                     {
-                        "race_info": {"date": "2026-07-19", "venue": "福島", "distance": 1200},
+                        "race_info": {
+                            "date": "2026-07-19",
+                            "venue": "福島",
+                            "distance": 1200,
+                            "surface": "turf",
+                        },
                         "evaluation": {
                             "runners": [
                                 {"horse_number": 7, "model_rank": 1},
@@ -168,7 +173,10 @@ class ResultAutomationIntegrationTest(unittest.TestCase):
                             ]
                         },
                         "ai_confidence": {"score": 0.9},
-                        "explain": {"narrative": "n"},
+                        "explain": {
+                            "narrative": "n",
+                            "meta": {"track_condition": "良"},
+                        },
                     }
                 ),
             ),
@@ -215,6 +223,27 @@ class ResultAutomationIntegrationTest(unittest.TestCase):
         self.assertGreaterEqual(doc["event_total"], 1)
         for name in ("run.json", "summary.json", "index.json"):
             self.assertTrue((self.imp_dir / "manifest" / "2026-07-19" / name).exists())
+
+        from app.data import db as app_db
+
+        conn = app_db.connect()
+        try:
+            ev = conn.execute(
+                "SELECT meta_json FROM race_evaluations WHERE race_id=?",
+                ("2026-07-19-04-11",),
+            ).fetchone()
+            self.assertIsNotNone(ev)
+            meta = json.loads(ev["meta_json"])
+            self.assertEqual(meta.get("going"), "良")
+            self.assertEqual(meta.get("distance"), 1200)
+            row = conn.execute(
+                "SELECT going, distance, surface FROM race_results WHERE race_id=?",
+                ("2026-07-19-04-11",),
+            ).fetchone()
+            self.assertEqual(row["going"], "良")
+            self.assertEqual(row["distance"], 1200)
+        finally:
+            conn.close()
 
     def test_new_run_id_each_time(self):
         from app.ops.result_automation import ResultAutomationService

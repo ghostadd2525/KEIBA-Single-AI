@@ -194,6 +194,17 @@ class Handler(BaseHTTPRequestHandler):
             self._send(200, ok(cov, {"service": "Coverage"}))
             return
 
+        if path == "/v1/stats/heatmap":
+            from .stats.service import get_stats_service
+
+            venues_raw = (qs.get("venues") or [""])[0] or ""
+            venue_filter = [v.strip() for v in venues_raw.split(",") if v.strip()] or None
+            data = get_stats_service().get_heatmap_stats(
+                venues=venue_filter,
+            )
+            self._send(200, ok(data, {"service": "StatsHeatmap"}))
+            return
+
         if path == "/v1/admin/dashboard":
             race_date = (qs.get("date") or qs.get("race_date") or [""])[0] or None
             dash = DashboardService().summary(race_date=race_date)

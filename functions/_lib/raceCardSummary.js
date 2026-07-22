@@ -5,26 +5,17 @@
  * schema_version: expect-race-card-summary/1.0
  */
 import { mapPiPredictionToBundle } from "./piPredictionMapper.js";
+import { applySegmentConfidenceBlend } from "./segmentConfidence.js";
+import {
+  CONFIDENCE_BAND_HIGH,
+  CONFIDENCE_BAND_MEDIUM,
+  confidenceBandFromScore,
+} from "./confidenceBands.js";
+
+export { CONFIDENCE_BAND_HIGH, CONFIDENCE_BAND_MEDIUM, confidenceBandFromScore };
 
 export const RACE_CARD_SUMMARY_SCHEMA = "expect-race-card-summary/1.0";
 export const RACE_CARDS_LIST_SCHEMA = "expect-race-cards/1.0";
-
-/** RaceCardSummary band 閾値（BFF 責務 — Web 禁止） */
-export const CONFIDENCE_BAND_HIGH = 0.6;
-export const CONFIDENCE_BAND_MEDIUM = 0.35;
-
-/**
- * @param {number | null | undefined} score 0–1（>1 なら /100 正規化）
- * @returns {"high"|"medium"|"low"}
- */
-export function confidenceBandFromScore(score) {
-  if (score == null || !Number.isFinite(Number(score))) return "low";
-  let s = Number(score);
-  if (s > 1) s = s / 100;
-  if (s >= CONFIDENCE_BAND_HIGH) return "high";
-  if (s >= CONFIDENCE_BAND_MEDIUM) return "medium";
-  return "low";
-}
 
 /**
  * Catalog 行 → race_info（Catalog 由来のみ）
@@ -42,11 +33,24 @@ export function buildRaceInfoFromCatalog(race) {
     race.post_time != null && String(race.post_time).trim() !== ""
       ? String(race.post_time)
       : null;
+  const surface =
+    race.surface != null && String(race.surface).trim() !== ""
+      ? String(race.surface)
+      : race.target_surface != null && String(race.target_surface).trim() !== ""
+        ? String(race.target_surface)
+        : null;
+  const rawDist = race.distance ?? race.target_distance;
+  const distance =
+    rawDist != null && rawDist !== "" && Number.isFinite(Number(rawDist))
+      ? Number(rawDist)
+      : null;
   return {
     venue,
     race_number: Number.isFinite(raceNumber) ? raceNumber : null,
     race_name: String(race.race_name || ""),
     post_time: postTime,
+    surface,
+    distance,
   };
 }
 
@@ -54,8 +58,9 @@ export function buildRaceInfoFromCatalog(race) {
  * PredictionBundle → summary 名前空間（一覧用最小集合）
  * Phase 1: short_reason は常に null
  * @param {Record<string, unknown>} bundle
+ * @param {Record<string, unknown> | null} [catalogRace]
  */
-export function buildSummaryFromBundle(bundle) {
+export function buildSummaryFromBundle(bundle, catalogRace = null) {
   const runners = Array.isArray(bundle?.evaluation?.runners)
     ? bundle.evaluation.runners
     : [];
@@ -69,20 +74,23 @@ export function buildSummaryFromBundle(bundle) {
       }
     : null;
 
-  const rawScore = bundle?.ai_confidence?.score;
-  const score =
-    rawScore == null || !Number.isFinite(Number(rawScore))
+  const comp = bundle?.ai_confidence?.component_scores || {};
+  const rawModel = comp.model_score != null ? comp.model_score : bundle?.ai_confidence?.score;
+  const modelScore =
+    rawModel == null || !Number.isFinite(Number(rawModel))
       ? null
-      : Number(rawScore) > 1
-        ? Number(rawScore) / 100
-        : Number(rawScore);
+      : Number(rawModel) > 1
+        ? Number(rawModel) / 100
+        : Number(rawModel);
 
+  const raceCtx = catalogRace || bundle?.race_info || {};
+  const blended = applySegmentConfidenceBlend(modelScore, raceCtx);
   const confidence =
-    score == null
+    blended == null
       ? null
       : {
-          score,
-          band: confidenceBandFromScore(score),
+          score: blended.score,
+          band: blended.band,
         };
 
   return {
@@ -127,7 +135,7 @@ export function buildRaceCardSummary(args) {
   }
 
   if (predictionStatus === "ready" && bundle) {
-    card.summary = buildSummaryFromBundle(bundle);
+    card.summary = buildSummaryFromBundle(bundle, catalogRace);
     if (!card.prediction.engine_source) {
       card.prediction.engine_source = "pi";
     }

@@ -20,6 +20,9 @@ class RaceResultRow:
     winner_name: str | None
     source: str
     extra: dict[str, Any]
+    surface: str | None = None
+    distance: int | None = None
+    going: str | None = None
 
 
 class ResultProvider(ABC):
@@ -94,6 +97,18 @@ class CsvResultProvider(ResultProvider):
                     fs_i = int(fs) if fs not in (None, "") else None
                 except ValueError:
                     fs_i = None
+                dist = raw.get("distance") or raw.get("target_distance")
+                try:
+                    dist_i = int(float(dist)) if dist not in (None, "") else None
+                except ValueError:
+                    dist_i = None
+                going = (
+                    raw.get("going")
+                    or raw.get("track_condition")
+                    or raw.get("condition")
+                    or raw.get("baba")
+                    or None
+                )
                 out.append(
                     RaceResultRow(
                         race_id=rid,
@@ -103,10 +118,15 @@ class CsvResultProvider(ResultProvider):
                         field_size=fs_i,
                         winner_name=(raw.get("winner_name") or raw.get("horse_name") or None),
                         source=f"csv:{path.name}",
+                        surface=(raw.get("surface") or raw.get("target_surface") or None),
+                        distance=dist_i,
+                        going=(str(going).strip() if going not in (None, "") else None),
                         extra={k: v for k, v in raw.items() if k not in {
                             "race_id", "race_date", "result_date", "venue",
                             "winner_horse_number", "winner_number", "field_size",
-                            "winner_name", "horse_name",
+                            "winner_name", "horse_name", "surface", "target_surface",
+                            "distance", "target_distance", "going", "track_condition",
+                            "condition", "baba",
                         }},
                     )
                 )

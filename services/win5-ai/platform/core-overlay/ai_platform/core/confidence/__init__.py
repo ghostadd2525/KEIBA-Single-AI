@@ -6,6 +6,8 @@ import math
 import os
 from typing import Any
 
+from .segment_rates import blend_confidence_score, lookup_segment_hit_rate
+
 
 def _entropy(probs: list[float]) -> float:
     if not probs:
@@ -58,6 +60,18 @@ class ConfidenceBuilder:
         spread_factor = 1.0 - uncertainty
         overall = top1 * (0.55 + 0.25 * gap_factor + 0.20 * spread_factor)
         overall = min(max(overall, 0.0), 1.0)
+        model_overall = float(overall)
+
+        segment = lookup_segment_hit_rate(meta)
+        blended = blend_confidence_score(model_overall, segment["hit_rate"])
+        if blended is not None:
+            overall = float(blended)
+            meta["model_confidence"] = model_overall
+            meta["segment_hit_rate"] = segment["hit_rate"]
+            meta["segment_scope"] = segment["scope"]
+            if segment.get("key"):
+                meta["segment_key"] = segment["key"]
+            meta["segment_samples"] = segment.get("n", 0)
 
         meta.update(
             {
@@ -77,6 +91,11 @@ class ConfidenceBuilder:
             f"entropy={meta['entropy']}",
             f"uncertainty={meta['uncertainty']}",
         ]
+        if meta.get("segment_hit_rate") is not None:
+            factors.append(f"segment_hit_rate={meta['segment_hit_rate']:.4f}")
+            factors.append(f"segment_scope={meta.get('segment_scope', 'overall')}")
+        if meta.get("model_confidence") is not None:
+            factors.append(f"model_confidence={meta['model_confidence']:.4f}")
 
         return {
             "race_id": str(score_bundle.get("race_id", "")),

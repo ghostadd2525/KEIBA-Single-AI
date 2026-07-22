@@ -10,7 +10,14 @@ from typing import Any
 
 from ..data.core_benchmark import load_labeled_races
 from ..data.repository import RaceRepository
-from .evaluator import distance_bucket, evaluate_bundle_against_result
+from .evaluator import (
+    distance_bucket,
+    distance_bucket_ui,
+    evaluate_bundle_against_result,
+    normalize_going,
+    surface_ja,
+)
+from ..ops.race_context import extract_race_context
 from .repository import StatsRepository
 
 
@@ -96,15 +103,16 @@ class StatsService:
                     winner_horse_number=result.get("winner_horse_number"),
                 )
                 info = bundle.get("race_info") or {}
+                ctx = extract_race_context(result=result, bundle=bundle)
                 row = {
                     "race_id": rid,
                     "prediction_id": pred_row.get("id"),
                     "race_date": result.get("race_date") or info.get("date"),
                     "venue": result.get("venue") or info.get("venue"),
                     "meeting_id": result.get("meeting_id") or info.get("meeting_id"),
-                    "surface": result.get("surface") or info.get("surface"),
-                    "distance": result.get("distance") or info.get("distance"),
-                    "going": result.get("going"),
+                    "surface": ctx.get("surface") or result.get("surface") or info.get("surface"),
+                    "distance": ctx.get("distance") or result.get("distance") or info.get("distance"),
+                    "going": ctx.get("going") or result.get("going"),
                     "field_size": result.get("field_size") or info.get("field_size"),
                     "winner_horse_number": result.get("winner_horse_number"),
                     "engine_source": pred_row.get("engine_source"),
@@ -153,6 +161,15 @@ class StatsService:
             buckets[("overall", "all")].append(row)
             venue = row.get("venue") or "unknown"
             buckets[("venue", venue)].append(row)
+            surf = surface_ja(row.get("surface"))
+            buckets[("surface", surf)].append(row)
+            dist_ui = distance_bucket_ui(row.get("distance"))
+            vsd_key = f"{venue}|{surf}|{dist_ui}"
+            buckets[("venue_surface_distance", vsd_key)].append(row)
+            going = normalize_going(row.get("going"))
+            if going:
+                vsg_key = f"{venue}|{surf}|{going}"
+                buckets[("venue_surface_going", vsg_key)].append(row)
             dist = distance_bucket(row.get("distance"))
             buckets[("distance", dist)].append(row)
             going = row.get("going") or "unknown"
@@ -337,6 +354,76 @@ class StatsService:
             "hit_at_5_rate": row["hit_at_5"],
             "roi": row.get("roi"),
         }
+
+    def _segment_tables_from_rows(self, rows: list[dict[str, Any]]) -> dict[str, Any]:
+        segments: dict[str, dict[str, Any]] = {}
+        segments_going: dict[str, dict[str, Any]] = {}
+        hits = 0
+        total = 0
+        for row in rows:
+            if row.get("hit_at_1") is None:
+                continue
+            total += 1
+            if row.get("hit_at_1"):
+                hits += 1
+            venue = str(row.get("venue") or "").strip()
+            if not venue:
+                continue
+            surf = surface_ja(row.get("surface"))
+            dist_ui = distance_bucket_ui(row.get("distance"))
+            vsd_key = f"{venue}|{surf}|{dist_ui}"
+            if vsd_key not in segments:
+                segments[vsd_key] = {"hits": 0, "n": 0}
+            segments[vsd_key]["n"] += 1
+            if row.get("hit_at_1"):
+                segments[vsd_key]["hits"] += 1
+            going = normalize_going(row.get("going"))
+            if going:
+                vsg_key = f"{venue}|{surf}|{going}"
+                if vsg_key not in segments_going:
+                    segments_going[vsg_key] = {"hits": 0, "n": 0}
+                segments_going[vsg_key]["n"] += 1
+                if row.get("hit_at_1"):
+                    segments_going[vsg_key]["hits"] += 1
+        for table in (segments, segments_going):
+            for key, val in table.items():
+                n = int(val["n"])
+                val["hit_rate"] = _pct(val["hits"], n) if n else 0.0
+        return {
+            "overall_hit_rate": _pct(hits, total) if total else 218 / 285,
+            "races_evaluated": total,
+            "segments": segments,
+            "segments_going": segments_going,
+        }
+
+    def get_heatmap_stats(self, *, venues: list[str] | None = None) -> dict[str, Any]:
+        rows = self.repo.list_evaluations_with_results()
+        tables = self._segment_tables_from_rows(rows)
+        run = self.repo.latest_run()
+        updated_at = None
+        if run and run.get("finished_at"):
+            updated_at = run["finished_at"]
+        payload = {
+            "schema_version": "expect-segment-hit-rates/1.0",
+            "corpus": "stats_db",
+            "generated_at": updated_at or _now(),
+            "updated_at": updated_at,
+            "overall_hit_rate": tables["overall_hit_rate"],
+            "min_samples": 3,
+            "races_evaluated": tables["races_evaluated"],
+            "segments": tables["segments"],
+            "segments_going": tables["segments_going"],
+            "source": "stats_db",
+        }
+        if venues:
+            allow = {v.strip() for v in venues if v and str(v).strip()}
+            payload["segments"] = {
+                k: v for k, v in payload["segments"].items() if k.split("|")[0] in allow
+            }
+            payload["segments_going"] = {
+                k: v for k, v in payload["segments_going"].items() if k.split("|")[0] in allow
+            }
+        return payload
 
 
 _stats_service: StatsService | None = None

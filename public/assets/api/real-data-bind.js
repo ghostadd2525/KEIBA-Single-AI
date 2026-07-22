@@ -116,6 +116,190 @@
     );
   }
 
+  function heatmapCellHtml(cell) {
+    if (!cell || cell.pct == null) {
+      return '<td><span class="hv hv--empty" style="--v:0"><b>—</b><i></i></span></td>';
+    }
+    var band = cell.band && cell.band !== "unknown" ? " hv--" + cell.band : "";
+    return (
+      '<td><span class="hv' +
+      band +
+      '" style="--v:' +
+      cell.pct +
+      '"><b>' +
+      cell.pct +
+      '%</b><i></i></span></td>'
+    );
+  }
+
+  function conditionCellHtml(cell) {
+    if (!cell || cell.pct == null) {
+      return '<td style="--v:0">—</td>';
+    }
+    return '<td style="--v:' + cell.pct + '">' + cell.pct + "%</td>";
+  }
+
+  function formatHeatNote(data, venueCount) {
+    var when = "";
+    if (data && data.updated_at) {
+      try {
+        var d = new Date(data.updated_at);
+        if (!isNaN(d.getTime())) {
+          when =
+            d.getFullYear() +
+            "/" +
+            (d.getMonth() + 1) +
+            "/" +
+            d.getDate() +
+            " " +
+            String(d.getHours()).padStart(2, "0") +
+            ":" +
+            String(d.getMinutes()).padStart(2, "0");
+        }
+      } catch (e) {
+        when = String(data.updated_at);
+      }
+    }
+    var parts = ["◎的中率（過去実績）"];
+    if (venueCount) parts.push("対象会場 " + venueCount + "場");
+    if (data && data.races_evaluated) parts.push(data.races_evaluated + "R評価");
+    if (when) parts.push("※" + when + " 更新");
+    return parts.join(" · ");
+  }
+
+  function paintHeatmapFromStats(data, venueFilter) {
+    var dist = (data && data.distance) || {};
+    var cond = (data && data.condition) || {};
+    var venues = dist.venues || [];
+    if (venueFilter && venueFilter.length) {
+      var allow = {};
+      venueFilter.forEach(function (v) {
+        allow[v] = true;
+      });
+      venues = venues.filter(function (v) {
+        return allow[v];
+      });
+    }
+
+    var distBody = document.querySelector("#heatmapBody");
+    if (distBody) {
+      if (!venues.length) {
+        distBody.innerHTML =
+          '<tr><td colspan="9" class="muted">過去実績データがありません</td></tr>';
+      } else {
+        var distRows = (dist.rows || []).filter(function (row) {
+          return venues.indexOf(row.venue) >= 0;
+        });
+        distBody.innerHTML = distRows
+          .map(function (row) {
+            var cells = (row.cells || []).map(heatmapCellHtml).join("");
+            return (
+              '<tr><th class="row-head">' +
+              escapeHtml(row.venue) +
+              "</th>" +
+              cells +
+              "</tr>"
+            );
+          })
+          .join("");
+      }
+    }
+
+    var condBody = document.querySelector("#conditionHeatmapBody");
+    if (condBody) {
+      var condRows = cond.rows || [];
+      if (venueFilter && venueFilter.length) {
+        var allowVenues = {};
+        venueFilter.forEach(function (v) {
+          allowVenues[v] = true;
+        });
+        condRows = condRows.filter(function (row) {
+          return allowVenues[row.venue];
+        });
+      }
+      if (!condRows.length) {
+        condBody.innerHTML =
+          '<tr><td colspan="5" class="muted">過去実績データがありません</td></tr>';
+      } else {
+        condBody.innerHTML = condRows
+          .map(function (row) {
+            var cells = (row.cells || []).map(conditionCellHtml).join("");
+            return "<tr><th>" + escapeHtml(row.label || "") + "</th>" + cells + "</tr>";
+          })
+          .join("");
+      }
+    }
+
+    var noteText = formatHeatNote(data, venues.length);
+    document.querySelectorAll("[data-heat-asof]").forEach(function (note) {
+      note.textContent = noteText;
+    });
+  }
+
+  var heatmapPollTimer = null;
+  var heatmapPollOpts = null;
+
+  function fetchAndPaintHeatmap(opts) {
+    opts = opts || {};
+    var venues = opts.venues || null;
+    if (venues && venues.length) {
+      heatmapPollOpts = Object.assign({}, heatmapPollOpts || {}, { venues: venues });
+    } else if (opts.venues === null) {
+      heatmapPollOpts = Object.assign({}, heatmapPollOpts || {}, { venues: null });
+    }
+    var query = {};
+    if (venues && venues.length) query.venues = venues.join(",");
+    var req =
+      global.ExpectApi && ExpectApi.Stats && ExpectApi.Stats.heatmap
+        ? ExpectApi.Stats.heatmap(query)
+        : fetch(
+            "/api/v1/stats/heatmap" +
+              (query.venues ? "?venues=" + encodeURIComponent(query.venues) : "")
+          )
+            .then(function (res) {
+              return res.json();
+            })
+            .then(function (payload) {
+              return payload && payload.data != null ? payload.data : payload;
+            });
+    return req
+      .then(function (data) {
+        paintHeatmapFromStats(data, venues);
+        return data;
+      });
+  }
+
+  function startHeatmapPolling(opts) {
+    opts = opts || {};
+    heatmapPollOpts = opts;
+    var intervalMs = opts.intervalMs || 60000;
+    if (heatmapPollTimer) clearInterval(heatmapPollTimer);
+    function tick() {
+      fetchAndPaintHeatmap(heatmapPollOpts || {}).catch(function () {
+        /* 前回表示を維持 */
+      });
+    }
+    tick();
+    heatmapPollTimer = setInterval(tick, intervalMs);
+    return function stopHeatmapPolling() {
+      if (heatmapPollTimer) clearInterval(heatmapPollTimer);
+      heatmapPollTimer = null;
+    };
+  }
+
+  function resolveHomeDate() {
+    if (global.ExpectRaceListUrl && ExpectRaceListUrl.calendarFallbackDate) {
+      var fb = ExpectRaceListUrl.calendarFallbackDate(new Date());
+      if (fb) return fb;
+    }
+    if (global.ExpectWeekendCalendar && ExpectWeekendCalendar.decide) {
+      var cal = ExpectWeekendCalendar.decide(new Date());
+      if (cal && cal.is_race_day && cal.date_jst) return cal.date_jst;
+      if (cal && cal.next_open_date_jst) return cal.next_open_date_jst;
+    }
+    return "";
+  }
+
   function paintDistanceHeatmap(bundles) {
     var tbody = document.querySelector("#heatmapBody");
     if (!tbody) return;
@@ -421,6 +605,10 @@
     scorePercent: scorePercent,
     paintDistanceHeatmap: paintDistanceHeatmap,
     paintConditionHeatmap: paintConditionHeatmap,
+    paintHeatmapFromStats: paintHeatmapFromStats,
+    fetchAndPaintHeatmap: fetchAndPaintHeatmap,
+    startHeatmapPolling: startHeatmapPolling,
+    resolveHomeDate: resolveHomeDate,
     paintDashMetrics: paintDashMetrics,
     applyRacesFilters: applyRacesFilters,
     bindMypageProfile: bindMypageProfile,

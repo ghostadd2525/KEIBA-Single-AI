@@ -125,11 +125,11 @@
         </a>
       </section>
 
-      <!-- AI信頼度ヒートマップ（会場×距離） -->
+      <!-- ◎的中率ヒートマップ（会場×距離） -->
       <section class="heat-card" id="heatmap">
         <div class="heat-head">
           <h2 class="heat-title">
-            AI信頼度（レース会場 × 距離）
+            ◎的中率（会場 × 距離）
             <img class="info-ico" src="assets/icons/icon-info.svg" alt="" />
           </h2>
           <div class="heat-legend" aria-hidden="true">
@@ -138,8 +138,8 @@
             <span>高</span>
           </div>
         </div>
-        <p class="heat-note" data-heat-asof>今週の対象会場（3場）※—時点の結果</p>
-        <div class="heatmap-scroll" aria-label="今週の対象会場×距離（スワイプで横スクロール）">
+        <p class="heat-note" data-heat-asof>◎的中率（過去実績）を読み込み中…</p>
+        <div class="heatmap-scroll" aria-label="会場×距離の◎的中率（スワイプで横スクロール）">
           <table class="heatmap-table">
             <thead>
               <tr>
@@ -149,17 +149,17 @@
               </tr>
             </thead>
             <tbody id="heatmapBody">
-              <tr><td colspan="9" class="muted">Prediction API から読み込み中…</td></tr>
+              <tr><td colspan="9" class="muted">過去実績を読み込み中…</td></tr>
             </tbody>
           </table>
         </div>
       </section>
 
-      <!-- AI信頼度（競馬場 × 馬場状態） -->
+      <!-- ◎的中率（競馬場 × 馬場状態） -->
       <section class="heat-card heat-card--condition">
         <div class="heat-head">
           <h2 class="heat-title">
-            AI信頼度（競馬場 × 馬場状態）
+            ◎的中率（会場 × 馬場状態）
             <img class="info-ico" src="assets/icons/icon-info.svg" alt="" />
           </h2>
           <div class="heat-legend" aria-hidden="true">
@@ -168,8 +168,8 @@
             <span>高</span>
           </div>
         </div>
-        <p class="heat-note" data-heat-asof>今週の対象会場（3場）※—時点の結果</p>
-        <div class="cond-table-wrap" aria-label="今週の対象会場×馬場状態">
+        <p class="heat-note" data-heat-asof>◎的中率（過去実績）を読み込み中…</p>
+        <div class="cond-table-wrap" aria-label="会場×馬場状態の◎的中率">
           <table class="cond-table">
             <thead>
               <tr>
@@ -241,6 +241,7 @@
   <script src="assets/api/auth.js"></script>
   <script src="assets/api/contract-guard.js"></script>
   <script src="assets/api/supply.js"></script>
+  <script src="assets/api/stats.js"></script>
   <script src="assets/api/prediction.js"></script>
   <script src="assets/api/race-id-meta.js"></script>
   <script src="assets/api/prediction-bind.js"></script>
@@ -355,12 +356,22 @@
         var predictCard = document.querySelector(".ai-card--predict");
         if (!window.ExpectApi || !ExpectApi.Prediction || !window.ExpectPredictionBind) return;
 
+        if (window.ExpectRealDataBind && ExpectRealDataBind.startHeatmapPolling) {
+          ExpectRealDataBind.startHeatmapPolling({ intervalMs: 60000 });
+        }
+
         function paintAll(bundles, coverage, history) {
           if (window.ExpectRealDataBind) {
             ExpectRealDataBind.cacheBundles(bundles);
-            ExpectRealDataBind.paintDistanceHeatmap(bundles);
-            ExpectRealDataBind.paintConditionHeatmap(bundles);
             ExpectRealDataBind.paintDashMetrics(coverage, history);
+            var venues = [];
+            (bundles || []).forEach(function (b) {
+              var v = b.race_info && b.race_info.venue;
+              if (v && venues.indexOf(v) < 0) venues.push(v);
+            });
+            if (venues.length && ExpectRealDataBind.fetchAndPaintHeatmap) {
+              ExpectRealDataBind.fetchAndPaintHeatmap({ venues: venues });
+            }
           }
           var filtered = window.ExpectContractGuard
             ? ExpectContractGuard.filterValidBundles(bundles)
@@ -409,7 +420,11 @@
         if (predictCard) predictCard.classList.add("is-updating");
         if (mount) mount.classList.add("is-loading");
 
-        var reqs = [ExpectApi.Prediction.list({})];
+        var listDate =
+          window.ExpectRealDataBind && ExpectRealDataBind.resolveHomeDate
+            ? ExpectRealDataBind.resolveHomeDate()
+            : "";
+        var reqs = [ExpectApi.Prediction.list({ date: listDate })];
         if (ExpectApi.Supply) reqs.push(ExpectApi.Supply.coverage().catch(function () { return null; }));
         else reqs.push(Promise.resolve(null));
         if (ExpectApi.User) reqs.push(ExpectApi.User.history().catch(function () { return null; }));

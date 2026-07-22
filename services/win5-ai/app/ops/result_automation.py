@@ -21,6 +21,7 @@ from .miss_evidence import (
     hit_flags_from_runners,
     winner_name_from_result,
 )
+from .race_context import apply_context_to_result_row, extract_race_context
 from .result_providers import ResultProvider, RaceResultRow, default_provider
 
 _service: "ResultAutomationService | None" = None
@@ -120,6 +121,7 @@ class ResultAutomationService:
                 else:
                     try:
                         sync_rows = self.provider.fetch(race_date)
+                        sync_rows = self._enrich_sync_rows(conn, sync_rows)
                         self._upsert_results(conn, sync_rows)
                         conn.commit()
                     except Exception as exc:
@@ -290,6 +292,10 @@ class ResultAutomationService:
                     pred = item["pred"]
                     bundle = item["bundle"]
                     race_id = row["race_id"]
+                    ctx = extract_race_context(result=row, bundle=bundle)
+                    row = apply_context_to_result_row(row, ctx)
+                    if ctx:
+                        self._patch_result_context(conn, race_id, ctx)
                     runners = ((bundle.get("evaluation") or {}).get("runners")) or []
                     winner_n = row["winner_horse_number"]
                     hit_at_1, hit_at_3, hit_at_5 = hit_flags_from_runners(
@@ -325,7 +331,15 @@ class ResultAutomationService:
                             pred["engine_source"],
                             pred["model_version"],
                             _now(),
-                            json.dumps({"trigger": trigger_n}, ensure_ascii=False),
+                            json.dumps(
+                                {
+                                    "trigger": trigger_n,
+                                    "surface": row.get("surface"),
+                                    "distance": row.get("distance"),
+                                    "going": row.get("going"),
+                                },
+                                ensure_ascii=False,
+                            ),
                         ),
                     )
 
@@ -589,17 +603,82 @@ class ResultAutomationService:
 
     # --- results ---
 
+    def _enrich_sync_rows(self, conn: Any, rows: list[RaceResultRow]) -> list[RaceResultRow]:
+        enriched: list[RaceResultRow] = []
+        for row in rows:
+            pred = conn.execute(
+                """
+                SELECT bundle_json FROM predictions WHERE race_id=?
+                ORDER BY created_at DESC, id DESC LIMIT 1
+                """,
+                (row.race_id,),
+            ).fetchone()
+            bundle = None
+            if pred:
+                try:
+                    bundle = json.loads(pred["bundle_json"])
+                except (json.JSONDecodeError, TypeError):
+                    bundle = None
+            ctx = extract_race_context(
+                result={
+                    "surface": row.surface,
+                    "distance": row.distance,
+                    "going": row.going,
+                },
+                bundle=bundle,
+                extra=row.extra,
+            )
+            enriched.append(
+                RaceResultRow(
+                    race_id=row.race_id,
+                    race_date=row.race_date,
+                    venue=row.venue,
+                    winner_horse_number=row.winner_horse_number,
+                    field_size=row.field_size,
+                    winner_name=row.winner_name,
+                    source=row.source,
+                    extra=row.extra,
+                    surface=ctx.get("surface") or row.surface,
+                    distance=ctx.get("distance") or row.distance,
+                    going=ctx.get("going") or row.going,
+                )
+            )
+        return enriched
+
+    def _patch_result_context(self, conn: Any, race_id: str, ctx: dict[str, Any]) -> None:
+        if not ctx:
+            return
+        conn.execute(
+            """
+            UPDATE race_results SET
+              surface=COALESCE(?, surface),
+              distance=COALESCE(?, distance),
+              going=COALESCE(?, going)
+            WHERE race_id=?
+            """,
+            (
+                ctx.get("surface"),
+                ctx.get("distance"),
+                ctx.get("going"),
+                race_id,
+            ),
+        )
+
     def _upsert_results(self, conn: Any, rows: list[RaceResultRow]) -> None:
         for r in rows:
             conn.execute(
                 """
                 INSERT INTO race_results(
-                  race_id, race_date, venue, winner_horse_number, field_size,
+                  race_id, race_date, venue, surface, distance, going,
+                  winner_horse_number, field_size,
                   result_json, source, finalized_at
-                ) VALUES (?,?,?,?,?,?,?,?)
+                ) VALUES (?,?,?,?,?,?,?,?,?,?,?)
                 ON CONFLICT(race_id) DO UPDATE SET
                   race_date=excluded.race_date,
                   venue=excluded.venue,
+                  surface=COALESCE(excluded.surface, race_results.surface),
+                  distance=COALESCE(excluded.distance, race_results.distance),
+                  going=COALESCE(excluded.going, race_results.going),
                   winner_horse_number=excluded.winner_horse_number,
                   field_size=excluded.field_size,
                   result_json=excluded.result_json,
@@ -610,10 +689,19 @@ class ResultAutomationService:
                     r.race_id,
                     r.race_date,
                     r.venue,
+                    r.surface,
+                    r.distance,
+                    r.going,
                     r.winner_horse_number,
                     r.field_size,
                     json.dumps(
-                        {"winner_name": r.winner_name, **(r.extra or {})},
+                        {
+                            "winner_name": r.winner_name,
+                            "surface": r.surface,
+                            "distance": r.distance,
+                            "going": r.going,
+                            **(r.extra or {}),
+                        },
                         ensure_ascii=False,
                     ),
                     r.source,
@@ -624,7 +712,8 @@ class ResultAutomationService:
     def _load_existing_results(self, conn: Any, race_date: str) -> list[dict[str, Any]]:
         rows = conn.execute(
             """
-            SELECT race_id, race_date, venue, winner_horse_number, field_size,
+            SELECT race_id, race_date, venue, surface, distance, going,
+                   winner_horse_number, field_size,
                    result_json, source, finalized_at
             FROM race_results WHERE race_date=? ORDER BY race_id
             """,

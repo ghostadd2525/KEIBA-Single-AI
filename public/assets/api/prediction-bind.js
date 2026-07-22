@@ -63,6 +63,7 @@
   var MARK_SYMBOL = { honmei: "◎", taikou: "○", ana: "▲", chuuken: "△", none: "—" };
   var MARK_LABEL = { honmei: "本命", taikou: "対抗", ana: "穴", chuuken: "中穴", none: "—" };
   var BAND_LABEL = { high: "高い", medium: "ふつう", low: "低い", unknown: "不明" };
+  var CONFIDENCE_NOTE = "過去の同条件実績も含めた評価です";
   var FEATURE_LABEL = { db: "DB", daily_csv: "日次CSV", global_csv: "全体CSV" };
 
   function runnerByMark(bundle, mark) {
@@ -98,6 +99,81 @@
     if (band === "medium") return "★★★☆☆";
     if (band === "low") return "★★☆☆☆";
     return "☆☆☆☆☆";
+  }
+
+  function bandFromNormalizedScore(score) {
+    if (score == null || !Number.isFinite(Number(score))) return "unknown";
+    var s = Number(score);
+    if (s > 1) s = s / 100;
+    if (s >= 0.6) return "high";
+    if (s >= 0.35) return "medium";
+    return "low";
+  }
+
+  /** 一覧カード右側 — 星＋ラベル（% 非表示）の内側 HTML */
+  function raceConfidenceSideInner(band, stars) {
+    var label = BAND_LABEL[band] || BAND_LABEL.unknown;
+    var starText = stars || starsFromBand(band);
+    return (
+      '<span class="race-conf-stars" aria-hidden="true">' +
+      starText +
+      "</span>" +
+      '<span class="race-conf-label">' +
+      escapeHtml(label) +
+      "</span>" +
+      "<small>自信度</small>"
+    );
+  }
+
+  /** 詳細ページ — 内訳（モデル評価 / 条件別実績） */
+  function raceConfidenceDetailHtml(bundle) {
+    var ac = (bundle && bundle.ai_confidence) || {};
+    var comp = ac.component_scores || {};
+    var band = ac.band && BAND_LABEL[ac.band] ? ac.band : bandFromNormalizedScore(ac.score);
+    var bandLabel = BAND_LABEL[band] || BAND_LABEL.unknown;
+    var stars = starsFromBand(band);
+    var modelScore = comp.model_score != null ? comp.model_score : ac.score;
+    var modelBand = bandFromNormalizedScore(modelScore);
+    var segmentRate = comp.segment_hit_rate;
+    var segmentBand = segmentRate != null ? bandFromNormalizedScore(segmentRate) : null;
+
+    var html = '<div class="confidence-detail-v2">';
+    html +=
+      '<p class="confidence-summary">このレースの自信度：<strong>' +
+      escapeHtml(bandLabel) +
+      '</strong> <span class="race-stars" aria-hidden="true">' +
+      stars +
+      "</span></p>";
+    html +=
+      '<p class="confidence-footnote muted">' +
+      escapeHtml(CONFIDENCE_NOTE) +
+      "（％は的中率ではありません）</p>";
+    html += '<dl class="confidence-breakdown">';
+    html +=
+      '<div class="confidence-breakdown-row"><dt>レース評価</dt><dd>モデルが見た◎の強さ：<strong>' +
+      escapeHtml(BAND_LABEL[modelBand] || "—") +
+      "</strong></dd></div>";
+    if (segmentRate != null) {
+      var segLabel = BAND_LABEL[segmentBand] || BAND_LABEL.unknown;
+      var scopeNote = "";
+      if (comp.segment_scope === "venue_surface_distance" && comp.segment_key) {
+        scopeNote = "（" + String(comp.segment_key).replace(/\|/g, "·") + "）";
+      } else if (comp.segment_scope === "venue") {
+        scopeNote = "（" + String(comp.segment_key || "会場") + "）";
+      } else if (comp.segment_scope === "venue_surface") {
+        scopeNote = "（" + String(comp.segment_key || "会場·馬場") + "）";
+      } else if (comp.segment_scope === "overall") {
+        scopeNote = "（全体実績）";
+      }
+      html +=
+        '<div class="confidence-breakdown-row"><dt>条件別実績</dt><dd>同条件の過去◎実績：<strong>' +
+        escapeHtml(segLabel) +
+        "</strong>" +
+        escapeHtml(scopeNote) +
+        "</dd></div>";
+    }
+    html += "</dl></div>";
+    return html;
   }
 
   function summaryScorePercent(confidence) {
@@ -148,53 +224,41 @@
 
     var confPct = null;
     var band = null;
-    var honmeiLine = "";
     var statusNote = "";
     var stars = "☆☆☆☆☆";
-    var confSide = "—<small>AI信頼度</small>";
+    var confSide = "—<small>自信度</small>";
+    var confAriaLabel = "";
     var honmeiNameAttr = "";
-    var honmeiAria = "";
 
     if (status === "ready" && summary) {
       var honmei = summary.honmei;
       var confidence = summary.confidence;
       confPct = summaryScorePercent(confidence);
       band = confidence && confidence.band ? confidence.band : null;
-      if (honmei && honmei.horse_number != null) {
-        var hName = horseLabel(honmei.horse_name, honmei.horse_number);
-        honmeiNameAttr = String(honmei.horse_name || hName || "").trim();
-        honmeiAria =
-          "本命 " + String(honmei.horse_number) + "番 " + (honmei.horse_name || hName || "");
-        honmeiLine =
-          '<p class="race-item-honmei"' +
-          (honmeiAria ? ' aria-label="' + escapeHtml(honmeiAria) + '"' : "") +
-          ">◎ " +
-          escapeHtml(String(honmei.horse_number)) +
-          " " +
-          escapeHtml(hName) +
-          "</p>";
+      if (honmei && honmei.horse_name) {
+        honmeiNameAttr = String(honmei.horse_name).trim();
       }
       if (band) stars = starsFromBand(band);
       else if (confPct != null) stars = starsFromScore(confPct);
-      if (confPct != null) {
-        confSide =
-          confPct +
-          "%<small>" +
-          escapeHtml(BAND_LABEL[band] || BAND_LABEL.unknown) +
-          "</small>";
+      if (band) {
+        confSide = raceConfidenceSideInner(band, stars);
+        confAriaLabel = "このレースの自信度 " + (BAND_LABEL[band] || BAND_LABEL.unknown);
+      } else if (confPct != null) {
+        var fbBand = bandFromNormalizedScore(confPct / 100);
+        confSide = raceConfidenceSideInner(fbBand, stars);
+        confAriaLabel = "このレースの自信度 " + (BAND_LABEL[fbBand] || BAND_LABEL.unknown);
       }
     } else if (status === "processing") {
-      honmeiLine = '<p class="race-item-honmei">◎ — <span class="muted">（予想準備中）</span></p>';
-      confSide = "—<small>AI信頼度</small>";
-      statusNote = "";
+      confSide = "—<small>自信度</small>";
+      statusNote = '<p class="race-item-status-note muted">予想準備中</p>';
     } else if (status === "failed") {
       statusNote = '<p class="race-item-status-note muted">予想取得失敗</p>';
-      confSide = "—<small>AI信頼度</small>";
+      confSide = "—<small>自信度</small>";
     } else {
       // missing（および未知 status）
       status = status === "missing" ? "missing" : status;
       statusNote = '<p class="race-item-status-note muted">予想未公開</p>';
-      confSide = "—<small>AI信頼度</small>";
+      confSide = "—<small>自信度</small>";
     }
 
     // short_reason は Phase 1 未表示（フィールドがあっても出さない）
@@ -254,17 +318,25 @@
       '<p class="race-item-name">' +
       escapeHtml(nameDisp) +
       "</p>" +
-      honmeiLine +
       statusNote +
       '<div class="race-item-meta">' +
       "<span>" +
       escapeHtml(post || "—") +
       "発走</span>" +
-      '<span class="race-stars">' +
-      stars +
-      "</span></div></div>" +
+      (band || confPct != null
+        ? ""
+        : '<span class="race-stars">' + stars + "</span>") +
+      "</div></div>" +
       '<div class="race-item-side">' +
-      '<div class="race-conf">' +
+      '<div class="race-conf"' +
+      (confAriaLabel
+        ? ' title="' +
+          escapeHtml(CONFIDENCE_NOTE) +
+          '" aria-label="' +
+          escapeHtml(confAriaLabel) +
+          '"'
+        : "") +
+      ">" +
       confSide +
       "</div>" +
       '<span class="btn-detail">詳細を見る ›</span></div></a>'
@@ -281,6 +353,10 @@
     var name = info.race_name || info.class_label || "レース";
     var grade = info.grade || "";
     var conf = scorePercent(bundle) || 0;
+    var band = bandFromNormalizedScore(
+      (bundle && bundle.ai_confidence && bundle.ai_confidence.score) || conf / 100
+    );
+    var stars = starsFromBand(band);
     var dLabel = dateLabel(info);
     var dFull = dateFull(info);
     var post = info.post_time || "";
@@ -334,14 +410,15 @@
       '<div class="race-item-meta">' +
       "<span>" +
       escapeHtml(post || "—") +
-      "発走</span>" +
-      '<span class="race-stars">' +
-      starsFromScore(conf) +
-      "</span></div></div>" +
+      "発走</span></div></div>" +
       '<div class="race-item-side">' +
-      '<div class="race-conf">' +
-      conf +
-      "%<small>AI信頼度</small></div>" +
+      '<div class="race-conf" title="' +
+      escapeHtml(CONFIDENCE_NOTE) +
+      '" aria-label="このレースの自信度 ' +
+      escapeHtml(BAND_LABEL[band] || BAND_LABEL.unknown) +
+      '">' +
+      raceConfidenceSideInner(band, stars) +
+      "</div>" +
       '<span class="btn-detail">詳細を見る ›</span></div></a>'
     );
   }
@@ -656,7 +733,10 @@
     var info = bundle.race_info || {};
     var conf = scorePercent(bundle);
     var honmei = honmeiRunner(bundle);
-    var bandLabel = confidenceBandLabel(bundle);
+    var ac = bundle.ai_confidence || {};
+    var band =
+      ac.band && BAND_LABEL[ac.band] ? ac.band : bandFromNormalizedScore(ac.score);
+    var bandLabel = BAND_LABEL[band] || BAND_LABEL.unknown;
 
     var titleEl = document.getElementById("raceTitle");
     var subEl = document.querySelector(".brand-sub");
@@ -681,15 +761,9 @@
       if (num) num.textContent = String(honmei.horse_number);
       if (h2) h2.textContent = horseLabel(honmei.horse_name, honmei.horse_number);
       if (p) {
-        p.textContent =
-          "AI本命 · 信頼度 " +
-          (conf != null ? conf : "—") +
-          (conf != null ? "%" : "") +
-          "（" +
-          bandLabel +
-          "）";
+        p.textContent = "AI本命 · 自信度：" + bandLabel;
       }
-      if (stars && conf != null) stars.textContent = starsFromScore(conf);
+      if (stars && conf != null) stars.textContent = starsFromBand(band);
 
       // v2_explain: 本命カード下に決定打 1 行（Flag OFF 時は要素を除去して v1.1 恒等）
       var dkHost = card.querySelector(".explain-honmei-decision");
@@ -720,24 +794,7 @@
 
     var confEl = document.getElementById("raceConfidenceDetail");
     if (confEl && bundle.ai_confidence) {
-      var ac = bundle.ai_confidence;
-      var factors = publicFactors(ac.factors || []);
-      confEl.innerHTML =
-        "<p>信頼度 <strong>" +
-        (conf != null ? conf + "%" : "—") +
-        "</strong>（" +
-        escapeHtml(bandLabel) +
-        "）</p>" +
-        (factors.length
-          ? "<ul>" +
-            factors
-              .slice(0, 5)
-              .map(function (f) {
-                return "<li>" + escapeHtml(f) + "</li>";
-              })
-              .join("") +
-            "</ul>"
-          : "");
+      confEl.innerHTML = raceConfidenceDetailHtml(bundle);
     }
 
     var narrativeEl = document.querySelector(".pace-card p");

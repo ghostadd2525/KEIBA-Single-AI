@@ -64,6 +64,9 @@ class StatsRepository:
                 ON CONFLICT(race_id) DO UPDATE SET
                   race_date=excluded.race_date,
                   venue=excluded.venue,
+                  surface=COALESCE(excluded.surface, race_results.surface),
+                  distance=COALESCE(excluded.distance, race_results.distance),
+                  going=COALESCE(excluded.going, race_results.going),
                   winner_horse_number=excluded.winner_horse_number,
                   result_json=excluded.result_json,
                   finalized_at=datetime('now')
@@ -140,7 +143,15 @@ class StatsRepository:
                     row.get("engine_source"),
                     row.get("model_version"),
                     row.get("evaluated_at"),
-                    json.dumps({"feature_source": row.get("feature_source")}, ensure_ascii=False),
+                    json.dumps(
+                        {
+                            "feature_source": row.get("feature_source"),
+                            "surface": row.get("surface"),
+                            "distance": row.get("distance"),
+                            "going": row.get("going"),
+                        },
+                        ensure_ascii=False,
+                    ),
                 ),
             )
             conn.commit()
@@ -161,5 +172,29 @@ class StatsRepository:
                 "SELECT * FROM self_evaluation_runs ORDER BY id DESC LIMIT 1"
             ).fetchone()
             return dict(row) if row else None
+        finally:
+            conn.close()
+
+    def list_evaluations_with_results(self) -> list[dict[str, Any]]:
+        conn = app_db.connect()
+        try:
+            rows = conn.execute(
+                """
+                SELECT
+                  e.hit_at_1, e.hit_at_3, e.hit_at_5, e.race_id, e.race_date, e.venue,
+                  COALESCE(r.surface, json_extract(e.meta_json, '$.surface')) AS surface,
+                  COALESCE(r.distance, CAST(json_extract(e.meta_json, '$.distance') AS INTEGER)) AS distance,
+                  COALESCE(r.going, json_extract(e.meta_json, '$.going')) AS going
+                FROM race_evaluations e
+                LEFT JOIN race_results r ON r.race_id = e.race_id
+                ORDER BY e.evaluated_at DESC, e.id DESC
+                """
+            ).fetchall()
+            out: list[dict[str, Any]] = []
+            for row in rows:
+                item = dict(row)
+                item["hit_at_1"] = bool(item.get("hit_at_1"))
+                out.append(item)
+            return out
         finally:
             conn.close()

@@ -55,21 +55,25 @@ const ready = {
 describe("raceCardSummaryHtml / prediction.status", () => {
   const bind = loadBind();
 
-  it("ready: ◎ + confidence% + band + data-prediction-status", () => {
+  it("ready: 自信度ラベル + band + data-prediction-status（印・馬名・%は非表示）", () => {
     const html = bind.raceCardSummaryHtml(ready, { listDate: "2026-07-25" });
     assert.match(html, /data-prediction-status="ready"/);
-    assert.match(html, /race-item-honmei/);
-    assert.match(html, /◎ 4/);
-    assert.match(html, /コルドンブルー/);
-    assert.match(html, />42%<small>ふつう<\/small>/);
+    assert.doesNotMatch(html, /race-item-honmei/);
+    assert.doesNotMatch(html, /◎/);
+    assert.doesNotMatch(html, /42%/);
+    assert.match(html, /race-conf-label/);
+    assert.match(html, />ふつう</);
+    assert.match(html, /<small>自信度<\/small>/);
+    assert.match(html, /過去の同条件実績も含めた評価です/);
     assert.match(html, /data-confidence-band="medium"/);
     assert.match(html, /data-race-date="2026-07-25"/);
+    assert.match(html, /data-race-honmei="コルドンブルー"/);
     // short_reason は Phase 1 未表示
     assert.doesNotMatch(html, /表示禁止確認用/);
     assert.doesNotMatch(html, /short_reason/);
   });
 
-  it("processing: ◎ — 予想準備中 / 信頼度 —", () => {
+  it("processing: 予想準備中 / 信頼度 —（印なし）", () => {
     const html = bind.raceCardSummaryHtml({
       ...ready,
       prediction: { status: "processing" },
@@ -77,8 +81,9 @@ describe("raceCardSummaryHtml / prediction.status", () => {
     });
     assert.match(html, /data-prediction-status="processing"/);
     assert.match(html, /予想準備中/);
-    assert.match(html, /—<small>AI信頼度<\/small>/);
-    assert.doesNotMatch(html, /コルドンブルー/);
+    assert.match(html, /race-item-status-note/);
+    assert.doesNotMatch(html, /race-item-honmei/);
+    assert.doesNotMatch(html, /◎/);
   });
 
   it("failed: Catalog + 予想取得失敗", () => {
@@ -129,7 +134,9 @@ describe("Flag OFF 恒等 — raceCardHtml", () => {
     assert.doesNotMatch(html, /data-prediction-status/);
     assert.doesNotMatch(html, /race-item-honmei/);
     assert.match(html, /race-item/);
-    assert.match(html, /42%<small>AI信頼度<\/small>/);
+    assert.doesNotMatch(html, /42%/);
+    assert.match(html, /<small>自信度<\/small>/);
+    assert.match(html, /race-conf-label/);
   });
 });
 
