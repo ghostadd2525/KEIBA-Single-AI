@@ -130,12 +130,14 @@
     if (data && data.access_token) {
       acceptTerms();
     }
-    if (data && data.favorites && global.ExpectFavorites && ExpectFavorites.importFromServer) {
-      ExpectFavorites.importFromServer(data.favorites, { merge: true });
-    }
-    if (global.ExpectFavorites && ExpectFavorites.syncNow) {
-      ExpectFavorites.syncNow({ reason: "login" }).catch(function () { /* ignore */ });
-    }
+    try {
+      if (data && data.favorites && global.ExpectFavorites && ExpectFavorites.importFromServer) {
+        ExpectFavorites.importFromServer(data.favorites, { merge: true });
+      }
+      if (global.ExpectFavorites && ExpectFavorites.syncNow) {
+        ExpectFavorites.syncNow({ reason: "login" }).catch(function () { /* ignore */ });
+      }
+    } catch (e) { /* favorites must not block login */ }
     return { ok: true, data: data };
   }
 

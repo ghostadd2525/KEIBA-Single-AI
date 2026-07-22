@@ -226,6 +226,18 @@ body.page-login {
   color: var(--gold-soft);
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
+  position: relative;
+}
+
+.login-eye svg {
+  grid-area: 1 / 1;
+  color: inherit;
+  opacity: 1;
+}
+
+.login-eye svg[hidden],
+.login-eye svg.is-hidden {
+  display: none !important;
 }
 
 .login-eye:hover,

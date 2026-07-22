@@ -48,9 +48,11 @@
   function api(path, options) {
     options = options || {};
     var headers = { Accept: "application/json" };
-    var token = options.useSetupToken ? getSetupToken() : getToken();
-    if (options.bearer) token = options.bearer;
-    if (token) headers.Authorization = "Bearer " + token;
+    if (!options.anonymous) {
+      var token = options.useSetupToken ? getSetupToken() : getToken();
+      if (options.bearer) token = options.bearer;
+      if (token) headers.Authorization = "Bearer " + token;
+    }
     if (options.body != null) headers["Content-Type"] = "application/json; charset=utf-8";
 
     return fetch(path, {
@@ -101,6 +103,7 @@
     inviteStart: function (inviteId) {
       return api("/api/auth/invite/start", {
         method: "POST",
+        anonymous: true,
         body: { invite_id: String(inviteId || "").trim() },
       }).then(function (data) {
         if (data && data.setup_token) setSetupToken(data.setup_token);
@@ -129,7 +132,11 @@
     },
 
     login: function (creds) {
-      return api("/api/auth/login", { method: "POST", body: creds || {} }).then(function (data) {
+      return api("/api/auth/login", {
+        method: "POST",
+        anonymous: true,
+        body: creds || {},
+      }).then(function (data) {
         var normalized = normalizeLogin(data);
         if (normalized && normalized.access_token) setToken(normalized.access_token);
         return normalized;
