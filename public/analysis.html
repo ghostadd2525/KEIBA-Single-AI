@@ -3,13 +3,13 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>Expect �E�EKEIBA AI �E�E· 刁E��</title>
+  <title>Expect ～ KEIBA AI ～ · 分析</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Noto+Sans+JP:wght@400;500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="assets/styles.css" />
+  <link rel="stylesheet" href="assets/styles.css?v=17" />
   <link rel="stylesheet" href="assets/screens.css" />
-  <link rel="stylesheet" href="assets/ux.css?v=14" />
+  <link rel="stylesheet" href="assets/ux.css?v=15" />
   <link rel="stylesheet" href="assets/vqa.css" />
   <script src="assets/api/calendar-weekend.js?v=11"></script>
   <script src="assets/auto-maintenance.js?v=11.3"></script>
@@ -27,7 +27,7 @@
         <div class="topbar-left">
           <div class="brand-block topbar-text">
             <p class="brand-name">Expect</p>
-            <p class="brand-sub">�E�EKEIBA AI �E�E/p>
+            <p class="brand-sub">～ KEIBA AI ～</p>
           </div>
         </div>
         <div class="topbar-tools" aria-hidden="true"></div>
@@ -37,11 +37,11 @@
     <div class="screen">
       <section class="chart-card analysis-summary is-loading" id="analysisSummary" aria-labelledby="aiSummaryTitle">
         <h3 id="aiSummaryTitle">AI総評パラメータ</h3>
-        <p class="analysis-lead">お気に入り登録レースを集計した総合評価です、E/p>
+        <p class="analysis-lead">お気に入り登録レースを集計した総合評価です。</p>
         <div class="pie-layout">
-          <div class="pie-chart pie-chart--lg" id="summaryPie" role="img" aria-label="AI総評�E冁E��ラチE>
+          <div class="pie-chart pie-chart--lg" id="summaryPie" role="img" aria-label="AI総評の円グラフ">
             <div class="pie-chart-center">
-              <strong id="summaryOverall"> E/strong>
+              <strong id="summaryOverall">—</strong>
               <small>総合</small>
             </div>
           </div>
@@ -51,18 +51,18 @@
 
       <section class="chart-card" aria-labelledby="favAiTitle">
         <h3 id="favAiTitle">お気に入りレースのAI評価</h3>
-        <p class="analysis-lead">登録中のレースごとにパラメータを�Eグラフ表示します、E/p>
+        <p class="analysis-lead">登録中のレースごとにパラメータを円グラフ表示します。</p>
         <div class="fav-ai-grid" id="favAiGrid" aria-busy="true">
           <div class="expect-loading expect-loading--compact" role="status" aria-live="polite" aria-busy="true" data-expect-loading="1">
             <div class="expect-loading__spinner" aria-hidden="true"></div>
             <p class="expect-loading__title">ロード中...</p>
-            <p class="expect-loading__msg">し�Eらくお征E��ください、E/p>
+            <p class="expect-loading__msg">しばらくお待ちください。</p>
             <div class="expect-loading__progress" data-expect-load-track role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
               <div class="expect-loading__track">
-                <img class="expect-loading__runner" data-expect-load-runner src="assets/images/mascot-loading-run.png?v=2" alt="" width="56" height="56" draggable="false" />
+                <img class="expect-loading__runner" data-expect-load-runner src="assets/images/mascot-loading-run.png?v=3" alt="" width="56" height="56" draggable="false" />
                 <div class="expect-loading__bar"><span class="expect-loading__fill" data-expect-load-fill></span></div>
               </div>
-              <p class="expect-loading__meta" data-expect-load-meta>経過 0.0私E/p>
+              <p class="expect-loading__meta" data-expect-load-meta>経過 0.0秒</p>
             </div>
           </div>
         </div>
@@ -84,7 +84,7 @@
   <script src="assets/api/prediction.js"></script>
   <script src="assets/api/analysis.js"></script>
   <script src="assets/api/analysis-bind.js"></script>
-  <script src="assets/ux.js?v=14"></script>
+  <script src="assets/ux.js?v=15"></script>
   <script src="assets/favorites.js"></script>
   <script src="assets/shell.js"></script>
   <script src="assets/reminders.js"></script>
@@ -97,8 +97,8 @@
         pedigree: "血統適性",
         pace: "展開予測",
         jockey: "騎手相性",
-        form: "近走冁E��",
-        odds: "オチE��妙味"
+        form: "近走内容",
+        odds: "オッズ妙味"
       };
 
       function escapeHtml(s) {
@@ -160,9 +160,9 @@
 
         if (!list.length) {
           pie.style.background = "conic-gradient(from -90deg, rgba(255,255,255,0.08) 0 100%)";
-          overall.textContent = " E;
+          overall.textContent = "—";
           legend.innerHTML =
-            '<li class="pie-legend-empty">お気に入りレースを登録すると、Ebr>総評パラメータが�Eグラフで表示されます、E/li>';
+            '<li class="pie-legend-empty">お気に入りレースを登録すると、<br>総評パラメータが円グラフで表示されます。</li>';
           return;
         }
 
@@ -188,8 +188,8 @@
         if (!list.length) {
           grid.innerHTML =
             '<div class="fav-ai-empty">' +
-            "<p>まだお気に入りがありません、E/p>" +
-            '<a href="races.html">レース一覧で ☁E登録する ›</a>' +
+            "<p>まだお気に入りがありません。</p>" +
+            '<a href="races.html">レース一覧で ★ 登録する ›</a>' +
             "</div>";
           return;
         }
@@ -217,7 +217,7 @@
               conicFromScores(ai) +
               '" role="img" aria-label="' +
               escapeHtml(item.place) +
-              'のAI評価冁E��ラチE>' +
+              'のAI評価円グラフ">' +
               '<div class="pie-chart-center">' +
               "<strong>" +
               ai.overall +
@@ -258,16 +258,16 @@
 
         var top = list[0];
         var lines = [
-          "お気に入り�EAI評価めEbr>冁E��ラフでまとめたよ！E,
-          "パラメータのバランスめEbr>見て買ぁE��を老E��よう♪"
+          "お気に入りのAI評価を<br>円グラフでまとめたよ！",
+          "パラメータのバランスを<br>見て買い目を考えよう♪"
         ];
         if (top && top.ai) {
           lines.unshift(
-            "ぁE��一番の注目は<br><strong>" +
+            "いま一番の注目は<br><strong>" +
               top.place +
               "</strong><br>総合 <strong>" +
               top.ai.overall +
-              "%</strong> だよ！E
+              "%</strong> だよ！"
           );
         }
         ExpectShell.initMascotTalk(lines);
@@ -321,7 +321,7 @@
           if (rejected && window.ExpectContractGuard && grid) {
             ExpectContractGuard.showErrorCard(grid, {
               title: "一部のお気に入りを更新できません",
-              message: rejected + "件ぁEAPI 契紁E��反�EためスキチE�Eしました、E,
+              message: rejected + "件が API 契約違反のためスキップしました。",
             });
           }
           render();
@@ -332,8 +332,8 @@
             grid.appendChild(
               ExpectUx.stateCard({
                 kind: "error",
-                title: "AI刁E��を更新できません",
-                message: "Prediction / Analysis の取得に失敗しました、E,
+                title: "AI分析を更新できません",
+                message: "Prediction / Analysis の取得に失敗しました。",
                 onRetry: function () {
                   location.reload();
                 },
@@ -341,8 +341,8 @@
             );
           } else if (window.ExpectContractGuard && grid) {
             ExpectContractGuard.showErrorCard(grid, {
-              title: "AI刁E��を更新できません",
-              message: "Prediction / Analysis の取得に失敗しました、E,
+              title: "AI分析を更新できません",
+              message: "Prediction / Analysis の取得に失敗しました。",
             });
           }
           finishLoading();

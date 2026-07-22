@@ -1629,6 +1629,7 @@ details.fold > summary::-webkit-details-marker { display: none; }
 /* メインタブ画面: 上ヘッダー・下ナビを固定し、中央だけ縦スクロール */
 .page-tab {
   height: 100dvh;
+  max-height: 100dvh;
   overflow: hidden;
 }
 
@@ -1643,7 +1644,10 @@ details.fold > summary::-webkit-details-marker { display: none; }
 }
 
 .page-tab .topbar {
+  position: sticky;
+  top: 0;
   flex-shrink: 0;
+  z-index: 40;
 }
 
 .page-tab .screen,
@@ -1666,9 +1670,12 @@ details.fold > summary::-webkit-details-marker { display: none; }
 }
 
 .page-tab .bottom-nav {
-  position: relative;
+  position: sticky;
+  bottom: 0;
   flex-shrink: 0;
   width: 100%;
+  z-index: 40;
+  margin-top: auto;
 }
 
 body.v11-mobile.page-tab .app {

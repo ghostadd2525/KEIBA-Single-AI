@@ -70,10 +70,18 @@
   width: 72px;
   height: 72px;
   object-fit: contain;
+  object-position: center bottom;
   pointer-events: none;
   z-index: 2;
   transform: translateX(-50%);
-  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.45));
+  background: transparent !important;
+  border: 0 !important;
+  outline: none;
+  box-shadow: none;
+  /* 端の白フチをわずかにマスクして落とす */
+  -webkit-mask-image: radial-gradient(ellipse 78% 82% at 50% 54%, #000 68%, transparent 86%);
+  mask-image: radial-gradient(ellipse 78% 82% at 50% 54%, #000 68%, transparent 86%);
+  filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.4));
   will-change: left, transform;
 }
 
