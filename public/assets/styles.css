@@ -1626,13 +1626,13 @@ details.fold > summary::-webkit-details-marker { display: none; }
   color: #d4af37;
 }
 
-/* ホーム: 上ヘッダー・下ナビを固定し、中央だけ縦スクロール */
-.page-home {
+/* メインタブ画面: 上ヘッダー・下ナビを固定し、中央だけ縦スクロール */
+.page-tab {
   height: 100dvh;
   overflow: hidden;
 }
 
-.page-home .app {
+.page-tab .app {
   display: flex;
   flex-direction: column;
   height: 100%;
@@ -1642,17 +1642,28 @@ details.fold > summary::-webkit-details-marker { display: none; }
   padding-bottom: 0;
 }
 
-.page-home .topbar {
+.page-tab .topbar {
   flex-shrink: 0;
 }
 
-.page-home .home-chrome {
+.page-tab .screen,
+.page-tab .home-chrome {
   flex: 1 1 auto;
   min-height: 0;
   overflow-y: auto;
   overflow-x: hidden;
   -webkit-overflow-scrolling: touch;
   overscroll-behavior-y: contain;
+}
+
+.page-tab .bottom-nav {
+  position: relative;
+  flex-shrink: 0;
+  width: 100%;
+}
+
+body.v11-mobile.page-tab .app {
+  padding-bottom: 0;
 }
 
 .page-home.is-catalog-view .home-chrome {
@@ -1666,16 +1677,6 @@ details.fold > summary::-webkit-details-marker { display: none; }
   overflow-x: hidden;
   -webkit-overflow-scrolling: touch;
   display: block;
-}
-
-.page-home .bottom-nav {
-  position: relative;
-  flex-shrink: 0;
-  width: 100%;
-}
-
-body.v11-mobile.page-home .app {
-  padding-bottom: 0;
 }
 
 @media (max-width: 360px) {
