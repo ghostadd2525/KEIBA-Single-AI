@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>Expect ～ KEIBA AI ～ · レース一覧</title>
+  <title>Expect �E�EKEIBA AI �E�E· レース一覧</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Noto+Sans+JP:wght@400;500;600;700&display=swap" rel="stylesheet" />
@@ -28,23 +28,23 @@
         <div class="topbar-left">
           <div class="brand-block topbar-text">
             <p class="brand-name">Expect</p>
-            <p class="brand-sub">～ KEIBA AI ～</p>
+            <p class="brand-sub">�E�EKEIBA AI �E�E/p>
           </div>
         </div>
         <div class="topbar-tools">
           <div class="race-sort">
-            <button type="button" class="icon-btn" id="raceSortOpen" aria-label="並び替え" aria-haspopup="menu" aria-expanded="false" title="並び替え">
+            <button type="button" class="icon-btn" id="raceSortOpen" aria-label="並び替ぁE aria-haspopup="menu" aria-expanded="false" title="並び替ぁE>
               <svg class="nav-ico" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                 <path d="M4 6h16M7 12h10M10 18h4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
               </svg>
             </button>
-            <div class="race-sort-panel" id="raceSortPanel" hidden role="menu" aria-label="並び替え">
-              <p class="race-sort-head">並び替え</p>
-              <button type="button" class="race-sort-item is-active" role="menuitem" data-sort="conf-desc">自信度が高い順</button>
-              <button type="button" class="race-sort-item" role="menuitem" data-sort="conf-asc">自信度が低い順</button>
-              <button type="button" class="race-sort-item" role="menuitem" data-sort="time-asc">発走が早い順</button>
-              <button type="button" class="race-sort-item" role="menuitem" data-sort="time-desc">発走が遅い順</button>
-              <button type="button" class="race-sort-item" role="menuitem" data-sort="venue-asc">会場名順</button>
+            <div class="race-sort-panel" id="raceSortPanel" hidden role="menu" aria-label="並び替ぁE>
+              <p class="race-sort-head">並び替ぁE/p>
+              <button type="button" class="race-sort-item is-active" role="menuitem" data-sort="conf-desc">自信度が高い頁E/button>
+              <button type="button" class="race-sort-item" role="menuitem" data-sort="conf-asc">自信度が低い頁E/button>
+              <button type="button" class="race-sort-item" role="menuitem" data-sort="time-asc">発走が早ぁE��E/button>
+              <button type="button" class="race-sort-item" role="menuitem" data-sort="time-desc">発走が遅ぁE��E/button>
+              <button type="button" class="race-sort-item" role="menuitem" data-sort="venue-asc">会場名頁E/button>
             </div>
           </div>
           <button type="button" class="icon-btn" id="raceSearchOpen" aria-label="レース検索" aria-haspopup="dialog" title="レース検索">
@@ -65,11 +65,11 @@
             <p class="race-search-kicker">SEARCH</p>
             <h2 id="raceSearchTitle">レース検索</h2>
           </div>
-          <button type="button" class="icon-btn race-search-close" data-race-search-close aria-label="閉じる">✕</button>
+          <button type="button" class="icon-btn race-search-close" data-race-search-close aria-label="閉じめE>✁E/button>
         </div>
         <label class="race-search-field">
-          <span>キーワード</span>
-          <input type="search" id="raceSearchQuery" placeholder="レース名・会場・R・本命馬名（例: コルドン / 阪神 11R）" autocomplete="off" />
+          <span>キーワーチE/span>
+          <input type="search" id="raceSearchQuery" placeholder="レース名�E会場・R・本命馬名（侁E コルドン / 阪祁E11R�E�E autocomplete="off" />
         </label>
         <div class="race-search-block">
           <p class="race-search-label">開催日</p>
@@ -79,10 +79,10 @@
           <p class="race-search-label">開催会場</p>
           <div class="chip-row" id="raceSearchVenues"></div>
         </div>
-        <p class="race-search-count" id="raceSearchCount">条件に合うレースを表示します</p>
+        <p class="race-search-count" id="raceSearchCount">条件に合うレースを表示しまぁE/p>
         <div class="race-search-actions">
           <button type="button" class="race-search-reset" id="raceSearchReset">条件クリア</button>
-          <button type="button" class="race-search-apply" id="raceSearchApply">この条件で見る</button>
+          <button type="button" class="race-search-apply" id="raceSearchApply">こ�E条件で見る</button>
         </div>
       </div>
     </div>
@@ -91,20 +91,20 @@
       <div class="race-filters" id="raceFilters">
         <div class="tab-row date-tabs chip-row" id="dateTabs"></div>
         <div class="chip-row" id="venueChips" aria-label="開催会場"></div>
-        <p class="heat-note race-filters-note" id="raceFilterNote">今週の対象会場は3場（すべて／各会場で絞り込み）。お気に入りは最大3件です。</p>
+        <p class="heat-note race-filters-note" id="raceFilterNote">今週の対象会場は3場�E�すべて�E�各会場で絞り込み�E�。お気に入り�E最大3件です、E/p>
       </div>
 
       <div class="race-list" id="raceList" aria-busy="true">
         <div class="expect-loading" role="status" aria-live="polite" aria-busy="true" data-expect-loading="1">
           <div class="expect-loading__spinner" aria-hidden="true"></div>
           <p class="expect-loading__title">ロード中...</p>
-          <p class="expect-loading__msg">しばらくお待ちください。</p>
+          <p class="expect-loading__msg">し�Eらくお征E��ください、E/p>
           <div class="expect-loading__progress" data-expect-load-track role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
             <div class="expect-loading__track">
-              <img class="expect-loading__runner" data-expect-load-runner src="assets/images/mascot-loading-run.png?v=1" alt="" width="72" height="72" draggable="false" />
+              <img class="expect-loading__runner" data-expect-load-runner src="assets/images/mascot-loading-run.png?v=2" alt="" width="72" height="72" draggable="false" />
               <div class="expect-loading__bar"><span class="expect-loading__fill" data-expect-load-fill></span></div>
             </div>
-            <p class="expect-loading__meta" data-expect-load-meta>経過 0.0秒</p>
+            <p class="expect-loading__meta" data-expect-load-meta>経過 0.0私E/p>
           </div>
         </div>
       </div>
@@ -139,13 +139,13 @@
   <script src="assets/partials-nav.js"></script>
   <script>
     ExpectShell.initMascotTalk([
-      "気になるレースは<br>★ でお気に入り登録してね！",
-      "お気に入りは最大3件だよ。<br>古いは順に外れるよ！"
+      "気になるレースは<br>☁Eでお気に入り登録してね�E�E,
+      "お気に入り�E最大3件だよ、Ebr>古ぁE�E頁E��外れるよ�E�E
     ]);
     ExpectShell.initChips("#dateTabs");
     ExpectShell.initChips("#venueChips");
 
-    /** v2 一覧コントローラ（Flag ON 時の date 再 fetch） */
+    /** v2 一覧コントローラ�E�Elag ON 時�E date 冁Efetch�E�E*/
     var raceListController = {
       mode: "v1",
       loadedDate: "",
@@ -217,8 +217,7 @@
         if (window.ExpectRaceSearch && ExpectRaceSearch.matchElement) {
           return ExpectRaceSearch.matchElement(item, state);
         }
-        // Fallback（race-search.js 未読込時）— Catalog のみ（v1.1 同等）
-        var date = item.getAttribute("data-race-date") || "";
+        // Fallback�E�Eace-search.js 未読込時） ECatalog のみ�E�E1.1 同等！E        var date = item.getAttribute("data-race-date") || "";
         var venue = item.getAttribute("data-race-venue") || "";
         var name = item.getAttribute("data-race-name") || "";
         var place = item.getAttribute("data-race-place") || "";
@@ -246,22 +245,22 @@
         if (emptyNow) emptyNow.hidden = shown > 0;
         if (countEl) {
           countEl.textContent =
-            shown + "件のレースが見つかりました（全" + items().length + "件中）";
+            shown + "件のレースが見つかりました�E��E" + items().length + "件中�E�E;
         }
         if (noteEl) {
           var parts = [];
           if (state.date !== "all") parts.push(state.date);
           if (state.venue !== "all") parts.push(state.venue);
-          if (state.q) parts.push("「" + state.q + "」");
+          if (state.q) parts.push("、E + state.q + "、E);
           var sortPart = list.getAttribute("data-sort-label") || "";
           if (parts.length) {
             noteEl.textContent =
-              "検索中: " + parts.join(" / ") + " → " + shown + "件" +
-              (sortPart ? " ／ " + sortPart : "");
+              "検索中: " + parts.join(" / ") + " ↁE" + shown + "件" +
+              (sortPart ? " �E�E" + sortPart : "");
           } else {
             noteEl.textContent = sortPart
-              ? "並び替え: " + sortPart + " ／ 今週の対象会場は3場。お気に入りは最大3件です。"
-              : "今週の対象会場は3場（すべて／各会場で絞り込み）。お気に入りは最大3件です。";
+              ? "並び替ぁE " + sortPart + " �E�E今週の対象会場は3場。お気に入り�E最大3件です、E
+              : "今週の対象会場は3場�E�すべて�E�各会場で絞り込み�E�。お気に入り�E最大3件です、E;
           }
         }
         // 上部チップと同期
@@ -341,7 +340,7 @@
         applyFilters();
         closeSearch();
         if (ExpectShell.speakMascot) {
-          ExpectShell.speakMascot("条件で絞り込んだよ！<br>気になるレースを選んでね♪", 4200);
+          ExpectShell.speakMascot("条件で絞り込んだよ！Ebr>気になるレースを選んでね♪", 4200);
         }
       });
 
@@ -360,8 +359,7 @@
         applyFilters();
       }
 
-      // 上部の日付・会場チップでも絞り込み（日付は URL 同期）
-      document.getElementById("dateTabs").addEventListener("click", function (e) {
+      // 上部の日付�E会場チップでも絞り込み�E�日付�E URL 同期�E�E      document.getElementById("dateTabs").addEventListener("click", function (e) {
         var btn = e.target.closest("[data-filter-date]");
         if (!btn) return;
         onDateSelected(btn.getAttribute("data-filter-date") || "all");
@@ -407,11 +405,11 @@
 
         var sortKey = "conf-desc";
         var labels = {
-          "conf-desc": "自信度が高い順",
-          "conf-asc": "自信度が低い順",
-          "time-asc": "発走が早い順",
-          "time-desc": "発走が遅い順",
-          "venue-asc": "会場名順"
+          "conf-desc": "自信度が高い頁E,
+          "conf-asc": "自信度が低い頁E,
+          "time-asc": "発走が早ぁE��E,
+          "time-desc": "発走が遅ぁE��E,
+          "venue-asc": "会場名頁E
         };
 
         function timeValue(t) {
@@ -476,7 +474,7 @@
           close();
           if (ExpectShell.speakMascot) {
             ExpectShell.speakMascot(
-              "並び替えたよ！<br><strong>" + (labels[sortKey] || "") + "</strong>",
+              "並び替えたよ！Ebr><strong>" + (labels[sortKey] || "") + "</strong>",
               3800
             );
           }
@@ -508,7 +506,7 @@
             ExpectUx.stateCard({
               kind: "error",
               title: "レース一覧を表示できません",
-              message: message || "通信エラーのため一覧を更新できませんでした。",
+              message: message || "通信エラーのため一覧を更新できませんでした、E,
               onRetry: function () {
                 location.reload();
               },
@@ -516,7 +514,7 @@
           );
         } else {
           list.innerHTML =
-            '<p class="race-list-empty" id="raceListEmpty">レースの取得に失敗しました。再読み込みしてください。</p>';
+            '<p class="race-list-empty" id="raceListEmpty">レースの取得に失敗しました。�E読み込みしてください、E/p>';
         }
         bootRaceUi();
       }
@@ -555,14 +553,14 @@
         var html = races.map(ExpectPredictionBind.raceCardHtml).join("");
         list.setAttribute("aria-busy", "false");
         list.innerHTML =
-          '<p class="race-list-empty" id="raceListEmpty" hidden>条件に合うレースがありません。検索条件を変えてみてください。</p>' +
+          '<p class="race-list-empty" id="raceListEmpty" hidden>条件に合うレースがありません。検索条件を変えてみてください、E/p>' +
           html;
         if (filtered.rejected.length && window.ExpectContractGuard) {
           ExpectContractGuard.showErrorCard(list, {
             title: "一部レースを表示できません",
             message:
               filtered.rejected.length +
-              "件が PredictionBundle 契約違反のため除外しました。",
+              "件ぁEPredictionBundle 契紁E��反�Eため除外しました、E,
             errors: (filtered.rejected[0] && filtered.rejected[0].errors) || [],
           });
         }
@@ -571,8 +569,8 @@
           if (e2) {
             e2.hidden = false;
             e2.textContent = filtered.rejected.length
-              ? "契約を満たすレースがありません。"
-              : "レースがありません。";
+              ? "契紁E��満たすレースがありません、E
+              : "レースがありません、E;
           }
         }
         if (window.ExpectRealDataBind) {
@@ -594,13 +592,13 @@
           .join("");
         list.setAttribute("aria-busy", "false");
         list.innerHTML =
-          '<p class="race-list-empty" id="raceListEmpty" hidden>条件に合うレースがありません。検索条件を変えてみてください。</p>' +
+          '<p class="race-list-empty" id="raceListEmpty" hidden>条件に合うレースがありません。検索条件を変えてみてください、E/p>' +
           html;
         if (!cards.length) {
           var e2 = document.getElementById("raceListEmpty");
           if (e2) {
             e2.hidden = false;
-            e2.textContent = "レースがありません。";
+            e2.textContent = "レースがありません、E;
           }
         }
         var shapes = cardsToFilterShapes(cards, listDate);
@@ -608,8 +606,7 @@
           ExpectRealDataBind.cacheBundles(shapes);
           ExpectRealDataBind.applyRacesFilters(shapes);
         }
-        // Phase 5: RaceCardSummary を最後に cache（shapes 上書き後に summary を復元）
-        if (window.ExpectFavorites && typeof ExpectFavorites.cacheBundles === "function") {
+        // Phase 5: RaceCardSummary を最後に cache�E�Ehapes 上書き後に summary を復允E��E        if (window.ExpectFavorites && typeof ExpectFavorites.cacheBundles === "function") {
           ExpectFavorites.cacheBundles(cards);
         }
         bootRaceUi();
@@ -618,7 +615,7 @@
       function loadV1() {
         raceListController.mode = "v1";
         if (!window.ExpectApi || !ExpectApi.Prediction || !window.ExpectPredictionBind) {
-          renderError("API クライアントが読み込めていません。");
+          renderError("API クライアントが読み込めてぁE��せん、E);
           return;
         }
         if (window.ExpectUx && ExpectUx.showLoading) {
@@ -627,14 +624,14 @@
         ExpectApi.Prediction.list({})
           .then(renderV1Bundles)
           .catch(function () {
-            renderError("通信エラーのため一覧を更新できませんでした。");
+            renderError("通信エラーのため一覧を更新できませんでした、E);
           });
       }
 
       function loadV2(dateOpt) {
         raceListController.mode = "v2";
         if (!window.ExpectApi || !ExpectApi.RaceCards || !window.ExpectPredictionBind) {
-          renderError("RaceCardSummary クライアントが読み込めていません。");
+          renderError("RaceCardSummary クライアントが読み込めてぁE��せん、E);
           return;
         }
         if (window.ExpectUx && ExpectUx.showLoading) {
@@ -647,7 +644,7 @@
           .catch(function (err) {
             renderError(
               (err && err.message) ||
-                "通信エラーのため一覧を更新できませんでした。"
+                "通信エラーのため一覧を更新できませんでした、E
             );
           });
       }

@@ -1,15 +1,15 @@
 /**
- * ExpectUx — フロントのみの loading / error / empty ヘルパ
- * API・契約に依存しない。
+ * ExpectUx  Eフロント�Eみの loading / error / empty ヘルチE
+ * API・契紁E��依存しなぁE��E
  */
 (function (global) {
   "use strict";
 
   var DEFAULT_LOADING_TITLE = "ロード中...";
-  var DEFAULT_LOADING_MSG = "しばらくお待ちください。";
+  var DEFAULT_LOADING_MSG = "し�Eらくお征E��ください、E;
   var LOAD_AVG_KEY = "expect_ux_load_avg_ms";
   var DEFAULT_EXPECTED_MS = 2800;
-  var LOADING_RUNNER_SRC = "assets/images/mascot-loading-run.png?v=1";
+  var LOADING_RUNNER_SRC = "assets/images/mascot-loading-run.png?v=2";
   var _loadTimers = [];
 
   function el(html) {
@@ -51,8 +51,8 @@
 
   function formatSec(ms) {
     var s = Math.max(0, ms) / 1000;
-    if (s < 10) return s.toFixed(1) + "秒";
-    return Math.round(s) + "秒";
+    if (s < 10) return s.toFixed(1) + "私E;
+    return Math.round(s) + "私E;
   }
 
   function stopProgress(panel) {
@@ -68,7 +68,7 @@
   }
 
   /**
-   * 経過時間＋横バー（APIは実進捗なし → 目安時間に漸近する推定バー）
+   * 経過時間�E�横バ�E�E�EPIは実進捗なぁEↁE目安時間に漸近する推定バー�E�E
    */
   function startProgress(panel, opts) {
     opts = opts || {};
@@ -95,13 +95,13 @@
       if (forcePct != null) {
         pct = forcePct;
       } else {
-        // 目安時間で ~90% 付近まで漸近（完了まで 100% にしない）
+        // 目安時間で ~90% 付近まで漸近（完亁E��で 100% にしなぁE��E
         pct = (1 - Math.exp(-elapsed / Math.max(400, expected))) * 92;
         if (pct > 92) pct = 92;
       }
       fill.style.width = pct.toFixed(1) + "%";
       if (runner) {
-        // バー先端に合わせてキャラを左右移動（わずかに上下バウンド）
+        // バ�E先端に合わせてキャラを左右移動（わずかに上下バウンド！E
         var bounce = Math.sin(elapsed / 120) * 3;
         runner.style.transform =
           "translateX(-50%) translateY(" + bounce.toFixed(1) + "px)";
@@ -112,13 +112,13 @@
         track.setAttribute("aria-valuenow", String(Math.round(pct)));
         track.setAttribute(
           "aria-label",
-          "読み込み進捗 約" + Math.round(pct) + "%、経過 " + formatSec(elapsed)
+          "読み込み進捁E紁E + Math.round(pct) + "%、経過 " + formatSec(elapsed)
         );
       }
       meta.textContent =
         "経過 " +
         formatSec(elapsed) +
-        " ／ 目安 " +
+        " �E�E目宁E" +
         formatSec(expected);
     }
 
@@ -166,7 +166,7 @@
             '" alt="" width="72" height="72" draggable="false" />' +
             '<div class="expect-loading__bar"><span class="expect-loading__fill" data-expect-load-fill></span></div>' +
             "</div>" +
-            '<p class="expect-loading__meta" data-expect-load-meta>経過 0.0秒</p>' +
+            '<p class="expect-loading__meta" data-expect-load-meta>経過 0.0私E/p>' +
             "</div>"
           : "") +
         "</div>"
@@ -182,8 +182,8 @@
   }
 
   /**
-   * mount 内にローディング画面を差し込む。
-   * replace=true（既定）で中身を置換、false でオーバーレイ追加。
+   * mount 冁E��ローチE��ング画面を差し込む、E
+   * replace=true�E�既定）で中身を置換、false でオーバ�Eレイ追加、E
    */
   function showLoading(mount, opts) {
     opts = opts || {};
@@ -225,7 +225,7 @@
     }
   }
 
-  /** 静的HTMLのローディング枠にも進捗バーを付ける */
+  /** 静的HTMLのローチE��ング枠にも進捗バーを付けめE*/
   function bootStaticLoading() {
     document.querySelectorAll("[data-expect-loading='1']").forEach(function (panel) {
       if (panel._expectLoadTimer) return;
@@ -238,7 +238,7 @@
             '" alt="" width="72" height="72" draggable="false" />' +
             '<div class="expect-loading__bar"><span class="expect-loading__fill" data-expect-load-fill></span></div>' +
             "</div>" +
-            '<p class="expect-loading__meta" data-expect-load-meta>経過 0.0秒</p>' +
+            '<p class="expect-loading__meta" data-expect-load-meta>経過 0.0私E/p>' +
             "</div>"
         );
         panel.appendChild(wrap);
