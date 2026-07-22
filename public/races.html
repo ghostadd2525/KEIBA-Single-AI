@@ -9,7 +9,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Noto+Sans+JP:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="assets/styles.css" />
   <link rel="stylesheet" href="assets/screens.css" />
-  <link rel="stylesheet" href="assets/ux.css" />
+  <link rel="stylesheet" href="assets/ux.css?v=14" />
   <link rel="stylesheet" href="assets/vqa.css" />
   <link rel="stylesheet" href="assets/v11.css?v=11" />
   <script src="assets/api/calendar-weekend.js?v=11"></script>
@@ -100,7 +100,10 @@
           <p class="expect-loading__title">ロード中...</p>
           <p class="expect-loading__msg">しばらくお待ちください。</p>
           <div class="expect-loading__progress" data-expect-load-track role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
-            <div class="expect-loading__bar"><span class="expect-loading__fill" data-expect-load-fill></span></div>
+            <div class="expect-loading__track">
+              <img class="expect-loading__runner" data-expect-load-runner src="assets/images/mascot-loading-run.png?v=1" alt="" width="72" height="72" draggable="false" />
+              <div class="expect-loading__bar"><span class="expect-loading__fill" data-expect-load-fill></span></div>
+            </div>
             <p class="expect-loading__meta" data-expect-load-meta>経過 0.0秒</p>
           </div>
         </div>
@@ -126,7 +129,7 @@
   <script src="assets/api/race-id-meta.js"></script>
   <script src="assets/api/prediction-bind.js?v=13"></script>
   <script src="assets/api/real-data-bind.js"></script>
-  <script src="assets/ux.js"></script>
+  <script src="assets/ux.js?v=14"></script>
   <script src="assets/api/ui-features.js?v=12"></script>
   <script src="assets/api/race-search.js?v=13"></script>
   <script src="assets/v11.js?v=11"></script>
@@ -376,7 +379,7 @@
       syncDateFromUrl({ normalize: true });
       applyFilters();
 
-      global.addEventListener("expect:race-filters-ready", function () {
+      window.addEventListener("expect:race-filters-ready", function () {
         applyFilters();
       });
 

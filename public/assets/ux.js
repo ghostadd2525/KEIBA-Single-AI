@@ -9,6 +9,7 @@
   var DEFAULT_LOADING_MSG = "しばらくお待ちください。";
   var LOAD_AVG_KEY = "expect_ux_load_avg_ms";
   var DEFAULT_EXPECTED_MS = 2800;
+  var LOADING_RUNNER_SRC = "assets/images/mascot-loading-run.png?v=1";
   var _loadTimers = [];
 
   function el(html) {
@@ -80,6 +81,7 @@
     var fill = panel.querySelector("[data-expect-load-fill]");
     var meta = panel.querySelector("[data-expect-load-meta]");
     var track = panel.querySelector("[data-expect-load-track]");
+    var runner = panel.querySelector("[data-expect-load-runner]");
     if (!fill || !meta) return;
 
     if (track) {
@@ -98,6 +100,14 @@
         if (pct > 92) pct = 92;
       }
       fill.style.width = pct.toFixed(1) + "%";
+      if (runner) {
+        // バー先端に合わせてキャラを左右移動（わずかに上下バウンド）
+        var bounce = Math.sin(elapsed / 120) * 3;
+        runner.style.transform =
+          "translateX(-50%) translateY(" + bounce.toFixed(1) + "px)";
+        runner.style.left = pct.toFixed(1) + "%";
+        runner.classList.toggle("is-running", forcePct == null);
+      }
       if (track) {
         track.setAttribute("aria-valuenow", String(Math.round(pct)));
         track.setAttribute(
@@ -150,7 +160,12 @@
         '<p class="expect-loading__msg"></p>' +
         (showProgress
           ? '<div class="expect-loading__progress" data-expect-load-track role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">' +
+            '<div class="expect-loading__track">' +
+            '<img class="expect-loading__runner" data-expect-load-runner src="' +
+            LOADING_RUNNER_SRC +
+            '" alt="" width="72" height="72" draggable="false" />' +
             '<div class="expect-loading__bar"><span class="expect-loading__fill" data-expect-load-fill></span></div>' +
+            "</div>" +
             '<p class="expect-loading__meta" data-expect-load-meta>経過 0.0秒</p>' +
             "</div>"
           : "") +
@@ -217,11 +232,37 @@
       if (!panel.querySelector("[data-expect-load-fill]")) {
         var wrap = el(
           '<div class="expect-loading__progress" data-expect-load-track role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">' +
+            '<div class="expect-loading__track">' +
+            '<img class="expect-loading__runner" data-expect-load-runner src="' +
+            LOADING_RUNNER_SRC +
+            '" alt="" width="72" height="72" draggable="false" />' +
             '<div class="expect-loading__bar"><span class="expect-loading__fill" data-expect-load-fill></span></div>' +
+            "</div>" +
             '<p class="expect-loading__meta" data-expect-load-meta>経過 0.0秒</p>' +
             "</div>"
         );
         panel.appendChild(wrap);
+      } else if (!panel.querySelector("[data-expect-load-runner]")) {
+        var barHost = panel.querySelector(".expect-loading__bar");
+        var trackHost = barHost && barHost.parentElement;
+        if (barHost && trackHost && !trackHost.classList.contains("expect-loading__track")) {
+          var trackWrap = document.createElement("div");
+          trackWrap.className = "expect-loading__track";
+          trackHost.insertBefore(trackWrap, barHost);
+          trackWrap.appendChild(barHost);
+          trackHost = trackWrap;
+        }
+        if (trackHost) {
+          var img = document.createElement("img");
+          img.className = "expect-loading__runner";
+          img.setAttribute("data-expect-load-runner", "");
+          img.src = LOADING_RUNNER_SRC;
+          img.alt = "";
+          img.width = 72;
+          img.height = 72;
+          img.draggable = false;
+          trackHost.insertBefore(img, trackHost.firstChild);
+        }
       }
       startProgress(panel);
     });

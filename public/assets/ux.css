@@ -50,15 +50,35 @@
 }
 
 .expect-loading__progress {
-  width: min(100%, 260px);
+  width: min(100%, 280px);
   margin-top: 4px;
   display: grid;
-  gap: 8px;
+  gap: 10px;
   justify-items: stretch;
 }
 
+.expect-loading__track {
+  position: relative;
+  padding-top: 58px;
+  overflow: visible;
+}
+
+.expect-loading__runner {
+  position: absolute;
+  left: 0;
+  bottom: 2px;
+  width: 72px;
+  height: 72px;
+  object-fit: contain;
+  pointer-events: none;
+  z-index: 2;
+  transform: translateX(-50%);
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.45));
+  will-change: left, transform;
+}
+
 .expect-loading__bar {
-  height: 8px;
+  height: 10px;
   border-radius: 999px;
   overflow: hidden;
   background: rgba(193, 162, 109, 0.16);
@@ -101,11 +121,20 @@
 }
 
 .expect-loading--compact .expect-loading__progress {
-  width: min(100%, 220px);
+  width: min(100%, 240px);
+}
+
+.expect-loading--compact .expect-loading__track {
+  padding-top: 44px;
+}
+
+.expect-loading--compact .expect-loading__runner {
+  width: 56px;
+  height: 56px;
 }
 
 .expect-loading--compact .expect-loading__bar {
-  height: 6px;
+  height: 8px;
 }
 
 .expect-loading--overlay {
