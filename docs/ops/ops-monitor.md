@@ -231,3 +231,19 @@ echo $?   # 0=healthy, 1=degraded
 ```bash
 npx wrangler pages secret put OPS_MONITOR_KEY --project-name keiba-single-ai
 ```
+
+---
+
+## 9. Version 2 Operations（Phase 1–3）
+
+| 文書 | パス |
+|------|------|
+| 監視対象一覧（正本） | `docs/releases/v2-operations-monitoring-inventory.md` |
+| 構成図（最終） | `docs/ops/v2-operations-architecture-final.md` |
+| アラート Runbook | `docs/ops/v2-operations-runbook.md` |
+| Final Report | `docs/releases/v2-operations-final-report.md` |
+| Dashboard API | `GET /api/ops/dashboard`（`v2_ops_dashboard`） |
+| Promtail 例 | `infra/observability/promtail-ops-metrics.example.yml` |
+
+追加 Secrets（任意）: `OPS_SLACK_WEBHOOK_URL` / `OPS_SLACK_WEBHOOK_CRITICAL` / `OPS_SLACK_WEBHOOK_WARNING` / `PI_BASE_URL`  
+Flag: `v2_ops_dashboard` 既定 **false**（OFF ≡ v1.1）。

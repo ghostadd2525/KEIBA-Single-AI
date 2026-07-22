@@ -22,8 +22,12 @@
     "v11_confidence": false,
     "v11_collector_status": false,
     "v11_system_health": false,
-    "v11_ops_dashboard": false,
-    "v11_auto_maintenance": true
+    "v11_ops_dashboard": true,
+    "v11_auto_maintenance": true,
+    "v2_race_cards": true,
+    "v2_race_list_ui": true,
+    "v2_explain": true,
+    "v2_ops_dashboard": true
   },
-  "notes": "Phase10 運営設定。canonical は config/beta.json。ui_features は Version 1.1 Flag。"
+  "notes": "Version 2 Production Release 2026-07-22。v2_* および Ops Dashboard を ON。Accuracy PE は EC2 env。"
 }

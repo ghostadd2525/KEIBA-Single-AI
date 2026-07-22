@@ -1,14 +1,16 @@
 /**
  * GET /api/ops/monitor — 統合ヘルス（本番監視用）
  *
- * BFF / Python / Tunnel / Prediction / Conversation / ETL / Result Automation をプローブ。
- * 障害時は incident ログへ記録。
+ * BFF / Python / Tunnel / PI / Prediction / Conversation / ETL / Result Automation をプローブ。
+ * Version 2 Phase 2: metrics / alerts / incidents を additive 添付（JSON 統一）。
  *
  * OPS_MONITOR_KEY 設定時は X-Ops-Monitor-Key または ?key= 必須。
  */
+import { alertIdForCheck } from "../../_lib/opsDashboard.js";
 import { logFailedChecks } from "../../_lib/incidentLog.js";
 import { jsonError, jsonOk } from "../../_lib/errors.js";
 import { runAllProbes, verifyMonitorKey } from "../../_lib/opsMonitor.js";
+import { dispatchAlerts } from "../../_lib/opsSlack.js";
 
 export async function onRequestGet(context) {
   if (!verifyMonitorKey(context)) {
@@ -30,9 +32,14 @@ export async function onRequestGet(context) {
           error: c.error || "unhealthy",
           restart_count: 0,
           detail: c.detail || { latency_ms: c.latency_ms },
+          alert_id: alertIdForCheck(c),
         };
       })
     );
+  }
+
+  if (report.alerts && report.alerts.length) {
+    await dispatchAlerts(context, report.alerts);
   }
 
   const httpStatus = report.status === "ok" ? 200 : 503;

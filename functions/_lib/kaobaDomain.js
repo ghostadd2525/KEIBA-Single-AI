@@ -4,10 +4,18 @@
  * Phase6: ルートからの差し替え入口は adapters/kaobaAdapter.js。
  * generateKaobaReply は rule プロバイダ実装として残す。
  * LLM/Python へは KaobaAdapter.chat（または generateViaPython）を使う。
+ *
+ * Phase 3 Explainability: explain_pick → explain 2.1 注入（v2_explain）
  */
 
 import { normalizePredictionBundle, scorePercent, toAnalysisDomain } from "./domain.js";
 import { loadAssetJson } from "./aiProxy.js";
+import {
+  canExplainPick,
+  formatExplainPickReply,
+  isExplainPickIntent,
+  projectExplainForPick,
+} from "./explainPick.js";
 
 export const KAOBA_SCHEMA = "expect-kaoba/1.0";
 
@@ -84,23 +92,36 @@ export function generateKaobaReply(input) {
   let reply;
   let emotion = "fun";
   let suggestions = ["展開を詳しく", "本命を教えて", "買い目を整理"];
+  let explainPick = null;
 
-  if (hasStrategy) {
+  // Phase 3: v2_explain ON + explain_pick + explain.reason → 構造化理由を注入
+  if (canExplainPick(input)) {
+    const projection = projectExplainForPick(bundle.explain);
+    const formatted = formatExplainPickReply(projection, { place });
+    if (formatted) {
+      reply = formatted;
+      emotion = "joy";
+      suggestions = ["信頼度の根拠は？", "買い目を提案して", "展開を詳しく"];
+      explainPick = projection;
+    }
+  }
+
+  if (!reply && hasStrategy) {
     reply =
-      "戦略データ受け取ったよ！軸は明確にして、点数は抑えめがおすすめ。主軸→保険→一発の順で入れてね。";
+      "戦略データ受け取ったよ！軸は明確にして、点数を抑えめがおすすめ。主軸→保険→一発の順で入れてね。";
     emotion = "joy";
     suggestions = ["点数を抑える案", "軸を見直す", "リスクを教えて"];
     if (h) {
       reply += `\n軸候補の目安は ${h.horse_number}番 ${h.horse_name || ""}`.trim() + "。";
     }
-  } else if (/買い目|戦略/.test(message)) {
+  } else if (!reply && /買い目|戦略/.test(message)) {
     reply = "買い目は軸1頭流しで点数を抑えるのがおすすめ！相手は最大3頭までにしてみよう。";
     emotion = "joy";
     if (h && conf != null) {
       reply += `\nいまの本命目線は ${h.horse_number}番（AI信頼度 ${conf}%）だよ。`;
     }
     suggestions = ["展開予想を教えて", "リスクを教えて", "血統について教えて"];
-  } else if (/展開|ペース/.test(message)) {
+  } else if (!reply && /展開|ペース/.test(message)) {
     if (narrative) {
       reply = narrative;
     } else {
@@ -109,8 +130,8 @@ export function generateKaobaReply(input) {
     emotion = "fun";
     if (charts) reply += `\n評価の目安: ${charts}`;
     suggestions = ["本命を教えて", "買い目を提案して", "血統について教えて"];
-  } else if (/血統/.test(message)) {
-    const ped = (analysis && analysis.charts || []).find((c) => c.key === "pedigree");
+  } else if (!reply && /血統/.test(message)) {
+    const ped = ((analysis && analysis.charts) || []).find((c) => c.key === "pedigree");
     if (ped) {
       reply = `血統適性は ${ped.value} 点くらいのイメージだよ。コース適性が効いてる産駒に注目してみて。`;
     } else {
@@ -118,14 +139,14 @@ export function generateKaobaReply(input) {
     }
     emotion = "fun";
     suggestions = ["展開予想を教えて", "本命を教えて", "買い目を提案して"];
-  } else if (/本命|信頼度|おすすめ/.test(message) && h) {
+  } else if (!reply && /本命|信頼度|おすすめ/.test(message) && h) {
     reply = `本命は ${h.horse_number}番 ${h.horse_name || ""}`.trim();
     if (conf != null) reply += `（AI信頼度 ${conf}%）`;
     reply += "。根拠は上位確率の分離と総合評価だよ。";
     if (place) reply = `${place} についてね。` + reply;
     emotion = "joy";
-    suggestions = ["展開を詳しく", "買い目を提案して", "リスクを教えて"];
-  } else if (bundle || analysis) {
+    suggestions = ["なぜ◎なの？", "展開を詳しく", "買い目を提案して"];
+  } else if (!reply && (bundle || analysis)) {
     reply = "いい質問！";
     if (place) reply += `${place} を見ているよ。`;
     if (h) {
@@ -137,14 +158,17 @@ export function generateKaobaReply(input) {
     }
     if (narrative) reply += `\n${narrative}`;
     emotion = "joy";
-  } else {
+    if (isExplainPickIntent(message) && !(bundle && bundle.explain && bundle.explain.reason)) {
+      suggestions = ["本命を教えて", "買い目を提案して", "展開を詳しく"];
+    }
+  } else if (!reply) {
     reply =
       "いい質問！レースを指定してもらえると、予想データに沿ってもっと具体的に答えられるよ。";
     emotion = "joy";
     suggestions = ["展開予想を教えて", "血統について教えて", "買い目を提案して"];
   }
 
-  return {
+  const out = {
     schema_version: KAOBA_SCHEMA,
     reply,
     suggestions,
@@ -156,13 +180,22 @@ export function generateKaobaReply(input) {
       expression: emotion === "joy" ? "smile" : "neutral",
     },
   };
+  // additive（契約 additionalProperties: true）— Flag OFF 経路では付与しない
+  if (explainPick) {
+    out.explain_pick = explainPick;
+    out.intent = "explain_pick";
+  }
+  return out;
 }
 
 export function normalizeKaobaResponse(raw, raceId) {
   const data = raw && typeof raw === "object" ? raw : {};
-  return {
+  const out = {
     schema_version: KAOBA_SCHEMA,
-    reply: typeof data.reply === "string" && data.reply ? data.reply : "うまく答えられなかったみたい。",
+    reply:
+      typeof data.reply === "string" && data.reply
+        ? data.reply
+        : "うまく答えられなかったみたい。",
     suggestions: Array.isArray(data.suggestions) ? data.suggestions : [],
     emotion: data.emotion || "neutral",
     referenced_race_id:
@@ -174,4 +207,18 @@ export function normalizeKaobaResponse(raw, raceId) {
     provider: data.provider || "mock",
     live2d: data.live2d || undefined,
   };
+  if (data.explain_pick && typeof data.explain_pick === "object") {
+    out.explain_pick = data.explain_pick;
+  }
+  if (typeof data.intent === "string") {
+    out.intent = data.intent;
+  }
+  return out;
 }
+
+export {
+  canExplainPick,
+  isExplainPickIntent,
+  projectExplainForPick,
+  formatExplainPickReply,
+};

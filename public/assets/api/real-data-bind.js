@@ -87,13 +87,20 @@
     return Object.keys(set).sort();
   }
 
+  /** @returns {{ iso: string, label: string }[]} ISO 昇順（URL ?date= と整合） */
   function datesFromBundles(bundles) {
-    var set = {};
+    var map = {};
     (bundles || []).forEach(function (b) {
-      var lbl = dateLabel(b.race_info || {});
-      if (lbl) set[lbl] = true;
+      var info = b.race_info || {};
+      var iso = String(info.date || "").trim();
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(iso)) return;
+      if (!map[iso]) map[iso] = dateLabel(info) || iso;
     });
-    return Object.keys(set).sort();
+    return Object.keys(map)
+      .sort()
+      .map(function (iso) {
+        return { iso: iso, label: map[iso] };
+      });
   }
 
   function cellHtml(pct) {
@@ -245,11 +252,32 @@
     var html =
       '<button type="button" class="tab-pill is-active" data-filter-date="all">すべて</button>';
     (dates || []).forEach(function (d) {
+      var iso = typeof d === "object" && d ? d.iso : d;
+      var label = typeof d === "object" && d ? d.label : d;
+      if (!iso) return;
       html +=
         '<button type="button" class="tab-pill" data-filter-date="' +
-        escapeHtml(d) +
+        escapeHtml(iso) +
         '">' +
-        escapeHtml(d) +
+        escapeHtml(label || iso) +
+        "</button>";
+    });
+    container.innerHTML = html;
+  }
+
+  function renderDateSearchChips(container, dates) {
+    if (!container) return;
+    var html =
+      '<button type="button" class="chip is-active" data-search-date="all">すべて</button>';
+    (dates || []).forEach(function (d) {
+      var iso = typeof d === "object" && d ? d.iso : d;
+      var label = typeof d === "object" && d ? d.label : d;
+      if (!iso) return;
+      html +=
+        '<button type="button" class="chip" data-search-date="' +
+        escapeHtml(iso) +
+        '">' +
+        escapeHtml(label || iso) +
         "</button>";
     });
     container.innerHTML = html;
@@ -259,7 +287,7 @@
     var chips = buildFilterChips(bundles);
     renderDateTabs(document.getElementById("dateTabs"), chips.dates);
     renderChipRow(document.getElementById("venueChips"), "venue", chips.venues);
-    renderChipRow(document.getElementById("raceSearchDates"), "search-date", chips.dates);
+    renderDateSearchChips(document.getElementById("raceSearchDates"), chips.dates);
     renderChipRow(document.getElementById("raceSearchVenues"), "search-venue", chips.venues);
     var note = document.getElementById("raceFilterNote");
     if (note) {

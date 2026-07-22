@@ -1,0 +1,19 @@
+[Unit]
+Description=Expect PI KeibaNet API (netkeiba bridge for Collector)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=pi
+Group=pi
+WorkingDirectory=/opt/expect-ai/current/services/pi-keibanet-api
+Environment=PI_KEIBANET_HOST=0.0.0.0
+Environment=PI_KEIBANET_PORT=8081
+Environment=PI_NETKEIBA_MIN_INTERVAL_SEC=1.0
+ExecStart=/usr/bin/python3 run.py
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

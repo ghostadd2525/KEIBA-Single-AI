@@ -1,0 +1,21 @@
+{
+  "ce_rank1": "CE 評価 1 位",
+  "ce_rank1_gap_lead": "CE 1 位・2 位差最大",
+  "midupper_world": "中上位世界",
+  "midupper_route": "中上位ルート型",
+  "core_world": "中核世界",
+  "ability": "能力差レース",
+  "strong_spread": "展開分散が必要",
+  "gap12": "1–2 位差",
+  "entropy": "混戦度",
+  "field_size": "頭数",
+  "top1_prob": "1 位勝率",
+  "top2_sum": "上位2頭合計",
+  "candidate_pool": "候補 Pool",
+  "entry": "Entry",
+  "repick": "RePick",
+  "pe_insert": "Pool 挿入",
+  "pe_no_race_trigger": "Pool 発火なし",
+  "rp_displaced": "RePick 入替",
+  "rp_no_near_candidate": "RePick NEAR なし"
+}

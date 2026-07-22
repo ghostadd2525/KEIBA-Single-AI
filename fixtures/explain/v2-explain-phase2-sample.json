@@ -1,0 +1,260 @@
+{
+  "schema_version": "single-prediction-bundle/2.0",
+  "race_id": "2026-07-25-01-06",
+  "note": "Explainability Phase 2 sample — Pool / Entry / RePick in explain 2.1",
+  "evaluation": {
+    "world": "midupper_world",
+    "sub_world": "midupper_route",
+    "runners": [
+      {
+        "horse_number": 4,
+        "horse_name": "コルドンブルー",
+        "model_rank": 1,
+        "win_prob": 0.0657,
+        "mark": "honmei"
+      }
+    ]
+  },
+  "ai_confidence": {
+    "score": 0.042,
+    "band": "low",
+    "factors": ["gap12=0.004883", "entropy=2.887667"]
+  },
+  "explain": {
+    "schema_version": "single-explain/2.1",
+    "meta": {
+      "explain_source": "core-explain-payload/1.0",
+      "explain_phase": 2
+    },
+    "narrative": "4番コルドンブルーを◎。CE 1 位、中上位ルート型。Pool+Entry / RePick 適用。",
+    "reasons": [
+      {
+        "horse_number": 4,
+        "bullets": [
+          "CE 評価 1 位",
+          "中上位ルート型",
+          "Pool 理由",
+          "Entry 理由",
+          "RePick 理由"
+        ]
+      }
+    ],
+    "reason": {
+      "schema_version": "single-honmei-reason/1.0",
+      "candidate_id": "c04",
+      "horse_number": 4,
+      "horse_name": "コルドンブルー",
+      "mark": "honmei",
+      "decision_key": {
+        "key": "ce_rank1_gap_lead",
+        "kind": "candidate_evaluation",
+        "label": "CE 評価 1 位",
+        "text": "2 位との勝率差が最も大きい",
+        "evidence": { "model_rank": 1, "win_prob": 0.0657, "gap12": 0.004883 }
+      },
+      "summary": "4番コルドンブルーを◎としたのは、CE 評価 1 位（勝率 6.6%）で 2 位との差が最も大きいため。中上位世界・中上位ルート型のレースです。Pool+Entry (PE-V2-A): rank11 サンプルホース を Pool に追加 NEAR rescue: rank9 NEAR馬 → repick membership",
+      "factors": [
+        {
+          "kind": "candidate_evaluation",
+          "label": "CE 評価",
+          "text": "モデル順位 1 位・勝率 6.6%",
+          "weight": "primary"
+        },
+        {
+          "kind": "world",
+          "label": "レース世界",
+          "text": "中上位世界"
+        },
+        {
+          "kind": "route",
+          "label": "展開ルート",
+          "text": "中上位ルート型"
+        },
+        {
+          "kind": "comparison",
+          "label": "Pool 理由",
+          "text": "Pool+Entry (PE-V2-A): rank11 サンプルホース を Pool に追加",
+          "weight": "secondary",
+          "evidence": {
+            "stage": "candidate_pool",
+            "status": "applied",
+            "reason_codes": ["pe_v2_a", "pe_insert"]
+          }
+        },
+        {
+          "kind": "comparison",
+          "label": "Entry 理由",
+          "text": "Entry (PE-V2-A): サンプルホース（rank11）を Entry 登録",
+          "weight": "secondary",
+          "evidence": {
+            "stage": "entry",
+            "status": "applied",
+            "reason_codes": ["pe_v2_a", "pe_insert"]
+          }
+        },
+        {
+          "kind": "repick",
+          "label": "RePick 理由",
+          "text": "NEAR rescue: rank9 NEAR馬 → repick membership",
+          "weight": "secondary",
+          "evidence": {
+            "stage": "repick",
+            "status": "applied",
+            "reason_codes": ["rv2_near", "rp_v2_a", "rp_displaced"]
+          }
+        }
+      ],
+      "reason_codes": [
+        "ce_rank1_gap_lead",
+        "world_midupper_world",
+        "route_midupper_route",
+        "pe_v2_a",
+        "pe_insert",
+        "rv2_near",
+        "rp_displaced"
+      ]
+    },
+    "confidence_reason": {
+      "schema_version": "single-confidence-reason/1.0",
+      "score": 0.042,
+      "band": "low",
+      "score_unit": "normalized",
+      "summary": "信頼度は低め。1–2 位差が小さく混戦度が高いため、◎ の優位は限定的です。",
+      "components": [
+        {
+          "key": "gap12",
+          "label": "1–2 位差",
+          "value": 0.004883,
+          "interpretation": "差が小さく上位が拮抗",
+          "weight": 0.25,
+          "contribution": 0.12
+        },
+        {
+          "key": "entropy",
+          "label": "混戦度",
+          "value": 2.887667,
+          "interpretation": "勝率分布が分散",
+          "weight": 0.2,
+          "contribution": 0.08
+        }
+      ],
+      "formula_ref": "top1*(0.55+0.25*gap_factor+0.20*spread_factor)"
+    },
+    "decision_trace": {
+      "schema_version": "single-decision-trace/1.0",
+      "pipeline_version": "ai-core-migrated/1.0-phase2",
+      "stages": [
+        {
+          "stage": "candidate_evaluation",
+          "status": "applied",
+          "delta": {
+            "summary": "CE 1 位: 4 番コルドンブルー（勝率 6.6%）",
+            "outputs": { "model_rank": 1, "horse_number": 4, "win_prob": 0.0657 }
+          }
+        },
+        {
+          "stage": "world_classification",
+          "status": "applied",
+          "delta": {
+            "summary": "midupper_world / midupper_route",
+            "outputs": { "world": "midupper_world", "sub_world": "midupper_route" }
+          }
+        },
+        {
+          "stage": "candidate_pool",
+          "status": "applied",
+          "timestamp": "2026-07-21T04:00:01.123Z",
+          "delta": {
+            "summary": "Pool+Entry (PE-V2-A): rank11 サンプルホース を Pool に追加",
+            "reason_codes": ["pe_v2_a", "pe_insert"],
+            "before": { "pool_size": 8 },
+            "after": { "pool_size": 9 },
+            "inputs": {
+              "facet": "PE-V2-A",
+              "cand_name": "サンプルホース",
+              "cand_rank": 11
+            },
+            "outputs": { "fired": true, "inserted": true }
+          }
+        },
+        {
+          "stage": "entry",
+          "status": "applied",
+          "timestamp": "2026-07-21T04:00:01.123Z",
+          "delta": {
+            "summary": "Entry (PE-V2-A): サンプルホース（rank11）を Entry 登録",
+            "reason_codes": ["pe_v2_a", "pe_insert"],
+            "before": { "pool_size": 8 },
+            "after": { "pool_size": 9, "inserted": true },
+            "outputs": { "inserted": true }
+          }
+        },
+        {
+          "stage": "repick",
+          "status": "applied",
+          "timestamp": "2026-07-21T04:00:01.123Z",
+          "delta": {
+            "summary": "NEAR rescue: rank9 NEAR馬 → repick membership",
+            "reason_codes": ["rv2_near", "rp_v2_a", "rp_displaced"],
+            "before": { "in_repick": 0, "surv_pos": 10 },
+            "after": { "in_repick": 1, "displaced": true },
+            "inputs": { "N": 8, "victim_rank": 11 },
+            "outputs": { "displaced": true }
+          }
+        },
+        {
+          "stage": "purchase",
+          "status": "not_applied",
+          "delta": { "summary": "Purchase 未配線（PI CE 経路）" }
+        },
+        {
+          "stage": "delete",
+          "status": "locked",
+          "delta": { "summary": "Delete Boundary — 変更禁止" }
+        },
+        {
+          "stage": "mark_assignment",
+          "status": "applied",
+          "delta": {
+            "summary": "Rank1 → ◎（honmei）",
+            "before": { "mark": null },
+            "after": { "mark": "honmei" }
+          }
+        }
+      ]
+    }
+  },
+  "core_explain_payload_excerpt": {
+    "schema_version": "core-explain-payload/1.0",
+    "product_stages": [
+      {
+        "stage": "candidate_pool",
+        "status": "applied",
+        "timestamp": "2026-07-21T04:00:01.123Z",
+        "delta": {
+          "summary": "Pool+Entry (PE-V2-A): rank11 サンプルホース を Pool に追加",
+          "reason_codes": ["pe_v2_a", "pe_insert"]
+        }
+      },
+      {
+        "stage": "entry",
+        "status": "applied",
+        "timestamp": "2026-07-21T04:00:01.123Z",
+        "delta": {
+          "summary": "Entry (PE-V2-A): サンプルホース（rank11）を Entry 登録",
+          "reason_codes": ["pe_v2_a", "pe_insert"]
+        }
+      },
+      {
+        "stage": "repick",
+        "status": "applied",
+        "timestamp": "2026-07-21T04:00:01.123Z",
+        "delta": {
+          "summary": "NEAR rescue: rank9 NEAR馬 → repick membership",
+          "reason_codes": ["rv2_near", "rp_v2_a", "rp_displaced"]
+        }
+      }
+    ],
+    "pipeline_version": "ai-core-migrated/1.0-phase2"
+  }
+}

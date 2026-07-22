@@ -69,7 +69,7 @@
         </div>
         <label class="race-search-field">
           <span>キーワード</span>
-          <input type="search" id="raceSearchQuery" placeholder="レース名・会場・R（例: 阪神 11R）" autocomplete="off" />
+          <input type="search" id="raceSearchQuery" placeholder="レース名・会場・R・本命馬名（例: コルドン / 阪神 11R）" autocomplete="off" />
         </label>
         <div class="race-search-block">
           <p class="race-search-label">開催日</p>
@@ -117,13 +117,16 @@
   <script src="assets/api/mock-gate.js"></script>
   <script src="assets/api/auth.js"></script>
   <script src="assets/api/contract-guard.js"></script>
+  <script src="assets/api/race-list-url.js?v=12"></script>
   <script src="assets/api/race.js"></script>
+  <script src="assets/api/race-cards.js?v=12"></script>
   <script src="assets/api/prediction.js"></script>
   <script src="assets/api/race-id-meta.js"></script>
-  <script src="assets/api/prediction-bind.js"></script>
+  <script src="assets/api/prediction-bind.js?v=13"></script>
   <script src="assets/api/real-data-bind.js"></script>
   <script src="assets/ux.js"></script>
-  <script src="assets/api/ui-features.js?v=11"></script>
+  <script src="assets/api/ui-features.js?v=12"></script>
+  <script src="assets/api/race-search.js?v=13"></script>
   <script src="assets/v11.js?v=11"></script>
   <script src="assets/favorites.js"></script>
   <script src="assets/shell.js"></script>
@@ -137,8 +140,32 @@
     ExpectShell.initChips("#dateTabs");
     ExpectShell.initChips("#venueChips");
 
+    /** v2 一覧コントローラ（Flag ON 時の date 再 fetch） */
+    var raceListController = {
+      mode: "v1",
+      loadedDate: "",
+      reload: null,
+    };
+
+    var raceListUi = {
+      booted: false,
+      applyFilters: null,
+      syncDateFromUrl: null,
+    };
+
     function bootRaceUi() {
     ExpectFavorites.bindButtons();
+
+    if (raceListUi.booted) {
+      if (typeof raceListUi.syncDateFromUrl === "function") {
+        raceListUi.syncDateFromUrl({ normalize: false });
+      }
+      if (typeof raceListUi.applyFilters === "function") {
+        raceListUi.applyFilters();
+      }
+      return;
+    }
+    raceListUi.booted = true;
 
     (function initRaceSearch() {
       var root = document.getElementById("raceSearchRoot");
@@ -163,7 +190,29 @@
         });
       }
 
+      function writeDateUrl(dateValue, mode) {
+        if (!window.ExpectRaceListUrl || !ExpectRaceListUrl.writeDate) return;
+        var iso =
+          dateValue && dateValue !== "all" ? dateValue : null;
+        ExpectRaceListUrl.writeDate(iso, { mode: mode || "push" });
+      }
+
+      /** URL ?date= を唯一の状態源として state.date へ反映 */
+      function syncDateFromUrl(opts) {
+        opts = opts || {};
+        if (!window.ExpectRaceListUrl) return;
+        var date =
+          opts.normalize
+            ? ExpectRaceListUrl.normalizeLocation()
+            : (ExpectRaceListUrl.resolveFromLocation().date);
+        state.date = date || "all";
+      }
+
       function match(item) {
+        if (window.ExpectRaceSearch && ExpectRaceSearch.matchElement) {
+          return ExpectRaceSearch.matchElement(item, state);
+        }
+        // Fallback（race-search.js 未読込時）— Catalog のみ（v1.1 同等）
         var date = item.getAttribute("data-race-date") || "";
         var venue = item.getAttribute("data-race-venue") || "";
         var name = item.getAttribute("data-race-name") || "";
@@ -211,11 +260,16 @@
         // 上部チップと同期
         if (state.date !== "all") {
           setActive(document.getElementById("dateTabs"), "data-filter-date", state.date);
+        } else {
+          setActive(document.getElementById("dateTabs"), "data-filter-date", "all");
         }
         setActive(document.getElementById("venueChips"), "data-venue", state.venue);
         setActive(document.getElementById("raceSearchDates"), "data-search-date", state.date);
         setActive(document.getElementById("raceSearchVenues"), "data-search-venue", state.venue);
       }
+
+      raceListUi.applyFilters = applyFilters;
+      raceListUi.syncDateFromUrl = syncDateFromUrl;
 
       function openSearch() {
         root.hidden = false;
@@ -251,6 +305,7 @@
         var btn = e.target.closest("[data-search-date]");
         if (!btn) return;
         state.date = btn.getAttribute("data-search-date") || "all";
+        writeDateUrl(state.date, "push");
         setActive(this, "data-search-date", state.date);
         applyFilters();
       });
@@ -271,6 +326,7 @@
       document.getElementById("raceSearchReset").addEventListener("click", function () {
         state = { q: "", date: "all", venue: "all" };
         queryInput.value = "";
+        writeDateUrl(null, "push");
         applyFilters();
       });
 
@@ -282,12 +338,26 @@
         }
       });
 
-      // 上部の日付・会場チップでも絞り込み
+      function onDateSelected(nextDate) {
+        state.date = nextDate || "all";
+        writeDateUrl(state.date, "push");
+        if (
+          raceListController.mode === "v2" &&
+          state.date !== "all" &&
+          state.date !== raceListController.loadedDate &&
+          typeof raceListController.reload === "function"
+        ) {
+          raceListController.reload(state.date);
+          return;
+        }
+        applyFilters();
+      }
+
+      // 上部の日付・会場チップでも絞り込み（日付は URL 同期）
       document.getElementById("dateTabs").addEventListener("click", function (e) {
         var btn = e.target.closest("[data-filter-date]");
         if (!btn) return;
-        state.date = btn.getAttribute("data-filter-date") || "all";
-        applyFilters();
+        onDateSelected(btn.getAttribute("data-filter-date") || "all");
       });
 
       document.getElementById("venueChips").addEventListener("click", function (e) {
@@ -297,7 +367,24 @@
         applyFilters();
       });
 
+      syncDateFromUrl({ normalize: true });
       applyFilters();
+
+      if (window.ExpectRaceListUrl && ExpectRaceListUrl.bindPopState) {
+        ExpectRaceListUrl.bindPopState(function () {
+          syncDateFromUrl({ normalize: false });
+          if (
+            raceListController.mode === "v2" &&
+            state.date !== "all" &&
+            state.date !== raceListController.loadedDate &&
+            typeof raceListController.reload === "function"
+          ) {
+            raceListController.reload(state.date);
+            return;
+          }
+          applyFilters();
+        });
+      }
 
       (function initRaceSort() {
         var wrap = document.querySelector(".race-sort");
@@ -420,38 +507,148 @@
         bootRaceUi();
       }
 
-      if (!window.ExpectApi || !ExpectApi.Race || !window.ExpectPredictionBind) {
-        renderError("API クライアントが読み込めていません。");
-        return;
+      function cardsToFilterShapes(cards, listDate) {
+        return (cards || []).map(function (c) {
+          var info = (c && c.race_info) || {};
+          var conf =
+            c && c.summary && c.summary.confidence && typeof c.summary.confidence.score === "number"
+              ? c.summary.confidence.score
+              : null;
+          return {
+            race_id: c.race_id,
+            race_info: {
+              date: listDate || "",
+              venue: info.venue || "",
+              race_no: info.race_number,
+              race_name: info.race_name || "",
+              post_time: info.post_time || "",
+              date_label:
+                window.ExpectRaceListUrl && ExpectRaceListUrl.dateLabelFromIso
+                  ? ExpectRaceListUrl.dateLabelFromIso(listDate)
+                  : "",
+            },
+            ai_confidence: { score: conf },
+          };
+        });
       }
 
-      var listDate = ExpectApi.Race.resolveListDate({});
-      ExpectApi.Race.list({ date: listDate })
-        .then(function (catalog) {
-          var items = catalog.items || [];
-          var cardBundles = items.map(function (item) {
-            return ExpectApi.Race.toCardBundle(item);
+      function renderV1Bundles(bundles) {
+        var filtered = window.ExpectContractGuard
+          ? ExpectContractGuard.filterValidBundles(bundles)
+          : { ok: bundles || [], rejected: [] };
+        var races = filtered.ok;
+        var html = races.map(ExpectPredictionBind.raceCardHtml).join("");
+        list.setAttribute("aria-busy", "false");
+        list.innerHTML =
+          '<p class="race-list-empty" id="raceListEmpty" hidden>条件に合うレースがありません。検索条件を変えてみてください。</p>' +
+          html;
+        if (filtered.rejected.length && window.ExpectContractGuard) {
+          ExpectContractGuard.showErrorCard(list, {
+            title: "一部レースを表示できません",
+            message:
+              filtered.rejected.length +
+              "件が PredictionBundle 契約違反のため除外しました。",
+            errors: (filtered.rejected[0] && filtered.rejected[0].errors) || [],
           });
-          var html = cardBundles.map(ExpectPredictionBind.raceCardHtml).join("");
-          list.setAttribute("aria-busy", "false");
-          list.innerHTML =
-            '<p class="race-list-empty" id="raceListEmpty" hidden>条件に合うレースがありません。検索条件を変えてみてください。</p>' +
-            html;
-          if (!items.length) {
-            var e2 = document.getElementById("raceListEmpty");
-            if (e2) {
-              e2.hidden = false;
-              e2.textContent = "レースがありません。";
-            }
+        }
+        if (!races.length) {
+          var e2 = document.getElementById("raceListEmpty");
+          if (e2) {
+            e2.hidden = false;
+            e2.textContent = filtered.rejected.length
+              ? "契約を満たすレースがありません。"
+              : "レースがありません。";
           }
-          if (window.ExpectRealDataBind) {
-            ExpectRealDataBind.applyRacesFilters(cardBundles);
+        }
+        if (window.ExpectRealDataBind) {
+          ExpectRealDataBind.cacheBundles(races);
+          ExpectRealDataBind.applyRacesFilters(races);
+        }
+        bootRaceUi();
+      }
+
+      function renderV2Cards(payload) {
+        var cards = (payload && payload.race_cards) || [];
+        var listDate = (payload && payload.date) || "";
+        raceListController.loadedDate = listDate;
+        var html = cards
+          .map(function (card) {
+            return ExpectPredictionBind.raceCardSummaryHtml(card, { listDate: listDate });
+          })
+          .join("");
+        list.setAttribute("aria-busy", "false");
+        list.innerHTML =
+          '<p class="race-list-empty" id="raceListEmpty" hidden>条件に合うレースがありません。検索条件を変えてみてください。</p>' +
+          html;
+        if (!cards.length) {
+          var e2 = document.getElementById("raceListEmpty");
+          if (e2) {
+            e2.hidden = false;
+            e2.textContent = "レースがありません。";
           }
-          bootRaceUi();
-        })
-        .catch(function () {
-          renderError("通信エラーのため一覧を更新できませんでした。");
+        }
+        var shapes = cardsToFilterShapes(cards, listDate);
+        if (window.ExpectRealDataBind) {
+          ExpectRealDataBind.cacheBundles(shapes);
+          ExpectRealDataBind.applyRacesFilters(shapes);
+        }
+        // Phase 5: RaceCardSummary を最後に cache（shapes 上書き後に summary を復元）
+        if (window.ExpectFavorites && typeof ExpectFavorites.cacheBundles === "function") {
+          ExpectFavorites.cacheBundles(cards);
+        }
+        bootRaceUi();
+      }
+
+      function loadV1() {
+        raceListController.mode = "v1";
+        if (!window.ExpectApi || !ExpectApi.Prediction || !window.ExpectPredictionBind) {
+          renderError("API クライアントが読み込めていません。");
+          return;
+        }
+        ExpectApi.Prediction.list({})
+          .then(renderV1Bundles)
+          .catch(function () {
+            renderError("通信エラーのため一覧を更新できませんでした。");
+          });
+      }
+
+      function loadV2(dateOpt) {
+        raceListController.mode = "v2";
+        if (!window.ExpectApi || !ExpectApi.RaceCards || !window.ExpectPredictionBind) {
+          renderError("RaceCardSummary クライアントが読み込めていません。");
+          return;
+        }
+        list.setAttribute("aria-busy", "true");
+        ExpectApi.RaceCards.list({ date: dateOpt || undefined })
+          .then(renderV2Cards)
+          .catch(function (err) {
+            renderError(
+              (err && err.message) ||
+                "通信エラーのため一覧を更新できませんでした。"
+            );
+          });
+      }
+
+      raceListController.reload = function (date) {
+        loadV2(date);
+      };
+
+      function start() {
+        var useV2 =
+          window.ExpectUiFeatures &&
+          typeof ExpectUiFeatures.enabled === "function" &&
+          ExpectUiFeatures.enabled("v2_race_list_ui");
+        if (useV2) loadV2();
+        else loadV1();
+      }
+
+      if (window.ExpectUiFeatures && typeof ExpectUiFeatures.ready === "function") {
+        ExpectUiFeatures.ready(function () {
+          start();
         });
+      } else {
+        start();
+      }
     })();
   </script>
 </body>

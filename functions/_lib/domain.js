@@ -135,11 +135,17 @@ export function normalizePredictionBundle(raw, raceId) {
     })(),
     explain: (() => {
       const ex = raw.explain || {};
-      return {
+      const out = {
         meta: ex.meta || {},
         reasons: Array.isArray(ex.reasons) ? ex.reasons : [],
         narrative: typeof ex.narrative === "string" ? ex.narrative : "",
       };
+      // Version 2 Explainability 2.1 — additive（Flag OFF 時は未設定のまま）
+      if (ex.schema_version) out.schema_version = ex.schema_version;
+      if (ex.reason) out.reason = ex.reason;
+      if (ex.confidence_reason) out.confidence_reason = ex.confidence_reason;
+      if (ex.decision_trace) out.decision_trace = ex.decision_trace;
+      return out;
     })(),
     betting_recommendations: raw.betting_recommendations || {
       schema_version: "single-betting-recommendations/1.0",

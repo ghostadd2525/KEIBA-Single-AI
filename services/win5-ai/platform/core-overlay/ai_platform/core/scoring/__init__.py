@@ -25,7 +25,15 @@ def _field_size_temperature(field_size: int) -> float:
     """
     PC-3: soften softmax for large fields (reduces probability flattening).
     Override via CORE_SOFTMAX_TEMP_BASE (default 1.0) and CORE_SOFTMAX_TEMP_SLOPE (0.04).
+    CE-V2 Facet A: when WIN5_CE_V2_ENABLED, use fixed CE_V2_A_TEMP (see v2_ce_v2).
     """
+    try:
+        from v2_ce_v2 import WIN5_CE_V2_ENABLED, CE_V2_A_TEMP
+
+        if WIN5_CE_V2_ENABLED:
+            return float(CE_V2_A_TEMP)
+    except Exception:
+        pass
     base = float(os.environ.get("CORE_SOFTMAX_TEMP_BASE") or "1.0")
     slope = float(os.environ.get("CORE_SOFTMAX_TEMP_SLOPE") or "0.04")
     threshold = int(float(os.environ.get("CORE_SOFTMAX_FIELD_THRESHOLD") or "12"))

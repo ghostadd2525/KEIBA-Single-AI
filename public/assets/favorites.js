@@ -73,8 +73,36 @@
 
   var _bundleCache = {};
 
+  function v2RaceListUiOn() {
+    return !!(
+      global.ExpectUiFeatures &&
+      typeof ExpectUiFeatures.enabled === "function" &&
+      ExpectUiFeatures.enabled("v2_race_list_ui")
+    );
+  }
+
+  function isRaceCardSummary(b) {
+    if (!b || typeof b !== "object") return false;
+    if (b.schema_version && String(b.schema_version).indexOf("race-card-summary") >= 0) {
+      return true;
+    }
+    return !!(b.prediction && typeof b.prediction === "object" && "summary" in b);
+  }
+
   function scoreFromBundle(b) {
     if (!b) return null;
+    if (isRaceCardSummary(b)) {
+      var sc =
+        b.summary &&
+        b.summary.confidence &&
+        typeof b.summary.confidence.score === "number"
+          ? b.summary.confidence.score
+          : null;
+      if (typeof sc === "number") {
+        return sc <= 1 ? Math.round(sc * 100) : Math.round(sc);
+      }
+      return null;
+    }
     var c = b.ai_confidence || {};
     if (typeof c.score === "number") {
       return c.score <= 1 ? Math.round(c.score * 100) : Math.round(c.score);
@@ -82,26 +110,54 @@
     return null;
   }
 
+  function summaryFieldsFromBundle(b) {
+    if (!isRaceCardSummary(b)) return {};
+    var summary = b.summary;
+    if (!summary) return { honmei: "", honmeiNum: null, confPct: null, confBand: "" };
+    var h = summary.honmei;
+    var conf = summary.confidence;
+    var confPct = null;
+    if (conf && typeof conf.score === "number") {
+      confPct = conf.score <= 1 ? Math.round(conf.score * 100) : Math.round(conf.score);
+    }
+    return {
+      honmei: h && h.horse_name ? String(h.horse_name) : "",
+      honmeiNum: h && h.horse_number != null ? h.horse_number : null,
+      confPct: confPct,
+      confBand: conf && conf.band ? String(conf.band) : "",
+    };
+  }
+
   function metaFromBundle(b) {
     if (!b || !b.race_id) return null;
     var info = b.race_info || {};
     var d = info.date || "";
+    if (!d && b.race_id) {
+      var m = String(b.race_id).match(/^(\d{4}-\d{2}-\d{2})/);
+      if (m) d = m[1];
+    }
     var p = String(d).split("-");
     var dateLabel =
       info.date_label ||
       (p.length === 3 ? Number(p[1]) + "/" + Number(p[2]) : d);
-    return {
-      id: b.race_id,
-      date: d,
-      dateLabel: dateLabel,
-      place:
-        (info.venue || "") + (info.race_no != null ? " " + info.race_no + "R" : ""),
-      name: info.class_label || "",
-      badge: info.grade || "",
-      postTime: info.post_time || "",
-      image: "assets/images/race-bg-1.png",
-      bg: ((Number(info.race_no) || 1) % 4) + 1,
-    };
+    var raceNo = info.race_number != null ? info.race_number : info.race_no;
+    var summaryBits = summaryFieldsFromBundle(b);
+    return Object.assign(
+      {
+        id: b.race_id,
+        date: d,
+        dateLabel: dateLabel,
+        place:
+          info.race_label ||
+          (info.venue || "") + (raceNo != null ? " " + raceNo + "R" : ""),
+        name: info.race_name || info.class_label || "",
+        badge: info.grade || "",
+        postTime: info.post_time || "",
+        image: "assets/images/race-bg-1.png",
+        bg: ((Number(raceNo) || 1) % 4) + 1,
+      },
+      summaryBits
+    );
   }
 
   function aiFromBundle(b) {
@@ -116,14 +172,77 @@
     };
   }
 
+  /** RaceCardSummary から localStorage のお気に入りへ ◎/信頼度を投影（サーバー同期はしない） */
+  function enrichStoredFromCache() {
+    var store = storage();
+    if (!store) return;
+    var items = read();
+    if (!items.length) return;
+    var changed = false;
+    var next = items.map(function (raw) {
+      var b = _bundleCache[raw.id];
+      if (!b || !isRaceCardSummary(b)) return raw;
+      var fields = summaryFieldsFromBundle(b);
+      var meta = metaFromBundle(b);
+      var updated = Object.assign({}, raw);
+      if (fields.honmei) {
+        if (updated.honmei !== fields.honmei) changed = true;
+        updated.honmei = fields.honmei;
+      }
+      if (fields.honmeiNum != null) {
+        if (updated.honmeiNum !== fields.honmeiNum) changed = true;
+        updated.honmeiNum = fields.honmeiNum;
+      }
+      if (fields.confPct != null) {
+        if (updated.confPct !== fields.confPct) changed = true;
+        updated.confPct = fields.confPct;
+      }
+      if (fields.confBand) {
+        if (updated.confBand !== fields.confBand) changed = true;
+        updated.confBand = fields.confBand;
+      }
+      if (meta.place && updated.place !== meta.place) {
+        updated.place = meta.place;
+        changed = true;
+      }
+      if (meta.name && updated.name !== meta.name) {
+        updated.name = meta.name;
+        changed = true;
+      }
+      if (meta.badge && updated.badge !== meta.badge) {
+        updated.badge = meta.badge;
+        changed = true;
+      }
+      if (meta.postTime && updated.postTime !== meta.postTime) {
+        updated.postTime = meta.postTime;
+        changed = true;
+      }
+      if (meta.dateLabel && updated.dateLabel !== meta.dateLabel) {
+        updated.dateLabel = meta.dateLabel;
+        changed = true;
+      }
+      return updated;
+    });
+    if (!changed) return;
+    try {
+      store.setItem(KEY, JSON.stringify(next));
+    } catch (e) {
+      /* ignore */
+    }
+  }
+
   function cacheBundles(bundles) {
     (bundles || []).forEach(function (b) {
       if (b && b.race_id) _bundleCache[b.race_id] = b;
     });
+    enrichStoredFromCache();
   }
 
   function cacheBundle(bundle) {
-    if (bundle && bundle.race_id) _bundleCache[bundle.race_id] = bundle;
+    if (bundle && bundle.race_id) {
+      _bundleCache[bundle.race_id] = bundle;
+      enrichStoredFromCache();
+    }
   }
 
   var AI_PARAM_LABELS = {
@@ -344,6 +463,20 @@
       bg: bg,
       ai: getAi(entry.id),
       addedAt: entry.addedAt || Date.now(),
+      honmei: entry.honmei != null ? entry.honmei : base.honmei || "",
+      honmeiNum:
+        entry.honmeiNum != null
+          ? entry.honmeiNum
+          : base.honmeiNum != null
+            ? base.honmeiNum
+            : null,
+      confPct:
+        entry.confPct != null
+          ? entry.confPct
+          : base.confPct != null
+            ? base.confPct
+            : null,
+      confBand: entry.confBand != null ? entry.confBand : base.confBand || "",
     };
   }
 
@@ -498,6 +631,27 @@
         escapeAttr(item.id) +
         '" aria-label="お気に入りから削除">×</button>'
       : "";
+
+    // Phase 5: summary 投影は v2_race_list_ui ON のときのみ（Flag OFF = v1.1 恒等）
+    var summaryHtml = "";
+    if (v2RaceListUiOn()) {
+      var parts = [];
+      if (item.honmeiNum != null || item.honmei) {
+        parts.push(
+          "◎ " +
+            (item.honmeiNum != null ? String(item.honmeiNum) + " " : "") +
+            escapeHtml(item.honmei || "")
+        );
+      }
+      if (item.confPct != null) {
+        parts.push(String(item.confPct) + "%");
+      }
+      if (parts.length) {
+        summaryHtml =
+          '<p class="fav-summary">' + parts.join('<span class="fav-meta-sep"> · </span>') + "</p>";
+      }
+    }
+
     return (
       '<a class="fav-card ' +
       bgClass +
@@ -519,6 +673,7 @@
       '<p class="fav-name">' +
       escapeHtml(item.name) +
       "</p>" +
+      summaryHtml +
       badge +
       "</div>" +
       "</a>"
@@ -652,8 +807,18 @@
           name: btn.getAttribute("data-fav-name") || undefined,
           badge: btn.getAttribute("data-fav-badge") || undefined,
           dateLabel: btn.getAttribute("data-fav-date") || undefined,
-          postTime: btn.getAttribute("data-fav-time") || undefined
+          postTime: btn.getAttribute("data-fav-time") || undefined,
+          honmei: btn.getAttribute("data-fav-honmei") || undefined,
+          honmeiNum: btn.getAttribute("data-fav-honmei-num") || undefined,
+          confPct: btn.getAttribute("data-fav-conf") || undefined,
+          confBand: btn.getAttribute("data-fav-band") || undefined,
         };
+        if (meta.honmeiNum != null && meta.honmeiNum !== "") {
+          meta.honmeiNum = Number(meta.honmeiNum);
+        }
+        if (meta.confPct != null && meta.confPct !== "") {
+          meta.confPct = Number(meta.confPct);
+        }
 
         // 解除はそのまま
         if (has(id)) {
@@ -714,5 +879,8 @@
     canSync: canSync,
     cacheBundles: cacheBundles,
     cacheBundle: cacheBundle,
+    isRaceCardSummary: isRaceCardSummary,
+    summaryFieldsFromBundle: summaryFieldsFromBundle,
+    cardHtml: cardHtml,
   };
 })(window);

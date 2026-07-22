@@ -1,0 +1,54 @@
+# Promtail → Loki（Version 2 Operations · prepared）
+
+Phase 3 では **接続レシピのみ**を提供する（本番 Loki 契約は任意）。
+
+```yaml
+server:
+  http_listen_port: 9080
+
+positions:
+  filename: /var/lib/expect-ai/ops/promtail-positions.yaml
+
+clients:
+  - url: https://YOUR_LOKI_HOST/loki/api/v1/push
+
+scrape_configs:
+  - job_name: expect-ops-pi-metrics
+    static_configs:
+      - targets: [localhost]
+        labels:
+          job: expect-ops
+          stream: pi-metrics
+          __path__: /var/lib/expect-ai/ops/pi-metrics.jsonl
+    pipeline_stages:
+      - json:
+          expressions:
+            schema_version: schema_version
+            metric: metric
+            status: status
+            source: source
+      - labels:
+          metric:
+          status:
+          source:
+
+  - job_name: expect-ops-incidents
+    static_configs:
+      - targets: [localhost]
+        labels:
+          job: expect-ops
+          stream: incidents
+          __path__: /var/lib/expect-ai/ops/incidents.jsonl
+    pipeline_stages:
+      - json:
+          expressions:
+            service: service
+            alert_id: alert_id
+            status: status
+      - labels:
+          service:
+          alert_id:
+          status:
+```
+
+Grafana パネル案: GRF-D01 PI Health Overview（`pi.health.ok` / `pi.health.latency_ms`）。

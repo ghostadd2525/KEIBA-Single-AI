@@ -1,0 +1,11 @@
+[Unit]
+Description=Expect PI Race Refresh — every 15 min (script gates 08:00-20:00 JST)
+
+[Timer]
+# EC2: timedatectl set-timezone Asia/Tokyo 推奨
+OnCalendar=*-*-* *:00/15:00
+Persistent=true
+AccuracySec=1min
+
+[Install]
+WantedBy=timers.target

@@ -1,0 +1,59 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://expect.keiba/contracts/expect-race-card-summary/1.0/schema.json",
+  "title": "RaceCardSummary",
+  "description": "BFF 一覧専用 DTO。PredictionBundle の簡易版ではない。Catalog=race_info / Prediction=summary。",
+  "type": "object",
+  "additionalProperties": true,
+  "required": ["schema_version", "race_id", "race_info", "prediction"],
+  "properties": {
+    "schema_version": {
+      "const": "expect-race-card-summary/1.0"
+    },
+    "race_id": { "type": "string", "minLength": 1 },
+    "race_info": {
+      "type": "object",
+      "required": ["venue", "race_number", "race_name"],
+      "properties": {
+        "venue": { "type": "string" },
+        "race_number": { "type": ["integer", "null"] },
+        "race_name": { "type": "string" },
+        "post_time": { "type": ["string", "null"] }
+      }
+    },
+    "prediction": {
+      "type": "object",
+      "required": ["status"],
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": ["ready", "processing", "failed", "missing"]
+        },
+        "engine_source": { "type": "string" }
+      }
+    },
+    "summary": {
+      "type": ["object", "null"],
+      "properties": {
+        "honmei": {
+          "type": ["object", "null"],
+          "properties": {
+            "horse_number": { "type": "integer" },
+            "horse_name": { "type": ["string", "null"] },
+            "mark": { "const": "honmei" }
+          },
+          "required": ["horse_number", "mark"]
+        },
+        "confidence": {
+          "type": ["object", "null"],
+          "properties": {
+            "score": { "type": ["number", "null"] },
+            "band": { "type": "string", "enum": ["high", "medium", "low"] }
+          },
+          "required": ["score", "band"]
+        },
+        "short_reason": { "type": ["string", "null"] }
+      }
+    }
+  }
+}

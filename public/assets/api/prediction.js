@@ -62,11 +62,18 @@
         score: Object.prototype.hasOwnProperty.call(conf, "score") ? conf.score : null,
         band: conf.band || "unknown",
       }),
-      explain: {
-        meta: ex.meta || {},
-        reasons: Array.isArray(ex.reasons) ? ex.reasons : [],
-        narrative: typeof ex.narrative === "string" ? ex.narrative : "",
-      },
+      explain: (function () {
+        var out = {
+          meta: ex.meta || {},
+          reasons: Array.isArray(ex.reasons) ? ex.reasons : [],
+          narrative: typeof ex.narrative === "string" ? ex.narrative : "",
+        };
+        if (ex.schema_version) out.schema_version = ex.schema_version;
+        if (ex.reason) out.reason = ex.reason;
+        if (ex.confidence_reason) out.confidence_reason = ex.confidence_reason;
+        if (ex.decision_trace) out.decision_trace = ex.decision_trace;
+        return out;
+      })(),
       betting_recommendations: Object.assign({ race_id: id, items: [] }, bets, {
         items: Array.isArray(bets.items) ? bets.items : [],
       }),

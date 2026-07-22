@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>v2_race_list_ui Favorites Preview — Phase 5</title>
+  <link rel="stylesheet" href="../../public/assets/styles.css" />
+  <link rel="stylesheet" href="../../public/assets/screens.css" />
+  <link rel="stylesheet" href="../../public/assets/v11.css" />
+  <style>
+    body { margin: 0; background: #1a1510; color: #f5efe6; font-family: "Noto Sans JP", sans-serif; }
+    .preview-wrap { max-width: 420px; margin: 0 auto; padding: 16px; }
+    .preview-wrap h1 { font-size: 1rem; margin: 0 0 8px; }
+    .preview-note { font-size: 0.75rem; opacity: 0.75; margin-bottom: 12px; }
+    .section-label { font-size: 0.8rem; margin: 16px 0 8px; opacity: 0.9; }
+    .favorites-rail {
+      display: flex; gap: 10px; overflow-x: auto; padding-bottom: 4px;
+    }
+    .race-list { margin-top: 8px; }
+  </style>
+</head>
+<body class="v11-fe v2-race-list-ui">
+  <div class="preview-wrap">
+    <h1>Phase 5 · お気に入り（◎ / 信頼度）</h1>
+    <p class="preview-note">v2_race_list_ui ON · ホーム fav レール + 一覧 ★</p>
+
+    <p class="section-label">ホーム · お気に入りレール</p>
+    <div class="favorites-rail" id="favRail"></div>
+
+    <p class="section-label">一覧 · RaceCardSummary（検索共存）</p>
+    <div class="race-list" id="raceList"></div>
+  </div>
+  <script src="../../public/assets/api/ui-features.js"></script>
+  <script src="../../public/assets/api/race-search.js"></script>
+  <script src="../../public/assets/api/prediction-bind.js"></script>
+  <script src="../../public/assets/favorites.js"></script>
+  <script>
+    ExpectUiFeatures.defaults.v2_race_list_ui = true;
+    ExpectUiFeatures.enabled = function (name) {
+      return name === "v2_race_list_ui";
+    };
+
+    var cards = [
+      {
+        schema_version: "expect-race-card-summary/1.0",
+        race_id: "2026-07-25-01-06",
+        race_info: {
+          venue: "新潟", race_number: 6, race_name: "豊栄特別",
+          post_time: "10:35", grade: "—"
+        },
+        prediction: { status: "ready", engine_source: "pi" },
+        summary: {
+          honmei: { horse_number: 4, horse_name: "コルドンブルー", mark: "honmei" },
+          confidence: { score: 0.42, band: "medium" },
+          short_reason: null
+        }
+      },
+      {
+        schema_version: "expect-race-card-summary/1.0",
+        race_id: "2026-07-25-01-11",
+        race_info: {
+          venue: "新潟", race_number: 11, race_name: "関屋記念",
+          post_time: "15:45", grade: "GIII"
+        },
+        prediction: { status: "ready", engine_source: "pi" },
+        summary: {
+          honmei: { horse_number: 7, horse_name: "サンプルホース", mark: "honmei" },
+          confidence: { score: 0.68, band: "high" },
+          short_reason: null
+        }
+      }
+    ];
+
+    ExpectFavorites.cacheBundles(cards);
+    ExpectFavorites.add(cards[0].race_id);
+    ExpectFavorites.add(cards[1].race_id);
+    ExpectFavorites.renderHome(document.getElementById("favRail"));
+
+    document.getElementById("raceList").innerHTML = cards.map(function (c) {
+      return ExpectPredictionBind.raceCardSummaryHtml(c, { listDate: "2026-07-25" });
+    }).join("");
+    ExpectFavorites.bindButtons(document.getElementById("raceList"));
+    ExpectFavorites.syncStarButtons(document.getElementById("raceList"));
+  </script>
+</body>
+</html>

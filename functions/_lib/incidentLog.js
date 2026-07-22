@@ -21,6 +21,7 @@ export function writeIncident(context, evt) {
         context.request.headers &&
         (context.request.headers.get("cf-ray") || context.request.headers.get("x-request-id"))) ||
       null,
+    ...(evt.alert_id ? { alert_id: String(evt.alert_id) } : {}),
   };
   console.log(JSON.stringify(line));
   return line;
@@ -28,7 +29,7 @@ export function writeIncident(context, evt) {
 
 /**
  * @param {object} context
- * @param {Array<{name:string, ok:boolean, error?:string, restart_count?:number, status?:string, detail?:object}>} checks
+ * @param {Array<{name:string, ok:boolean, error?:string, restart_count?:number, status?:string, detail?:object, alert_id?:string}>} checks
  */
 export function logFailedChecks(context, checks) {
   const lines = [];
@@ -42,6 +43,7 @@ export function logFailedChecks(context, checks) {
           status: c.status || "down",
           detail: c.detail || {},
           source: "bff",
+          alert_id: c.alert_id || null,
         })
       );
     }

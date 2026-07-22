@@ -90,12 +90,58 @@ class ReasonBuilder:
                 citations.append({"type": "fallback_reason", "code": fb_reason})
 
         if intent == "explain_pick":
-            reasons = (bundle.get("explain") or {}).get("reasons") or []
-            for r in reasons[:3]:
-                bullets.extend(r.get("bullets") or [])
-            summary = f"{venue_label or rid} の選定理由です。"
-            if not bullets:
-                bullets = [narrative or "詳細理由は限定的です。"]
+            explain = bundle.get("explain") or {}
+            reason = explain.get("reason") if isinstance(explain, dict) else None
+            # Phase 3: explain 2.1 reason を優先注入（無い場合は legacy reasons[]）
+            if isinstance(reason, dict) and reason.get("summary"):
+                dk = reason.get("decision_key") or {}
+                summary = (
+                    f"{venue_label or rid} の選定理由です。"
+                    f"{' 決定打: ' + str(dk.get('label')) if dk.get('label') else ''}"
+                ).strip()
+                bullets = []
+                if dk.get("label"):
+                    bullets.append(
+                        f"決定打: {dk.get('label')}"
+                        + (f"（{dk.get('text')}）" if dk.get("text") else "")
+                    )
+                bullets.append(str(reason.get("summary")))
+                for f in (reason.get("factors") or [])[:6]:
+                    if not isinstance(f, dict):
+                        continue
+                    label = f.get("label") or f.get("kind") or ""
+                    text = f.get("text") or ""
+                    bullets.append(f"{label}: {text}".strip(": "))
+                conf_r = explain.get("confidence_reason") or {}
+                if isinstance(conf_r, dict) and conf_r.get("summary"):
+                    bullets.append(f"信頼度: {conf_r.get('summary')}")
+                trace = explain.get("decision_trace") or {}
+                stages = (trace.get("stages") if isinstance(trace, dict) else None) or []
+                for s in stages:
+                    if not isinstance(s, dict):
+                        continue
+                    if s.get("stage") in ("candidate_pool", "entry", "repick") and s.get(
+                        "status"
+                    ) in ("applied", "skipped"):
+                        delta = s.get("delta") or {}
+                        bullets.append(
+                            f"{s.get('stage')}[{s.get('status')}]: {delta.get('summary') or ''}"
+                        )
+                narrative = str(reason.get("summary") or narrative)
+                citations.append(
+                    {
+                        "type": "explain_v21",
+                        "explain_phase": 3,
+                        "decision_key": dk.get("key"),
+                    }
+                )
+            else:
+                reasons = explain.get("reasons") or []
+                for r in reasons[:3]:
+                    bullets.extend(r.get("bullets") or [])
+                summary = f"{venue_label or rid} の選定理由です。"
+                if not bullets:
+                    bullets = [narrative or "詳細理由は限定的です。"]
         elif intent == "find_upset":
             ana = next((r for r in runners if r.get("mark") == "ana"), None)
             if not ana and len(runners) >= 4:

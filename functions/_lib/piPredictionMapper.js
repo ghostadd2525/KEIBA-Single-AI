@@ -2,6 +2,7 @@
  * PI GET /v1/predictions/{race_id} → PredictionBundle (single-prediction-bundle/2.0)
  */
 import { normalizePredictionBundle } from "./domain.js";
+import { buildExplainV21, isExplainV2Enabled } from "./explainBuilder.js";
 
 const MARK_BY_RANK = {
   1: ["honmei", 1],
@@ -59,8 +60,9 @@ function mapCandidateToRunner(candidate) {
 /**
  * @param {Record<string, unknown>} piPayload PI /v1/predictions レスポンス
  * @param {Record<string, unknown> | null} [catalogRace] PI races 行（任意）
+ * @param {{ context?: object, explainV2Enabled?: boolean }} [options]
  */
-export function mapPiPredictionToBundle(piPayload, catalogRace = null) {
+export function mapPiPredictionToBundle(piPayload, catalogRace = null, options = {}) {
   if (!piPayload || piPayload.prediction_available !== true) {
     return null;
   }
@@ -85,6 +87,38 @@ export function mapPiPredictionToBundle(piPayload, catalogRace = null) {
   const predMeta = pred.meta && typeof pred.meta === "object" ? pred.meta : {};
   const generatedAt =
     String(predMeta.generated_at || pred.generated_at || new Date().toISOString());
+
+  const aiConfidence = {
+    schema_version: "single-ai-confidence/1.0",
+    status: overall != null ? "ok" : "unknown",
+    score: overall,
+    score_unit: "normalized",
+    band: confidenceBand(overall),
+    factors: [],
+    component_scores: {},
+    notes: "pi-keibanet-api",
+    computed_at: generatedAt,
+  };
+
+  const baseExplainMeta = {
+    source: "pi-keibanet-api",
+    numeric_race_id: raceRow.numeric_race_id || piPayload.numeric_race_id || null,
+    collector_race_id: raceRow.collector_race_id || piPayload.collector_race_id || null,
+    ...predMeta,
+  };
+
+  const explainEnabled =
+    options.explainV2Enabled != null
+      ? Boolean(options.explainV2Enabled)
+      : isExplainV2Enabled(options.context);
+  const honmei = runners.find((r) => r.mark === "honmei") || runners[0] || null;
+  const explain = buildExplainV21({
+    piPred: pred,
+    honmeiRunner: honmei,
+    aiConfidence,
+    baseMeta: baseExplainMeta,
+    enabled: explainEnabled,
+  });
 
   const raw = {
     schema_version: "single-prediction-bundle/2.0",
@@ -113,27 +147,8 @@ export function mapPiPredictionToBundle(piPayload, catalogRace = null) {
       sub_world: pred.sub_world != null ? String(pred.sub_world) : null,
       runners,
     },
-    ai_confidence: {
-      schema_version: "single-ai-confidence/1.0",
-      status: overall != null ? "ok" : "unknown",
-      score: overall,
-      score_unit: "normalized",
-      band: confidenceBand(overall),
-      factors: [],
-      component_scores: {},
-      notes: "pi-keibanet-api",
-      computed_at: generatedAt,
-    },
-    explain: {
-      meta: {
-        source: "pi-keibanet-api",
-        numeric_race_id: raceRow.numeric_race_id || piPayload.numeric_race_id || null,
-        collector_race_id: raceRow.collector_race_id || piPayload.collector_race_id || null,
-        ...predMeta,
-      },
-      reasons: [],
-      narrative: "",
-    },
+    ai_confidence: aiConfidence,
+    explain,
     betting_recommendations: {
       schema_version: "single-betting-recommendations/1.0",
       race_id: raceId,

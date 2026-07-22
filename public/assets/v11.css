@@ -244,6 +244,116 @@ body.v11-confidence .v11-conf-meter > i {
   line-height: 1.5;
 }
 
+.page-ops .ops-section-title {
+  margin: 8px 0 4px;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--gold-soft, #e5c78f);
+  letter-spacing: 0.02em;
+}
+
+.page-ops .ops-section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.page-ops .ops-section-head .ops-section-title {
+  margin: 0;
+}
+
+.page-ops .ops-refresh-btn {
+  appearance: none;
+  border: 1px solid rgba(193, 162, 109, 0.35);
+  background: rgba(16, 18, 24, 0.9);
+  color: var(--gold-soft, #e5c78f);
+  font-size: 12px;
+  font-weight: 600;
+  padding: 6px 12px;
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+.page-ops .ops-refresh-btn:hover {
+  border-color: rgba(193, 162, 109, 0.6);
+}
+
+.page-ops .ops-runbook {
+  font-size: 11px;
+  color: #9a8b6e;
+  word-break: break-all;
+}
+
+.page-ops .ops-pi-section {
+  margin-top: 8px;
+  padding-top: 4px;
+  border-top: 1px solid rgba(193, 162, 109, 0.2);
+}
+
+.page-ops .ops-card--ok .ops-value {
+  color: #8fd4a8;
+}
+
+.page-ops .ops-card--bad .ops-value {
+  color: #e8a0a0;
+}
+
+.page-ops .ops-card--warn .ops-value {
+  color: #e0c07a;
+}
+
+.page-ops .ops-card--muted .ops-value {
+  color: #9a8b6e;
+}
+
+.page-ops .ops-table-wrap {
+  overflow-x: auto;
+  margin: 0 0 14px;
+}
+
+.page-ops .ops-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+
+.page-ops .ops-table th,
+.page-ops .ops-table td {
+  text-align: left;
+  padding: 8px 10px;
+  border-bottom: 1px solid rgba(193, 162, 109, 0.18);
+  vertical-align: top;
+}
+
+.page-ops .ops-table th {
+  color: #a89878;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  font-size: 11px;
+}
+
+.page-ops .ops-tone-ok {
+  color: #8fd4a8;
+  font-weight: 600;
+}
+
+.page-ops .ops-tone-bad {
+  color: #e8a0a0;
+  font-weight: 600;
+}
+
+.page-ops .ops-tone-warn {
+  color: #e0c07a;
+  font-weight: 600;
+}
+
+.page-ops .ops-tone-muted {
+  color: #9a8b6e;
+}
+
 .page-ops .ops-denied {
   padding: 24px 16px;
 }

@@ -1,0 +1,26 @@
+{
+  "schema_version": "expect-race-card-summary/1.0",
+  "race_id": "2026-07-25-01-06",
+  "race_info": {
+    "venue": "新潟",
+    "race_number": 6,
+    "race_name": "豊栄特別",
+    "post_time": "10:35"
+  },
+  "prediction": {
+    "status": "ready",
+    "engine_source": "pi"
+  },
+  "summary": {
+    "honmei": {
+      "horse_number": 4,
+      "horse_name": "コルドンブルー",
+      "mark": "honmei"
+    },
+    "confidence": {
+      "score": 0.42,
+      "band": "medium"
+    },
+    "short_reason": null
+  }
+}

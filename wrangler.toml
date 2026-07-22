@@ -33,3 +33,6 @@ AUTH_MODE = "stub"
 VALIDATE_CONTRACTS = "soft"
 KAOBA_PROVIDER = "auto"
 AI_ENGINE = "real"
+EXPECT_ENV = "production"
+# Version 2 Explainability — BFF mapper（本番 Release）
+EXPLAIN_V2_ENABLED = "true"

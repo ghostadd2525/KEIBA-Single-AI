@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://expect.keiba/contracts/expect-ops-metrics/1.0/schema.json",
+  "title": "OpsMetrics",
+  "description": "Version 2 Operations — unified JSON metrics line (MET-J*)",
+  "$defs": {
+    "OpsMetricRow": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["schema_version", "ts", "source", "metric", "status"],
+      "properties": {
+        "schema_version": { "const": "expect-ops-metrics/1.0" },
+        "ts": { "type": "string", "minLength": 1 },
+        "source": {
+          "type": "string",
+          "description": "ec2-monitor | bff-probe | pi-probe"
+        },
+        "metric": { "type": "string", "minLength": 1 },
+        "value": { "type": ["number", "null"] },
+        "unit": { "type": ["string", "null"] },
+        "labels": { "type": "object", "additionalProperties": true },
+        "status": {
+          "type": "string",
+          "enum": ["ok", "error", "warn", "skipped"]
+        }
+      }
+    }
+  }
+}

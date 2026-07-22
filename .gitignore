@@ -32,6 +32,15 @@ services/win5-ai/var/miss-evidence/*/
 !services/win5-ai/var/miss-evidence/.gitignore
 services/win5-ai/var/improvement-evidence/
 
+# PI runtime / debug artifacts
+services/pi-keibanet-api/var/
+services/pi-keibanet-api/**/__pycache__/
+
+# Ephemeral development run artifacts (keep index/proposals separately if needed)
+development/runs/
+development/canary/results/**/2026-*.json
+docs/ops/canary-v1.1-evidence/tmp/
+
 # Python
 __pycache__/
 *.py[cod]

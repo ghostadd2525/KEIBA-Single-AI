@@ -1,0 +1,174 @@
+{
+  "schema_version": "single-prediction-bundle/2.0",
+  "race_id": "2026-07-25-01-06",
+  "note": "Explainability Phase 3 final sample — Kaoba explain_pick projection + full decision_trace",
+  "evaluation": {
+    "world": "midupper_world",
+    "sub_world": "midupper_route",
+    "runners": [
+      {
+        "horse_number": 4,
+        "horse_name": "コルドンブルー",
+        "model_rank": 1,
+        "win_prob": 0.0657,
+        "mark": "honmei"
+      }
+    ]
+  },
+  "ai_confidence": {
+    "score": 0.042,
+    "band": "low",
+    "factors": ["gap12=0.004883", "entropy=2.887667"]
+  },
+  "explain": {
+    "schema_version": "single-explain/2.1",
+    "meta": {
+      "explain_source": "core-explain-payload/1.0",
+      "explain_phase": 2,
+      "kaoba_ready": true,
+      "kaoba_intent": "explain_pick"
+    },
+    "narrative": "4番コルドンブルーを◎。CE 1 位、中上位ルート型。Pool+Entry / RePick 適用。",
+    "reasons": [
+      {
+        "horse_number": 4,
+        "bullets": ["CE 評価 1 位", "Pool 理由", "Entry 理由", "RePick 理由"]
+      }
+    ],
+    "reason": {
+      "schema_version": "single-honmei-reason/1.0",
+      "candidate_id": "c04",
+      "horse_number": 4,
+      "horse_name": "コルドンブルー",
+      "mark": "honmei",
+      "decision_key": {
+        "key": "ce_rank1_gap_lead",
+        "kind": "candidate_evaluation",
+        "label": "CE 評価 1 位",
+        "text": "2 位との勝率差が最も大きい",
+        "evidence": { "model_rank": 1, "win_prob": 0.0657, "gap12": 0.004883 }
+      },
+      "summary": "4番コルドンブルーを◎としたのは、CE 評価 1 位（勝率 6.6%）で 2 位との差が最も大きいため。中上位世界・中上位ルート型のレースです。",
+      "factors": [
+        {
+          "kind": "candidate_evaluation",
+          "label": "CE 評価",
+          "text": "モデル順位 1 位・勝率 6.6%",
+          "weight": "primary"
+        },
+        {
+          "kind": "comparison",
+          "label": "Pool 理由",
+          "text": "Pool+Entry (PE-V2-A): rank11 サンプルホース を Pool に追加",
+          "weight": "secondary"
+        },
+        {
+          "kind": "comparison",
+          "label": "Entry 理由",
+          "text": "Entry (PE-V2-A): サンプルホース（rank11）を Entry 登録",
+          "weight": "secondary"
+        },
+        {
+          "kind": "repick",
+          "label": "RePick 理由",
+          "text": "NEAR rescue: rank9 NEAR馬 → repick membership",
+          "weight": "secondary"
+        }
+      ]
+    },
+    "confidence_reason": {
+      "schema_version": "single-confidence-reason/1.0",
+      "score": 0.042,
+      "band": "low",
+      "score_unit": "normalized",
+      "summary": "信頼度は低め。1–2 位差が小さく混戦度が高いため、◎ の優位は限定的です。",
+      "components": [
+        {
+          "key": "gap12",
+          "label": "1–2 位差",
+          "value": 0.004883,
+          "interpretation": "差が小さく上位が拮抗",
+          "weight": 0.25,
+          "contribution": 0.12
+        }
+      ]
+    },
+    "decision_trace": {
+      "schema_version": "single-decision-trace/1.0",
+      "pipeline_version": "ai-core-migrated/1.0-phase2",
+      "stages": [
+        {
+          "stage": "candidate_evaluation",
+          "status": "applied",
+          "delta": { "summary": "CE 1 位: 4 番コルドンブルー（勝率 6.6%）" }
+        },
+        {
+          "stage": "world_classification",
+          "status": "applied",
+          "delta": { "summary": "midupper_world / midupper_route" }
+        },
+        {
+          "stage": "candidate_pool",
+          "status": "applied",
+          "timestamp": "2026-07-21T04:00:01.123Z",
+          "delta": {
+            "summary": "Pool+Entry (PE-V2-A): rank11 サンプルホース を Pool に追加",
+            "reason_codes": ["pe_v2_a", "pe_insert"]
+          }
+        },
+        {
+          "stage": "entry",
+          "status": "applied",
+          "timestamp": "2026-07-21T04:00:01.123Z",
+          "delta": {
+            "summary": "Entry (PE-V2-A): サンプルホース（rank11）を Entry 登録",
+            "reason_codes": ["pe_v2_a", "pe_insert"]
+          }
+        },
+        {
+          "stage": "repick",
+          "status": "applied",
+          "timestamp": "2026-07-21T04:00:01.123Z",
+          "delta": {
+            "summary": "NEAR rescue: rank9 NEAR馬 → repick membership",
+            "reason_codes": ["rv2_near", "rp_v2_a", "rp_displaced"]
+          }
+        },
+        {
+          "stage": "delete",
+          "status": "locked",
+          "delta": { "summary": "Delete Boundary — 変更禁止" }
+        },
+        {
+          "stage": "mark_assignment",
+          "status": "applied",
+          "delta": { "summary": "Rank1 → ◎（honmei）" }
+        }
+      ]
+    }
+  },
+  "kaoba_explain_pick": {
+    "schema_version": "single-explain-pick/1.0",
+    "explain_phase": 3,
+    "intent": "explain_pick",
+    "decision_key": {
+      "key": "ce_rank1_gap_lead",
+      "label": "CE 評価 1 位",
+      "text": "2 位との勝率差が最も大きい"
+    },
+    "summary": "4番コルドンブルーを◎としたのは、CE 評価 1 位（勝率 6.6%）で 2 位との差が最も大きいため。中上位世界・中上位ルート型のレースです。",
+    "factor_lines": [
+      "CE 評価: モデル順位 1 位・勝率 6.6%",
+      "Pool 理由: Pool+Entry (PE-V2-A): rank11 サンプルホース を Pool に追加",
+      "Entry 理由: Entry (PE-V2-A): サンプルホース（rank11）を Entry 登録",
+      "RePick 理由: NEAR rescue: rank9 NEAR馬 → repick membership"
+    ],
+    "confidence_summary": "信頼度は低め。1–2 位差が小さく混戦度が高いため、◎ の優位は限定的です。",
+    "trace_lines": [
+      "candidate_pool[applied] Pool+Entry (PE-V2-A): rank11 サンプルホース を Pool に追加",
+      "entry[applied] Entry (PE-V2-A): サンプルホース（rank11）を Entry 登録",
+      "repick[applied] NEAR rescue: rank9 NEAR馬 → repick membership"
+    ],
+    "sample_reply": "新潟 6R についてね。4番コルドンブルーを◎にした理由を説明するね。\n決定打は「CE 評価 1 位」（2 位との勝率差が最も大きい）だよ。"
+  }
+}

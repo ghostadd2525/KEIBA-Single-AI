@@ -1,0 +1,20 @@
+[Unit]
+Description=Expect PI Race Refresh — published races → features (Phase A)
+After=network-online.target expect-pi-keibanet-api.service
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=ubuntu
+Group=ubuntu
+WorkingDirectory=/home/ubuntu/KEIBA-Single-AI/services/pi-keibanet-api
+Environment=PI_KEIBANET_MIN_INTERVAL_SEC=1.0
+Environment=PI_AI_PLATFORM_ROOT=/opt/expect-ai/platform
+Environment=PI_DATA_ROOT=/opt/expect-ai/platform/data
+Environment=PI_RACE_REFRESH_STATE_ROOT=/opt/expect-ai/platform/data/var/race_refresh
+Environment=PI_RACE_REFRESH_START_HOUR=8
+Environment=PI_RACE_REFRESH_END_HOUR=20
+ExecStart=/usr/bin/python3 scripts/prod_race_refresh.py
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>v2 Ops Phase1 — PI Dashboard Preview</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600&family=Noto+Sans+JP:wght@400;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #101218;
+      --gold: #e5c78f;
+      --muted: #a89878;
+      --line: rgba(193, 162, 109, 0.28);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Noto Sans JP", sans-serif;
+      background:
+        radial-gradient(1200px 600px at 20% -10%, rgba(193, 162, 109, 0.18), transparent 60%),
+        linear-gradient(180deg, #161820 0%, #0c0e14 100%);
+      color: #f3ead7;
+      padding: 28px 24px 40px;
+    }
+    .brand {
+      font-family: "Cormorant Garamond", serif;
+      font-size: 28px;
+      margin: 0;
+      color: var(--gold);
+    }
+    .sub { margin: 2px 0 0; color: var(--muted); font-size: 13px; }
+    h1 { font-size: 18px; font-weight: 700; margin: 18px 0 8px; }
+    h2 {
+      margin: 22px 0 6px;
+      font-size: 15px;
+      color: var(--gold);
+      border-top: 1px solid rgba(193, 162, 109, 0.2);
+      padding-top: 14px;
+    }
+    .note { font-size: 12px; color: #9a8b6e; margin: 0 0 12px; }
+    .grid {
+      display: grid;
+      gap: 12px;
+      grid-template-columns: repeat(4, minmax(120px, 1fr));
+      max-width: 880px;
+    }
+    .card {
+      padding: 14px;
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      background: rgba(16, 18, 24, 0.75);
+    }
+    .card h3 {
+      margin: 0 0 6px;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--muted);
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+    .card .v {
+      margin: 0;
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--gold);
+    }
+    .ok { color: #8fd4a8; }
+    .badge {
+      display: inline-block;
+      margin-top: 16px;
+      font-size: 11px;
+      color: var(--muted);
+      border: 1px solid var(--line);
+      padding: 4px 8px;
+      border-radius: 999px;
+    }
+  </style>
+</head>
+<body>
+  <p class="brand">Expect</p>
+  <p class="sub">～ KEIBA AI ～ · Ops Phase 1 Preview</p>
+  <h1>運用ダッシュボード</h1>
+  <p class="note">Baseline: v1.0.0-stable · Flag <code>v2_ops_dashboard</code> ON（プレビュー）</p>
+
+  <div class="grid">
+    <article class="card"><h3>Health</h3><p class="v ok">OK</p></article>
+    <article class="card"><h3>API応答 (health)</h3><p class="v">48 ms</p></article>
+    <article class="card"><h3>API応答 (predictions)</h3><p class="v">312 ms</p></article>
+    <article class="card"><h3>Prediction件数</h3><p class="v">12</p></article>
+  </div>
+
+  <h2>PI Health（v2 Ops Phase 1）</h2>
+  <p class="note">出典: GET /api/health の additive <code>pi</code> · monitor-prod MET-J04</p>
+  <div class="grid">
+    <article class="card"><h3>Overall PI</h3><p class="v ok">OK</p></article>
+    <article class="card"><h3>PI configured</h3><p class="v">yes</p></article>
+    <article class="card"><h3>PI latency</h3><p class="v">18 ms</p></article>
+    <article class="card"><h3>PI service</h3><p class="v" style="font-size:14px">pi-keibanet-api</p></article>
+  </div>
+
+  <p class="badge">fixtures/ops/v2-ops-phase1-preview.html · Phase1 提出用</p>
+</body>
+</html>

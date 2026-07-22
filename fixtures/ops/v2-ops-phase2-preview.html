@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>v2 Ops Phase2 — Dashboard Preview</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600&family=Noto+Sans+JP:wght@400;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #101218;
+      --gold: #e5c78f;
+      --muted: #a89878;
+      --line: rgba(193, 162, 109, 0.28);
+      --ok: #8fd4a8;
+      --bad: #e8a0a0;
+      --warn: #e0c07a;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Noto Sans JP", sans-serif;
+      background:
+        radial-gradient(1200px 600px at 20% -10%, rgba(193, 162, 109, 0.18), transparent 60%),
+        linear-gradient(180deg, #161820 0%, #0c0e14 100%);
+      color: #f3ead7;
+      padding: 24px 22px 36px;
+    }
+    .brand { font-family: "Cormorant Garamond", serif; font-size: 28px; margin: 0; color: var(--gold); }
+    .sub { margin: 2px 0 0; color: var(--muted); font-size: 13px; }
+    h1 { font-size: 18px; font-weight: 700; margin: 16px 0 6px; }
+    h2 {
+      margin: 18px 0 6px;
+      font-size: 15px;
+      color: var(--gold);
+      border-top: 1px solid rgba(193, 162, 109, 0.2);
+      padding-top: 12px;
+    }
+    .note { font-size: 12px; color: #9a8b6e; margin: 0 0 10px; }
+    .grid {
+      display: grid;
+      gap: 10px;
+      grid-template-columns: repeat(4, minmax(110px, 1fr));
+      max-width: 920px;
+      margin-bottom: 8px;
+    }
+    .card {
+      padding: 12px;
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      background: rgba(16, 18, 24, 0.75);
+    }
+    .card h3 {
+      margin: 0 0 6px;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--muted);
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+    .card .v { margin: 0; font-size: 20px; font-weight: 700; color: var(--gold); }
+    .ok { color: var(--ok) !important; }
+    .bad { color: var(--bad) !important; }
+    table {
+      width: 100%;
+      max-width: 920px;
+      border-collapse: collapse;
+      font-size: 12px;
+      margin-bottom: 8px;
+    }
+    th, td {
+      text-align: left;
+      padding: 7px 9px;
+      border-bottom: 1px solid rgba(193, 162, 109, 0.18);
+    }
+    th { color: var(--muted); font-size: 11px; text-transform: uppercase; }
+    .badge {
+      display: inline-block;
+      margin-top: 12px;
+      font-size: 11px;
+      color: var(--muted);
+      border: 1px solid var(--line);
+      padding: 4px 8px;
+      border-radius: 999px;
+    }
+  </style>
+</head>
+<body>
+  <p class="brand">Expect</p>
+  <p class="sub">～ KEIBA AI ～ · Ops Phase 2 Preview</p>
+  <h1>運用ダッシュボード</h1>
+  <p class="note">Flag <code>v2_ops_dashboard</code> ON · GET /api/ops/dashboard</p>
+
+  <div class="grid">
+    <article class="card"><h3>Health</h3><p class="v ok">OK</p></article>
+    <article class="card"><h3>API応答 (health)</h3><p class="v">42 ms</p></article>
+    <article class="card"><h3>Prediction件数</h3><p class="v">12</p></article>
+    <article class="card"><h3>AI成功率</h3><p class="v">91.7%</p></article>
+  </div>
+
+  <h2>PI Health</h2>
+  <div class="grid">
+    <article class="card"><h3>Overall PI</h3><p class="v ok">OK</p></article>
+    <article class="card"><h3>PI probes</h3><p class="v">1</p></article>
+    <article class="card"><h3>PI latency</h3><p class="v">18 ms</p></article>
+    <article class="card"><h3>PI alerts</h3><p class="v">0</p></article>
+  </div>
+  <table>
+    <thead><tr><th>Probe</th><th>Status</th><th>Latency</th><th>Alert</th></tr></thead>
+    <tbody><tr><td>pi_health</td><td class="ok">OK</td><td>18 ms</td><td>—</td></tr></tbody>
+  </table>
+
+  <h2>Metrics 集約</h2>
+  <div class="grid">
+    <article class="card"><h3>Metrics total</h3><p class="v">14</p></article>
+    <article class="card"><h3>Metrics ok</h3><p class="v ok">14</p></article>
+    <article class="card"><h3>Metrics error</h3><p class="v">0</p></article>
+    <article class="card"><h3>Status</h3><p class="v ok">OK</p></article>
+  </div>
+
+  <h2>Alerts</h2>
+  <div class="grid">
+    <article class="card"><h3>Active</h3><p class="v">0</p></article>
+    <article class="card"><h3>Critical</h3><p class="v">0</p></article>
+    <article class="card"><h3>Warning</h3><p class="v">0</p></article>
+  </div>
+  <table>
+    <thead><tr><th>Alert ID</th><th>Severity</th><th>Service</th><th>Summary</th></tr></thead>
+    <tbody><tr><td colspan="4">アクティブな Alert なし</td></tr></tbody>
+  </table>
+
+  <h2>Incidents</h2>
+  <table>
+    <thead><tr><th>Occurred</th><th>Service</th><th>Alert</th><th>Error</th></tr></thead>
+    <tbody><tr><td colspan="4">Incident なし</td></tr></tbody>
+  </table>
+
+  <p class="badge">fixtures/ops/v2-ops-phase2-preview.html · Phase2</p>
+</body>
+</html>

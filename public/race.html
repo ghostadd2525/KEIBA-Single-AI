@@ -198,6 +198,7 @@
     }
 
     if (window.ExpectApi && ExpectApi.Prediction && window.ExpectPredictionBind) {
+      var startDetail = function () {
       ExpectApi.Prediction.getWithMeta(id)
         .then(function (result) {
           var bundle = result.bundle;
@@ -310,6 +311,12 @@
           }
           ExpectFavorites.bindButtons();
         });
+      };
+      if (window.ExpectUiFeatures && ExpectUiFeatures.ready) {
+        ExpectUiFeatures.ready(startDetail);
+      } else {
+        startDetail();
+      }
     } else {
       markReady();
       ExpectFavorites.bindButtons();

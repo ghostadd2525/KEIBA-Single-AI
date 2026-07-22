@@ -1,0 +1,443 @@
+[
+  {
+    "race_id": "2026-07-25-01-06",
+    "race_date": "2026-07-25",
+    "course": "新潟",
+    "race_number": 6,
+    "race_label": "新潟6R",
+    "race_name": "豊栄特別",
+    "prediction_ok": true,
+    "feature_loader_ok": true,
+    "evaluate_ok": true,
+    "ce_ok": true,
+    "entries": 18,
+    "candidates": 18,
+    "top5": [
+      {
+        "rank": 1,
+        "horse": "コルドンブルー",
+        "horse_number": "4",
+        "confidence": 0.09771316412070961
+      },
+      {
+        "rank": 2,
+        "horse": "シャンソンドール",
+        "horse_number": "7",
+        "confidence": 0.09328950748908332
+      },
+      {
+        "rank": 3,
+        "horse": "ホウオウタイタン",
+        "horse_number": "13",
+        "confidence": 0.05493793828232772
+      },
+      {
+        "rank": 4,
+        "horse": "ソニックライン",
+        "horse_number": "9",
+        "confidence": 0.053152933802795066
+      },
+      {
+        "rank": 5,
+        "horse": "リカントロポ",
+        "horse_number": "17",
+        "confidence": 0.05274462005340726
+      }
+    ],
+    "confidence": 0.055035747726160086,
+    "errors": [],
+    "flags": []
+  },
+  {
+    "race_id": "2026-07-25-01-07",
+    "race_date": "2026-07-25",
+    "course": "新潟",
+    "race_number": 7,
+    "race_label": "新潟7R",
+    "race_name": "新潟日報賞",
+    "prediction_ok": true,
+    "feature_loader_ok": true,
+    "evaluate_ok": true,
+    "ce_ok": true,
+    "entries": 18,
+    "candidates": 18,
+    "top5": [
+      {
+        "rank": 1,
+        "horse": "コートアリシアン",
+        "horse_number": "7",
+        "confidence": 0.06583208142453173
+      },
+      {
+        "rank": 2,
+        "horse": "ウナギノボリ",
+        "horse_number": "3",
+        "confidence": 0.05698323615425386
+      },
+      {
+        "rank": 3,
+        "horse": "エイムフォーエース",
+        "horse_number": "4",
+        "confidence": 0.05645464481117616
+      },
+      {
+        "rank": 4,
+        "horse": "ボンヌソワレ",
+        "horse_number": "14",
+        "confidence": 0.055791144692717565
+      },
+      {
+        "rank": 5,
+        "horse": "スマイルアップ",
+        "horse_number": "9",
+        "confidence": 0.055561241895177575
+      }
+    ],
+    "confidence": 0.03842470544506938,
+    "errors": [],
+    "flags": []
+  },
+  {
+    "race_id": "2026-07-25-01-08",
+    "race_date": "2026-07-25",
+    "course": "新潟",
+    "race_number": 8,
+    "race_label": "新潟8R",
+    "race_name": "清津峡特別",
+    "prediction_ok": true,
+    "feature_loader_ok": true,
+    "evaluate_ok": true,
+    "ce_ok": true,
+    "entries": 14,
+    "candidates": 14,
+    "top5": [
+      {
+        "rank": 1,
+        "horse": "イリュストル",
+        "horse_number": "2",
+        "confidence": 0.09310947566717243
+      },
+      {
+        "rank": 2,
+        "horse": "バッカステソーロ",
+        "horse_number": "9",
+        "confidence": 0.08593954384658768
+      },
+      {
+        "rank": 3,
+        "horse": "ヴィエントデコラ",
+        "horse_number": "4",
+        "confidence": 0.07830925123943824
+      },
+      {
+        "rank": 4,
+        "horse": "ケルピー",
+        "horse_number": "5",
+        "confidence": 0.07704587320161067
+      },
+      {
+        "rank": 5,
+        "horse": "ロケットパンチ",
+        "horse_number": "14",
+        "confidence": 0.0754185194263643
+      }
+    ],
+    "confidence": 0.05306109049689221,
+    "errors": [],
+    "flags": []
+  },
+  {
+    "race_id": "2026-07-25-02-06",
+    "race_date": "2026-07-25",
+    "course": "中京",
+    "race_number": 6,
+    "race_label": "中京6R",
+    "race_name": "四日市特別",
+    "prediction_ok": true,
+    "feature_loader_ok": true,
+    "evaluate_ok": true,
+    "ce_ok": true,
+    "entries": 22,
+    "candidates": 22,
+    "top5": [
+      {
+        "rank": 1,
+        "horse": "ゼロヴィジビリティ",
+        "horse_number": "10",
+        "confidence": 0.08011539092478416
+      },
+      {
+        "rank": 2,
+        "horse": "ヘリテージブルーム",
+        "horse_number": "15",
+        "confidence": 0.06216216363003021
+      },
+      {
+        "rank": 3,
+        "horse": "ザックザク",
+        "horse_number": "6",
+        "confidence": 0.058390383447681264
+      },
+      {
+        "rank": 4,
+        "horse": "アリエスキング",
+        "horse_number": "1",
+        "confidence": 0.0504461920251573
+      },
+      {
+        "rank": 5,
+        "horse": "エブリーポッシブル",
+        "horse_number": "3",
+        "confidence": 0.04924907822085517
+      }
+    ],
+    "confidence": 0.04865301362056242,
+    "errors": [],
+    "flags": []
+  },
+  {
+    "race_id": "2026-07-25-02-07",
+    "race_date": "2026-07-25",
+    "course": "中京",
+    "race_number": 7,
+    "race_label": "中京7R",
+    "race_name": "関ケ原S",
+    "prediction_ok": true,
+    "feature_loader_ok": true,
+    "evaluate_ok": true,
+    "ce_ok": true,
+    "entries": 11,
+    "candidates": 11,
+    "top5": [
+      {
+        "rank": 1,
+        "horse": "ミュージシャン",
+        "horse_number": "9",
+        "confidence": 0.12050915803020333
+      },
+      {
+        "rank": 2,
+        "horse": "リンフレスカンテ",
+        "horse_number": "11",
+        "confidence": 0.10948895952968271
+      },
+      {
+        "rank": 3,
+        "horse": "ミッキーゴールド",
+        "horse_number": "8",
+        "confidence": 0.09219034177983161
+      },
+      {
+        "rank": 4,
+        "horse": "タイセイフェリーク",
+        "horse_number": "5",
+        "confidence": 0.08664814270042971
+      },
+      {
+        "rank": 5,
+        "horse": "ハーツコンチェルト",
+        "horse_number": "7",
+        "confidence": 0.08602153004212677
+      }
+    ],
+    "confidence": 0.06911498838706809,
+    "errors": [],
+    "flags": []
+  },
+  {
+    "race_id": "2026-07-25-02-08",
+    "race_date": "2026-07-25",
+    "course": "中京",
+    "race_number": 8,
+    "race_label": "中京8R",
+    "race_name": "香嵐渓特別",
+    "prediction_ok": true,
+    "feature_loader_ok": true,
+    "evaluate_ok": true,
+    "ce_ok": true,
+    "entries": 13,
+    "candidates": 13,
+    "top5": [
+      {
+        "rank": 1,
+        "horse": "ブラックシャリマー",
+        "horse_number": "10",
+        "confidence": 0.1239147285180735
+      },
+      {
+        "rank": 2,
+        "horse": "キシダンチョウ",
+        "horse_number": "3",
+        "confidence": 0.09323174270025296
+      },
+      {
+        "rank": 3,
+        "horse": "メイショウナルカミ",
+        "horse_number": "12",
+        "confidence": 0.08724371720624419
+      },
+      {
+        "rank": 4,
+        "horse": "サイモンシャリオ",
+        "horse_number": "5",
+        "confidence": 0.07322657512616484
+      },
+      {
+        "rank": 5,
+        "horse": "サラコスティ",
+        "horse_number": "6",
+        "confidence": 0.07318350939402474
+      }
+    ],
+    "confidence": 0.07600206112716384,
+    "errors": [],
+    "flags": []
+  },
+  {
+    "race_id": "2026-07-25-03-10",
+    "race_date": "2026-07-25",
+    "course": "札幌",
+    "race_number": 10,
+    "race_label": "札幌10R",
+    "race_name": "ライラック賞",
+    "prediction_ok": true,
+    "feature_loader_ok": true,
+    "evaluate_ok": true,
+    "ce_ok": true,
+    "entries": 11,
+    "candidates": 11,
+    "top5": [
+      {
+        "rank": 1,
+        "horse": "ウェイクフィールド",
+        "horse_number": "3",
+        "confidence": 0.13062841129255787
+      },
+      {
+        "rank": 2,
+        "horse": "ライフセービング",
+        "horse_number": "8",
+        "confidence": 0.1029884940484884
+      },
+      {
+        "rank": 3,
+        "horse": "バースライト",
+        "horse_number": "6",
+        "confidence": 0.0887422334939313
+      },
+      {
+        "rank": 4,
+        "horse": "アスクデッドヒート",
+        "horse_number": "1",
+        "confidence": 0.08793982785472136
+      },
+      {
+        "rank": 5,
+        "horse": "ジュンツバメガエシ",
+        "horse_number": "4",
+        "confidence": 0.08728590214967173
+      }
+    ],
+    "confidence": 0.07886807977348456,
+    "errors": [],
+    "flags": []
+  },
+  {
+    "race_id": "2026-07-25-03-11",
+    "race_date": "2026-07-25",
+    "course": "札幌",
+    "race_number": 11,
+    "race_label": "札幌11R",
+    "race_name": "TVh賞",
+    "prediction_ok": true,
+    "feature_loader_ok": true,
+    "evaluate_ok": true,
+    "ce_ok": true,
+    "entries": 12,
+    "candidates": 12,
+    "top5": [
+      {
+        "rank": 1,
+        "horse": "ロジケープ",
+        "horse_number": "12",
+        "confidence": 0.13849784727929404
+      },
+      {
+        "rank": 2,
+        "horse": "アスクケンタッキー",
+        "horse_number": "1",
+        "confidence": 0.0828146448838092
+      },
+      {
+        "rank": 3,
+        "horse": "アンジュプロミス",
+        "horse_number": "2",
+        "confidence": 0.08099577995164561
+      },
+      {
+        "rank": 4,
+        "horse": "メルトユアハート",
+        "horse_number": "10",
+        "confidence": 0.07852499225664969
+      },
+      {
+        "rank": 5,
+        "horse": "サウスバンク",
+        "horse_number": "7",
+        "confidence": 0.07834873246788031
+      }
+    ],
+    "confidence": 0.09028546087488132,
+    "errors": [],
+    "flags": []
+  },
+  {
+    "race_id": "2026-07-25-03-12",
+    "race_date": "2026-07-25",
+    "course": "札幌",
+    "race_number": 12,
+    "race_label": "札幌12R",
+    "race_name": "桑園特別",
+    "prediction_ok": true,
+    "feature_loader_ok": true,
+    "evaluate_ok": true,
+    "ce_ok": true,
+    "entries": 14,
+    "candidates": 14,
+    "top5": [
+      {
+        "rank": 1,
+        "horse": "セボンサデッセ",
+        "horse_number": "5",
+        "confidence": 0.1388566498801262
+      },
+      {
+        "rank": 2,
+        "horse": "ベラジオワールド",
+        "horse_number": "10",
+        "confidence": 0.11032119147597971
+      },
+      {
+        "rank": 3,
+        "horse": "ハイクオリティ",
+        "horse_number": "6",
+        "confidence": 0.06511313422886555
+      },
+      {
+        "rank": 4,
+        "horse": "フェスタリア",
+        "horse_number": "8",
+        "confidence": 0.06427552295759256
+      },
+      {
+        "rank": 5,
+        "horse": "フォーワンセルフ",
+        "horse_number": "9",
+        "confidence": 0.063970767360529
+      }
+    ],
+    "confidence": 0.08393636839446365,
+    "errors": [],
+    "flags": []
+  }
+]

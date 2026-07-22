@@ -16,7 +16,7 @@ const DEFAULTS = {
   invitation_required: true,
   max_concurrent_sessions: null,
   audit: { enabled: true, sink: "jsonl" },
-  /** Version 1.1 UI Feature Flags（未知キー無視・後方互換） */
+  /** Version 1.1 / Version 2 UI Feature Flags（未知キー無視・後方互換） */
   ui_features: {
     v11_loading_errors: true,
     v11_mobile: false,
@@ -29,6 +29,12 @@ const DEFAULTS = {
     v11_system_health: false,
     v11_ops_dashboard: false,
     v11_auto_maintenance: false,
+    /** Version 2 — GET /api/race-cards（BFF）既定 OFF */
+    v2_race_cards: false,
+    v2_race_list_ui: false,
+    v2_explain: false,
+    /** Version 2 Operations — PI Health Dashboard 基盤（既定 OFF） */
+    v2_ops_dashboard: false,
   },
 };
 

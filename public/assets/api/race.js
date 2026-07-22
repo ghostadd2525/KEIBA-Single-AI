@@ -101,13 +101,29 @@
 
   function resolveListDate(opts) {
     opts = opts || {};
-    if (opts.date) return String(opts.date);
-    try {
-      var params = new URLSearchParams(global.location.search || "");
-      var fromUrl = params.get("date");
-      if (fromUrl) return fromUrl;
-    } catch (e) {
-      /* ignore */
+    if (opts.date) {
+      var forced = String(opts.date);
+      var forcedOk =
+        !global.ExpectRaceListUrl ||
+        !ExpectRaceListUrl.isValidIsoDate ||
+        ExpectRaceListUrl.isValidIsoDate(forced);
+      if (forced && forcedOk) return forced;
+    }
+    if (global.ExpectRaceListUrl && ExpectRaceListUrl.resolveFromLocation) {
+      var resolved = ExpectRaceListUrl.resolveFromLocation();
+      if (resolved && resolved.date) return resolved.date;
+    } else {
+      try {
+        var params = new URLSearchParams(global.location.search || "");
+        var fromUrl = params.get("date");
+        if (fromUrl) return fromUrl;
+      } catch (e) {
+        /* ignore */
+      }
+    }
+    if (global.ExpectRaceListUrl && ExpectRaceListUrl.calendarFallbackDate) {
+      var fb = ExpectRaceListUrl.calendarFallbackDate(new Date());
+      if (fb) return fb;
     }
     if (global.ExpectWeekendCalendar && ExpectWeekendCalendar.decide) {
       var cal = ExpectWeekendCalendar.decide(new Date());

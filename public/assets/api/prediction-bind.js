@@ -93,7 +93,185 @@
     return bg;
   }
 
-  /** レース一覧カード HTML（既存 .race-item 構造を維持） */
+  function starsFromBand(band) {
+    if (band === "high") return "★★★★★";
+    if (band === "medium") return "★★★☆☆";
+    if (band === "low") return "★★☆☆☆";
+    return "☆☆☆☆☆";
+  }
+
+  function summaryScorePercent(confidence) {
+    if (!confidence || typeof confidence.score !== "number") return null;
+    var s = confidence.score;
+    return s <= 1 ? Math.round(s * 100) : Math.round(s);
+  }
+
+  function dateFromRaceId(raceId) {
+    var m = String(raceId || "").match(/^(\d{4}-\d{2}-\d{2})/);
+    return m ? m[1] : "";
+  }
+
+  /**
+   * RaceCardSummary → 一覧カード HTML（v2_race_list_ui）
+   * short_reason は Phase 1 未表示。
+   * @param {object} card RaceCardSummary
+   * @param {{ listDate?: string }} [opts]
+   */
+  function raceCardSummaryHtml(card, opts) {
+    opts = opts || {};
+    var info = (card && card.race_info) || {};
+    var pred = (card && card.prediction) || {};
+    var status = String(pred.status || "missing");
+    var summary = card && card.summary;
+    var rid = (card && card.race_id) || "";
+    var raceNo = info.race_number != null ? info.race_number : info.race_no;
+    var place =
+      info.race_label ||
+      (info.venue || "") + (raceNo != null ? " " + raceNo + "R" : "");
+    var name = info.race_name || info.class_label || "レース";
+    var grade = info.grade || "";
+    var post = info.post_time != null ? String(info.post_time) : "";
+    var listDate =
+      opts.listDate ||
+      info.date ||
+      dateFromRaceId(rid) ||
+      "";
+    var dLabel =
+      info.date_label ||
+      (global.ExpectRaceListUrl && ExpectRaceListUrl.dateLabelFromIso
+        ? ExpectRaceListUrl.dateLabelFromIso(listDate)
+        : dateLabel({ date: listDate }));
+    var dFull = info.date_full || dateFull({ date: listDate, date_label: dLabel });
+    var bg = bgClass(info, raceNo);
+    var nameDisp = name + (grade && grade !== "—" ? "（" + grade + "）" : "");
+    var eng = pred.engine_source || "";
+
+    var confPct = null;
+    var band = null;
+    var honmeiLine = "";
+    var statusNote = "";
+    var stars = "☆☆☆☆☆";
+    var confSide = "—<small>AI信頼度</small>";
+    var honmeiNameAttr = "";
+    var honmeiAria = "";
+
+    if (status === "ready" && summary) {
+      var honmei = summary.honmei;
+      var confidence = summary.confidence;
+      confPct = summaryScorePercent(confidence);
+      band = confidence && confidence.band ? confidence.band : null;
+      if (honmei && honmei.horse_number != null) {
+        var hName = horseLabel(honmei.horse_name, honmei.horse_number);
+        honmeiNameAttr = String(honmei.horse_name || hName || "").trim();
+        honmeiAria =
+          "本命 " + String(honmei.horse_number) + "番 " + (honmei.horse_name || hName || "");
+        honmeiLine =
+          '<p class="race-item-honmei"' +
+          (honmeiAria ? ' aria-label="' + escapeHtml(honmeiAria) + '"' : "") +
+          ">◎ " +
+          escapeHtml(String(honmei.horse_number)) +
+          " " +
+          escapeHtml(hName) +
+          "</p>";
+      }
+      if (band) stars = starsFromBand(band);
+      else if (confPct != null) stars = starsFromScore(confPct);
+      if (confPct != null) {
+        confSide =
+          confPct +
+          "%<small>" +
+          escapeHtml(BAND_LABEL[band] || BAND_LABEL.unknown) +
+          "</small>";
+      }
+    } else if (status === "processing") {
+      honmeiLine = '<p class="race-item-honmei">◎ — <span class="muted">（予想準備中）</span></p>';
+      confSide = "—<small>AI信頼度</small>";
+      statusNote = "";
+    } else if (status === "failed") {
+      statusNote = '<p class="race-item-status-note muted">予想取得失敗</p>';
+      confSide = "—<small>AI信頼度</small>";
+    } else {
+      // missing（および未知 status）
+      status = status === "missing" ? "missing" : status;
+      statusNote = '<p class="race-item-status-note muted">予想未公開</p>';
+      confSide = "—<small>AI信頼度</small>";
+    }
+
+    // short_reason は Phase 1 未表示（フィールドがあっても出さない）
+
+    return (
+      '<a class="race-item race-item--bg' +
+      bg +
+      '" href="race.html?race_id=' +
+      encodeURIComponent(rid) +
+      '" data-race-date="' +
+      escapeHtml(listDate || dLabel) +
+      '" data-race-venue="' +
+      escapeHtml(info.venue || "") +
+      '" data-race-name="' +
+      escapeHtml(name) +
+      '" data-race-conf="' +
+      (confPct != null ? confPct : 0) +
+      '" data-race-time="' +
+      escapeHtml(post) +
+      '" data-race-place="' +
+      escapeHtml(place) +
+      '" data-race-honmei="' +
+      escapeHtml(honmeiNameAttr) +
+      '" data-prediction-status="' +
+      escapeHtml(status) +
+      '"' +
+      (band ? ' data-confidence-band="' + escapeHtml(band) + '"' : "") +
+      (eng ? ' data-engine-source="' + escapeHtml(eng) + '"' : "") +
+      ">" +
+      '<button type="button" class="fav-btn fav-btn--icon" data-fav-toggle="' +
+      escapeHtml(rid) +
+      '" data-fav-place="' +
+      escapeHtml(place) +
+      '" data-fav-name="' +
+      escapeHtml(name) +
+      '" data-fav-badge="' +
+      escapeHtml(grade) +
+      '" data-fav-time="' +
+      escapeHtml(post) +
+      '" data-fav-date="' +
+      escapeHtml(dFull) +
+      '"' +
+      (honmeiNameAttr
+        ? ' data-fav-honmei="' + escapeHtml(honmeiNameAttr) + '"'
+        : "") +
+      (status === "ready" && summary && summary.honmei && summary.honmei.horse_number != null
+        ? ' data-fav-honmei-num="' + escapeHtml(String(summary.honmei.horse_number)) + '"'
+        : "") +
+      (confPct != null ? ' data-fav-conf="' + escapeHtml(String(confPct)) + '"' : "") +
+      (band ? ' data-fav-band="' + escapeHtml(band) + '"' : "") +
+      ' aria-label="お気に入りに追加">' +
+      '<span class="fav-star" aria-hidden="true">★</span></button>' +
+      "<div>" +
+      '<p class="race-item-place">' +
+      escapeHtml(place) +
+      "</p>" +
+      '<p class="race-item-name">' +
+      escapeHtml(nameDisp) +
+      "</p>" +
+      honmeiLine +
+      statusNote +
+      '<div class="race-item-meta">' +
+      "<span>" +
+      escapeHtml(post || "—") +
+      "発走</span>" +
+      '<span class="race-stars">' +
+      stars +
+      "</span></div></div>" +
+      '<div class="race-item-side">' +
+      '<div class="race-conf">' +
+      confSide +
+      "</div>" +
+      '<span class="btn-detail">詳細を見る ›</span></div></a>'
+    );
+  }
+
+  /** レース一覧カード HTML（既存 .race-item 構造を維持）— Flag OFF / v1.1 */
   function raceCardHtml(bundle) {
     var info = (bundle && bundle.race_info) || {};
     var rid = (bundle && bundle.race_id) || info.race_id || "";
@@ -118,7 +296,7 @@
       '" href="race.html?race_id=' +
       encodeURIComponent(rid) +
       '" data-race-date="' +
-      escapeHtml(dLabel) +
+      escapeHtml(info.date || dLabel) +
       '" data-race-venue="' +
       escapeHtml(info.venue || "") +
       '" data-race-name="' +
@@ -298,7 +476,17 @@
   }
 
   function reasonsSectionHtml(bundle) {
-    var reasons = ((bundle.explain || {}).reasons) || [];
+    var explain = (bundle && bundle.explain) || {};
+    var v2On =
+      global.ExpectUiFeatures &&
+      typeof ExpectUiFeatures.enabled === "function" &&
+      ExpectUiFeatures.enabled("v2_explain");
+
+    if (v2On && explain.reason) {
+      return explainV2SectionHtml(explain, bundle && bundle.race_id);
+    }
+
+    var reasons = explain.reasons || [];
     if (!reasons.length) return '<p class="muted">理由データなし</p>';
     var html = '<ul class="reason-list">';
     reasons.forEach(function (r) {
@@ -314,6 +502,148 @@
     });
     html += "</ul>";
     return html;
+  }
+
+  /** v2_explain Flag ON — decision_key / summary / factors / confidence / trace */
+  function explainV2SectionHtml(explain, raceId) {
+    var reason = explain.reason || {};
+    var dk = reason.decision_key || {};
+    var conf = explain.confidence_reason || {};
+    var trace = explain.decision_trace || {};
+    var html = '<div class="explain-v2">';
+
+    if (dk.label) {
+      html +=
+        '<p class="explain-decision-key"><span class="explain-decision-key-label">決定打</span> ' +
+        escapeHtml(String(dk.label)) +
+        (dk.text ? " — " + escapeHtml(String(dk.text)) : "") +
+        "</p>";
+    }
+    if (reason.summary) {
+      html += '<p class="explain-summary">' + escapeHtml(String(reason.summary)) + "</p>";
+    }
+
+    var factors = Array.isArray(reason.factors) ? reason.factors : [];
+    if (factors.length) {
+      html += '<ul class="reason-list explain-factors">';
+      factors.forEach(function (f) {
+        html +=
+          "<li><strong>" +
+          escapeHtml(String(f.label || f.kind || "")) +
+          "</strong> " +
+          escapeHtml(String(f.text || "")) +
+          "</li>";
+      });
+      html += "</ul>";
+    }
+
+    if (conf.summary) {
+      html += '<div class="explain-confidence">';
+      html += "<h4>信頼度の根拠</h4>";
+      html += "<p>" + escapeHtml(String(conf.summary)) + "</p>";
+      var comps = Array.isArray(conf.components) ? conf.components : [];
+      if (comps.length) {
+        html += '<details class="explain-confidence-details"><summary>構成要素</summary><ul>';
+        comps.forEach(function (c) {
+          html +=
+            "<li><strong>" +
+            escapeHtml(String(c.label || c.key || "")) +
+            "</strong>: " +
+            escapeHtml(String(c.value)) +
+            (c.interpretation ? " — " + escapeHtml(String(c.interpretation)) : "") +
+            (c.contribution != null
+              ? " <span class=\"muted\">(寄与 " +
+                escapeHtml(String(c.contribution)) +
+                (c.weight != null ? ", w=" + escapeHtml(String(c.weight)) : "") +
+                ")</span>"
+              : "") +
+            "</li>";
+        });
+        html += "</ul></details>";
+      }
+      html += "</div>";
+    }
+
+    var stages = (trace.stages && Array.isArray(trace.stages) ? trace.stages : []);
+    if (stages.length) {
+      var hasProduct = stages.some(function (s) {
+        return (
+          (s.stage === "candidate_pool" ||
+            s.stage === "entry" ||
+            s.stage === "repick") &&
+          (s.status === "applied" || s.status === "skipped")
+        );
+      });
+      html +=
+        '<details class="explain-trace"' +
+        (hasProduct ? " open" : "") +
+        "><summary>判断トレース" +
+        (hasProduct ? "（Pool / Entry / RePick）" : "") +
+        "</summary><ol class=\"explain-trace-list\">";
+      stages.forEach(function (s) {
+        var delta = s.delta || {};
+        var isProduct =
+          s.stage === "candidate_pool" ||
+          s.stage === "entry" ||
+          s.stage === "repick";
+        var codes = Array.isArray(delta.reason_codes)
+          ? delta.reason_codes.join(", ")
+          : "";
+        html +=
+          "<li" +
+          (isProduct ? ' class="explain-trace-product"' : "") +
+          '><span class="explain-trace-stage">' +
+          escapeHtml(String(s.stage || "")) +
+          '</span> <span class="explain-trace-status">[' +
+          escapeHtml(String(s.status || "")) +
+          "]</span> " +
+          escapeHtml(String(delta.summary || ""));
+        if (s.timestamp) {
+          html +=
+            ' <span class="explain-trace-ts muted">' +
+            escapeHtml(String(s.timestamp)) +
+            "</span>";
+        }
+        if (codes) {
+          html +=
+            ' <span class="explain-trace-codes muted">(' +
+            escapeHtml(codes) +
+            ")</span>";
+        }
+        html += "</li>";
+      });
+      html += "</ol></details>";
+    }
+
+    html += explainKaobaCtaHtml({
+      explain: explain,
+      race_id: raceId || "",
+    });
+    html += "</div>";
+    return html;
+  }
+
+  /**
+   * Phase 3: v2_explain ON 時のみ KAOBA explain_pick 導線
+   */
+  function explainKaobaCtaHtml(bundle) {
+    var v2On =
+      global.ExpectUiFeatures &&
+      typeof ExpectUiFeatures.enabled === "function" &&
+      ExpectUiFeatures.enabled("v2_explain");
+    if (!v2On) return "";
+    if (!(bundle && bundle.explain && bundle.explain.reason)) return "";
+    var rid = (bundle && bundle.race_id) || "";
+    var href =
+      "chat.html?race_id=" +
+      encodeURIComponent(rid) +
+      "&prompt=" +
+      encodeURIComponent("なぜ本命なの？理由を教えて");
+    return (
+      '<p class="explain-kaoba-cta"><a class="explain-kaoba-link" href="' +
+      href +
+      '">KAOBAに◎の理由を聞く</a></p>'
+    );
   }
 
   function applyPaceDots(bundle) {
@@ -387,6 +717,32 @@
           "）";
       }
       if (stars && conf != null) stars.textContent = starsFromScore(conf);
+
+      // v2_explain: 本命カード下に決定打 1 行（Flag OFF 時は要素を除去して v1.1 恒等）
+      var dkHost = card.querySelector(".explain-honmei-decision");
+      var v2Explain =
+        global.ExpectUiFeatures &&
+        ExpectUiFeatures.enabled("v2_explain") &&
+        bundle.explain &&
+        bundle.explain.reason &&
+        bundle.explain.reason.decision_key;
+      if (v2Explain) {
+        var dk = bundle.explain.reason.decision_key;
+        if (!dkHost) {
+          dkHost = document.createElement("p");
+          dkHost.className = "explain-honmei-decision muted";
+          var insertAfter = stars || p;
+          if (insertAfter && insertAfter.parentNode) {
+            insertAfter.parentNode.insertBefore(dkHost, insertAfter.nextSibling);
+          }
+        }
+        dkHost.textContent =
+          "決定打: " +
+          String(dk.label || "") +
+          (dk.text ? " — " + String(dk.text) : "");
+      } else if (dkHost) {
+        dkHost.remove();
+      }
     }
 
     var confEl = document.getElementById("raceConfidenceDetail");
@@ -441,8 +797,10 @@
   global.ExpectPredictionBind = {
     scorePercent: scorePercent,
     starsFromScore: starsFromScore,
+    starsFromBand: starsFromBand,
     dateLabel: dateLabel,
     raceCardHtml: raceCardHtml,
+    raceCardSummaryHtml: raceCardSummaryHtml,
     applyHomeHonmeiCard: applyHomeHonmeiCard,
     applyRaceDetail: applyRaceDetail,
     pickTopByConfidence: pickTopByConfidence,

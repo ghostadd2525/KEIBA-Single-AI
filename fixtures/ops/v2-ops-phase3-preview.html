@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>v2 Ops Phase3 — Final Dashboard Preview</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600&family=Noto+Sans+JP:wght@400;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root { --gold:#e5c78f; --muted:#a89878; --line:rgba(193,162,109,.28); --ok:#8fd4a8; --bad:#e8a0a0; }
+    *{box-sizing:border-box} body{margin:0;font-family:"Noto Sans JP",sans-serif;background:radial-gradient(1000px 500px at 15% -10%,rgba(193,162,109,.16),transparent 55%),linear-gradient(180deg,#161820,#0c0e14);color:#f3ead7;padding:22px}
+    .brand{font-family:"Cormorant Garamond",serif;font-size:28px;margin:0;color:var(--gold)}
+    .sub{margin:2px 0 0;color:var(--muted);font-size:13px}
+    h1{font-size:18px;margin:14px 0 6px} h2{font-size:14px;color:var(--gold);border-top:1px solid rgba(193,162,109,.2);padding-top:12px;margin:16px 0 6px}
+    .note{font-size:12px;color:#9a8b6e;margin:0 0 8px}
+    .grid{display:grid;gap:10px;grid-template-columns:repeat(4,minmax(100px,1fr));max-width:960px;margin-bottom:8px}
+    .card{padding:12px;border-radius:14px;border:1px solid var(--line);background:rgba(16,18,24,.75)}
+    .card h3{margin:0 0 4px;font-size:11px;color:var(--muted);text-transform:uppercase}
+    .v{margin:0;font-size:18px;font-weight:700;color:var(--gold)} .ok{color:var(--ok)!important}
+    table{width:100%;max-width:960px;border-collapse:collapse;font-size:12px;margin-bottom:6px}
+    th,td{text-align:left;padding:6px 8px;border-bottom:1px solid rgba(193,162,109,.16)} th{color:var(--muted);font-size:11px}
+    .badge{display:inline-block;margin-top:10px;font-size:11px;border:1px solid var(--line);padding:4px 8px;border-radius:999px;color:var(--muted)}
+  </style>
+</head>
+<body>
+  <p class="brand">Expect</p>
+  <p class="sub">～ KEIBA AI ～ · Ops Phase 3 Final</p>
+  <h1>運用ダッシュボード</h1>
+  <p class="note">Flag <code>v2_ops_dashboard</code> ON · Final integration</p>
+  <h2>Overview</h2>
+  <div class="grid">
+    <article class="card"><h3>Status</h3><p class="v ok">OK</p></article>
+    <article class="card"><h3>Probes OK</h3><p class="v">7/7</p></article>
+    <article class="card"><h3>Down</h3><p class="v">0</p></article>
+    <article class="card"><h3>Health %</h3><p class="v ok">100%</p></article>
+  </div>
+  <h2>PI · Metrics · Alerts</h2>
+  <div class="grid">
+    <article class="card"><h3>Overall PI</h3><p class="v ok">OK</p></article>
+    <article class="card"><h3>Metrics ok</h3><p class="v ok">14</p></article>
+    <article class="card"><h3>Active alerts</h3><p class="v">0</p></article>
+    <article class="card"><h3>SLK-N01</h3><p class="v">configured</p></article>
+  </div>
+  <h2>Inventory</h2>
+  <table>
+    <thead><tr><th>ID</th><th>Layer</th><th>Status</th><th>Via</th></tr></thead>
+    <tbody>
+      <tr><td>PI-H02</td><td>PI</td><td class="ok">wired</td><td>bff + ec2</td></tr>
+      <tr><td>MET-J02</td><td>Metrics</td><td class="ok">wired</td><td>dashboard</td></tr>
+      <tr><td>SLK-N01</td><td>Notification</td><td class="ok">wired</td><td>webhook</td></tr>
+      <tr><td>GRF-D01</td><td>Observability</td><td>prepared</td><td>promtail example</td></tr>
+    </tbody>
+  </table>
+  <p class="badge">fixtures/ops/v2-ops-phase3-preview.html · Operations Final</p>
+</body>
+</html>

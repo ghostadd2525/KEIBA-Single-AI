@@ -1,0 +1,10 @@
+{
+  "overall": 0.5574,
+  "diff_rows": 401,
+  "note": "Before: horse_history が初回 HTML のみ fetch（ajax 未使用）",
+  "datasets": {
+    "runners": 0.8552,
+    "horse_history_raw": 0.0,
+    "runners_pace_market_features": 0.4601
+  }
+}

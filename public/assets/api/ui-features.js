@@ -17,6 +17,12 @@
     v11_system_health: false,
     v11_ops_dashboard: false,
     v11_auto_maintenance: false,
+    /** Version 2 Explainability */
+    v2_explain: false,
+    v2_race_cards: false,
+    v2_race_list_ui: false,
+    /** Version 2 Operations — PI Health Dashboard 基盤 */
+    v2_ops_dashboard: false,
   };
 
   var cache = null;

@@ -11,6 +11,7 @@ from typing import Any
 import pandas as pd
 
 from ai_platform.core.confidence import ConfidenceBuilder
+from ai_platform.core.explain import build_explain_payload, is_explain_v2_enabled
 from ai_platform.core.features import FeatureGenerator, FeatureLoader, FeatureLoadResult
 from ai_platform.core.ranking import Ranker
 from ai_platform.core.scoring import Scorer
@@ -91,7 +92,7 @@ class CorePipeline:
         world = self.world.classify_world(confidence, meta)
         candidates = self.projector.project_candidates(ranking, confidence, world)
 
-        return {
+        result: dict[str, Any] = {
             "race_id": str(race_id),
             "candidates": candidates,
             "context": {
@@ -107,6 +108,18 @@ class CorePipeline:
             "meta": meta,
             "core_version": "ai-core-migrated/1.0-phase1",
         }
+        # Version 2 Explainability Phase 1 — Flag OFF ≡ omit key (v1.1 identical)
+        if is_explain_v2_enabled():
+            payload = build_explain_payload(
+                candidates=candidates,
+                world=world,
+                confidence=confidence,
+                meta=meta,
+                core_version=result["core_version"],
+            )
+            if payload is not None:
+                result["explain_payload"] = payload
+        return result
 
 
 __all__ = ["CandidateEvaluationProjector", "CorePipeline"]

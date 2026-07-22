@@ -1,0 +1,15 @@
+{
+  "overall": 0.934077,
+  "adjusted_excl_netkeiba_odds": 0.985741,
+  "diff_rows": 638,
+  "remaining_by_cause": {
+    "netkeiba_spec_difference": 500,
+    "feature_calc_difference": 102,
+    "missing_data": 36
+  },
+  "datasets": {
+    "runners": 0.9,
+    "horse_history_raw": 0.948718,
+    "runners_pace_market_features": 0.740385
+  }
+}

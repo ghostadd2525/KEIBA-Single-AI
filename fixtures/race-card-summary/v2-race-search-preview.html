@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>v2_race_list_ui Search Preview — Phase 4</title>
+  <link rel="stylesheet" href="../../public/assets/styles.css" />
+  <link rel="stylesheet" href="../../public/assets/screens.css" />
+  <link rel="stylesheet" href="../../public/assets/v11.css" />
+  <style>
+    body { margin: 0; background: #1a1510; color: #f5efe6; font-family: "Noto Sans JP", sans-serif; }
+    .preview-wrap { max-width: 420px; margin: 0 auto; padding: 16px; }
+    .preview-wrap h1 { font-size: 1rem; margin: 0 0 8px; }
+    .preview-note { font-size: 0.75rem; opacity: 0.75; margin-bottom: 12px; }
+    .race-search-demo { background: #2a231c; border-radius: 12px; padding: 12px; margin-bottom: 12px; }
+    .race-search-demo input {
+      width: 100%; box-sizing: border-box; padding: 10px 12px; border-radius: 8px;
+      border: 1px solid #5a4a3a; background: #1a1510; color: #f5efe6;
+    }
+    .hit-count { font-size: 0.8rem; margin: 8px 0 0; opacity: 0.85; }
+    .race-list a.race-item[hidden] { display: none !important; }
+  </style>
+</head>
+<body class="v11-fe v2-race-list-ui">
+  <div class="preview-wrap">
+    <h1>Phase 4 · 検索（本命 / 信頼度）</h1>
+    <p class="preview-note">v2_race_list_ui ON · 「コルドン」で本命マッチ</p>
+    <div class="race-search-demo">
+      <label for="q">キーワード</label>
+      <input type="search" id="q" value="コルドン" placeholder="レース名・会場・R・本命馬名" />
+      <p class="hit-count" id="count"></p>
+    </div>
+    <div class="race-list" id="raceList"></div>
+  </div>
+  <script src="../../public/assets/api/ui-features.js"></script>
+  <script src="../../public/assets/api/race-search.js"></script>
+  <script src="../../public/assets/api/prediction-bind.js"></script>
+  <script>
+    ExpectUiFeatures.defaults.v2_race_list_ui = true;
+    ExpectUiFeatures.enabled = function (name) {
+      return name === "v2_race_list_ui";
+    };
+    var cards = [
+      {
+        schema_version: "expect-race-card-summary/1.0",
+        race_id: "2026-07-25-01-06",
+        race_info: { venue: "新潟", race_number: 6, race_name: "豊栄特別", post_time: "10:35" },
+        prediction: { status: "ready", engine_source: "pi" },
+        summary: {
+          honmei: { horse_number: 4, horse_name: "コルドンブルー", mark: "honmei" },
+          confidence: { score: 0.42, band: "medium" },
+          short_reason: null
+        }
+      },
+      {
+        schema_version: "expect-race-card-summary/1.0",
+        race_id: "2026-07-25-01-11",
+        race_info: { venue: "新潟", race_number: 11, race_name: "関屋記念", post_time: "15:45" },
+        prediction: { status: "ready", engine_source: "pi" },
+        summary: {
+          honmei: { horse_number: 7, horse_name: "サンプルホース", mark: "honmei" },
+          confidence: { score: 0.68, band: "high" },
+          short_reason: null
+        }
+      },
+      {
+        schema_version: "expect-race-card-summary/1.0",
+        race_id: "2026-07-25-01-12",
+        race_info: { venue: "中京", race_number: 12, race_name: "未設定", post_time: null },
+        prediction: { status: "missing" },
+        summary: null
+      }
+    ];
+    var list = document.getElementById("raceList");
+    list.innerHTML = cards.map(function (c) {
+      return ExpectPredictionBind.raceCardSummaryHtml(c, { listDate: "2026-07-25" });
+    }).join("");
+
+    function apply() {
+      var q = document.getElementById("q").value;
+      var state = { q: q, date: "all", venue: "all" };
+      var shown = 0;
+      list.querySelectorAll(".race-item").forEach(function (el) {
+        var ok = ExpectRaceSearch.matchElement(el, state);
+        el.hidden = !ok;
+        if (ok) shown += 1;
+      });
+      document.getElementById("count").textContent =
+        shown + "件表示（全" + cards.length + "件中）· q=「" + q + "」";
+    }
+    document.getElementById("q").addEventListener("input", apply);
+    apply();
+  </script>
+</body>
+</html>

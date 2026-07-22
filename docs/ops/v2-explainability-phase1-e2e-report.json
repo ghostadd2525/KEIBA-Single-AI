@@ -1,0 +1,93 @@
+{
+  "race_id": "2026-07-25-01-06",
+  "matrix": [
+    {
+      "name": "全 OFF ≡ v1.1 空 explain",
+      "flags": {
+        "core": false,
+        "pi": false,
+        "bff": false,
+        "web": false
+      },
+      "explain21": false,
+      "ui": "empty",
+      "pass": true
+    },
+    {
+      "name": "Core ON / PI OFF → payload 到達せず",
+      "flags": {
+        "core": true,
+        "pi": false,
+        "bff": true,
+        "web": true
+      },
+      "explain21": false,
+      "ui": "empty",
+      "pass": true
+    },
+    {
+      "name": "Core+PI ON / BFF OFF → Bundle explain 空",
+      "flags": {
+        "core": true,
+        "pi": true,
+        "bff": false,
+        "web": true
+      },
+      "explain21": false,
+      "ui": "empty",
+      "pass": true
+    },
+    {
+      "name": "Core+PI+BFF ON / Web OFF → explain 2.1 あるが v2 UI なし（legacy 表示）",
+      "flags": {
+        "core": true,
+        "pi": true,
+        "bff": true,
+        "web": false
+      },
+      "explain21": true,
+      "ui": "legacy",
+      "pass": true
+    },
+    {
+      "name": "全 ON → v2 UI（summary / decision_key / confidence / trace）",
+      "flags": {
+        "core": true,
+        "pi": true,
+        "bff": true,
+        "web": true
+      },
+      "explain21": true,
+      "ui": "v2",
+      "pass": true
+    }
+  ],
+  "display": {
+    "race_id": "2026-07-25-01-06",
+    "decision_key": "ce_rank1_gap_lead",
+    "summary_preview": "4番コルドンブルーを◎としたのは、CE 評価 1 位（勝率 9.8%）で 2 位との差が最も大きいため。中上位世界・中上位ルート型のレースです。",
+    "confidence_band": "low",
+    "trace_stages": [
+      "candidate_evaluation:applied",
+      "world_classification:applied",
+      "candidate_pool:not_applied",
+      "entry:not_applied",
+      "repick:not_applied",
+      "purchase:not_applied",
+      "delete:locked",
+      "mark_assignment:applied"
+    ],
+    "ui_ok": true
+  },
+  "legacy": {
+    "reasons": 1,
+    "narrative": true,
+    "pass": true
+  },
+  "missing": {
+    "pass": true,
+    "ui": "理由データなし"
+  },
+  "verdict": "PASS",
+  "generated_at": "2026-07-22T05:21:45.408Z"
+}

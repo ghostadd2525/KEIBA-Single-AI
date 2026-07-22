@@ -2,77 +2,79 @@
 
 **日付:** 2026-07-21  
 **実施者:** Cursor Agent  
-**対象週:** `week_id=2026-07-25`（7/25-26 開催）
+**対象週:** `week_id=2026-07-25`（7/25-26 開催）  
+**反映コミット:** `bd13181`
 
 ---
 
-## 1. 実施内容
+## 1. 実施結果サマリー
 
 | # | 項目 | 結果 |
 |---|------|------|
-| 1 | 本番運用設定（collect.env.example） | ✅ 作成 |
-| 2 | Scheduler 有効化（systemd timer） | ✅ 定義作成（EC2 反映要） |
-| 3 | 平日自動収集 runner | ✅ `collect_weekday_runner.py` |
-| 4 | ETL 自動実行 | ✅ ingest_ready_race_meta / entries_core 組込 |
-| 5 | Coverage 記録 | ✅ `EXPECT_COLLECT_COVERAGE_DIR` |
-| 6 | ローカル smoke | ✅ `test_collect_weekday_runner` PASS |
+| 1 | main へ push | ✅ `bd13181` |
+| 2 | EC2 git pull | ✅ Fast-forward |
+| 3 | collect.env 設定 | ✅ `/etc/expect-ai/collect.env` |
+| 4 | EXPECT_KEIBANET_BASE_URL | ⚠️ `https://race.netkeiba.com`（**API 非対応 → 404**） |
+| 5 | systemd timer 有効化 | ✅ `enabled`（月〜金 06:30 JST） |
+| 6 | service 手動起動 | ✅ 正常終了（exit 2: failed jobs あり） |
+| 7 | journalctl | ✅ ログ出力確認 |
+| 8 | Coverage 生成 | ✅ `coverage_2026_07_25_latest.json` |
+| 9 | ETL → SQLite | ⚠️ READY 0件のため ingest 0 |
+| 10 | prediction_ready | ❌ `false`（KeibaNet 404 のため） |
 
 ---
 
-## 2. ローカル検証（Mock KeibaNet）
+## 2. journalctl 抜粋（2026-07-21 初回実行）
 
-```
-tests.ops.test_collect_weekday_runner.CollectWeekdayRunnerTest.test_run_collect_day_mock ... ok
-Ran 1 test in 0.952s — OK
-```
-
-- Planner → Scheduler → Collector → ETL → Coverage 一連動作確認済み
-- `EXPECT_COLLECT_DAILY_LIMIT=200` で dequeue 動作
+- Planner: 48 races × 2 artifact → enqueue 完了
+- Collect: **dequeued=68**（200/日上限内）、全件 `HTTP 404 from KeibaNet`
+- Budget: used=68, remaining=132
+- ETL: races=0, entries=0
+- Coverage: `prediction_ready: false`, `total_races_expected: 48`
 
 ---
 
-## 3. 本番 EC2 反映（要オペレータ実行）
+## 3. ブロッカー — EXPECT_KEIBANET_BASE_URL
 
-本環境から EC2 SSH 不可のため、以下を **本番サーバで実行** してください。
+指定 URL `https://race.netkeiba.com/top/?rf=navi` は **netkeiba 公開 Web ページ**であり、Collector が要求する **KeibaNet PI JSON API** ではありません。
+
+Collector が呼ぶエンドポイント例:
+
+```
+GET {BASE_URL}/v1/static/race_meta?date=2026-07-25&venue=新潟&race_no=1
+GET {BASE_URL}/v1/static/entries_core?...
+```
+
+`https://race.netkeiba.com/v1/static/race_meta` → **HTTP 404**（検証済み）
+
+**必要な値:** O-1 検証済みの **PI 接続用ベース URL**（partner API ホスト）。netkeiba トップページ URL ではありません。
+
+---
+
+## 4. 本番 EC2 状態（インフラ）
 
 ```bash
-cd /opt/expect-ai/current && git pull --ff-only origin main
-# collect.env 設定 → timer enable → 手動 start
-# 詳細: docs/ops/collector-production-weekday-runbook.md
+# timer
+systemctl is-enabled expect-collect-weekday.timer  # enabled
+
+# collect.env（秘密値はマスク）
+grep -E '^EXPECT_' /etc/expect-ai/collect.env
+
+# coverage
+cat .../var/collect/coverage/coverage_2026_07_25_latest.json
 ```
-
-### 確認コマンド
-
-```bash
-systemctl is-active expect-collect-weekday.timer
-journalctl -u expect-collect-weekday.service -n 30 --no-pager
-cat /var/lib/expect-ai/collect/coverage/coverage_2026_07_25_latest.json
-curl -sS http://127.0.0.1:8000/api/data/coverage -H "Authorization: Bearer ..."
-```
-
----
-
-## 4. 既知の制約
-
-| 項目 | 内容 |
-|------|------|
-| KeibaNet URL | `EXPECT_KEIBANET_BASE_URL` は本番 secret。リポジトリに含めない |
-| 開催カレンダー | 毎週手動更新（`config/collect-calendars/`） |
-| entries_core | 枠順確定前（〜水曜）は race_meta のみ enqueue |
-| FeatureBuilder | entries_core ETL は races/entries/horses。`features` CSV は別途 Phase E |
 
 ---
 
 ## 5. 次アクション
 
-1. EC2 で collect.env + timer 有効化
-2. 2026-07-21 手動 `systemctl start expect-collect-weekday.service`
-3. 金曜 EOD: `prediction_ready` + DB races 件数確認
-4. `/api/predictions` で `real_ai` 比率トレンド記録（KI-01）
+1. **正しい PI API ベース URL** を `/etc/expect-ai/collect.env` の `EXPECT_KEIBANET_BASE_URL` に設定
+2. `sudo systemctl start expect-collect-weekday.service` で再実行
+3. `jobs_ready` 増加・ETL ingest > 0・金曜 EOD で `prediction_ready: true` を確認
 
 ---
 
-## 6. 変更ファイル一覧
+## 6. 変更ファイル一覧（bd13181）
 
 | パス | 内容 |
 |------|------|

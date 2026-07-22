@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>v2_explain Phase 2 Preview — Pool / Entry / RePick</title>
+  <link rel="stylesheet" href="../../public/assets/screens.css" />
+  <style>
+    body { margin: 0; background: #1a1a1e; color: #f2f2f2; font-family: "Segoe UI", sans-serif; }
+    .preview { max-width: 420px; margin: 24px auto; padding: 16px; }
+    .honmei-card { display: grid; grid-template-columns: 56px 1fr; gap: 12px; padding: 16px; border-radius: 12px; background: #24242a; }
+    .honmei-num { font-size: 28px; font-weight: 700; color: #d4b46a; }
+    .chart-card { margin-top: 16px; padding: 16px; border-radius: 12px; background: #24242a; }
+    .muted { opacity: 0.7; }
+    .preview-note { font-size: 12px; opacity: 0.75; margin: 0 0 12px; }
+  </style>
+</head>
+<body>
+  <div class="preview">
+    <p class="preview-note">Phase 2 · v2_explain ON · Pool / Entry / RePick</p>
+    <article class="honmei-card is-ready" id="honmeiCard">
+      <div class="honmei-num">4</div>
+      <div>
+        <h2>コルドンブルー</h2>
+        <p>AI本命 · 信頼度 6%（低い）</p>
+        <p class="race-stars" style="margin-top:6px">★★☆☆☆</p>
+        <p class="explain-honmei-decision muted">決定打: CE 1 位・2 位差最大 — 2 位との勝率差が最も大きい</p>
+      </div>
+    </article>
+    <section class="chart-card" id="reasonsSection">
+      <h3>理由</h3>
+      <div id="reasonsSectionBody"></div>
+    </section>
+  </div>
+  <script src="../../public/assets/api/ui-features.js"></script>
+  <script src="../../public/assets/api/prediction-bind.js"></script>
+  <script>
+    ExpectUiFeatures.defaults.v2_explain = true;
+    var orig = ExpectUiFeatures.enabled;
+    ExpectUiFeatures.enabled = function (name) {
+      if (name === "v2_explain") return true;
+      return orig(name);
+    };
+    var explain = {
+      schema_version: "single-explain/2.1",
+      meta: { explain_phase: 2 },
+      reason: {
+        schema_version: "single-honmei-reason/1.0",
+        horse_number: 4,
+        horse_name: "コルドンブルー",
+        mark: "honmei",
+        decision_key: {
+          key: "ce_rank1_gap_lead",
+          kind: "candidate_evaluation",
+          label: "CE 1 位・2 位差最大",
+          text: "2 位との勝率差が最も大きい"
+        },
+        summary: "4番コルドンブルーを◎としたのは、CE 評価 1 位（勝率 6.6%）で 2 位との差が最も大きいため。中上位世界・中上位ルート型のレースです。Pool+Entry (PE-V2-A): rank11 サンプルホース を Pool に追加",
+        factors: [
+          { kind: "candidate_evaluation", label: "CE 評価", text: "モデル順位 1 位・勝率 6.6%", weight: "primary" },
+          { kind: "world", label: "レース世界", text: "中上位世界" },
+          { kind: "route", label: "展開ルート", text: "中上位ルート型" },
+          { kind: "comparison", label: "Pool 理由", text: "Pool+Entry (PE-V2-A): rank11 サンプルホース を Pool に追加", weight: "secondary" },
+          { kind: "comparison", label: "Entry 理由", text: "Entry (PE-V2-A): サンプルホース（rank11）を Entry 登録", weight: "secondary" },
+          { kind: "repick", label: "RePick 理由", text: "NEAR rescue: rank9 NEAR馬 → repick membership", weight: "secondary" }
+        ]
+      },
+      confidence_reason: {
+        schema_version: "single-confidence-reason/1.0",
+        score: 0.042,
+        band: "low",
+        summary: "信頼度は低め。1–2 位差が小さく混戦度が高いため、◎ の優位は限定的です。",
+        components: [
+          { key: "gap12", label: "1–2 位差", value: 0.004883, interpretation: "差が小さく上位が拮抗", weight: 0.25, contribution: 0.12 }
+        ]
+      },
+      decision_trace: {
+        schema_version: "single-decision-trace/1.0",
+        pipeline_version: "ai-core-migrated/1.0-phase2",
+        stages: [
+          { stage: "candidate_evaluation", status: "applied", delta: { summary: "CE 1 位: 4 番コルドンブルー（勝率 6.6%）" } },
+          { stage: "world_classification", status: "applied", delta: { summary: "midupper_world / midupper_route" } },
+          {
+            stage: "candidate_pool",
+            status: "applied",
+            timestamp: "2026-07-21T04:00:01.123Z",
+            delta: {
+              summary: "Pool+Entry (PE-V2-A): rank11 サンプルホース を Pool に追加",
+              reason_codes: ["pe_v2_a", "pe_insert"]
+            }
+          },
+          {
+            stage: "entry",
+            status: "applied",
+            timestamp: "2026-07-21T04:00:01.123Z",
+            delta: {
+              summary: "Entry (PE-V2-A): サンプルホース（rank11）を Entry 登録",
+              reason_codes: ["pe_v2_a", "pe_insert"]
+            }
+          },
+          {
+            stage: "repick",
+            status: "applied",
+            timestamp: "2026-07-21T04:00:01.123Z",
+            delta: {
+              summary: "NEAR rescue: rank9 NEAR馬 → repick membership",
+              reason_codes: ["rv2_near", "rp_v2_a", "rp_displaced"]
+            }
+          },
+          { stage: "delete", status: "locked", delta: { summary: "Delete Boundary — 変更禁止" } },
+          { stage: "mark_assignment", status: "applied", delta: { summary: "Rank1 → ◎（honmei）" } }
+        ]
+      }
+    };
+    document.getElementById("reasonsSectionBody").innerHTML =
+      ExpectPredictionBind.reasonsSectionHtml({ explain: explain });
+  </script>
+</body>
+</html>

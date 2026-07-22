@@ -79,7 +79,7 @@ async function fetchFromPiGet(context, raceId, catalogRace = null) {
   }
 
   const row = catalogRace || findPiRaceInCatalog({ races: [payload] }, raceId) || payload;
-  const bundle = mapPiPredictionToBundle(payload, row);
+  const bundle = mapPiPredictionToBundle(payload, row, { context });
   if (!bundle) {
     return { ok: false, error: "PI prediction mapping failed", status: 502 };
   }

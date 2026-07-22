@@ -80,8 +80,16 @@
       var params = new URLSearchParams(location.search);
       var fromStrategy = params.get("from") === "strategy";
       var raceId = params.get("race_id") || "";
+      var promptParam = params.get("prompt") || "";
       var strategyCtx = null;
       var history = [];
+      var v2ExplainOn = function () {
+        return !!(
+          window.ExpectUiFeatures &&
+          ExpectUiFeatures.enabled &&
+          ExpectUiFeatures.enabled("v2_explain")
+        );
+      };
 
       function addMsg(text, who, asHtml) {
         if (window.ExpectUx) ExpectUx.removeTyping(log);
@@ -199,8 +207,23 @@
                 type: "strategy_review",
                 bundle_ref: strategyCtx.raceId || raceId,
                 strategy: strategyCtx,
+                v2_explain:
+                  !!(
+                    window.ExpectUiFeatures &&
+                    ExpectUiFeatures.enabled &&
+                    ExpectUiFeatures.enabled("v2_explain")
+                  ),
               }
-            : { ui: "chat", bundle_ref: raceId || null },
+            : {
+                ui: "chat",
+                bundle_ref: raceId || null,
+                v2_explain:
+                  !!(
+                    window.ExpectUiFeatures &&
+                    ExpectUiFeatures.enabled &&
+                    ExpectUiFeatures.enabled("v2_explain")
+                  ),
+              },
           history: history.slice(-8),
         };
 
@@ -355,6 +378,12 @@
           "こんにちは！今日のレース、何が気になる？展開・血統・買い目、なんでも聞いてね。",
           "ai"
         );
+        // Phase 3: v2_explain + ?prompt= → explain_pick を自動送信
+        if (v2ExplainOn() && promptParam && raceId) {
+          setTimeout(function () {
+            send(promptParam, { delay: 400 });
+          }, 350);
+        }
       }
 
       form.addEventListener("submit", function (e) {

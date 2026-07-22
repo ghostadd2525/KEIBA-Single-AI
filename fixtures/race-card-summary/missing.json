@@ -1,0 +1,14 @@
+{
+  "schema_version": "expect-race-card-summary/1.0",
+  "race_id": "2026-07-25-01-12",
+  "race_info": {
+    "venue": "新潟",
+    "race_number": 12,
+    "race_name": "未設定",
+    "post_time": null
+  },
+  "prediction": {
+    "status": "missing"
+  },
+  "summary": null
+}

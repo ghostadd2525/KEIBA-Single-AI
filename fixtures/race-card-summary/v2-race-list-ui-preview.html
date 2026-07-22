@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>v2_race_list_ui Preview — Phase 3</title>
+  <link rel="stylesheet" href="../../public/assets/styles.css" />
+  <link rel="stylesheet" href="../../public/assets/screens.css" />
+  <style>
+    body {
+      margin: 0;
+      background: #0c0e14;
+      color: #f2f2f2;
+      font-family: "Noto Sans JP", "Segoe UI", sans-serif;
+    }
+    .preview {
+      max-width: 420px;
+      margin: 20px auto;
+      padding: 12px 16px 32px;
+    }
+    .preview h1 {
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      color: rgba(212, 175, 55, 0.9);
+      margin: 0 0 4px;
+    }
+    .preview .sub {
+      font-size: 12px;
+      opacity: 0.65;
+      margin: 0 0 16px;
+    }
+    .status-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      opacity: 0.55;
+      margin: 14px 0 6px;
+    }
+    .race-list {
+      display: grid;
+      gap: 10px;
+    }
+    .muted { opacity: 0.7; }
+  </style>
+</head>
+<body class="v11-fe v2-race-list-ui">
+  <div class="preview">
+    <h1>v2_race_list_ui · RaceCardSummary</h1>
+    <p class="sub">Phase 3 HTML — ready / processing / failed / missing（short_reason 未表示）</p>
+    <div class="race-list" id="raceList"></div>
+  </div>
+  <script src="../../public/assets/api/ui-features.js"></script>
+  <script src="../../public/assets/api/prediction-bind.js"></script>
+  <script>
+    ExpectUiFeatures.defaults.v2_race_list_ui = true;
+    var orig = ExpectUiFeatures.enabled;
+    ExpectUiFeatures.enabled = function (name) {
+      if (name === "v2_race_list_ui") return true;
+      return orig.call(ExpectUiFeatures, name);
+    };
+
+    var listDate = "2026-07-25";
+    var cards = [
+      {
+        schema_version: "expect-race-card-summary/1.0",
+        race_id: "2026-07-25-01-06",
+        race_info: {
+          venue: "新潟",
+          race_number: 6,
+          race_name: "豊栄特別",
+          post_time: "10:35",
+        },
+        prediction: { status: "ready", engine_source: "pi" },
+        summary: {
+          honmei: { horse_number: 4, horse_name: "コルドンブルー", mark: "honmei" },
+          confidence: { score: 0.42, band: "medium" },
+          short_reason: "表示してはいけない理由テキスト",
+        },
+      },
+      {
+        schema_version: "expect-race-card-summary/1.0",
+        race_id: "2026-07-25-01-07",
+        race_info: {
+          venue: "新潟",
+          race_number: 7,
+          race_name: "3歳以上1勝クラス",
+          post_time: "11:05",
+        },
+        prediction: { status: "processing" },
+        summary: null,
+      },
+      {
+        schema_version: "expect-race-card-summary/1.0",
+        race_id: "2026-07-25-01-08",
+        race_info: {
+          venue: "中京",
+          race_number: 8,
+          race_name: "長久手特別",
+          post_time: "14:20",
+        },
+        prediction: { status: "failed" },
+        summary: null,
+      },
+      {
+        schema_version: "expect-race-card-summary/1.0",
+        race_id: "2026-07-25-01-12",
+        race_info: {
+          venue: "新潟",
+          race_number: 12,
+          race_name: "未設定",
+          post_time: null,
+        },
+        prediction: { status: "missing" },
+        summary: null,
+      },
+    ];
+
+    var labels = {
+      ready: "ready — ◎ + confidence",
+      processing: "processing — 予想準備中",
+      failed: "failed — 予想取得失敗",
+      missing: "missing — 予想未公開",
+    };
+
+    var root = document.getElementById("raceList");
+    cards.forEach(function (card) {
+      var status = card.prediction.status;
+      var label = document.createElement("p");
+      label.className = "status-label";
+      label.textContent = labels[status] || status;
+      root.appendChild(label);
+      var wrap = document.createElement("div");
+      wrap.innerHTML = ExpectPredictionBind.raceCardSummaryHtml(card, { listDate: listDate });
+      root.appendChild(wrap.firstChild);
+    });
+  </script>
+</body>
+</html>

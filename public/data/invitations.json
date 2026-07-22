@@ -27,6 +27,15 @@
       "activated_at": null,
       "activated_user_id": null,
       "note": "auto-maintenance production verify 2026-07-21"
+    },
+    {
+      "invite_id": "BETA-SMOKE-0721",
+      "status": "issued",
+      "issued_at": "2026-07-21T05:46:40.985Z",
+      "expires_at": null,
+      "activated_at": null,
+      "activated_user_id": null,
+      "note": "smoke invite for operator manual test"
     }
   ]
 }

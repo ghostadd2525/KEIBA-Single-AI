@@ -804,6 +804,16 @@ a.back-btn { color: var(--gold-soft); }
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.9);
 }
 
+/* Phase 5: ホーム fav レールへ ◎ / 信頼度%（v2_race_list_ui ON 時のみ HTML 出力） */
+.fav-summary {
+  margin: -2px 0 6px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: #f0e6d2;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.9);
+}
+
 .fav-badge {
   display: inline-block;
   align-self: flex-start;

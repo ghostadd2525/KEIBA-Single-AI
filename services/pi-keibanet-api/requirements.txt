@@ -1,0 +1,2 @@
+# PI KeibaNet API — stdlib only (Raspberry Pi / bridge host)
+# No pip packages required.

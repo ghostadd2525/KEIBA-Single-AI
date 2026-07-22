@@ -497,6 +497,33 @@ body.is-race-search {
   color: var(--muted);
 }
 
+/* v2_race_list_ui — 構造用の最小スタイル（デザイン刷新は対象外） */
+body.v2-race-list-ui .race-item-honmei {
+  margin: 4px 0 0;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: #f0e6d2;
+}
+
+body.v2-race-list-ui .race-item-status-note {
+  margin: 4px 0 0;
+  font-size: 12px;
+}
+
+body.v2-race-list-ui .race-item[data-prediction-status="processing"],
+body.v2-race-list-ui .race-item[data-prediction-status="failed"],
+body.v2-race-list-ui .race-item[data-prediction-status="missing"] {
+  opacity: 0.72;
+}
+
+body.v2-race-list-ui .race-conf small {
+  display: block;
+  font-size: 10px;
+  font-weight: 500;
+  opacity: 0.85;
+}
+
 .race-item-meta {
   margin: 6px 0 0;
   display: flex;
@@ -1817,3 +1844,38 @@ body.is-race-search {
 .page-screen .main:not(.is-visible) { display: none; }
 
 .page-screen .mascot-ka0ba { z-index: 40; }
+
+/* Version 2 Explainability (v2_explain) */
+.explain-v2 { display: grid; gap: 12px; }
+.explain-decision-key {
+  margin: 0;
+  font-size: 14px;
+  color: var(--gold-soft, #d4b46a);
+}
+.explain-decision-key-label {
+  display: inline-block;
+  margin-right: 6px;
+  padding: 1px 6px;
+  border: 1px solid rgba(212, 180, 106, 0.45);
+  border-radius: 4px;
+  font-size: 11px;
+  letter-spacing: 0.04em;
+}
+.explain-summary { margin: 0; line-height: 1.55; font-size: 14px; }
+.explain-confidence h4 { margin: 0 0 6px; font-size: 13px; }
+.explain-confidence-details,
+.explain-trace { margin-top: 4px; font-size: 13px; }
+.explain-trace-list { margin: 8px 0 0; padding-left: 1.2em; }
+.explain-trace-stage { font-weight: 600; }
+.explain-trace-status { opacity: 0.7; font-size: 12px; }
+.explain-trace-product { color: var(--gold-soft, #d4b46a); }
+.explain-trace-ts,
+.explain-trace-codes { display: block; font-size: 11px; margin-top: 2px; }
+.explain-kaoba-cta { margin: 8px 0 0; }
+.explain-kaoba-link {
+  color: var(--gold-soft, #d4b46a);
+  font-size: 13px;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.explain-honmei-decision { margin: 6px 0 0; font-size: 12px; }
