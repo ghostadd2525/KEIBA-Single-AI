@@ -7,9 +7,9 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Noto+Sans+JP:wght@400;500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="assets/styles.css?v=17" />
-  <link rel="stylesheet" href="assets/screens.css" />
-  <link rel="stylesheet" href="assets/ux.css?v=15" />
+  <link rel="stylesheet" href="assets/styles.css?v=18" />
+  <link rel="stylesheet" href="assets/screens.css?v=18" />
+  <link rel="stylesheet" href="assets/ux.css?v=16" />
   <link rel="stylesheet" href="assets/vqa.css" />
   <link rel="stylesheet" href="assets/v11.css?v=11" />
   <link rel="stylesheet" href="assets/onboarding.css" />
@@ -244,7 +244,7 @@
   <script src="assets/api/stats.js"></script>
   <script src="assets/api/prediction.js"></script>
   <script src="assets/api/race-id-meta.js"></script>
-  <script src="assets/api/prediction-bind.js"></script>
+  <script src="assets/api/prediction-bind.js?v=14"></script>
   <script src="assets/api/user.js"></script>
   <script src="assets/api/real-data-bind.js"></script>
   <script src="assets/ux.js?v=15"></script>
@@ -368,7 +368,15 @@
           ExpectRealDataBind.startHeatmapPolling({ intervalMs: 60000 });
         }
 
-        function paintAll(bundles, coverage, history) {
+        var listDate =
+          window.ExpectRealDataBind && ExpectRealDataBind.resolveHomeDate
+            ? ExpectRealDataBind.resolveHomeDate()
+            : "";
+        var honmeiCached =
+          ExpectPredictionBind.readHomeHonmeiCache &&
+          ExpectPredictionBind.readHomeHonmeiCache(listDate);
+
+        function paintHeatAndMetrics(bundles, coverage, history) {
           if (window.ExpectRealDataBind) {
             ExpectRealDataBind.cacheBundles(bundles);
             ExpectRealDataBind.paintDashMetrics(coverage, history);
@@ -377,21 +385,42 @@
               var v = b.race_info && b.race_info.venue;
               if (v && venues.indexOf(v) < 0) venues.push(v);
             });
+            if (!venues.length && honmeiCached && honmeiCached.venues) {
+              venues = honmeiCached.venues.slice();
+            }
             if (venues.length && ExpectRealDataBind.fetchAndPaintHeatmap) {
               ExpectRealDataBind.fetchAndPaintHeatmap({ venues: venues });
             }
           }
+        }
+
+        function paintHonmeiFromBundles(bundles) {
           var filtered = window.ExpectContractGuard
             ? ExpectContractGuard.filterValidBundles(bundles)
             : { ok: bundles || [], rejected: [] };
           if (filtered.ok.length) {
             if (window.ExpectContractGuard) ExpectContractGuard.clearErrorCard(mount);
-            var sk = mount && mount.querySelector(".v11-home-skel");
-            if (sk) sk.remove();
             ExpectPredictionBind.applyHomeHonmeiCard(
               ExpectPredictionBind.pickTopByConfidence(filtered.ok)
             );
+            try {
+              var snap = ExpectPredictionBind.readHomeHonmeiCache(listDate);
+              if (snap) {
+                var venues = [];
+                filtered.ok.forEach(function (b) {
+                  var v = b.race_info && b.race_info.venue;
+                  if (v && venues.indexOf(v) < 0) venues.push(v);
+                });
+                if (venues.length) {
+                  snap.venues = venues;
+                  localStorage.setItem("expect_home_honmei_v1", JSON.stringify(snap));
+                }
+              }
+            } catch (e) { /* ignore */ }
           }
+        }
+
+        function clearMountLoading() {
           if (predictCard) predictCard.classList.remove("is-updating");
           if (mount) {
             mount.classList.remove("is-loading");
@@ -402,13 +431,8 @@
         }
 
         function fail(msg) {
-          if (predictCard) predictCard.classList.remove("is-updating");
-          if (mount) {
-            mount.classList.remove("is-loading");
-            if (window.ExpectUx && ExpectUx.hideLoading) ExpectUx.hideLoading(mount);
-            var sk = mount.querySelector(".v11-home-skel");
-            if (sk) sk.remove();
-          }
+          clearMountLoading();
+          if (honmeiCached) return;
           if (window.ExpectUiFeatures && ExpectUiFeatures.enabled("v11_loading_errors") && window.ExpectUx && mount) {
             ExpectUx.showIn(
               mount,
@@ -431,6 +455,22 @@
           }
         }
 
+        /* 当日キャッシュがあれば本命カードは即表示・再ロードしない */
+        if (honmeiCached && ExpectPredictionBind.applyHomeHonmeiSnapshot(honmeiCached)) {
+          clearMountLoading();
+          var sideReqs = [];
+          if (ExpectApi.Supply) sideReqs.push(ExpectApi.Supply.coverage().catch(function () { return null; }));
+          else sideReqs.push(Promise.resolve(null));
+          if (ExpectApi.User) sideReqs.push(ExpectApi.User.history().catch(function () { return null; }));
+          else sideReqs.push(Promise.resolve(null));
+          Promise.all(sideReqs)
+            .then(function (parts) {
+              paintHeatAndMetrics([], parts[0], parts[1]);
+            })
+            .catch(function () { /* ignore */ });
+          return;
+        }
+
         if (predictCard) predictCard.classList.add("is-updating");
         if (mount) {
           mount.classList.add("is-loading");
@@ -444,10 +484,6 @@
           }
         }
 
-        var listDate =
-          window.ExpectRealDataBind && ExpectRealDataBind.resolveHomeDate
-            ? ExpectRealDataBind.resolveHomeDate()
-            : "";
         var reqs = [ExpectApi.Prediction.list({ date: listDate })];
         if (ExpectApi.Supply) reqs.push(ExpectApi.Supply.coverage().catch(function () { return null; }));
         else reqs.push(Promise.resolve(null));
@@ -456,7 +492,10 @@
 
         Promise.all(reqs)
           .then(function (parts) {
-            paintAll(parts[0] || [], parts[1], parts[2]);
+            var bundles = parts[0] || [];
+            paintHonmeiFromBundles(bundles);
+            paintHeatAndMetrics(bundles, parts[1], parts[2]);
+            clearMountLoading();
           })
           .catch(function () {
             fail("Prediction API からレース一覧を取得できませんでした。");

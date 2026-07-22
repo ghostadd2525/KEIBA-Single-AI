@@ -721,14 +721,28 @@ a.back-btn { color: var(--gold-soft); }
   -webkit-overflow-scrolling: touch;
   touch-action: pan-x;
   overscroll-behavior-x: contain;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-  padding-bottom: 2px;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(193, 162, 109, 0.55) rgba(255, 255, 255, 0.06);
+  -ms-overflow-style: auto;
+  padding-bottom: 6px;
   cursor: grab;
   user-select: none;
 }
 
-.favorites-rail::-webkit-scrollbar { display: none; height: 0; }
+.favorites-rail::-webkit-scrollbar {
+  display: block;
+  height: 6px;
+}
+
+.favorites-rail::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 999px;
+}
+
+.favorites-rail::-webkit-scrollbar-thumb {
+  background: rgba(193, 162, 109, 0.45);
+  border-radius: 999px;
+}
 
 .favorites-rail.is-dragging {
   cursor: grabbing;
@@ -1648,6 +1662,10 @@ details.fold > summary::-webkit-details-marker { display: none; }
   top: 0;
   flex-shrink: 0;
   z-index: 40;
+  background: #080c12;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  box-shadow: 0 8px 14px -8px rgba(0, 0, 0, 0.85);
 }
 
 .page-tab .screen,
@@ -1676,6 +1694,7 @@ details.fold > summary::-webkit-details-marker { display: none; }
   width: 100%;
   z-index: 40;
   margin-top: auto;
+  background: rgba(8, 12, 18, 0.98);
 }
 
 body.v11-mobile.page-tab .app {

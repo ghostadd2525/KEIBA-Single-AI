@@ -423,7 +423,56 @@
     );
   }
 
-  /** ホーム「今日の本命」カード */
+  /** ホーム「今日の本命」カード（当日分は localStorage に固定） */
+  var HOME_HONMEI_CACHE_KEY = "expect_home_honmei_v1";
+
+  function homeHonmeiCacheDate() {
+    if (global.ExpectRealDataBind && ExpectRealDataBind.resolveHomeDate) {
+      return ExpectRealDataBind.resolveHomeDate() || "";
+    }
+    return "";
+  }
+
+  function readHomeHonmeiCache(dateKey) {
+    try {
+      var raw = global.localStorage.getItem(HOME_HONMEI_CACHE_KEY);
+      if (!raw) return null;
+      var o = JSON.parse(raw);
+      if (!o || !o.race_id) return null;
+      if (dateKey && o.date && o.date !== dateKey) return null;
+      return o;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  function writeHomeHonmeiCache(snapshot) {
+    try {
+      global.localStorage.setItem(HOME_HONMEI_CACHE_KEY, JSON.stringify(snapshot));
+    } catch (e) { /* ignore */ }
+  }
+
+  function applyHomeHonmeiSnapshot(snapshot) {
+    if (!snapshot || !snapshot.race_id) return false;
+    var card = document.querySelector(".ai-card--predict");
+    if (!card) return false;
+    card.setAttribute("href", "race.html?race_id=" + encodeURIComponent(snapshot.race_id));
+    var score = snapshot.score != null ? Number(snapshot.score) : 0;
+    var gauge = card.querySelector(".ai-gauge");
+    var num = card.querySelector(".ai-gauge-num");
+    if (gauge) {
+      gauge.style.setProperty("--p", String(score));
+      gauge.setAttribute("aria-label", "AI信頼度 " + score + "%");
+    }
+    if (num) num.textContent = score + "%";
+    var desc = card.querySelector(".ai-desc");
+    if (desc && snapshot.desc) desc.textContent = snapshot.desc;
+    card.classList.add("is-ready");
+    card.classList.remove("is-updating");
+    card.setAttribute("data-honmei-cached", "1");
+    return true;
+  }
+
   function applyHomeHonmeiCard(bundle) {
     if (!bundle || !bundle.race_id) return;
     var card = document.querySelector(".ai-card--predict");
@@ -440,6 +489,7 @@
     var info = bundle.race_info || {};
     var h = honmeiRunner(bundle);
     var desc = card.querySelector(".ai-desc");
+    var descText = "";
     if (desc) {
       var place =
         (info.venue || "") + (info.race_no != null ? " " + info.race_no + "R" : "");
@@ -447,12 +497,21 @@
         h && h.horse_number != null
           ? h.horse_number + "番 " + horseLabel(h.horse_name, h.horse_number)
           : "";
-      if (place && horse) desc.textContent = place + " · " + horse;
-      else if (horse) desc.textContent = "本命 " + horse;
-      else if (place) desc.textContent = place + " が本日の注目";
+      if (place && horse) descText = place + " · " + horse;
+      else if (horse) descText = "本命 " + horse;
+      else if (place) descText = place + " が本日の注目";
+      if (descText) desc.textContent = descText;
     }
     card.classList.add("is-ready");
     card.classList.remove("is-updating");
+    writeHomeHonmeiCache({
+      date: homeHonmeiCacheDate(),
+      race_id: bundle.race_id,
+      score: score,
+      desc: descText || (desc && desc.textContent) || "",
+      venues: info.venue ? [String(info.venue)] : [],
+      at: Date.now(),
+    });
   }
 
   function confidenceBandLabel(bundle) {
@@ -832,6 +891,9 @@
     raceCardHtml: raceCardHtml,
     raceCardSummaryHtml: raceCardSummaryHtml,
     applyHomeHonmeiCard: applyHomeHonmeiCard,
+    applyHomeHonmeiSnapshot: applyHomeHonmeiSnapshot,
+    readHomeHonmeiCache: readHomeHonmeiCache,
+    homeHonmeiCacheDate: homeHonmeiCacheDate,
     applyRaceDetail: applyRaceDetail,
     pickTopByConfidence: pickTopByConfidence,
     honmeiRunner: honmeiRunner,

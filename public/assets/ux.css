@@ -626,10 +626,6 @@
   .page-race-detail .screen {
     max-width: 520px;
   }
-
-  .page-analysis .fav-ai-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
 }
 
 .race-provenance-wrap {
