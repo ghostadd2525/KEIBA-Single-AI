@@ -246,17 +246,22 @@ describe("Explainability Phase 2 — Pool / Entry / RePick", () => {
     assert.ok(by.repick.delta.reason_codes.includes("rv2_near"));
   });
 
-  it("Flag ON: reason.factors に Pool / Entry / RePick 理由", () => {
+  it("Flag ON: product 詳細は decision_trace に残る（主理由リストには Pool 等を出さない）", () => {
     const bundle = mapPiPredictionToBundle(withProductStages(baseFixture), null, {
       explainV2Enabled: true,
     });
     const labels = bundle.explain.reason.factors.map((f) => f.label);
-    assert.ok(labels.includes("Pool 理由"));
-    assert.ok(labels.includes("Entry 理由"));
-    assert.ok(labels.includes("RePick 理由"));
-    const repick = bundle.explain.reason.factors.find((f) => f.kind === "repick");
-    assert.ok(repick);
-    assert.match(repick.text, /NEAR rescue/);
+    assert.ok(!labels.includes("Pool 理由"));
+    assert.ok(!labels.includes("Entry 理由"));
+    assert.ok(!labels.includes("RePick 理由"));
+    assert.ok(labels.includes("AI予測"));
+    assert.ok(labels.includes("レースの傾向"));
+    const by = Object.fromEntries(
+      bundle.explain.decision_trace.stages.map((s) => [s.stage, s])
+    );
+    assert.equal(by.candidate_pool.status, "applied");
+    assert.equal(by.entry.status, "applied");
+    assert.equal(by.repick.status, "applied");
   });
 
   it("product 無し Flag ON は Phase 1（product_stages null・explain_phase 1）", () => {
@@ -265,6 +270,6 @@ describe("Explainability Phase 2 — Pool / Entry / RePick", () => {
     });
     assert.equal(bundle.explain.meta.explain_phase, 1);
     assert.ok(bundle.explain.reason);
-    assert.ok(!bundle.explain.reason.factors.some((f) => f.label === "Pool 理由"));
+    assert.ok(!bundle.explain.reason.factors.some((f) => f.label === "候補の絞り込み"));
   });
 });

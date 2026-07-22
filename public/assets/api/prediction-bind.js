@@ -504,7 +504,7 @@
     return html;
   }
 
-  /** v2_explain Flag ON — decision_key / summary / factors / confidence / trace */
+  /** v2_explain Flag ON — ユーザー向け本命理由 */
   function explainV2SectionHtml(explain, raceId) {
     var reason = explain.reason || {};
     var dk = reason.decision_key || {};
@@ -512,24 +512,26 @@
     var trace = explain.decision_trace || {};
     var html = '<div class="explain-v2">';
 
-    if (dk.label) {
+    if (reason.summary) {
+      html += '<p class="explain-summary">' + escapeHtml(String(reason.summary)) + "</p>";
+    } else if (dk.label) {
       html +=
-        '<p class="explain-decision-key"><span class="explain-decision-key-label">決定打</span> ' +
+        '<p class="explain-summary">' +
         escapeHtml(String(dk.label)) +
         (dk.text ? " — " + escapeHtml(String(dk.text)) : "") +
         "</p>";
     }
-    if (reason.summary) {
-      html += '<p class="explain-summary">' + escapeHtml(String(reason.summary)) + "</p>";
-    }
 
     var factors = Array.isArray(reason.factors) ? reason.factors : [];
-    if (factors.length) {
+    var userFactors = factors.filter(function (f) {
+      return f.kind !== "comparison" && f.kind !== "repick";
+    });
+    if (userFactors.length) {
       html += '<ul class="reason-list explain-factors">';
-      factors.forEach(function (f) {
+      userFactors.forEach(function (f) {
         html +=
           "<li><strong>" +
-          escapeHtml(String(f.label || f.kind || "")) +
+          escapeHtml(String(f.label || "")) +
           "</strong> " +
           escapeHtml(String(f.text || "")) +
           "</li>";
@@ -539,77 +541,25 @@
 
     if (conf.summary) {
       html += '<div class="explain-confidence">';
-      html += "<h4>信頼度の根拠</h4>";
+      html += "<h4>信頼度について</h4>";
       html += "<p>" + escapeHtml(String(conf.summary)) + "</p>";
-      var comps = Array.isArray(conf.components) ? conf.components : [];
-      if (comps.length) {
-        html += '<details class="explain-confidence-details"><summary>構成要素</summary><ul>';
-        comps.forEach(function (c) {
-          html +=
-            "<li><strong>" +
-            escapeHtml(String(c.label || c.key || "")) +
-            "</strong>: " +
-            escapeHtml(String(c.value)) +
-            (c.interpretation ? " — " + escapeHtml(String(c.interpretation)) : "") +
-            (c.contribution != null
-              ? " <span class=\"muted\">(寄与 " +
-                escapeHtml(String(c.contribution)) +
-                (c.weight != null ? ", w=" + escapeHtml(String(c.weight)) : "") +
-                ")</span>"
-              : "") +
-            "</li>";
-        });
-        html += "</ul></details>";
-      }
       html += "</div>";
     }
 
-    var stages = (trace.stages && Array.isArray(trace.stages) ? trace.stages : []);
+    var stages = trace.stages && Array.isArray(trace.stages) ? trace.stages : [];
     if (stages.length) {
-      var hasProduct = stages.some(function (s) {
-        return (
-          (s.stage === "candidate_pool" ||
-            s.stage === "entry" ||
-            s.stage === "repick") &&
-          (s.status === "applied" || s.status === "skipped")
-        );
-      });
       html +=
-        '<details class="explain-trace"' +
-        (hasProduct ? " open" : "") +
-        "><summary>判断トレース" +
-        (hasProduct ? "（Pool / Entry / RePick）" : "") +
-        "</summary><ol class=\"explain-trace-list\">";
+        '<details class="explain-trace"><summary>詳細（開発者向け）</summary><ol class="explain-trace-list">';
       stages.forEach(function (s) {
         var delta = s.delta || {};
-        var isProduct =
-          s.stage === "candidate_pool" ||
-          s.stage === "entry" ||
-          s.stage === "repick";
-        var codes = Array.isArray(delta.reason_codes)
-          ? delta.reason_codes.join(", ")
-          : "";
+        var stageLabel = explainStageLabel(String(s.stage || ""));
         html +=
-          "<li" +
-          (isProduct ? ' class="explain-trace-product"' : "") +
-          '><span class="explain-trace-stage">' +
-          escapeHtml(String(s.stage || "")) +
+          "<li><span class=\"explain-trace-stage\">" +
+          escapeHtml(stageLabel) +
           '</span> <span class="explain-trace-status">[' +
-          escapeHtml(String(s.status || "")) +
+          escapeHtml(explainStatusLabel(String(s.status || ""))) +
           "]</span> " +
           escapeHtml(String(delta.summary || ""));
-        if (s.timestamp) {
-          html +=
-            ' <span class="explain-trace-ts muted">' +
-            escapeHtml(String(s.timestamp)) +
-            "</span>";
-        }
-        if (codes) {
-          html +=
-            ' <span class="explain-trace-codes muted">(' +
-            escapeHtml(codes) +
-            ")</span>";
-        }
         html += "</li>";
       });
       html += "</ol></details>";
@@ -621,6 +571,29 @@
     });
     html += "</div>";
     return html;
+  }
+
+  function explainStageLabel(stage) {
+    var map = {
+      candidate_evaluation: "AI予測",
+      world_classification: "レース傾向の判定",
+      candidate_pool: "候補の絞り込み",
+      entry: "候補への追加",
+      repick: "候補の並べ替え",
+      delete: "除外ルール",
+      mark_assignment: "印の付与",
+    };
+    return map[stage] || stage;
+  }
+
+  function explainStatusLabel(status) {
+    var map = {
+      applied: "適用",
+      skipped: "見送り",
+      locked: "固定",
+      not_applied: "未適用",
+    };
+    return map[status] || status;
   }
 
   /**

@@ -7,29 +7,82 @@
  * Flag OFF → 空 explain（v1.1）。
  */
 
+/** ユーザー向けラベル（内部コード → 画面表示） */
 const LABELS_JA = {
-  ce_rank1: "CE 評価 1 位",
-  ce_rank1_gap_lead: "CE 1 位・2 位差最大",
-  midupper_world: "中上位世界",
-  midupper_route: "中上位ルート型",
-  core_world: "中核世界",
-  ability: "能力差レース",
-  strong_spread: "展開分散が必要",
-  gap12: "1–2 位差",
+  ce_rank1: "AI予測1位",
+  ce_rank1_gap_lead: "AI予測1位・2位との差が大きい",
+  midupper_world: "上位争いになりやすいレース",
+  midupper_route: "好位・先行が活きやすい展開",
+  core_world: "実力差が出やすいレース",
+  ability: "能力差がはっきりしやすいレース",
+  strong_spread: "展開が分かれやすいレース",
+  gap12: "1番手と2番手の差",
   entropy: "混戦度",
-  field_size: "頭数",
-  top1_prob: "1 位勝率",
-  top2_sum: "上位2頭合計",
-  candidate_pool: "候補 Pool",
-  entry: "Entry",
-  repick: "RePick",
+  field_size: "出走頭数",
+  top1_prob: "本命の推定勝率",
+  top2_sum: "上位2頭の合計勝率",
+  candidate_pool: "候補の絞り込み",
+  entry: "候補への追加",
+  repick: "候補の並べ替え",
+};
+
+/** レース傾向を1文で（世界コードの組み合わせ） */
+const RACE_TENDENCY = {
+  "midupper_world|midupper_route":
+    "上位争いになりやすく、好位・先行が活きやすい展開です。",
+  "midupper_world|":
+    "上位争いになりやすいレースです。",
+  "core_world|":
+    "実力差が出やすいレースです。",
+  "ability|":
+    "能力差がはっきりしやすいレースです。",
+  "|strong_spread": "展開が分かれやすいレースです。",
+  "|midupper_route": "好位・先行が活きやすい展開です。",
 };
 
 const PRODUCT_STAGE_FACTOR = {
-  candidate_pool: { kind: "comparison", label: "Pool 理由" },
-  entry: { kind: "comparison", label: "Entry 理由" },
-  repick: { kind: "repick", label: "RePick 理由" },
+  candidate_pool: { kind: "comparison", label: "候補の絞り込み" },
+  entry: { kind: "comparison", label: "候補への追加" },
+  repick: { kind: "repick", label: "候補の並べ替え" },
 };
+
+function labelOf(code) {
+  const c = String(code || "");
+  return LABELS_JA[c] || c;
+}
+
+/** 世界・サブ世界をユーザー向け1文に */
+function raceTendencyText(world, subWorld) {
+  const w = String(world || "").trim();
+  const s = String(subWorld || "").trim();
+  const key = `${w}|${s}`;
+  if (RACE_TENDENCY[key]) return RACE_TENDENCY[key];
+  const parts = [];
+  if (w && LABELS_JA[w] && !RACE_TENDENCY[`${w}|`]) parts.push(LABELS_JA[w]);
+  if (s && LABELS_JA[s]) parts.push(LABELS_JA[s]);
+  if (parts.length) return `${parts.join("。")}。`;
+  if (w || s) return "レース条件に合わせて評価しています。";
+  return "";
+}
+
+/** decision_key のユーザー向け短ラベル */
+function decisionKeyUserLabel(key) {
+  if (key === "ce_rank1_gap_lead") return "AI予測1位・2位との差が大きい";
+  return "AI予測1位";
+}
+
+/** decision_key.text をユーザー向けに（CE 等を除去） */
+function decisionKeyUserText(key, text, gap12) {
+  const t = String(text || "").trim();
+  if (t && !/\bCE\b/i.test(t)) return t;
+  if (key === "ce_rank1_gap_lead") {
+    return "2番手との推定勝率差が、このレースで最も大きい";
+  }
+  if (gap12 != null && gap12 < 0.02) {
+    return "1番手ですが、2番手との差は小さめです";
+  }
+  return "モデル評価で1番手";
+}
 
 function envFlagOn(context) {
   const raw =
@@ -37,11 +90,6 @@ function envFlagOn(context) {
     (typeof process !== "undefined" && process.env && process.env.EXPLAIN_V2_ENABLED) ||
     "";
   return ["1", "true", "yes", "on"].includes(String(raw).trim().toLowerCase());
-}
-
-function labelOf(code) {
-  const c = String(code || "");
-  return LABELS_JA[c] || c;
 }
 
 function pct(prob) {
@@ -163,12 +211,14 @@ export function buildHonmeiReason(piPred, honmeiRunner) {
   const winProb =
     asNum(honmeiRunner && honmeiRunner.win_prob) ?? asNum(ranking.win_prob) ?? 0;
   const gap12 = asNum(ranking.gap_to_next) ?? asNum(meta.gap12) ?? 0;
+  const tendency = raceTendencyText(world, subWorld);
+  const dkKey = decisionKey.key || "ce_rank1";
 
   const factors = [
     {
       kind: "candidate_evaluation",
-      label: "CE 評価",
-      text: `モデル順位 1 位・勝率 ${pct(winProb)}`,
+      label: "AI予測",
+      text: `モデル評価の1番手（推定勝率 ${pct(winProb)}）`,
       weight: "primary",
       evidence: {
         model_rank: 1,
@@ -177,26 +227,12 @@ export function buildHonmeiReason(piPred, honmeiRunner) {
       },
     },
   ];
-  if (world) {
+  if (tendency) {
     factors.push({
-      kind: "world",
-      label: "レース世界",
-      text: labelOf(world) || world,
-      evidence: { code: world },
-    });
-  }
-  if (subWorld) {
-    factors.push({
-      kind: "sub_world",
-      label: "サブ世界",
-      text: labelOf(subWorld) || subWorld,
-      evidence: { code: subWorld },
-    });
-    factors.push({
-      kind: "route",
-      label: "展開ルート",
-      text: labelOf(subWorld) || subWorld,
-      evidence: { code: subWorld },
+      kind: "race_context",
+      label: "レースの傾向",
+      text: tendency.replace(/。$/, ""),
+      evidence: { world, sub_world: subWorld },
     });
   }
   const pick = required.race_required_pick;
@@ -204,11 +240,13 @@ export function buildHonmeiReason(piPred, honmeiRunner) {
   if (pick != null || spread) {
     factors.push({
       kind: "required_role",
-      label: "必要役割",
+      label: "買い目の幅",
       text:
         pick != null
-          ? `${pick} 頭拾い必要${spread ? `（展開分散 ${spread}）` : ""}`
-          : String(spread || ""),
+          ? `上位以外も${pick}頭程度は押さえた方がよい展開${spread ? "（展開が分かれやすい）" : ""}`
+          : spread
+            ? "展開が分かれやすいレース"
+            : "",
       weight: "secondary",
       evidence: {
         race_required_pick: pick,
@@ -218,7 +256,7 @@ export function buildHonmeiReason(piPred, honmeiRunner) {
     });
   }
 
-  // Phase 2 — Pool / Entry / RePick factors from product_stages (or merged trace)
+  // Pool / Entry / RePick は decision_trace のみ（画面の主リストには出さない）
   const productStages = Array.isArray(payload.product_stages)
     ? payload.product_stages
     : [];
@@ -228,26 +266,16 @@ export function buildHonmeiReason(piPred, honmeiRunner) {
       ? payload.decision_trace_stages
       : [];
   const productFactors = productFactorsFromStages(traceForFactors);
-  productFactors.forEach((f) => factors.push(f));
 
   const namePart = horseName
     ? `${horseNumber}番${horseName}`
     : `${horseNumber}番`;
-  const ceHint =
-    decisionKey.key === "ce_rank1_gap_lead"
-      ? `CE 評価 1 位（勝率 ${pct(winProb)}）で 2 位との差が最も大きいため`
-      : `CE 評価 1 位（勝率 ${pct(winProb)}）のため`;
-  const worldHint =
-    world || subWorld
-      ? `${labelOf(world) || world}${subWorld ? `・${labelOf(subWorld) || subWorld}` : ""}のレースです。`
-      : "";
-  const productHint = productFactors
-    .filter((f) => f.evidence && f.evidence.status === "applied")
-    .map((f) => f.text)
-    .slice(0, 2)
-    .join(" ");
-  const summary = `${namePart}を◎としたのは、${ceHint}。${worldHint}${
-    productHint ? productHint : ""
+  const rankHint =
+    dkKey === "ce_rank1_gap_lead"
+      ? `AI予測では1番手で、2番手との差も相対的に大きい`
+      : `AI予測では1番手`;
+  const summary = `${namePart}を◎にしたのは、${rankHint}ため。${
+    tendency ? ` ${tendency}` : ""
   }`.trim();
 
   const productCodes = productFactors
@@ -263,16 +291,16 @@ export function buildHonmeiReason(piPred, honmeiRunner) {
     horse_name: horseName,
     mark: "honmei",
     decision_key: {
-      key: decisionKey.key,
+      key: dkKey,
       kind: decisionKey.kind || "candidate_evaluation",
-      label: decisionKey.label || labelOf(decisionKey.key),
-      text: decisionKey.text,
+      label: decisionKeyUserLabel(dkKey),
+      text: decisionKeyUserText(dkKey, decisionKey.text, gap12),
       evidence: decisionKey.evidence || {},
     },
     summary,
     factors,
     reason_codes: [
-      decisionKey.key,
+      dkKey,
       world ? `world_${world}` : null,
       subWorld ? `route_${subWorld}` : null,
       ...productCodes,
@@ -357,10 +385,10 @@ export function buildConfidenceReason(meta, aiConfidence, payload = {}) {
   const gap12 = asNum(confMeta.gap12);
   const summary =
     band === "low" || (gap12 != null && gap12 < 0.02)
-      ? "信頼度は低め。1–2 位差が小さく混戦度が高いため、◎ の優位は限定的です。"
+      ? "このレースは混戦になりやすく、◎ の優位は限定的です。"
       : band === "high"
-        ? "信頼度は高め。1 位の勝率と 1–2 位差から ◎ の優位が読み取れます。"
-        : "信頼度は中程度。CE 上位は安定していますが混戦余地があります。";
+        ? "1番手の評価と2番手との差から、◎ に一定の説得力があります。"
+        : "1番手は評価されていますが、混戦の余地もあります。";
 
   return {
     schema_version: "single-confidence-reason/1.0",
@@ -425,7 +453,7 @@ export function legacyCompat(explain) {
     narrative:
       typeof reason.summary === "string"
         ? reason.summary.length > 80
-          ? `${reason.horse_number}番${reason.horse_name || ""}を◎。${decisionLabel || "CE 1 位"}。`.replace(
+          ? `${reason.horse_number}番${reason.horse_name || ""}を◎。${decisionLabel || "AI予測1位"}。`.replace(
               /を◎。$/,
               "を◎。"
             )
