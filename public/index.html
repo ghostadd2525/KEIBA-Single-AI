@@ -298,17 +298,20 @@
       }
 
       /** タッチはネイティブ、マウスはドラッグで横スクロール */
-      function enableSwipeScroll(el) {
+      function enableSwipeScroll(el, options) {
+        options = options || {};
         if (!el || el.dataset.swipeBound === "1") return;
         el.dataset.swipeBound = "1";
         var pointerId = null;
         var startX = 0;
         var startScrollLeft = 0;
         var moved = false;
+        var linkSelector = options.linkSelector || "";
 
         el.addEventListener("pointerdown", function (e) {
           if (e.pointerType === "touch") return;
           if (e.pointerType === "mouse" && e.button !== 0) return;
+          if (linkSelector && e.target.closest(linkSelector)) return;
           pointerId = e.pointerId;
           startX = e.clientX;
           startScrollLeft = el.scrollLeft;
@@ -329,6 +332,11 @@
           pointerId = null;
           el.classList.remove("is-dragging");
           try { el.releasePointerCapture(e.pointerId); } catch (err) { /* noop */ }
+          if (moved) {
+            window.setTimeout(function () {
+              moved = false;
+            }, 0);
+          }
         }
 
         el.addEventListener("pointerup", endDrag);
@@ -344,10 +352,10 @@
       function refreshFavorites() {
         var rail = document.getElementById("favoritesRail");
         ExpectFavorites.renderHome(rail);
-        enableSwipeScroll(rail);
       }
       ExpectFavorites.bindHomeEdit();
       refreshFavorites();
+      enableSwipeScroll(document.getElementById("favoritesRail"), { linkSelector: ".fav-card" });
       window.addEventListener("expect:favorites-changed", refreshFavorites);
 
       /* 今日の本命 + ヒートマップ + ダッシュメトリクス */

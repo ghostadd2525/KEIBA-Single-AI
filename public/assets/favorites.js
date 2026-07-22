@@ -724,11 +724,63 @@
     syncEditButton();
   }
 
+  function bindHomeCardNavigation(rail) {
+    if (!rail || rail.dataset.favNavBound === "1") return;
+    rail.dataset.favNavBound = "1";
+
+    var gesture = null;
+    var TAP_SLOP = 10;
+
+    function clearGesture() {
+      gesture = null;
+    }
+
+    rail.addEventListener("pointerdown", function (e) {
+      if (homeEditMode) return;
+      var card = e.target.closest(".fav-card");
+      if (!card) return;
+      gesture = {
+        pointerId: e.pointerId,
+        x: e.clientX,
+        y: e.clientY,
+        card: card,
+        moved: false,
+      };
+    });
+
+    rail.addEventListener("pointermove", function (e) {
+      if (!gesture || gesture.pointerId !== e.pointerId) return;
+      if (
+        Math.abs(e.clientX - gesture.x) > TAP_SLOP ||
+        Math.abs(e.clientY - gesture.y) > TAP_SLOP
+      ) {
+        gesture.moved = true;
+      }
+    });
+
+    function finishPointer(e) {
+      if (!gesture || gesture.pointerId !== e.pointerId) return;
+      var card = gesture.card;
+      var shouldNavigate = !homeEditMode && !gesture.moved && card;
+      clearGesture();
+      if (!shouldNavigate) return;
+      var href = card.getAttribute("href");
+      if (!href) return;
+      e.preventDefault();
+      global.location.assign(href);
+    }
+
+    rail.addEventListener("pointerup", finishPointer);
+    rail.addEventListener("pointercancel", clearGesture);
+  }
+
   function bindHomeEdit() {
     var btn = document.getElementById("favEditBtn");
     var rail = document.getElementById("favoritesRail");
     if (!btn || !rail || btn.dataset.favEditBound === "1") return;
     btn.dataset.favEditBound = "1";
+
+    bindHomeCardNavigation(rail);
 
     btn.addEventListener("click", function () {
       if (!list().length && !homeEditMode) return;

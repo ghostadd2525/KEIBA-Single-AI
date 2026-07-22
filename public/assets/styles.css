@@ -751,6 +751,9 @@ a.back-btn { color: var(--gold-soft); }
   min-height: 148px;
   touch-action: pan-x;
   isolation: isolate;
+  cursor: pointer;
+  text-decoration: none;
+  color: inherit;
 }
 
 .fav-card-shade {
