@@ -499,6 +499,58 @@
       var list = document.getElementById("raceList");
       if (!list) return;
 
+      var RACE_LIST_CACHE_KEY = "expect_race_list_cache_v1";
+
+      function resolveCacheDate(dateOpt) {
+        if (dateOpt) return String(dateOpt);
+        if (window.ExpectRaceListUrl && ExpectRaceListUrl.resolveFromLocation) {
+          var resolved = ExpectRaceListUrl.resolveFromLocation();
+          if (resolved && resolved.date) return String(resolved.date);
+        }
+        return "";
+      }
+
+      function cacheSlotKey(mode, dateKey) {
+        return String(mode || "v1") + ":" + String(dateKey || "");
+      }
+
+      function readRaceListStore() {
+        try {
+          var raw = localStorage.getItem(RACE_LIST_CACHE_KEY);
+          if (!raw) return { entries: {} };
+          var o = JSON.parse(raw);
+          if (!o || typeof o !== "object") return { entries: {} };
+          if (!o.entries || typeof o.entries !== "object") o.entries = {};
+          return o;
+        } catch (e) {
+          return { entries: {} };
+        }
+      }
+
+      function writeRaceListStore(store) {
+        try {
+          localStorage.setItem(RACE_LIST_CACHE_KEY, JSON.stringify(store));
+        } catch (e) { /* quota / private mode */ }
+      }
+
+      function readRaceListCache(mode, dateKey) {
+        var store = readRaceListStore();
+        var hit = store.entries[cacheSlotKey(mode, dateKey)];
+        if (!hit || !hit.payload) return null;
+        return hit;
+      }
+
+      function writeRaceListCache(mode, dateKey, payload) {
+        var store = readRaceListStore();
+        store.entries[cacheSlotKey(mode, dateKey)] = {
+          mode: mode,
+          date: dateKey || "",
+          payload: payload,
+          at: Date.now(),
+        };
+        writeRaceListStore(store);
+      }
+
       function renderError(message) {
         if (window.ExpectUx && ExpectUx.hideLoading) ExpectUx.hideLoading(list);
         list.setAttribute("aria-busy", "false");
@@ -546,7 +598,8 @@
         });
       }
 
-      function renderV1Bundles(bundles) {
+      function renderV1Bundles(bundles, opts) {
+        opts = opts || {};
         if (window.ExpectUx && ExpectUx.hideLoading) ExpectUx.hideLoading(list);
         var filtered = window.ExpectContractGuard
           ? ExpectContractGuard.filterValidBundles(bundles)
@@ -579,10 +632,14 @@
           ExpectRealDataBind.cacheBundles(races);
           ExpectRealDataBind.applyRacesFilters(races);
         }
+        if (!opts.fromCache) {
+          writeRaceListCache("v1", "", { bundles: races });
+        }
         bootRaceUi();
       }
 
-      function renderV2Cards(payload) {
+      function renderV2Cards(payload, opts) {
+        opts = opts || {};
         if (window.ExpectUx && ExpectUx.hideLoading) ExpectUx.hideLoading(list);
         var cards = (payload && payload.race_cards) || [];
         var listDate = (payload && payload.date) || "";
@@ -608,9 +665,11 @@
           ExpectRealDataBind.cacheBundles(shapes);
           ExpectRealDataBind.applyRacesFilters(shapes);
         }
-        // Phase 5: RaceCardSummary を最後に cache（shapes 上書き後に summary を復元）
         if (window.ExpectFavorites && typeof ExpectFavorites.cacheBundles === "function") {
           ExpectFavorites.cacheBundles(cards);
+        }
+        if (!opts.fromCache) {
+          writeRaceListCache("v2", listDate || resolveCacheDate(""), payload);
         }
         bootRaceUi();
       }
@@ -621,11 +680,18 @@
           renderError("API クライアントが読み込めていません。");
           return;
         }
+        var cached = readRaceListCache("v1", "");
+        if (cached && cached.payload && Array.isArray(cached.payload.bundles)) {
+          renderV1Bundles(cached.payload.bundles, { fromCache: true });
+          return;
+        }
         if (window.ExpectUx && ExpectUx.showLoading) {
           ExpectUx.showLoading(list);
         }
         ExpectApi.Prediction.list({})
-          .then(renderV1Bundles)
+          .then(function (bundles) {
+            renderV1Bundles(bundles);
+          })
           .catch(function () {
             renderError("通信エラーのため一覧を更新できませんでした。");
           });
@@ -637,13 +703,21 @@
           renderError("RaceCardSummary クライアントが読み込めていません。");
           return;
         }
+        var dateKey = resolveCacheDate(dateOpt);
+        var cached = readRaceListCache("v2", dateKey);
+        if (cached && cached.payload && Array.isArray(cached.payload.race_cards)) {
+          renderV2Cards(cached.payload, { fromCache: true });
+          return;
+        }
         if (window.ExpectUx && ExpectUx.showLoading) {
           ExpectUx.showLoading(list);
         } else {
           list.setAttribute("aria-busy", "true");
         }
         ExpectApi.RaceCards.list({ date: dateOpt || undefined })
-          .then(renderV2Cards)
+          .then(function (payload) {
+            renderV2Cards(payload);
+          })
           .catch(function (err) {
             renderError(
               (err && err.message) ||
@@ -672,7 +746,7 @@
       } else {
         start();
       }
-    })();
+    })();    })();
   </script>
 </body>
 </html>

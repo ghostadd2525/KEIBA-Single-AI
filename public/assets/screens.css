@@ -54,20 +54,35 @@
 
 /* —— レース一覧 —— */
 .page-races .screen {
-  display: grid;
+  display: flex;
+  flex-direction: column;
   gap: 10px;
-  align-content: start;
+  align-content: stretch;
+  min-height: 0;
+  height: 100%;
+}
+
+/* 画面全体ではなくレースカード領域だけをスクロール */
+.page-races.page-tab .screen {
+  overflow: hidden !important;
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+}
+
+.page-races.page-tab .screen::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
 }
 
 .page-races .race-filters {
-  position: sticky;
-  top: 0;
+  position: relative;
   z-index: 22;
+  flex: 0 0 auto;
   display: grid;
   gap: 10px;
   margin: 0 calc(-1 * var(--pad));
   padding: 0 var(--pad) 10px;
-  /* スクロール時にカードが透けないよう完全不透明 */
   background: #0b1018;
   box-shadow: 0 10px 16px -8px #0b1018;
   backdrop-filter: none;
@@ -79,36 +94,38 @@
   font-size: 11px;
 }
 
-.race-list {
+.page-races .race-list {
+  flex: 1 1 auto;
   display: grid;
   gap: 10px;
+  align-content: start;
   min-height: 0;
-}
-
-/* レース一覧はスクロールバーを表示 */
-.page-races.page-tab .screen {
+  overflow-x: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: contain;
+  padding-right: 2px;
   scrollbar-width: thin;
   scrollbar-color: rgba(193, 162, 109, 0.55) rgba(255, 255, 255, 0.06);
   -ms-overflow-style: auto;
 }
 
-.page-races.page-tab .screen::-webkit-scrollbar {
+.page-races .race-list::-webkit-scrollbar {
   display: block;
   width: 7px;
-  height: 7px;
 }
 
-.page-races.page-tab .screen::-webkit-scrollbar-track {
+.page-races .race-list::-webkit-scrollbar-track {
   background: rgba(255, 255, 255, 0.04);
   border-radius: 999px;
 }
 
-.page-races.page-tab .screen::-webkit-scrollbar-thumb {
+.page-races .race-list::-webkit-scrollbar-thumb {
   background: rgba(193, 162, 109, 0.45);
   border-radius: 999px;
 }
 
-.page-races.page-tab .screen::-webkit-scrollbar-thumb:hover {
+.page-races .race-list::-webkit-scrollbar-thumb:hover {
   background: rgba(193, 162, 109, 0.7);
 }
 
