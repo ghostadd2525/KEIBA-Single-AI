@@ -1,0 +1,182 @@
+{
+  "benchmark": "v5_knowledge_runtime_phase2",
+  "query": "本命の意味",
+  "rounds": 30,
+  "components": {
+    "embedding_runtime": {
+      "rounds": 30.0,
+      "min_ms": 0.0106,
+      "max_ms": 0.0116,
+      "mean_ms": 0.011,
+      "median_ms": 0.0109,
+      "p95_ms": 0.0112
+    },
+    "vector_store_runtime": {
+      "rounds": 30.0,
+      "min_ms": 0.0427,
+      "max_ms": 0.1215,
+      "mean_ms": 0.0523,
+      "median_ms": 0.0448,
+      "p95_ms": 0.0727
+    },
+    "retriever_runtime": {
+      "rounds": 30.0,
+      "min_ms": 0.0089,
+      "max_ms": 0.0096,
+      "mean_ms": 0.0091,
+      "median_ms": 0.0091,
+      "p95_ms": 0.0094
+    },
+    "rag_runtime": {
+      "rounds": 30.0,
+      "min_ms": 0.0553,
+      "max_ms": 0.0854,
+      "mean_ms": 0.0597,
+      "median_ms": 0.0584,
+      "p95_ms": 0.0637
+    },
+    "knowledge_provider": {
+      "rounds": 30.0,
+      "min_ms": 0.0629,
+      "max_ms": 0.1367,
+      "mean_ms": 0.0699,
+      "median_ms": 0.0652,
+      "p95_ms": 0.0786
+    },
+    "knowledge_tool": {
+      "rounds": 30.0,
+      "min_ms": 0.0624,
+      "max_ms": 0.108,
+      "mean_ms": 0.0679,
+      "median_ms": 0.064,
+      "p95_ms": 0.082
+    },
+    "knowledge_tool_via_manager": {
+      "rounds": 30.0,
+      "min_ms": 0.0626,
+      "max_ms": 0.0709,
+      "mean_ms": 0.0651,
+      "median_ms": 0.0647,
+      "p95_ms": 0.067
+    },
+    "knowledge_runtime_total": {
+      "rounds": 30.0,
+      "min_ms": 0.0574,
+      "max_ms": 0.0651,
+      "mean_ms": 0.0597,
+      "median_ms": 0.0592,
+      "p95_ms": 0.0622
+    }
+  },
+  "sanity": {
+    "hit_count": 5,
+    "search_path": "rag_runtime",
+    "phase": 2,
+    "embedding_local": true,
+    "vector_store_local": true,
+    "external_api": false,
+    "llm": false,
+    "rag": true
+  },
+  "stack": {
+    "embedding": {
+      "runtime": "embedding_runtime",
+      "provider": "local_hashing",
+      "dimensions": 64,
+      "external_api": false,
+      "llm": false,
+      "connected": true,
+      "local_only": true
+    },
+    "vector_store": {
+      "runtime": "vector_store_runtime",
+      "backend": "in_memory",
+      "external_api": false,
+      "vector_db_cloud": false,
+      "record_count": 9,
+      "connected": true,
+      "local_only": true
+    },
+    "rag": {
+      "runtime": "rag_runtime",
+      "indexed": true,
+      "embedding": {
+        "runtime": "embedding_runtime",
+        "provider": "local_hashing",
+        "dimensions": 64,
+        "external_api": false,
+        "llm": false,
+        "connected": true,
+        "local_only": true
+      },
+      "vector_store": {
+        "runtime": "vector_store_runtime",
+        "backend": "in_memory",
+        "external_api": false,
+        "vector_db_cloud": false,
+        "record_count": 9,
+        "connected": true,
+        "local_only": true
+      },
+      "llm": false,
+      "external_api": false,
+      "generation": false,
+      "rag_search_only": true
+    },
+    "retriever": {
+      "runtime": "v5_retriever_runtime",
+      "stub": true,
+      "vector_db": false,
+      "embedding": false,
+      "external_api": false,
+      "llm": false,
+      "uses_embedding_runtime": false,
+      "uses_vector_store_runtime": false,
+      "knowledge_source": "stub"
+    },
+    "knowledge_runtime": {
+      "runtime": "knowledge_runtime",
+      "version": "v5",
+      "phase": 2,
+      "use_rag": true,
+      "retriever": "retriever_runtime",
+      "rag": "rag_runtime",
+      "embedding": {
+        "runtime": "embedding_runtime",
+        "provider": "local_hashing",
+        "dimensions": 64,
+        "external_api": false,
+        "llm": false,
+        "connected": true,
+        "local_only": true
+      },
+      "vector_store": {
+        "runtime": "vector_store_runtime",
+        "backend": "in_memory",
+        "external_api": false,
+        "vector_db_cloud": false,
+        "record_count": 9,
+        "connected": true,
+        "local_only": true
+      },
+      "source": {
+        "stub": true,
+        "vector_db": false,
+        "embedding": false,
+        "external_api": false,
+        "user_private": false,
+        "prediction_rationale": false,
+        "categories": [
+          "faq",
+          "general_keiba",
+          "glossary",
+          "help",
+          "service"
+        ],
+        "document_count": 9
+      },
+      "vector_db": false,
+      "external_api": false
+    }
+  }
+}

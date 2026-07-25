@@ -1,0 +1,125 @@
+{
+  "ok": true,
+  "version": "v5-production",
+  "flags_applied": {
+    "F_V4_CONVERSATION_ENABLED": "ON",
+    "F_V4_REVIEW_AGENT": "ON",
+    "F_V4_PERSONAL_CHAT": "ON",
+    "F_V4_TOOL_LAYER": "ON",
+    "F_V4_KNOWLEDGE_LAYER": "ON",
+    "F_V5_KNOWLEDGE_RUNTIME": "ON",
+    "F_V4_KNOWLEDGE_INTEGRATION": "OFF",
+    "F_V4_CONVERSATION_OLLAMA": "OFF"
+  },
+  "flag_snapshot": {
+    "F_V4_CONVERSATION_ENABLED": true,
+    "F_V4_CONVERSATION_OLLAMA": false,
+    "F_V4_REVIEW_AGENT": true,
+    "F_V4_PERSONAL_CHAT": true,
+    "F_V4_TOOL_LAYER": true,
+    "F_V4_KNOWLEDGE_LAYER": true,
+    "F_V4_KNOWLEDGE_INTEGRATION": false,
+    "F_V5_KNOWLEDGE_RUNTIME": true
+  },
+  "checks": {
+    "feature_flags": {
+      "pass": true,
+      "snapshot": {
+        "F_V4_CONVERSATION_ENABLED": true,
+        "F_V4_CONVERSATION_OLLAMA": false,
+        "F_V4_REVIEW_AGENT": true,
+        "F_V4_PERSONAL_CHAT": true,
+        "F_V4_TOOL_LAYER": true,
+        "F_V4_KNOWLEDGE_LAYER": true,
+        "F_V4_KNOWLEDGE_INTEGRATION": false,
+        "F_V5_KNOWLEDGE_RUNTIME": true
+      }
+    },
+    "security_guard": {
+      "pass": true,
+      "always_on": true,
+      "block_on_secret": true,
+      "allow_casual": true
+    },
+    "review": {
+      "pass": true,
+      "agent": "review",
+      "intent": "review_prediction",
+      "mutated": false,
+      "reply_len": 273
+    },
+    "explain": {
+      "pass": true,
+      "agent": "expert",
+      "intent": "explain_pick",
+      "mutated": false,
+      "reply_len": 102
+    },
+    "personal_chat": {
+      "pass": true,
+      "agent": "chat",
+      "intent": "chat",
+      "reply_len": 99
+    },
+    "personal_chat_guard_block": {
+      "pass": true,
+      "blocked": true,
+      "reply_preview": "その内容にはお答えできません。内部の仕組みや秘密情報についてはお話しできないよ。日常の雑談や一般的な相談なら、どうぞ！"
+    },
+    "knowledge_runtime": {
+      "pass": true,
+      "ok": true,
+      "search_path": "rag_runtime",
+      "hit_count": 5,
+      "phase": 2
+    },
+    "prediction_read_only": {
+      "pass": true,
+      "has_official": true,
+      "mutated": false,
+      "via": "tool_manager",
+      "honmei": "3"
+    },
+    "prediction_client_ignored": {
+      "pass": true,
+      "mutated": false
+    },
+    "history": {
+      "pass": true,
+      "turns": 2,
+      "persistent": false,
+      "memory": false
+    },
+    "performance_budget": {
+      "pass": true,
+      "budgets_ms": {
+        "review_chat_ms": 500.0,
+        "explain_chat_ms": 500.0,
+        "knowledge_search_ms": 200.0
+      }
+    }
+  },
+  "performance": {
+    "review_chat_ms": {
+      "rounds": 12.0,
+      "mean_ms": 0.173,
+      "median_ms": 0.1671,
+      "p95_ms": 0.2076,
+      "max_ms": 0.2417
+    },
+    "explain_chat_ms": {
+      "rounds": 12.0,
+      "mean_ms": 0.1066,
+      "median_ms": 0.105,
+      "p95_ms": 0.1132,
+      "max_ms": 0.1208
+    },
+    "knowledge_search_ms": {
+      "rounds": 12.0,
+      "mean_ms": 0.0627,
+      "median_ms": 0.0606,
+      "p95_ms": 0.0727,
+      "max_ms": 0.0759
+    }
+  }
+}

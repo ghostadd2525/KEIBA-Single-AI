@@ -1,0 +1,19 @@
+[Unit]
+Description=Expect Python AI (Conversation V5 Production)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=expect-ai
+Group=expect-ai
+WorkingDirectory=/opt/expect-ai/current
+EnvironmentFile=-/opt/expect-ai/shared/.env
+# V5 Conversation Feature Flags（Prediction フラグとは分離）
+EnvironmentFile=-/etc/expect-ai/conversation.env
+ExecStart=/opt/expect-ai/shared/venv/bin/python /opt/expect-ai/current/services/win5-ai/run.py
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

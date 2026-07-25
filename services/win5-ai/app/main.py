@@ -194,6 +194,15 @@ class Handler(BaseHTTPRequestHandler):
             self._send(200, ok(cov, {"service": "Coverage"}))
             return
 
+        if path == "/v1/conversation/health":
+            from .conversation.v4 import health as v4_health
+
+            self._send(
+                200,
+                ok(v4_health(), {"service": "ConversationOrchestrator", "platform": "v4"}),
+            )
+            return
+
         if path == "/v1/stats/heatmap":
             from .stats.service import get_stats_service
 
@@ -417,16 +426,15 @@ class Handler(BaseHTTPRequestHandler):
                 body = dict(body if isinstance(body, dict) else {})
                 body["_user_id"] = ctx.user_id
             result = conversation.chat(body if isinstance(body, dict) else {})
-            self._send(
-                200,
-                ok(
-                    result,
-                    {
-                        "service": "ConversationService",
-                        "layer": "conversation",
-                    },
-                ),
-            )
+            meta = {
+                "service": "ConversationService",
+                "layer": "conversation",
+            }
+            if result.get("orchestrator"):
+                meta["service"] = "ConversationOrchestrator"
+                meta["platform"] = "v4"
+                meta["agent"] = result.get("agent")
+            self._send(200, ok(result, meta))
             return
 
         if path == "/v1/auth/login":
