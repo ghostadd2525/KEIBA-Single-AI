@@ -184,29 +184,57 @@
     return bundle;
   }
 
-  function apiGet(path, query) {
+  function apiGet(path, query, opts) {
+    opts = opts || {};
     var headers = { Accept: "application/json" };
     var token = getToken();
     if (token) headers.Authorization = "Bearer " + token;
-
-    return fetch(buildUrl(path, query), { method: "GET", headers: headers }).then(function (res) {
-      return res.text().then(function (text) {
-        var payload = null;
+    var timeoutMs =
+      typeof opts.timeoutMs === "number" && opts.timeoutMs > 0 ? opts.timeoutMs : 18000;
+    var controller = typeof AbortController !== "undefined" ? new AbortController() : null;
+    var timer = null;
+    if (controller) {
+      timer = setTimeout(function () {
         try {
-          payload = text ? JSON.parse(text) : null;
-        } catch (e) {
-          payload = null;
+          controller.abort();
+        } catch (e) { /* ignore */ }
+      }, timeoutMs);
+    }
+
+    return fetch(buildUrl(path, query), {
+      method: "GET",
+      headers: headers,
+      signal: controller ? controller.signal : undefined,
+    })
+      .then(function (res) {
+        return res.text().then(function (text) {
+          var payload = null;
+          try {
+            payload = text ? JSON.parse(text) : null;
+          } catch (e) {
+            payload = null;
+          }
+          if (!res.ok || (payload && payload.ok === false)) {
+            var err = new Error(
+              (payload && payload.error && payload.error.message) || "API error " + res.status
+            );
+            err.status = res.status;
+            throw err;
+          }
+          return parsePayload(payload);
+        });
+      })
+      .catch(function (err) {
+        if (err && err.name === "AbortError") {
+          var te = new Error("Prediction API timeout");
+          te.code = "TIMEOUT";
+          throw te;
         }
-        if (!res.ok || (payload && payload.ok === false)) {
-          var err = new Error(
-            (payload && payload.error && payload.error.message) || "API error " + res.status
-          );
-          err.status = res.status;
-          throw err;
-        }
-        return parsePayload(payload);
+        throw err;
+      })
+      .finally(function () {
+        if (timer) clearTimeout(timer);
       });
-    });
   }
 
   function attachContract(bundle) {

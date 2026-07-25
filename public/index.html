@@ -7,11 +7,11 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Noto+Sans+JP:wght@400;500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="assets/styles.css?v=21" />
-  <link rel="stylesheet" href="assets/screens.css?v=28" />
-  <link rel="stylesheet" href="assets/ux.css?v=16" />
-  <link rel="stylesheet" href="assets/vqa.css?v=2" />
-  <link rel="stylesheet" href="assets/v11.css?v=12" />
+  <link rel="stylesheet" href="assets/styles.css?v=22" />
+  <link rel="stylesheet" href="assets/screens.css?v=36" />
+  <link rel="stylesheet" href="assets/ux.css?v=21" />
+  <link rel="stylesheet" href="assets/vqa.css?v=3" />
+  <link rel="stylesheet" href="assets/v11.css?v=13" />
   <link rel="stylesheet" href="assets/onboarding.css" />
   <script src="assets/api/calendar-weekend.js?v=14"></script>
   <script src="assets/auto-maintenance.js?v=11.5"></script>
@@ -242,21 +242,21 @@
   <script src="assets/api/mock-gate.js"></script>
   <script src="assets/api/auth.js"></script>
   <script src="assets/api/contract-guard.js"></script>
-  <script src="assets/api/supply.js"></script>
+  <script src="assets/api/supply.js?v=4"></script>
   <script src="assets/api/stats.js"></script>
-  <script src="assets/api/prediction.js"></script>
-  <script src="assets/api/race-id-meta.js"></script>
-  <script src="assets/api/prediction-bind.js?v=14"></script>
-  <script src="assets/api/user.js"></script>
-  <script src="assets/api/real-data-bind.js?v=15"></script>
-  <script src="assets/ux.js?v=15"></script>
+  <script src="assets/api/prediction.js?v=11"></script>
+  <script src="assets/api/race-id-meta.js?v=5"></script>
+  <script src="assets/api/prediction-bind.js?v=31"></script>
+  <script src="assets/api/user.js?v=4"></script>
+  <script src="assets/api/real-data-bind.js?v=16"></script>
+  <script src="assets/ux.js?v=21"></script>
   <script src="assets/api/ui-features.js?v=11"></script>
-  <script src="assets/v11.js?v=11"></script>
+  <script src="assets/v11.js?v=12"></script>
   <script src="assets/app.js"></script>
-  <script src="assets/favorites.js?v=4"></script>
+  <script src="assets/favorites.js?v=5"></script>
   <script src="assets/shell.js"></script>
   <script src="assets/api/user-prefs.js?v=1"></script>
-  <script src="assets/reminders.js"></script>
+  <script src="assets/reminders.js?v=2"></script>
   <script src="assets/onboarding.js"></script>
   <script>
     /* 表示専用（app.js 非改変）: 時計 + ホーム/カタログ表示切替 */
@@ -363,9 +363,37 @@
 
       /* 今日の本命 + ヒートマップ + ダッシュメトリクス */
       (function loadHomeRealData() {
-        var mount = document.getElementById("aiCards");
+        var cardsMount = document.getElementById("aiCards");
         var predictCard = document.querySelector(".ai-card--predict");
+        var loadMount = predictCard || cardsMount;
         if (!window.ExpectApi || !ExpectApi.Prediction || !window.ExpectPredictionBind) return;
+
+        function withTimeout(promise, ms, label) {
+          return new Promise(function (resolve, reject) {
+            var settled = false;
+            var timer = setTimeout(function () {
+              if (settled) return;
+              settled = true;
+              var err = new Error(label || "timeout");
+              err.code = "TIMEOUT";
+              reject(err);
+            }, ms);
+            Promise.resolve(promise).then(
+              function (value) {
+                if (settled) return;
+                settled = true;
+                clearTimeout(timer);
+                resolve(value);
+              },
+              function (err) {
+                if (settled) return;
+                settled = true;
+                clearTimeout(timer);
+                reject(err);
+              }
+            );
+          });
+        }
 
         if (window.ExpectRealDataBind && ExpectRealDataBind.startHeatmapPolling) {
           // 会場は週次解決（全場表示を避ける）
@@ -409,7 +437,7 @@
             ? ExpectContractGuard.filterValidBundles(bundles)
             : { ok: bundles || [], rejected: [] };
           if (filtered.ok.length) {
-            if (window.ExpectContractGuard) ExpectContractGuard.clearErrorCard(mount);
+            if (window.ExpectContractGuard) ExpectContractGuard.clearErrorCard(cardsMount);
             ExpectPredictionBind.applyHomeHonmeiCard(
               ExpectPredictionBind.pickTopByConfidence(filtered.ok)
             );
@@ -432,10 +460,15 @@
 
         function clearMountLoading() {
           if (predictCard) predictCard.classList.remove("is-updating");
-          if (mount) {
-            mount.classList.remove("is-loading");
-            if (window.ExpectUx && ExpectUx.hideLoading) ExpectUx.hideLoading(mount);
-            var sk = mount.querySelector(".v11-home-skel");
+          if (cardsMount) cardsMount.classList.remove("is-loading");
+          if (loadMount && window.ExpectUx && ExpectUx.hideLoading) {
+            ExpectUx.hideLoading(loadMount);
+          }
+          if (cardsMount && window.ExpectUx && ExpectUx.hideLoading) {
+            ExpectUx.hideLoading(cardsMount);
+          }
+          if (cardsMount) {
+            var sk = cardsMount.querySelector(".v11-home-skel");
             if (sk) sk.remove();
           }
         }
@@ -443,9 +476,9 @@
         function fail(msg) {
           clearMountLoading();
           if (honmeiCached) return;
-          if (window.ExpectUiFeatures && ExpectUiFeatures.enabled("v11_loading_errors") && window.ExpectUx && mount) {
+          if (window.ExpectUiFeatures && ExpectUiFeatures.enabled("v11_loading_errors") && window.ExpectUx && cardsMount) {
             ExpectUx.showIn(
-              mount,
+              cardsMount,
               ExpectUx.stateCard({
                 kind: "error",
                 title: "データを更新できません",
@@ -457,8 +490,8 @@
             );
             return;
           }
-          if (window.ExpectContractGuard && mount) {
-            ExpectContractGuard.showErrorCard(mount, {
+          if (window.ExpectContractGuard && cardsMount) {
+            ExpectContractGuard.showErrorCard(cardsMount, {
               title: "データを更新できません",
               message: msg || "Prediction API に接続できません。",
             });
@@ -482,19 +515,23 @@
         }
 
         if (predictCard) predictCard.classList.add("is-updating");
-        if (mount) {
-          mount.classList.add("is-loading");
-          if (window.ExpectUx && ExpectUx.showLoading) {
-            ExpectUx.showLoading(mount, {
-              replace: false,
-              compact: true,
-              title: "ロード中...",
-              message: "しばらくお待ちください。",
-            });
-          }
+        if (cardsMount) cardsMount.classList.add("is-loading");
+        if (loadMount && window.ExpectUx && ExpectUx.showLoading) {
+          ExpectUx.showLoading(loadMount, {
+            replace: false,
+            compact: true,
+            title: "ロード中...",
+            message: "しばらくお待ちください。",
+          });
         }
 
-        var reqs = [ExpectApi.Prediction.list({ date: listDate })];
+        var reqs = [
+          withTimeout(
+            ExpectApi.Prediction.list({ date: listDate }),
+            20000,
+            "predictions timeout"
+          ),
+        ];
         if (ExpectApi.Supply) reqs.push(ExpectApi.Supply.coverage().catch(function () { return null; }));
         else reqs.push(Promise.resolve(null));
         if (ExpectApi.User) reqs.push(ExpectApi.User.history().catch(function () { return null; }));
@@ -505,10 +542,16 @@
             var bundles = parts[0] || [];
             paintHonmeiFromBundles(bundles);
             paintHeatAndMetrics(bundles, parts[1], parts[2]);
-            clearMountLoading();
           })
-          .catch(function () {
+          .catch(function (err) {
+            if (err && err.code === "TIMEOUT") {
+              fail("予想データの取得がタイムアウトしました。再読み込みしてください。");
+              return;
+            }
             fail("Prediction API からレース一覧を取得できませんでした。");
+          })
+          .finally(function () {
+            clearMountLoading();
           });
       })();
 

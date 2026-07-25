@@ -734,7 +734,11 @@
       bgClass +
       (editing ? " is-editing" : "") +
       '" href="race.html?race_id=' +
-      encodeURIComponent(item.id) +
+      encodeURIComponent(
+        global.ExpectRaceIdMeta && ExpectRaceIdMeta.normalizeRaceIdYear
+          ? ExpectRaceIdMeta.normalizeRaceIdYear(item.id)
+          : item.id
+      ) +
       '" style="background-image:url(\'' +
       escapeAttr(item.image) +
       "')\">" +

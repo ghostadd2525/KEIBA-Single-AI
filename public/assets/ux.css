@@ -150,6 +150,7 @@
   inset: 0;
   z-index: 40;
   min-height: 0;
+  overflow: hidden;
   border-radius: inherit;
   background: rgba(8, 10, 14, 0.78);
   backdrop-filter: blur(6px);
@@ -159,6 +160,7 @@
 .is-api-loading {
   position: relative;
   min-height: 180px;
+  overflow: hidden;
 }
 
 /* —— Skeleton —— */

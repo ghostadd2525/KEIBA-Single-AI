@@ -13,6 +13,14 @@
       .replace(/"/g, "&quot;");
   }
 
+  function raceDetailHref(raceId) {
+    var rid = String(raceId || "");
+    if (global.ExpectRaceIdMeta && ExpectRaceIdMeta.normalizeRaceIdYear) {
+      rid = ExpectRaceIdMeta.normalizeRaceIdYear(rid) || rid;
+    }
+    return "race.html?race_id=" + encodeURIComponent(rid);
+  }
+
   /** "15:10" / "9:50" / "15:10:00" → "15:10" */
   function normalizePostTime(raw) {
     var m = String(raw == null ? "" : raw).trim().match(/^(\d{1,2}):(\d{2})/);
@@ -290,8 +298,8 @@
     return (
       '<a class="race-item race-item--bg' +
       bg +
-      '" href="race.html?race_id=' +
-      encodeURIComponent(rid) +
+      '" href="' +
+      raceDetailHref(rid) +
       '" data-race-date="' +
       escapeHtml(dateAttr) +
       '" data-race-venue="' +
@@ -393,8 +401,8 @@
     return (
       '<a class="race-item race-item--bg' +
       bg +
-      '" href="race.html?race_id=' +
-      encodeURIComponent(rid) +
+      '" href="' +
+      raceDetailHref(rid) +
       '" data-race-date="' +
       escapeHtml(info.date || dLabel) +
       '" data-race-venue="' +
@@ -481,7 +489,7 @@
     if (!snapshot || !snapshot.race_id) return false;
     var card = document.querySelector(".ai-card--predict");
     if (!card) return false;
-    card.setAttribute("href", "race.html?race_id=" + encodeURIComponent(snapshot.race_id));
+    card.setAttribute("href", raceDetailHref(snapshot.race_id));
     var score = snapshot.score != null ? Number(snapshot.score) : 0;
     var gauge = card.querySelector(".ai-gauge");
     var num = card.querySelector(".ai-gauge-num");
@@ -502,7 +510,7 @@
     if (!bundle || !bundle.race_id) return;
     var card = document.querySelector(".ai-card--predict");
     if (!card) return;
-    card.setAttribute("href", "race.html?race_id=" + encodeURIComponent(bundle.race_id));
+    card.setAttribute("href", raceDetailHref(bundle.race_id));
     var score = scorePercent(bundle) || 0;
     var gauge = card.querySelector(".ai-gauge");
     var num = card.querySelector(".ai-gauge-num");
