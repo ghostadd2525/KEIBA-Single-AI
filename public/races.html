@@ -128,6 +128,7 @@
   <script src="assets/api/prediction.js?v=15"></script>
   <script src="assets/api/race-id-meta.js?v=15"></script>
   <script src="assets/api/prediction-bind.js?v=34"></script>
+  <script src="assets/api/race-prefetch.js?v=1"></script>
   <script src="assets/api/real-data-bind.js?v=16"></script>
   <script src="assets/ux.js?v=21"></script>
   <script src="assets/api/ui-features.js?v=15"></script>
@@ -789,6 +790,9 @@
               (String((card && card.race_id) || "").match(/^(\d{4}-\d{2}-\d{2})/) ||
                 [])[1] ||
               listDate;
+            if (window.ExpectRacePrefetch && ExpectRacePrefetch.putMetaFromCard) {
+              ExpectRacePrefetch.putMetaFromCard(card);
+            }
             return ExpectPredictionBind.raceCardSummaryHtml(card, { listDate: cardDate });
           })
           .join("");
@@ -796,6 +800,9 @@
         list.innerHTML =
           '<p class="race-list-empty" id="raceListEmpty" hidden>条件に合うレースがありません。検索条件を変えてみてください。</p>' +
           html;
+        if (window.ExpectRacePrefetch && ExpectRacePrefetch.observeList) {
+          ExpectRacePrefetch.observeList(list);
+        }
         if (!cards.length) {
           var e2 = document.getElementById("raceListEmpty");
           if (e2) {
@@ -972,6 +979,13 @@
                   if (bundle && bundle.race_id) {
                     byId[rid] = ExpectPredictionBind.bundleToRaceCardSummary(bundle, seed);
                     readyCount += 1;
+                    if (window.ExpectRacePrefetch && ExpectRacePrefetch.putBundle) {
+                      ExpectRacePrefetch.putBundle(
+                        rid,
+                        bundle,
+                        (result && result.meta) || {}
+                      );
+                    }
                   } else {
                     byId[rid] = Object.assign({}, seed, {
                       prediction: { status: "missing", engine_source: null },

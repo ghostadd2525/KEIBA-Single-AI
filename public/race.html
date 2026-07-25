@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Noto+Sans+JP:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="assets/styles.css?v=18" />
-  <link rel="stylesheet" href="assets/screens.css?v=38" />
+  <link rel="stylesheet" href="assets/screens.css?v=39" />
   <link rel="stylesheet" href="assets/ux.css?v=20" />
   <link rel="stylesheet" href="assets/vqa.css" />
   <link rel="stylesheet" href="assets/v11.css?v=11" />
@@ -119,17 +119,17 @@
 
       <section class="chart-card" data-tab-panel="shutuba" id="tabPanelShutuba" hidden>
         <h3>出馬表</h3>
-        <div id="tabShutubaBody"><p class="muted">タブを開くと読み込みます</p></div>
+        <div id="tabShutubaBody" class="skel-host" aria-busy="true"><div class="skel-stack"><div class="skel-row"><span class="skel-block skel-block--sm"></span><span class="skel-block skel-block--lg"></span></div><div class="skel-row"><span class="skel-block skel-block--sm"></span><span class="skel-block skel-block--lg"></span></div><div class="skel-row"><span class="skel-block skel-block--sm"></span><span class="skel-block skel-block--lg"></span></div></div></div>
       </section>
 
       <section class="chart-card" data-tab-panel="odds" id="tabPanelOdds" hidden>
         <h3>単勝オッズ</h3>
-        <div id="tabOddsBody"><p class="muted">タブを開くと読み込みます</p></div>
+        <div id="tabOddsBody" class="skel-host" aria-busy="true"><div class="skel-stack"><div class="skel-row"><span class="skel-block skel-block--sm"></span><span class="skel-block skel-block--lg"></span></div><div class="skel-row"><span class="skel-block skel-block--sm"></span><span class="skel-block skel-block--lg"></span></div><div class="skel-row"><span class="skel-block skel-block--sm"></span><span class="skel-block skel-block--lg"></span></div></div></div>
       </section>
 
       <section class="chart-card" data-tab-panel="data" id="tabPanelData" hidden>
         <h3>近走データ（各馬3件）</h3>
-        <div id="tabDataBody"><p class="muted">タブを開くと読み込みます</p></div>
+        <div id="tabDataBody" class="skel-host" aria-busy="true"><div class="skel-stack"><div class="skel-row"><span class="skel-block skel-block--sm"></span><span class="skel-block skel-block--lg"></span></div><div class="skel-row"><span class="skel-block skel-block--sm"></span><span class="skel-block skel-block--lg"></span></div><div class="skel-row"><span class="skel-block skel-block--sm"></span><span class="skel-block skel-block--lg"></span></div></div></div>
       </section>
     </div>
 
@@ -148,8 +148,9 @@
   <script src="assets/api/contract-guard.js"></script>
   <script src="assets/api/prediction.js?v=10"></script>
   <script src="assets/api/prediction-bind.js?v=34"></script>
+  <script src="assets/api/race-prefetch.js?v=1"></script>
   <script src="assets/api/race-board.js?v=10"></script>
-  <script src="assets/api/race-detail-tabs.js?v=14"></script>
+  <script src="assets/api/race-detail-tabs.js?v=15"></script>
   <script src="assets/api/analysis.js?v=10"></script>
   <script src="assets/api/analysis-bind.js?v=30"></script>
   <script src="assets/ux.js?v=20"></script>
@@ -208,10 +209,23 @@
 
     if (window.ExpectConversationUi) ExpectConversationUi.mountRaceCtas(id);
     if (window.ExpectRaceDetailTabs) ExpectRaceDetailTabs.bind(id);
+    var prefMeta =
+      window.ExpectRacePrefetch && typeof ExpectRacePrefetch.getMeta === "function"
+        ? ExpectRacePrefetch.getMeta(id)
+        : null;
     var meta =
       window.ExpectFavorites && typeof ExpectFavorites.getMeta === "function"
         ? ExpectFavorites.getMeta(id)
         : { place: "", name: "", badge: "", dateLabel: "", postTime: "" };
+    if (prefMeta) {
+      meta = {
+        place: prefMeta.place || meta.place || "",
+        name: prefMeta.name || meta.name || "",
+        badge: prefMeta.badge || meta.badge || "",
+        dateLabel: prefMeta.dateLabel || meta.dateLabel || "",
+        postTime: prefMeta.postTime || meta.postTime || "",
+      };
+    }
     var titleEl = document.getElementById("raceTitle");
     var subEl = document.getElementById("raceSub") || document.querySelector(".brand-sub");
     var placeHint =
@@ -271,13 +285,13 @@
       strategyLink.href = "strategy.html?race_id=" + encodeURIComponent(id);
     }
 
-    /* PB 入口 → race_id で Analysis（loading / 本命刷り込み） */
+    /* PB / Board / History は並列。全画面オーバーレイは出さず Skeleton → Progressive */
     var detailMount = document.querySelector(".screen");
     var honmeiCard = document.getElementById("honmeiCard");
     var chartCard = document.getElementById("chartCard");
+    var aiApplied = false;
 
     function markReady() {
-      if (window.ExpectUx && ExpectUx.hideLoading) ExpectUx.hideLoading(detailMount);
       if (honmeiCard) {
         honmeiCard.classList.remove("is-loading");
         honmeiCard.classList.add("is-ready");
@@ -312,181 +326,221 @@
       });
     }
 
-    if (window.ExpectApi && ExpectApi.Prediction && window.ExpectPredictionBind) {
-      var startDetail = function () {
-      if (window.ExpectUx && ExpectUx.showLoading) {
-        ExpectUx.showLoading(detailMount, {
-          replace: false,
-          title: "ロード中...",
-          message: "レース詳細を準備しています。",
-        });
+    function showAiSkeleton() {
+      var marks = document.getElementById("marksSectionBody");
+      var picks = document.getElementById("pickCardsBody");
+      var conf = document.getElementById("raceConfidenceDetail");
+      var reasons = document.getElementById("reasonsSectionBody");
+      var sk =
+        window.ExpectRaceDetailTabs && ExpectRaceDetailTabs.skeletonHtml
+          ? ExpectRaceDetailTabs.skeletonHtml(4)
+          : '<p class="muted">読み込み中…</p>';
+      if (marks && !aiApplied) marks.innerHTML = sk;
+      if (picks && !aiApplied) picks.innerHTML = sk;
+      if (conf && !aiApplied) conf.innerHTML = sk;
+      if (reasons && !aiApplied) reasons.innerHTML = sk;
+      if (honmeiCard) honmeiCard.classList.add("is-loading");
+      if (chartCard) chartCard.classList.add("is-loading");
+    }
+
+    function applyPredictionResult(result, opts) {
+      opts = opts || {};
+      var bundle = result && result.bundle ? result.bundle : result;
+      var envelopeMeta = (result && result.meta) || {};
+      if (!bundle) return false;
+      var pbCheck =
+        bundle.__contract ||
+        (window.ExpectContractGuard && ExpectContractGuard.validatePredictionBundle(bundle)) ||
+        { ok: true, errors: [] };
+      if (!pbCheck.ok) {
+        if (!opts.fromCache && window.ExpectContractGuard) {
+          ExpectContractGuard.showErrorCard(detailMount, {
+            title: "レース詳細を更新できません",
+            message: "PredictionBundle が契約と一致しません。",
+            errors: pbCheck.errors,
+          });
+        }
+        return false;
       }
-      withTimeout(ExpectApi.Prediction.getWithMeta(id), 14000, "prediction timeout")
-        .then(function (result) {
-          var bundle = result.bundle;
-          var envelopeMeta = result.meta || {};
-          var pbCheck =
-            (bundle && bundle.__contract) ||
-            (window.ExpectContractGuard && ExpectContractGuard.validatePredictionBundle(bundle)) ||
+      if (window.ExpectContractGuard) ExpectContractGuard.clearErrorCard(detailMount);
+
+      if (window.ExpectRacePrefetch && ExpectRacePrefetch.putBundle) {
+        ExpectRacePrefetch.putBundle(id, bundle, envelopeMeta);
+      }
+      if (ExpectFavorites.cacheBundle) ExpectFavorites.cacheBundle(bundle);
+
+      var applied = ExpectPredictionBind.applyRaceDetail(bundle, envelopeMeta, id);
+      aiApplied = true;
+      markReady();
+
+      var chartsFromPb = false;
+      if (window.ExpectAnalysisBind && ExpectAnalysisBind.applyFromPredictionBundle) {
+        chartsFromPb = !!ExpectAnalysisBind.applyFromPredictionBundle(bundle);
+        if (chartsFromPb && chartCard) chartCard.classList.remove("is-loading");
+      }
+      if (applied && applied.mismatch && window.ExpectUx && detailMount && !opts.fromCache) {
+        detailMount.insertBefore(
+          ExpectUx.stateCard({
+            kind: "warn",
+            title: "race_id の不一致",
+            message:
+              "URL race_id=" +
+              id +
+              " に対し API は " +
+              applied.raceId +
+              " を返しました。Core: " +
+              (envelopeMeta.core_race_id || "—"),
+          }),
+          detailMount.firstChild
+        );
+      }
+      if (!chartsFromPb && chartCard) chartCard.classList.add("is-loading");
+      if (applied && favBtn) {
+        favBtn.setAttribute("data-fav-place", applied.place || meta.place || "");
+        favBtn.setAttribute("data-fav-name", applied.name || meta.name || "");
+        favBtn.setAttribute("data-fav-badge", applied.badge || meta.badge || "");
+        if (applied.postTime) favBtn.setAttribute("data-fav-time", applied.postTime);
+        if (applied.dateLabel) favBtn.setAttribute("data-fav-date", applied.dateLabel);
+      }
+      return { bundle: bundle, applied: applied, chartsFromPb: chartsFromPb };
+    }
+
+    function loadAnalysis(bundle, chartsFromPb) {
+      var narrative = bundle && bundle.explain && bundle.explain.narrative;
+      var raceId = (bundle && bundle.race_id) || id;
+
+      function afterAnalysis(analysis) {
+        if (chartCard) chartCard.classList.remove("is-loading");
+        if (analysis) {
+          var aCheck =
+            analysis.__contract ||
+            (window.ExpectContractGuard && ExpectContractGuard.validateAnalysis(analysis)) ||
             { ok: true, errors: [] };
-          if (!pbCheck.ok) {
-            markReady();
-            if (window.ExpectContractGuard) {
+          if (!aCheck.ok) {
+            if (!chartsFromPb && window.ExpectContractGuard) {
               ExpectContractGuard.showErrorCard(detailMount, {
-                title: "レース詳細を更新できません",
-                message: "PredictionBundle が契約と一致しません。",
-                errors: pbCheck.errors,
+                title: "評価内訳を更新できません",
+                message: "Analysis が契約と一致しません。本命カード等は Prediction のままです。",
+                errors: aCheck.errors,
               });
             }
-            ExpectFavorites.bindButtons();
-            return;
-          }
-          if (window.ExpectContractGuard) ExpectContractGuard.clearErrorCard(detailMount);
-
-          if (bundle && ExpectFavorites.cacheBundle) {
-            ExpectFavorites.cacheBundle(bundle);
-          }
-
-          var applied = ExpectPredictionBind.applyRaceDetail(bundle, envelopeMeta, id);
-          // Prediction 反映時点でオーバーレイを閉じる（Analysis 待ちで固まるのを防ぐ）
-          markReady();
-          var chartsFromPb = false;
-          if (window.ExpectAnalysisBind && ExpectAnalysisBind.applyFromPredictionBundle) {
-            chartsFromPb = !!ExpectAnalysisBind.applyFromPredictionBundle(bundle);
-            if (chartsFromPb && chartCard) {
-              chartCard.classList.remove("is-loading");
-            }
-          }
-          if (applied && applied.mismatch && window.ExpectUx && detailMount) {
-            detailMount.insertBefore(
-              ExpectUx.stateCard({
-                kind: "warn",
-                title: "race_id の不一致",
-                message:
-                  "URL race_id=" +
-                  id +
-                  " に対し API は " +
-                  applied.raceId +
-                  " を返しました。Core: " +
-                  (envelopeMeta.core_race_id || "—"),
-              }),
-              detailMount.firstChild
-            );
-          }
-          if (honmeiCard) {
-            honmeiCard.classList.remove("is-loading");
-            honmeiCard.classList.add("is-ready");
-          }
-          if (!chartsFromPb && chartCard) chartCard.classList.add("is-loading");
-          if (applied && favBtn) {
-            favBtn.setAttribute("data-fav-place", applied.place || meta.place || "");
-            favBtn.setAttribute("data-fav-name", applied.name || meta.name || "");
-            favBtn.setAttribute("data-fav-badge", applied.badge || meta.badge || "");
-            if (applied.postTime) favBtn.setAttribute("data-fav-time", applied.postTime);
-            if (applied.dateLabel) favBtn.setAttribute("data-fav-date", applied.dateLabel);
-          }
-          var narrative = bundle && bundle.explain && bundle.explain.narrative;
-          var raceId = (bundle && bundle.race_id) || id;
-
-          function afterAnalysis(analysis) {
-            if (chartCard) chartCard.classList.remove("is-loading");
-            if (analysis) {
-              var aCheck =
-                analysis.__contract ||
-                (window.ExpectContractGuard && ExpectContractGuard.validateAnalysis(analysis)) ||
-                { ok: true, errors: [] };
-              if (!aCheck.ok) {
-                if (!chartsFromPb && window.ExpectContractGuard) {
-                  ExpectContractGuard.showErrorCard(detailMount, {
-                    title: "評価内訳を更新できません",
-                    message: "Analysis が契約と一致しません。本命カード等は Prediction のままです。",
-                    errors: aCheck.errors,
-                  });
-                }
-              } else if (window.ExpectAnalysisBind) {
-                // PB 由来の評価内訳がある場合は mock Analysis で上書きしない
-                if (!chartsFromPb) {
-                  ExpectAnalysisBind.applyRaceDetailAnalysis(analysis);
-                } else if (analysis.narrative) {
-                  var narrativeEl = document.querySelector(".pace-card p");
-                  if (narrativeEl) {
-                    var current = (narrativeEl.textContent || "").trim();
-                    if (!current) narrativeEl.textContent = analysis.narrative;
-                  }
-                }
-                if (!narrative && analysis.narrative) narrative = analysis.narrative;
+          } else if (window.ExpectAnalysisBind) {
+            if (!chartsFromPb) {
+              ExpectAnalysisBind.applyRaceDetailAnalysis(analysis);
+            } else if (analysis.narrative) {
+              var narrativeEl = document.querySelector(".pace-card p");
+              if (narrativeEl) {
+                var current = (narrativeEl.textContent || "").trim();
+                if (!current) narrativeEl.textContent = analysis.narrative;
               }
             }
-            if (ExpectShell.speakMascot && narrative) {
-              ExpectShell.speakMascot(narrative.replace(/。/g, "。<br>"), 5200);
+            if (!narrative && analysis.narrative) narrative = analysis.narrative;
+          }
+        }
+        if (ExpectShell.speakMascot && narrative) {
+          ExpectShell.speakMascot(narrative.replace(/。/g, "。<br>"), 5200);
+        }
+        ExpectFavorites.bindButtons();
+      }
+
+      if (ExpectApi.Analysis) {
+        return withTimeout(ExpectApi.Analysis.get(raceId), 15000, "analysis timeout")
+          .then(afterAnalysis)
+          .catch(function () {
+            afterAnalysis(null);
+          });
+      }
+      afterAnalysis(null);
+      return Promise.resolve();
+    }
+
+    if (window.ExpectApi && ExpectApi.Prediction && window.ExpectPredictionBind) {
+      var startDetail = function () {
+        showAiSkeleton();
+
+        // キャッシュ優先で即描画（一覧 prefetch / 直前訪問）
+        var cached =
+          window.ExpectRacePrefetch && ExpectRacePrefetch.getBundle
+            ? ExpectRacePrefetch.getBundle(id)
+            : null;
+        if (cached && cached.bundle) {
+          var cachedApplied = applyPredictionResult(
+            { bundle: cached.bundle, meta: cached.meta || {} },
+            { fromCache: true }
+          );
+          if (cachedApplied && cachedApplied.bundle) {
+            loadAnalysis(cachedApplied.bundle, cachedApplied.chartsFromPb);
+          }
+        }
+
+        // Prediction は裏で再取得（キャッシュがあっても最新化）。Board/History は tabs.warm が並列実行済
+        withTimeout(ExpectApi.Prediction.getWithMeta(id), 14000, "prediction timeout")
+          .then(function (result) {
+            var applied = applyPredictionResult(result, { fromCache: false });
+            if (!applied) {
+              ExpectFavorites.bindButtons();
+              return;
+            }
+            return loadAnalysis(applied.bundle, applied.chartsFromPb);
+          })
+          .catch(function (err) {
+            if (aiApplied) {
+              ExpectFavorites.bindButtons();
+              return;
+            }
+            markReady();
+            var status = err && err.status;
+            var code = err && err.code;
+            var msg = String((err && err.message) || "");
+            var isUnauthorized =
+              status === 401 ||
+              code === "UNAUTHORIZED" ||
+              /unauthorized|invalid token/i.test(msg);
+            if (window.ExpectUx && detailMount) {
+              if (isUnauthorized) {
+                detailMount.insertBefore(
+                  ExpectUx.stateCard({
+                    kind: "error",
+                    title: "ログインの有効期限切れ",
+                    message:
+                      "ログイン情報の有効期限が切れました。もう一度ログインしてください。",
+                    retryLabel: "再ログイン",
+                    onRetry: function () {
+                      try {
+                        localStorage.removeItem("expect_access_token_v1");
+                      } catch (e) { /* ignore */ }
+                      location.href = "login.html";
+                    },
+                  }),
+                  detailMount.firstChild
+                );
+              } else {
+                detailMount.insertBefore(
+                  ExpectUx.stateCard({
+                    kind: "error",
+                    title: "レース詳細を更新できません",
+                    message:
+                      "PredictionBundle の取得に失敗またはタイムアウトしました。",
+                    onRetry: function () {
+                      location.reload();
+                    },
+                  }),
+                  detailMount.firstChild
+                );
+              }
+            } else if (window.ExpectContractGuard) {
+              ExpectContractGuard.showErrorCard(detailMount, {
+                title: isUnauthorized
+                  ? "ログインの有効期限切れ"
+                  : "レース詳細を更新できません",
+                message: isUnauthorized
+                  ? "ログイン情報の有効期限が切れました。もう一度ログインしてください。"
+                  : "PredictionBundle の取得に失敗しました。",
+              });
             }
             ExpectFavorites.bindButtons();
-          }
-
-          if (ExpectApi.Analysis) {
-            return withTimeout(ExpectApi.Analysis.get(raceId), 15000, "analysis timeout")
-              .then(afterAnalysis)
-              .catch(function () {
-                afterAnalysis(null);
-              });
-          }
-          afterAnalysis(null);
-        })
-        .catch(function (err) {
-          markReady();
-          var status = err && err.status;
-          var code = err && err.code;
-          var msg = String((err && err.message) || "");
-          var isUnauthorized =
-            status === 401 ||
-            code === "UNAUTHORIZED" ||
-            /unauthorized|invalid token/i.test(msg);
-          if (window.ExpectUx && detailMount) {
-            if (isUnauthorized) {
-              detailMount.insertBefore(
-                ExpectUx.stateCard({
-                  kind: "error",
-                  title: "ログインの有効期限切れ",
-                  message:
-                    "ログイン情報の有効期限が切れました。もう一度ログインしてください。",
-                  retryLabel: "再ログイン",
-                  onRetry: function () {
-                    try {
-                      localStorage.removeItem("expect_access_token_v1");
-                    } catch (e) { /* ignore */ }
-                    location.href = "login.html";
-                  },
-                }),
-                detailMount.firstChild
-              );
-            } else {
-              detailMount.insertBefore(
-                ExpectUx.stateCard({
-                  kind: "error",
-                  title: "レース詳細を更新できません",
-                  message:
-                    "PredictionBundle の取得に失敗またはタイムアウトしました。",
-                  onRetry: function () {
-                    location.reload();
-                  },
-                }),
-                detailMount.firstChild
-              );
-            }
-          } else if (window.ExpectContractGuard) {
-            ExpectContractGuard.showErrorCard(detailMount, {
-              title: isUnauthorized
-                ? "ログインの有効期限切れ"
-                : "レース詳細を更新できません",
-              message: isUnauthorized
-                ? "ログイン情報の有効期限が切れました。もう一度ログインしてください。"
-                : "PredictionBundle の取得に失敗しました。",
-            });
-          }
-          ExpectFavorites.bindButtons();
-        });
+          });
       };
-      // Feature flag 取得と並行して Prediction を開始（beta.json 待ちで遅延させない）
       startDetail();
     } else {
       markReady();

@@ -291,7 +291,7 @@
             id +
             '" role="region" aria-labelledby="' +
             id +
-            '-btn">' +
+            '-btn" aria-hidden="true">' +
             '<div class="board-acc-panel-inner">' +
             panelBody +
             "</div></div></div>"
@@ -319,6 +319,19 @@
     });
   }
 
+  function skeletonHtml(rows) {
+    rows = rows || 6;
+    var html = '<div class="skel-stack" aria-busy="true" aria-label="読み込み中">';
+    for (var i = 0; i < rows; i++) {
+      html +=
+        '<div class="skel-row">' +
+        '<span class="skel-block skel-block--sm"></span>' +
+        '<span class="skel-block skel-block--lg"></span>' +
+        "</div>";
+    }
+    return html + "</div>";
+  }
+
   function bindTabs(raceId) {
     var tabs = document.getElementById("detailTabs");
     if (!tabs || tabs.dataset.boardBound === "1") return;
@@ -331,6 +344,10 @@
       loadingHistory: null,
       activeTab: "ai",
       oddsTimer: null,
+      paintedShutuba: false,
+      paintedOdds: false,
+      paintedData: false,
+      warmed: false,
     };
 
     function setActive(tabName) {
@@ -384,17 +401,50 @@
       return cache.loadingHistory;
     }
 
+    function paintShutubaFromBoard(data) {
+      var el = document.getElementById("tabShutubaBody");
+      if (!el || !data) return;
+      hideTabLoading(el);
+      el.innerHTML = shutubaHtml(data.entries);
+      cache.paintedShutuba = true;
+    }
+
+    function paintOddsFromBoard(data, opts) {
+      opts = opts || {};
+      var el = document.getElementById("tabOddsBody");
+      if (!el || !data) return;
+      if (!opts.silent) hideTabLoading(el);
+      el.innerHTML = oddsHtml(data.entries, data);
+      cache.paintedOdds = true;
+    }
+
+    function paintDataFromHistory(history, entries) {
+      var el = document.getElementById("tabDataBody");
+      if (!el) return;
+      hideTabLoading(el);
+      el.dataset.accBound = "";
+      el.innerHTML = historyHtml(history || [], entries || []);
+      bindHistoryAccordion(el);
+      cache.paintedData = true;
+    }
+
     function paintShutuba() {
       var el = document.getElementById("tabShutubaBody");
       if (!el) return;
-      showTabLoading(el, {
-        title: "出馬表を準備中...",
-        message: "出走馬データを読み込んでいます。",
-      });
+      if (cache.paintedShutuba && cache.board) {
+        paintShutubaFromBoard(cache.board);
+        return;
+      }
+      if (!el.querySelector(".skel-stack")) {
+        showTabLoading(el, {
+          title: "出馬表を準備中...",
+          message: "出走馬データを読み込んでいます。",
+        });
+      }
       ensureBoard()
         .then(function (data) {
-          hideTabLoading(el);
-          el.innerHTML = shutubaHtml(data.entries);
+          paintShutubaFromBoard(data);
+          if (!cache.paintedOdds) paintOddsFromBoard(data);
         })
         .catch(function () {
           hideTabLoading(el);
@@ -407,7 +457,11 @@
       var el = document.getElementById("tabOddsBody");
       if (!el) return;
       var silent = !!opts.silent && !!cache.board;
-      if (!silent) {
+      if (cache.paintedOdds && cache.board && !opts.force) {
+        paintOddsFromBoard(cache.board, { silent: true });
+        return;
+      }
+      if (!silent && !el.querySelector(".skel-stack")) {
         showTabLoading(el, {
           title: "オッズを準備中...",
           message: "単勝オッズを取得しています。",
@@ -415,8 +469,8 @@
       }
       ensureBoard(!!opts.force)
         .then(function (data) {
-          hideTabLoading(el);
-          el.innerHTML = oddsHtml(data.entries, data);
+          paintOddsFromBoard(data, { silent: silent });
+          if (!cache.paintedShutuba) paintShutubaFromBoard(data);
         })
         .catch(function () {
           if (!silent) {
@@ -429,38 +483,69 @@
     function paintData() {
       var el = document.getElementById("tabDataBody");
       if (!el) return;
-      showTabLoading(el, {
-        title: "近走データを準備中...",
-        message: "各馬の近走を取得しています。少し時間がかかることがあります。",
-      });
-
-      function renderRows(rows) {
-        hideTabLoading(el);
-        el.dataset.accBound = "";
-        el.innerHTML = historyHtml(rows.history, rows.entries);
-        bindHistoryAccordion(el);
+      if (cache.paintedData) return;
+      if (!el.querySelector(".skel-stack")) {
+        showTabLoading(el, {
+          title: "近走データを準備中...",
+          message: "各馬の近走を取得しています。少し時間がかかることがあります。",
+        });
       }
 
       ensureHistory()
         .then(function (history) {
-          var entries =
-            (cache.board && cache.board.entries) ||
-            [];
-          renderRows({ history: history || [], entries: entries });
+          var entries = (cache.board && cache.board.entries) || [];
+          paintDataFromHistory(history || [], entries);
         })
         .catch(function () {
           return ensureBoard()
             .then(function (data) {
-              renderRows({
-                history: [],
-                entries: (data && data.entries) || [],
-              });
+              paintDataFromHistory([], (data && data.entries) || []);
             })
             .catch(function () {
               hideTabLoading(el);
               el.innerHTML =
                 '<p class="muted">近走データの取得に失敗しました。</p>';
             });
+        });
+    }
+
+    /** 詳細入場直後に board / history を並列開始し、到着順に描画 */
+    function warm() {
+      if (cache.warmed) return;
+      cache.warmed = true;
+      var shutuba = document.getElementById("tabShutubaBody");
+      var odds = document.getElementById("tabOddsBody");
+      var data = document.getElementById("tabDataBody");
+      if (shutuba) shutuba.innerHTML = skeletonHtml(8);
+      if (odds) odds.innerHTML = skeletonHtml(8);
+      if (data) data.innerHTML = skeletonHtml(6);
+
+      ensureBoard()
+        .then(function (board) {
+          paintShutubaFromBoard(board);
+          paintOddsFromBoard(board);
+        })
+        .catch(function () {
+          if (shutuba && !cache.paintedShutuba) {
+            shutuba.innerHTML = '<p class="muted">出馬表の取得に失敗しました。</p>';
+          }
+          if (odds && !cache.paintedOdds) {
+            odds.innerHTML = '<p class="muted">オッズの取得に失敗しました。</p>';
+          }
+        });
+
+      ensureHistory()
+        .then(function (history) {
+          var entries = (cache.board && cache.board.entries) || [];
+          paintDataFromHistory(history || [], entries);
+        })
+        .catch(function () {
+          if (cache.board && cache.board.entries) {
+            paintDataFromHistory([], cache.board.entries);
+          } else if (data && !cache.paintedData) {
+            data.innerHTML =
+              '<p class="muted">近走データの取得に失敗しました。</p>';
+          }
         });
     }
 
@@ -477,6 +562,7 @@
       cache.oddsTimer = setInterval(function () {
         if (cache.activeTab !== "odds") return;
         cache.board = null;
+        cache.paintedOdds = false;
         paintOdds({ force: true, silent: true });
       }, ODDS_REFRESH_MS);
     }
@@ -494,6 +580,9 @@
     });
 
     global.addEventListener("pagehide", stopOddsRefresh);
+
+    // 詳細ページ入場時に即 warm（タブを開かなくても並列取得）
+    warm();
   }
 
   global.ExpectRaceDetailTabs = {
@@ -501,5 +590,6 @@
     shutubaHtml: shutubaHtml,
     oddsHtml: oddsHtml,
     historyHtml: historyHtml,
+    skeletonHtml: skeletonHtml,
   };
 })(typeof window !== "undefined" ? window : globalThis);
