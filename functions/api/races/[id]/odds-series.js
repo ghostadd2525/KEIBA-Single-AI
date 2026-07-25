@@ -40,6 +40,7 @@ export async function onRequestGet(context) {
       venue: p.venue || "",
       race_no: p.race_no != null ? Number(p.race_no) : null,
       post_time: p.post_time || null,
+      numeric_race_id: p.numeric_race_id != null ? String(p.numeric_race_id) : null,
       sample_interval_sec: p.sample_interval_sec != null ? Number(p.sample_interval_sec) : 300,
       point_count: p.point_count != null ? Number(p.point_count) : 0,
       timestamps: Array.isArray(p.timestamps) ? p.timestamps : [],

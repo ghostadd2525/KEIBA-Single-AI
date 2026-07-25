@@ -650,9 +650,31 @@ class PiKeibaNetService:
             "condition": parse_track_condition(html),
         }
 
-    def entries_full(self, *, date: str, venue: str, race_no: int) -> dict[str, Any]:
-        """entries_core + sex/age/trainer/horse_url (Win5AI runners.csv compatible)."""
-        numeric, html = self.resolve(date=date, venue=venue, race_no=race_no)
+    def entries_full(
+        self,
+        *,
+        date: str,
+        venue: str,
+        race_no: int,
+        numeric_race_id: str,
+    ) -> dict[str, Any]:
+        """entries_core + sex/age/trainer/horse_url (Win5AI runners.csv compatible).
+
+        numeric_race_id は呼び出し元（resolve_race_ref）から渡すこと。
+        内部での find_numeric_race_id / resolve 再実行は禁止。
+        """
+        numeric = str(numeric_race_id or "").strip()
+        if not numeric:
+            raise RaceNotFoundError(
+                "no_numeric_id",
+                f"numeric_race_id required: date={date} venue={venue} race_no={race_no}",
+            )
+        html = self.client.fetch_shutuba(numeric)
+        if not shutuba_has_race(html):
+            raise RaceNotFoundError(
+                "shutuba_empty",
+                f"shutuba has no race content: race_id={numeric} date={date} venue={venue} race_no={race_no}",
+            )
         raw_entries = parse_entries_from_shutuba(html)
         if not raw_entries:
             raise RaceNotFoundError(
@@ -684,6 +706,7 @@ class PiKeibaNetService:
             "race_number": race_no,
             "race_label": race_label(venue, race_no),
             "race_name": meta.get("race_name") or "",
+            "numeric_race_id": numeric,
             "entries": entries,
         }
 
@@ -699,21 +722,28 @@ class PiKeibaNetService:
                 return out
 
         ref = self.resolve_race_ref(rid)
+        numeric = str(ref.get("numeric_race_id") or "").strip()
+        if not numeric:
+            raise RaceNotFoundError(
+                "no_numeric_id",
+                f"numeric_race_id missing for race_id={rid}",
+            )
         full = self.entries_full(
             date=ref["race_date"],
             venue=ref["course"],
             race_no=int(ref["race_number"]),
+            numeric_race_id=numeric,
         )
         entries = list(full.get("entries") or [])
         odds_rows, odds_status = self._load_win_odds(
-            numeric_race_id=str(ref.get("numeric_race_id") or full.get("numeric_race_id") or ""),
+            numeric_race_id=numeric,
             shutuba_html=None,
         )
-        if not odds_rows and ref.get("numeric_race_id"):
+        if not odds_rows:
             try:
-                html = self.client.fetch_shutuba(str(ref["numeric_race_id"]))
+                html = self.client.fetch_shutuba(numeric)
                 odds_rows, odds_status = self._load_win_odds(
-                    numeric_race_id=str(ref["numeric_race_id"]),
+                    numeric_race_id=numeric,
                     shutuba_html=html,
                     force=True,
                 )
@@ -749,7 +779,7 @@ class PiKeibaNetService:
             "post_time": ref.get("post_time") or full.get("post_time"),
             "entries": entries,
             "count": len(entries),
-            "numeric_race_id": ref.get("numeric_race_id") or full.get("numeric_race_id"),
+            "numeric_race_id": numeric,
             "odds_status": odds_status,
             "odds_cache_ttl_sec": int(_ODDS_CACHE_TTL_SEC),
         }
@@ -766,7 +796,7 @@ class PiKeibaNetService:
                     "venue": ref["course"],
                     "race_no": int(ref["race_number"]),
                     "race_id": ref["race_id"],
-                    "numeric_race_id": ref.get("numeric_race_id"),
+                    "numeric_race_id": numeric,
                     "race_name": payload["race_name"],
                 },
                 limit=3,
@@ -780,6 +810,7 @@ class PiKeibaNetService:
             "schema_version": "expect-race-history/1.0",
             "race_id": board.get("race_id"),
             "race_label": board.get("race_label"),
+            "numeric_race_id": board.get("numeric_race_id"),
             "history": board.get("history") or [],
             "count": len(board.get("history") or []),
         }

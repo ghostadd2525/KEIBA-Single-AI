@@ -45,6 +45,7 @@ export async function onRequestGet(context) {
     venue: p.venue || p.course || "",
     race_no: p.race_no != null ? Number(p.race_no) : null,
     post_time: p.post_time || null,
+    numeric_race_id: p.numeric_race_id != null ? String(p.numeric_race_id) : null,
     entries,
     count: entries.length,
   };
