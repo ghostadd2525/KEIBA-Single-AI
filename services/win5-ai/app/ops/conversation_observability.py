@@ -161,20 +161,22 @@ class ConversationObservability:
             if "timeout" in str(llm.get("error_reason") or "").lower() or fallback == "ollama_timeout":
                 self._counts["ollama_timeout_count"] += 1
 
-        knowledge_obj = result.get("knowledge") if isinstance(result.get("knowledge"), dict) else {}
-        used_knowledge = any(
-            str(t).lower() in ("knowledge", "knowledge_tool", "knowledge_api") for t in tools
-        ) or bool(knowledge_obj.get("used"))
-        if used_knowledge:
-            self._counts["knowledge_search_count"] += 1
-            self._knowledge_latencies.append(float(latency_ms))
-            hits = knowledge_obj.get("hit_count")
-            if hits is None and isinstance(result.get("citations"), list):
-                hits = len(result["citations"])
-            if hits is not None and int(hits) > 0:
-                self._counts["knowledge_retrieval_hit"] += 1
-            else:
-                self._counts["knowledge_retrieval_miss"] += 1
+            knowledge_obj = (
+                result.get("knowledge") if isinstance(result.get("knowledge"), dict) else {}
+            )
+            used_knowledge = any(
+                str(t).lower() in ("knowledge", "knowledge_tool", "knowledge_api") for t in tools
+            ) or bool(knowledge_obj.get("used"))
+            if used_knowledge:
+                self._counts["knowledge_search_count"] += 1
+                self._knowledge_latencies.append(float(latency_ms))
+                hits = knowledge_obj.get("hit_count")
+                if hits is None and isinstance(result.get("citations"), list):
+                    hits = len(result["citations"])
+                if hits is not None and int(hits) > 0:
+                    self._counts["knowledge_retrieval_hit"] += 1
+                else:
+                    self._counts["knowledge_retrieval_miss"] += 1
 
             row = {
                 "ts": _now_iso(),
