@@ -75,6 +75,22 @@ function cellFromSegment(seg, overall) {
   };
 }
 
+/** 芝・ダなど複数セグメントをサンプル数加重平均 */
+function cellFromSegments(segs, overall) {
+  let sum = 0;
+  let n = 0;
+  for (const seg of segs || []) {
+    if (!seg || seg.n == null || Number(seg.n) < 1) continue;
+    const rate = seg.hit_rate != null ? Number(seg.hit_rate) : overall;
+    if (!Number.isFinite(rate)) continue;
+    const w = Number(seg.n);
+    sum += rate * w;
+    n += w;
+  }
+  if (n < 1) return { hit_rate: null, n: 0, band: "unknown", label: "—" };
+  return cellFromSegment({ hit_rate: sum / n, n }, overall);
+}
+
 export function buildHeatmapPayload(table, venueFilter) {
   const segments = table?.segments || {};
   const segmentsGoing = table?.segments_going || {};
@@ -97,23 +113,18 @@ export function buildHeatmapPayload(table, venueFilter) {
     })),
   };
 
+  // タイトル「会場 × 馬場状態」に合わせ、芝/ダは会場単位に加重平均
   const condition = {
     cols: GOING_COLS.map((c) => c.label),
-    rows: [],
+    rows: venues.map((venue) => ({
+      venue,
+      label: venue,
+      cells: GOING_COLS.map((goingCol) => {
+        const segs = ["芝", "ダ"].map((surf) => segmentsGoing[`${venue}|${surf}|${goingCol.key}`]);
+        return cellFromSegments(segs, overall);
+      }),
+    })),
   };
-  for (const venue of venues) {
-    for (const surf of ["芝", "ダ"]) {
-      condition.rows.push({
-        venue,
-        surf,
-        label: `${venue} ${surf}`,
-        cells: GOING_COLS.map((goingCol) => {
-          const key = `${venue}|${surf}|${goingCol.key}`;
-          return cellFromSegment(segmentsGoing[key], overall);
-        }),
-      });
-    }
-  }
 
   return {
     schema_version: HEATMAP_SCHEMA,

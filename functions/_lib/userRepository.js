@@ -2,16 +2,25 @@
  * UserRepository — 正式アカウント
  *
  * Seed: ASSETS `/data/users.json`
- * 新規作成（setup）は Isolate メモリに保持。
- * 将来: KV / D1 差し替え。
+ * 新規作成（setup）は KV `EXPECT_AUTH_STORE` に永続（未バインド時は Isolate メモリ）。
  */
 import { loadAssetJson } from "./aiProxy.js";
+import { authStoreGet, authStorePut } from "./authStore.js";
 import { hashPassword, verifyPassword } from "./password.js";
 
 /** @type {Map<string, object>} */
 const runtimeUsers = new Map();
 
 let seedLoaded = false;
+
+function userKvKey(id) {
+  return `user:${normalizeUserId(id)}`;
+}
+
+async function persistUser(context, user) {
+  runtimeUsers.set(user.user_id, user);
+  await authStorePut(context, userKvKey(user.user_id), user);
+}
 
 function normalizeUserId(id) {
   return String(id || "").trim();
@@ -22,6 +31,16 @@ function coerceUser(raw) {
   const user_id = normalizeUserId(raw.user_id || raw.id);
   if (!user_id) return null;
   const roleRaw = raw.role != null ? String(raw.role) : "USER";
+  let preferences = {};
+  if (raw.preferences && typeof raw.preferences === "object") {
+    preferences = { ...raw.preferences };
+  } else if (raw.preferences_json) {
+    try {
+      preferences = JSON.parse(String(raw.preferences_json)) || {};
+    } catch {
+      preferences = {};
+    }
+  }
   return {
     user_id,
     password_hash: raw.password_hash || "",
@@ -32,6 +51,11 @@ function coerceUser(raw) {
     created_at: raw.created_at || null,
     terms_version: raw.terms_version || null,
     terms_accepted_at: raw.terms_accepted_at || null,
+    // profiles テーブル相当（role / user_id / password は別管理）
+    avatar_url: raw.avatar_url != null ? String(raw.avatar_url) : "",
+    locale: raw.locale != null ? String(raw.locale) : "ja",
+    preferences,
+    updated_at: raw.updated_at || null,
   };
 }
 
@@ -52,7 +76,14 @@ async function ensureSeed(context) {
 export async function getUser(context, userId) {
   await ensureSeed(context);
   const id = normalizeUserId(userId);
-  return runtimeUsers.get(id) || null;
+  if (!id) return null;
+  if (runtimeUsers.has(id)) return runtimeUsers.get(id);
+  const fromKv = coerceUser(await authStoreGet(context, userKvKey(id)));
+  if (fromKv) {
+    runtimeUsers.set(id, fromKv);
+    return fromKv;
+  }
+  return null;
 }
 
 export async function findUserByLoginId(context, loginId) {
@@ -68,7 +99,8 @@ export async function createUser(context, input) {
   if (!user_id) {
     return { ok: false, code: "INVALID_LOGIN_ID", message: "ログインIDが不正です" };
   }
-  if (runtimeUsers.has(user_id)) {
+  const existing = await getUser(context, user_id);
+  if (existing) {
     return { ok: false, code: "LOGIN_ID_TAKEN", message: "このログインIDは既に使われています" };
   }
 
@@ -79,12 +111,17 @@ export async function createUser(context, input) {
     display_name: input.display_name != null ? String(input.display_name) : user_id,
     invite_id: input.invite_id ? String(input.invite_id).toUpperCase() : null,
     status: "active",
-    role: String(input.role || "USER").trim().toUpperCase() || "USER",
+    // 一時ID経由の正式アカウントは常に USER（管理者昇格は別経路）
+    role: "USER",
     created_at: new Date().toISOString(),
     terms_version: input.terms_version || null,
     terms_accepted_at: input.terms_accepted_at || new Date().toISOString(),
+    avatar_url: "",
+    locale: "ja",
+    preferences: {},
+    updated_at: new Date().toISOString(),
   };
-  runtimeUsers.set(user_id, user);
+  await persistUser(context, user);
   return { ok: true, user };
 }
 
@@ -112,7 +149,7 @@ export async function authenticate(context, loginId, password) {
 export async function setUserStatus(context, userId, status) {
   await ensureSeed(context);
   const id = normalizeUserId(userId);
-  const user = runtimeUsers.get(id);
+  const user = await getUser(context, id);
   if (!user) {
     return { ok: false, code: "USER_NOT_FOUND", message: "ユーザーが見つかりません" };
   }
@@ -121,7 +158,7 @@ export async function setUserStatus(context, userId, status) {
     return { ok: false, code: "INVALID_STATUS", message: "status は active または disabled" };
   }
   const next = { ...user, status: nextStatus };
-  runtimeUsers.set(id, next);
+  await persistUser(context, next);
   return { ok: true, user: next };
 }
 
@@ -131,7 +168,7 @@ export async function setUserStatus(context, userId, status) {
 export async function setPassword(context, userId, password) {
   await ensureSeed(context);
   const id = normalizeUserId(userId);
-  const user = runtimeUsers.get(id);
+  const user = await getUser(context, id);
   if (!user) {
     return { ok: false, code: "USER_NOT_FOUND", message: "ユーザーが見つかりません" };
   }
@@ -140,8 +177,81 @@ export async function setPassword(context, userId, password) {
   }
   const password_hash = await hashPassword(String(password));
   const next = { ...user, password_hash };
-  runtimeUsers.set(id, next);
+  await persistUser(context, next);
   return { ok: true, user: next };
+}
+
+/**
+ * プロフィール更新（profiles 相当）。
+ * 変更不可: role / user_id / password_hash
+ * @returns {{ ok: true, user } | { ok: false, code: string, message: string }}
+ */
+export async function updateProfile(context, userId, fields = {}) {
+  await ensureSeed(context);
+  const id = normalizeUserId(userId);
+  const user = await getUser(context, id);
+  if (!user) {
+    return { ok: false, code: "USER_NOT_FOUND", message: "ユーザーが見つかりません" };
+  }
+
+  const next = { ...user };
+  if (Object.prototype.hasOwnProperty.call(fields, "display_name")) {
+    const name = String(fields.display_name ?? "").trim();
+    if (!name) {
+      return { ok: false, code: "INVALID_DISPLAY_NAME", message: "表示名を入力してください" };
+    }
+    if (name.length > 40) {
+      return { ok: false, code: "INVALID_DISPLAY_NAME", message: "表示名は40文字以内にしてください" };
+    }
+    next.display_name = name;
+  }
+  if (Object.prototype.hasOwnProperty.call(fields, "avatar_url")) {
+    const url = String(fields.avatar_url ?? "").trim();
+    if (url && !/^https?:\/\//i.test(url) && !url.startsWith("/") && !url.startsWith("assets/")) {
+      return { ok: false, code: "INVALID_AVATAR_URL", message: "アバターURLの形式が不正です" };
+    }
+    next.avatar_url = url;
+  }
+  if (Object.prototype.hasOwnProperty.call(fields, "locale")) {
+    const locale = String(fields.locale ?? "ja").trim() || "ja";
+    if (!/^[a-z]{2}(-[A-Z]{2})?$/.test(locale)) {
+      return { ok: false, code: "INVALID_LOCALE", message: "locale は ja / en 形式で指定してください" };
+    }
+    next.locale = locale;
+  }
+  if (Object.prototype.hasOwnProperty.call(fields, "preferences")) {
+    const prefs = fields.preferences;
+    if (prefs == null || typeof prefs !== "object" || Array.isArray(prefs)) {
+      return { ok: false, code: "INVALID_PREFERENCES", message: "preferences はオブジェクトで指定してください" };
+    }
+    next.preferences = { ...prefs };
+  }
+  next.updated_at = new Date().toISOString();
+  await persistUser(context, next);
+  return { ok: true, user: next };
+}
+
+export function toPublicUser(user) {
+  if (!user) return null;
+  return {
+    schema_version: "expect-user/1.0",
+    user_id: user.user_id,
+    login_id: user.user_id,
+    status: user.status,
+    role: user.role,
+    invite_id: user.invite_id,
+    created_at: user.created_at,
+    terms_version: user.terms_version,
+    terms_accepted_at: user.terms_accepted_at,
+    profile: {
+      display_name: user.display_name,
+      avatar_url: user.avatar_url || "",
+      locale: user.locale || "ja",
+      preferences: user.preferences || {},
+      updated_at: user.updated_at || null,
+    },
+    subscription: null,
+  };
 }
 
 export async function listUsers(context) {
@@ -172,5 +282,7 @@ export const UserRepository = {
   authenticate,
   setStatus: setUserStatus,
   setPassword,
+  updateProfile,
+  toPublicUser,
   list: listUsers,
 };

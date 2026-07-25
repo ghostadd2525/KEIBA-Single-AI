@@ -5,12 +5,14 @@ import {
   _resetInvitationRuntimeForTests,
   _seedInvitationsForTests,
 } from "../../functions/_lib/invitationRepository.js";
+import { _resetAuthStoreMemoryForTests } from "../../functions/_lib/authStore.js";
 
 const ctx = {};
 
 describe("Phase9-B Invitation state machine", () => {
   beforeEach(() => {
     _resetInvitationRuntimeForTests();
+    _resetAuthStoreMemoryForTests();
     _seedInvitationsForTests([
       {
         invite_id: "BETA-STATE-01",
@@ -68,5 +70,18 @@ describe("Phase9-B Invitation state machine", () => {
     assert.equal(r.invite.status, "issued");
     const list = await InvitationRepository.list(ctx);
     assert.ok(list.some((x) => x.invite_id === "BETA-NEW-99"));
+  });
+
+  it("署名付き一時IDはメモリ未登録でも assertIssuable ok", async () => {
+    const minted = await InvitationRepository.issue(ctx, "", { expires_days: 14, note: "signed" });
+    assert.equal(minted.ok, true);
+    assert.match(minted.invite.invite_id, /^TMP-[0-9A-F]+-[0-9A-F]{8}-[0-9A-F]{12}$/);
+    // 別 isolate 相当: メモリを全消ししても署名で検証できる
+    _resetInvitationRuntimeForTests();
+    _resetAuthStoreMemoryForTests();
+    _seedInvitationsForTests([]);
+    const check = await InvitationRepository.assertIssuable(ctx, minted.invite.invite_id);
+    assert.equal(check.ok, true);
+    assert.equal(check.invite.status, "issued");
   });
 });

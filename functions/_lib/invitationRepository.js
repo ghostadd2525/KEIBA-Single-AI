@@ -1,11 +1,15 @@
 /**
  * InvitationRepository — 管理者発行の一時ID
  *
- * 正本: ASSETS `/data/invitations.json`（管理者が登録）
- * 実行時の状態更新（activated 等）は Isolate メモリにオーバーレイ。
- * 将来: KV / D1 に差し替え可能なインタフェース。
+ * 正本:
+ *  1) ASSETS `/data/invitations.json`（シード）
+ *  2) 署名付き一時ID（跨 isolate 自己検証）
+ *  3) KV `EXPECT_AUTH_STORE`（発行・activated 状態の永続）
+ *  4) Isolate メモリ（開発フォールバック）
  */
 import { loadAssetJson } from "./aiProxy.js";
+import { authStoreGet, authStoreListKeys, authStorePut } from "./authStore.js";
+import { isSignedInviteId, mintSignedInvite, resolveSignedInvite } from "./inviteToken.js";
 
 /** @typedef {"issued"|"activated"|"disabled"|"expired"} InviteStatus */
 
@@ -25,6 +29,10 @@ function normalizeInviteId(id) {
 
 function nowIso() {
   return new Date().toISOString();
+}
+
+function inviteKvKey(id) {
+  return `invite:${normalizeInviteId(id)}`;
 }
 
 function coerceInvite(raw) {
@@ -67,9 +75,27 @@ async function loadSeed(context) {
   return map;
 }
 
-function mergeInvite(seed, overlay) {
-  if (!seed && !overlay) return null;
-  return applyExpiry({ ...(seed || {}), ...(overlay || {}) });
+function mergeInvite(...parts) {
+  let out = null;
+  for (const p of parts) {
+    if (!p) continue;
+    out = { ...(out || {}), ...p };
+  }
+  return applyExpiry(out);
+}
+
+async function persistInvite(context, invite) {
+  const id = normalizeInviteId(invite.invite_id);
+  runtimeOverlay.set(id, invite);
+  let ttl;
+  if (invite.expires_at) {
+    const exp = Date.parse(invite.expires_at);
+    if (!Number.isNaN(exp)) {
+      // 期限後も activated 履歴を残すため +30日
+      ttl = Math.max(86400, Math.ceil((exp - Date.now()) / 1000) + 30 * 86400);
+    }
+  }
+  await authStorePut(context, inviteKvKey(id), invite, ttl ? { expirationTtl: ttl } : {});
 }
 
 /** 管理者登録済み一時IDを取得 */
@@ -77,7 +103,13 @@ export async function getInvitation(context, inviteId) {
   const id = normalizeInviteId(inviteId);
   if (!id) return null;
   const seed = await loadSeed(context);
-  return mergeInvite(seed.get(id) || null, runtimeOverlay.get(id) || null);
+  const fromKv = coerceInvite(await authStoreGet(context, inviteKvKey(id)));
+  const fromMem = runtimeOverlay.get(id) || null;
+  let signed = null;
+  if (isSignedInviteId(id)) {
+    signed = await resolveSignedInvite(context, id);
+  }
+  return mergeInvite(seed.get(id) || null, signed, fromKv, fromMem);
 }
 
 /**
@@ -108,44 +140,81 @@ export async function assertIssuable(context, inviteId) {
 export async function activateInvitation(context, inviteId, userId) {
   const check = await assertIssuable(context, inviteId);
   if (!check.ok) return check;
-  const id = normalizeInviteId(inviteId);
   const next = {
     ...check.invite,
     status: "activated",
     activated_at: nowIso(),
     activated_user_id: String(userId),
   };
-  runtimeOverlay.set(id, next);
+  await persistInvite(context, next);
   return { ok: true, invite: next };
 }
 
 /**
- * 管理者: 一時IDを issued として登録（ランタイム）。
- * 永続化は ASSETS JSON への追記（scripts/issue-invite.mjs）と併用。
+ * 管理者: 一時IDを issued として登録。
+ * inviteId 省略時は署名付きIDを自動発行（跨 isolate で検証可能）。
  */
 export async function issueInvitation(context, inviteId, opts = {}) {
   await loadSeed(context);
-  const id = normalizeInviteId(inviteId);
-  if (id.length < 4) {
+
+  let id = normalizeInviteId(inviteId);
+  let expires_at = opts.expires_at || null;
+  let issued_at = nowIso();
+
+  if (!id) {
+    const days = Number(opts.expires_days);
+    const safeDays = Number.isFinite(days) && days >= 1 ? Math.min(90, days) : 14;
+    const minted = await mintSignedInvite(context, {
+      expiresAtMs: Date.now() + safeDays * 86400000,
+      issuedAtIso: issued_at,
+    });
+    id = minted.invite_id;
+    expires_at = minted.expires_at;
+    issued_at = minted.issued_at;
+    // 新規 nonce のため既存チェック不要（署名だけだと issued に見える）
+    const next = {
+      invite_id: id,
+      status: "issued",
+      issued_at,
+      expires_at,
+      activated_at: null,
+      activated_user_id: null,
+      note: opts.note || null,
+    };
+    await persistInvite(context, next);
+    return { ok: true, invite: next };
+  } else if (id.length < 4) {
     return { ok: false, code: "INVALID_INVITE", message: "一時IDが不正です" };
   }
-  const existing = await getInvitation(context, id);
-  if (existing && existing.status === "issued") {
+
+  // seed / KV / メモリ上の実体のみ衝突とみなす（署名の自己解決は除外）
+  const seed = await loadSeed(context);
+  const fromKv = coerceInvite(await authStoreGet(context, inviteKvKey(id)));
+  const fromMem = runtimeOverlay.get(id) || null;
+  const stored = mergeInvite(seed.get(id) || null, fromKv, fromMem);
+  if (stored && stored.status === "issued") {
+    if (opts.allow_existing) return { ok: true, invite: stored };
     return { ok: false, code: "INVITE_EXISTS", message: "この一時IDは既に発行済みです" };
   }
-  if (existing && existing.status === "activated") {
+  if (stored && stored.status === "activated") {
     return { ok: false, code: "INVITE_ALREADY_USED", message: "利用済みの一時IDは再発行できません" };
   }
+
+  if (!expires_at && isSignedInviteId(id)) {
+    const signed = await resolveSignedInvite(context, id);
+    if (signed) expires_at = signed.expires_at;
+  }
+
   const next = {
     invite_id: id,
     status: "issued",
-    issued_at: nowIso(),
-    expires_at: opts.expires_at || null,
+    issued_at,
+    expires_at,
     activated_at: null,
     activated_user_id: null,
     note: opts.note || null,
   };
-  runtimeOverlay.set(id, next);
+  await persistInvite(context, next);
   return { ok: true, invite: next };
 }
 
@@ -161,9 +230,8 @@ export async function disableInvitation(context, inviteId) {
   if (invite.status === "expired") {
     return { ok: false, code: "INVITE_EXPIRED", message: "期限切れの一時IDは停止不要です" };
   }
-  const id = normalizeInviteId(inviteId);
   const next = { ...invite, status: "disabled" };
-  runtimeOverlay.set(id, next);
+  await persistInvite(context, next);
   return { ok: true, invite: next };
 }
 
@@ -181,19 +249,27 @@ export async function enableInvitation(context, inviteId) {
   if (invite.status !== "disabled") {
     return { ok: true, invite };
   }
-  const id = normalizeInviteId(inviteId);
   const next = {
     ...invite,
     status: invite.activated_user_id ? "activated" : "issued",
   };
-  runtimeOverlay.set(id, next);
+  await persistInvite(context, next);
   return { ok: true, invite: next };
 }
 
-/** 一覧（seed ∪ overlay） */
+/** 一覧（seed ∪ overlay ∪ KV） */
 export async function listInvitations(context) {
   const seed = await loadSeed(context);
   const ids = new Set([...seed.keys(), ...runtimeOverlay.keys()]);
+  try {
+    const keys = await authStoreListKeys(context, "invite:", 500);
+    for (const k of keys) {
+      const id = k.replace(/^invite:/, "");
+      if (id) ids.add(normalizeInviteId(id));
+    }
+  } catch {
+    /* ignore */
+  }
   const items = [];
   for (const id of ids) {
     const inv = await getInvitation(context, id);

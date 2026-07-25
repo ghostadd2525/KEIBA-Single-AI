@@ -36,10 +36,10 @@ test("buildHeatmapPayload shapes distance and condition grids", () => {
   assert.deepEqual(payload.distance.venues, ["東京"]);
   assert.equal(payload.distance.rows.length, 1);
   assert.equal(payload.distance.rows[0].cells[1].pct, 80);
-  assert.equal(payload.condition.rows.length, 2);
-  const turfRow = payload.condition.rows.find((r) => r.label === "東京 芝");
-  assert.ok(turfRow);
-  assert.equal(turfRow.cells[0].pct, 75);
+  assert.equal(payload.condition.rows.length, 1);
+  const row = payload.condition.rows[0];
+  assert.equal(row.label, "東京");
+  assert.equal(row.cells[0].pct, 75);
 });
 
 test("buildHeatmapPayload marks sparse cells as unknown", () => {

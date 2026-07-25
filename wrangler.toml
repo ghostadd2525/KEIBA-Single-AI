@@ -36,3 +36,9 @@ AI_ENGINE = "real"
 EXPECT_ENV = "production"
 # Version 2 Explainability — BFF mapper（本番 Release）
 EXPLAIN_V2_ENABLED = "true"
+
+# 招待・ユーザー永続化（一時IDログインが isolate またぎで失敗しないように）
+[[kv_namespaces]]
+binding = "EXPECT_AUTH_STORE"
+id = "d5c2348e5a8e4727b9e3c4635182ca5f"
+preview_id = "3b3855e76a204324a812a7f03965cc56"

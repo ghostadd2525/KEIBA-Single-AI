@@ -50,15 +50,19 @@ body.v11-mobile .expect-btn {
   min-height: 44px;
 }
 
-body.v11-mobile .favorites-rail,
-body.v11-mobile .heatmap-scroll {
+body.v11-mobile .favorites-rail {
   -webkit-overflow-scrolling: touch;
   scroll-snap-type: x proximity;
 }
 
-body.v11-mobile .favorites-rail > *,
-body.v11-mobile .heatmap-scroll > * {
+body.v11-mobile .favorites-rail > * {
   scroll-snap-align: start;
+}
+
+body.v11-mobile .heatmap-scroll,
+body.v11-mobile .cond-table-wrap {
+  -webkit-overflow-scrolling: touch;
+  scroll-snap-type: none;
 }
 
 /* —— Home —— */
