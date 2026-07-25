@@ -11,7 +11,7 @@ import { InvitationRepository } from "../../_lib/invitationRepository.js";
 import { UserRepository } from "../../_lib/userRepository.js";
 import { resolveAuthorization } from "../../_lib/authorization.js";
 import { getBetaConfig } from "../../_lib/betaConfig.js";
-import { isPrivilegedOpsRole } from "../../_lib/roles.js";
+import { isPrivilegedOpsRole, normalizeRole } from "../../_lib/roles.js";
 import { writeAudit } from "../../_lib/auditLog.js";
 
 function unauthorized() {
@@ -28,16 +28,22 @@ async function requireAdmin(context) {
   if (!session) return { ok: false, response: unauthorized() };
   context.data = context.data || {};
   context.data.user = session;
-  const beta = await getBetaConfig(context);
-  const authz = await resolveAuthorization(context, beta);
-  if (!isPrivilegedOpsRole(authz.role)) {
-    return { ok: false, response: forbidden() };
+
+  // まず token / profile の role を見て、ADMIN なら beta 読み込みを省略（発行レイテンシ短縮）
+  let user = await UserRepository.get(context, session.id);
+  let role = normalizeRole((user && user.role) || session.role || "USER");
+  if (!isPrivilegedOpsRole(role)) {
+    const beta = await getBetaConfig(context);
+    const authz = await resolveAuthorization(context, beta);
+    role = authz.role;
+    if (!isPrivilegedOpsRole(role)) {
+      return { ok: false, response: forbidden() };
+    }
   }
-  const user = (await UserRepository.get(context, session.id)) || {
-    user_id: session.id,
-    role: authz.role,
-  };
-  return { ok: true, user, role: authz.role, session };
+  if (!user) {
+    user = { user_id: session.id, role };
+  }
+  return { ok: true, user, role, session };
 }
 
 /** 最近発行（issued|activated）5件。issued_at 降順 */

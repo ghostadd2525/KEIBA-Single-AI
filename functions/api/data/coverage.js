@@ -12,7 +12,7 @@ export async function onRequestGet(context) {
   const env = getEnv(context);
 
   if (useAiProxy(env)) {
-    const proxied = await aiFetch(context, "/v1/data/coverage" + qs);
+    const proxied = await aiFetch(context, "/v1/data/coverage" + qs, { timeoutMs: 4000 });
     if (proxied && proxied instanceof Response) return proxied;
     if (proxied && proxied.ok) {
       return jsonOk(proxied.payload.data, {

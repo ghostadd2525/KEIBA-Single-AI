@@ -1,6 +1,8 @@
 import { getEnv, useAiProxy } from "./env.js";
 import { jsonError } from "./errors.js";
 
+const AI_FETCH_TIMEOUT_MS = 12000;
+
 export async function aiFetch(context, path, init = {}) {
   const env = getEnv(context);
   if (!useAiProxy(env)) return null;
@@ -20,16 +22,42 @@ export async function aiFetch(context, path, init = {}) {
     headers["content-type"] = "application/json; charset=utf-8";
   }
 
-  let res;
-  try {
-    res = await fetch(url, { ...init, headers });
-  } catch (e) {
-    return jsonError("AI_UNAVAILABLE", "WIN5 AI service unreachable", 502, {
-      message: String(e && e.message ? e.message : e),
-    });
+  const timeoutMs =
+    typeof init.timeoutMs === "number" && init.timeoutMs > 0
+      ? init.timeoutMs
+      : AI_FETCH_TIMEOUT_MS;
+  const { timeoutMs: _omit, signal: userSignal, ...fetchInit } = init;
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+  if (userSignal) {
+    if (userSignal.aborted) controller.abort();
+    else
+      userSignal.addEventListener("abort", () => controller.abort(), {
+        once: true,
+      });
   }
 
-  const text = await res.text();
+  let res;
+  let text;
+  try {
+    res = await fetch(url, { ...fetchInit, headers, signal: controller.signal });
+    // ヘッダ到着後の body 停滞も同一 AbortSignal で打ち切る
+    text = await res.text();
+  } catch (e) {
+    const aborted = e && (e.name === "AbortError" || controller.signal.aborted);
+    return jsonError(
+      aborted ? "AI_TIMEOUT" : "AI_UNAVAILABLE",
+      aborted ? "WIN5 AI service timeout" : "WIN5 AI service unreachable",
+      502,
+      {
+        message: String(e && e.message ? e.message : e),
+        timeout_ms: timeoutMs,
+      }
+    );
+  } finally {
+    clearTimeout(timer);
+  }
+
   let payload = null;
   try {
     payload = text ? JSON.parse(text) : null;

@@ -27,6 +27,7 @@ export const OPS_MODE_EXEMPT_PATHS = new Set([
   "/api/auth/invite/start",
   "/api/auth/setup",
   "/api/users/me",
+  "/api/admin/invitations",
   "/api/health",
   "/api/ops/monitor",
   "/api/ops/public-status",

@@ -10,7 +10,7 @@ export async function onRequestGet(context) {
   if (!useAiProxy(env)) {
     return jsonError("AI_BASE_URL_REQUIRED", "Set AI_BASE_URL to collect missing reports", 503);
   }
-  const proxied = await aiFetch(context, "/v1/diagnostics/missing");
+  const proxied = await aiFetch(context, "/v1/diagnostics/missing", { timeoutMs: 4000 });
   if (proxied && proxied instanceof Response) return proxied;
   if (!proxied || !proxied.ok) {
     return jsonError("DIAGNOSTICS_UNAVAILABLE", "diagnostics failed", 502);
