@@ -608,7 +608,15 @@
         escapeHtml(MARK_SYMBOL[r.mark] || "—") +
         "</span>" +
         '<span class="mark-chip-num">' +
-        escapeHtml(String(r.horse_number)) +
+        escapeHtml(
+          String(
+            r.number != null
+              ? r.number
+              : r.horse_number != null
+                ? r.horse_number
+                : "—"
+          )
+        ) +
         "</span>" +
         '<span class="mark-chip-name">' +
         escapeHtml(horseLabel(r.horse_name, r.horse_number)) +
@@ -637,7 +645,15 @@
         escapeHtml(MARK_SYMBOL[mark] || "") +
         "</p>" +
         "<h4>" +
-        escapeHtml(String(r.horse_number)) +
+        escapeHtml(
+          String(
+            r.number != null
+              ? r.number
+              : r.horse_number != null
+                ? r.horse_number
+                : "—"
+          )
+        ) +
         " " +
         escapeHtml(horseLabel(r.horse_name, r.horse_number)) +
         "</h4>" +
@@ -830,25 +846,28 @@
     return t ? t + "出走" : "";
   }
 
-  function raceCourseLine(info) {
+  function extractPostTime(info) {
     info = info || {};
-    var parts = [];
-    var surface = info.surface || info.target_surface || "";
-    var dist = info.distance != null ? info.distance : info.target_distance;
-    if (surface || dist) {
-      parts.push(String(surface || "") + (dist != null && dist !== "" ? String(dist) + "m" : ""));
-    }
-    if (info.field_size != null && info.field_size !== "") {
-      parts.push(String(info.field_size) + "頭");
-    }
-    return parts.filter(Boolean).join(" · ");
+    if (info.post_time) return info.post_time;
+    var raw = String(info.race_name || info.class_label || "");
+    var m = raw.match(/(\d{1,2}):(\d{2})/);
+    return m ? m[1] + ":" + m[2] : "";
+  }
+
+  function venueOnly(info) {
+    info = info || {};
+    var v = info.venue || info.course || "";
+    if (v) return String(v);
+    var label = String(info.race_label || "");
+    var m = label.match(/^(.+?)(\d{1,2})\s*R$/);
+    if (m) return m[1];
+    return label || "レース";
   }
 
   function paintRaceMeta(info) {
     info = info || {};
     var name = shortRaceName(info.race_name || info.class_label || "");
-    var nameDisp = name;
-    var postLabel = formatPostTimeLabel(info.post_time);
+    var postLabel = formatPostTimeLabel(extractPostTime(info));
     var dateBit = "";
     if (info.date_label) dateBit = String(info.date_label);
     else if (info.date && /^\d{4}-\d{2}-\d{2}$/.test(String(info.date))) {
@@ -861,17 +880,17 @@
       var subBits = [];
       if (name) subBits.push(name);
       if (postLabel) subBits.push(postLabel);
-      subEl.textContent = subBits.join(" · ") || "—";
+      subEl.textContent = subBits.join(" ") || "—";
     }
 
     var nameEl = document.getElementById("raceMetaName");
     var lineEl = document.getElementById("raceMetaLine");
-    if (nameEl) nameEl.textContent = nameDisp || "—";
+    if (nameEl) nameEl.textContent = name || "—";
     if (lineEl) {
       var lineBits = [];
       if (dateBit) lineBits.push(dateBit);
       if (postLabel) lineBits.push(postLabel);
-      lineEl.textContent = lineBits.join(" · ") || "レース情報を取得中…";
+      lineEl.textContent = lineBits.join("・") || "レース情報を取得中…";
     }
   }
 
@@ -896,11 +915,8 @@
     var bandLabel = BAND_LABEL[band] || BAND_LABEL.unknown;
 
     var titleEl = document.getElementById("raceTitle");
-    var raceNo = info.race_number != null ? info.race_number : info.race_no;
     if (titleEl) {
-      titleEl.textContent =
-        info.race_label ||
-        (info.venue || "") + (raceNo != null ? " " + raceNo + "R" : "");
+      titleEl.textContent = venueOnly(info);
     }
     paintRaceMeta(info);
 
@@ -910,7 +926,15 @@
       var h2 = card.querySelector("h2");
       var p = card.querySelector("p");
       var stars = card.querySelector(".race-stars");
-      if (num) num.textContent = String(honmei.horse_number);
+      if (num) {
+        num.textContent = String(
+          honmei.number != null
+            ? honmei.number
+            : honmei.horse_number != null
+              ? honmei.horse_number
+              : "—"
+        );
+      }
       if (h2) h2.textContent = horseLabel(honmei.horse_name, honmei.horse_number);
       if (p) {
         p.textContent = "AI本命 · 自信度：" + bandLabel;

@@ -1054,10 +1054,112 @@ body.v2-race-list-ui .race-conf {
   font-variant-numeric: tabular-nums;
 }
 
-.board-acc-line--finish {
+.board-acc-line--compact {
+  font-size: 13px;
+  line-height: 1.45;
+  color: #e8edf5;
+  font-variant-numeric: tabular-nums;
+}
+
+/* オッズ変動AI — 会場アコーディオン */
+.odds-venue-acc {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.odds-venue-acc-item {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.odds-venue-acc-item:last-child {
+  border-bottom: 0;
+}
+
+.odds-venue-acc-trigger {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  margin: 0;
+  padding: 14px 4px;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+.odds-venue-acc-chevron {
+  width: 0.55em;
+  height: 0.55em;
+  border-right: 2px solid var(--muted, #9aa3b2);
+  border-bottom: 2px solid var(--muted, #9aa3b2);
+  transform: rotate(-45deg);
+  transition: transform 0.22s ease;
+  flex: 0 0 auto;
+}
+
+.odds-venue-acc-item.is-open .odds-venue-acc-chevron {
+  transform: rotate(45deg);
+  border-color: var(--gold-soft, #e5c78f);
+}
+
+.odds-venue-acc-name {
+  flex: 1 1 auto;
   font-weight: 700;
+  font-size: 15px;
+  color: #fff;
+}
+
+.odds-venue-acc-count {
+  flex: 0 0 auto;
+  min-width: 1.6em;
+  text-align: center;
+  font-size: 12px;
+  color: var(--muted, #9aa3b2);
+}
+
+.odds-venue-acc-panel {
+  display: grid;
+  gap: 6px;
+  padding: 0 2px 12px 22px;
+}
+
+.odds-venue-race {
+  display: block;
+  width: 100%;
+  margin: 0;
+  padding: 12px 14px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.04);
   color: #fff;
   font-size: 14px;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+.odds-venue-race.is-active {
+  border-color: rgba(229, 199, 143, 0.55);
+  background: rgba(229, 199, 143, 0.12);
+  color: var(--gold-soft, #e5c78f);
+}
+
+.odds-race-select-label,
+.odds-race-select {
+  display: none !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .odds-venue-acc-chevron {
+    transition: none;
+  }
 }
 
 .board-acc-line--race {

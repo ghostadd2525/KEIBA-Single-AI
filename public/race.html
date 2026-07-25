@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Noto+Sans+JP:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="assets/styles.css?v=18" />
-  <link rel="stylesheet" href="assets/screens.css?v=39" />
+  <link rel="stylesheet" href="assets/screens.css?v=40" />
   <link rel="stylesheet" href="assets/ux.css?v=20" />
   <link rel="stylesheet" href="assets/vqa.css" />
   <link rel="stylesheet" href="assets/v11.css?v=11" />
@@ -232,10 +232,19 @@
       (window.ExpectRaceIdMeta && ExpectRaceIdMeta.displayPlace(id, meta.place)) ||
       meta.place ||
       "レース";
+    placeHint = String(placeHint)
+      .replace(/\s*\d{1,2}\s*R\s*$/u, "")
+      .trim() || String(placeHint);
     if (titleEl) titleEl.textContent = placeHint;
     if (subEl) {
       var subBits = [];
-      if (meta.name) subBits.push(meta.name);
+      if (meta.name) {
+        var shortName = String(meta.name)
+          .replace(/\s+\d{1,2}:\d{2}(?:芝|ダート|ダ|障)?\d*m?\d*頭?\s*$/u, "")
+          .replace(/\s+\d{1,2}:\d{2}\S*\s*$/u, "")
+          .trim();
+        subBits.push(shortName || meta.name);
+      }
       if (meta.postTime) {
         var pt = String(meta.postTime).trim();
         var m = pt.match(/^(\d{1,2}):(\d{2})/);
@@ -246,14 +255,20 @@
               ? pt
               : pt + "出走"
         );
-      } else if (meta.badge) {
+      } else if (meta.badge && !/芝|ダート|\d+m|\d+頭/.test(String(meta.badge))) {
         subBits.push(meta.badge);
       }
-      subEl.textContent = subBits.length ? subBits.join(" · ") : "読み込み中…";
+      subEl.textContent = subBits.length ? subBits.join(" ") : "読み込み中…";
     }
     var metaNameEl = document.getElementById("raceMetaName");
     var metaLineEl = document.getElementById("raceMetaLine");
-    if (metaNameEl) metaNameEl.textContent = meta.name || placeHint || "—";
+    if (metaNameEl) {
+      var cardName = String(meta.name || "")
+        .replace(/\s+\d{1,2}:\d{2}(?:芝|ダート|ダ|障)?\d*m?\d*頭?\s*$/u, "")
+        .replace(/\s+\d{1,2}:\d{2}\S*\s*$/u, "")
+        .trim();
+      metaNameEl.textContent = cardName || placeHint || "—";
+    }
     if (metaLineEl) {
       var lineBits = [];
       if (meta.dateLabel) lineBits.push(meta.dateLabel);
@@ -268,7 +283,7 @@
               : pt2 + "出走"
         );
       }
-      metaLineEl.textContent = lineBits.length ? lineBits.join(" · ") : "読み込み中…";
+      metaLineEl.textContent = lineBits.length ? lineBits.join("・") : "読み込み中…";
     }
 
     var favBtn = document.getElementById("raceFavBtn");

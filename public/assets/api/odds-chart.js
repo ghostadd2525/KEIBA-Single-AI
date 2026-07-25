@@ -297,6 +297,7 @@
 
   function bind() {
     var raceListEl =
+      document.getElementById("oddsRaceAccordion") ||
       document.getElementById("oddsRaceSelect") ||
       document.getElementById("oddsRaceList");
     var dateTabs = document.getElementById("oddsDateTabs");
@@ -316,6 +317,8 @@
       allItems: [],
       date: "all",
       venue: "all",
+      openVenue: null,
+      accordionClosed: false,
     };
 
     function ensureSvg() {
@@ -598,99 +601,98 @@
       }
     }
 
-    function shortRaceName(raw) {
-      var s = String(raw == null ? "" : raw).trim();
-      if (!s) return "";
-      var m = s.match(
-        /^(.+?)\s+\d{1,2}:\d{2}(?:芝|ダート|ダ|障)?\d*m?\d*頭?\s*$/u
-      );
-      if (m && m[1]) return String(m[1]).trim();
-      s = s
-        .replace(/\s+\d{1,2}:\d{2}(?:芝|ダート|ダ|障)\d+m\d+頭\s*$/u, "")
-        .replace(/\s+\d{1,2}:\d{2}\S*\s*$/u, "")
-        .trim();
-      return s || String(raw).trim();
+    function raceRowLabel(r) {
+      return raceMetaLabel({
+        race_label:
+          r.race_label ||
+          (r.course || "") + (r.race_number != null ? r.race_number + "R" : ""),
+        race_name:
+          r.race_name ||
+          (r.race_info && (r.race_info.race_name || r.race_info.class_label)) ||
+          "",
+        post_time:
+          (r.race_info && r.race_info.post_time) || r.post_time || "",
+      });
     }
 
-    function raceRowLabel(r) {
-      var place =
-        r.race_label ||
-        (r.course || "") + (r.race_number != null ? r.race_number + "R" : "");
-      var name = shortRaceName(
-        r.race_name ||
-          (r.race_info && (r.race_info.race_name || r.race_info.class_label)) ||
-          ""
-      );
-      var post = String(
-        (r.race_info && r.race_info.post_time) || r.post_time || ""
-      ).trim();
-      var postM = post.match(/^(\d{1,2}):(\d{2})/);
-      var postLabel = postM
-        ? String(Number(postM[1])).padStart(2, "0") +
-          ":" +
-          postM[2] +
-          "出走"
-        : post
-          ? post.indexOf("出走") >= 0
-            ? post
-            : post + "出走"
-          : "";
-      var bits = [];
-      if (place) bits.push(place);
-      if (name) bits.push(name);
-      if (postLabel) bits.push(postLabel);
-      return bits.join(" · ");
+    function raceShortLabel(r) {
+      if (r.race_label) return String(r.race_label);
+      var v = itemVenue(r) || "";
+      var n = r.race_number != null ? r.race_number : r.race_no;
+      return v + (n != null ? n + "R" : "");
     }
 
     function paintRaceList() {
       var items = filteredItems();
       if (!items.length) {
-        if (raceListEl.tagName === "SELECT") {
-          raceListEl.innerHTML =
-            '<option value="">この条件に合うレースがありません</option>';
-          raceListEl.disabled = true;
-        } else {
-          raceListEl.innerHTML =
-            '<p class="race-list-empty">この条件に合うレースがありません。</p>';
+        raceListEl.innerHTML =
+          '<p class="race-list-empty">この条件に合うレースがありません。</p>';
+        return;
+      }
+
+      var groups = Object.create(null);
+      var order = [];
+      items.forEach(function (r) {
+        var v = itemVenue(r) || "その他";
+        if (!groups[v]) {
+          groups[v] = [];
+          order.push(v);
         }
-        return;
+        groups[v].push(r);
+      });
+
+      var openVenue = null;
+      if (!state.accordionClosed) {
+        openVenue = state.openVenue;
+        if (!openVenue && state.raceId) {
+          for (var i = 0; i < items.length; i++) {
+            if (items[i].race_id === state.raceId) {
+              openVenue = itemVenue(items[i]) || "その他";
+              break;
+            }
+          }
+        }
+        if (!openVenue) openVenue = order[0] || null;
       }
-      if (raceListEl.tagName === "SELECT") {
-        raceListEl.disabled = false;
-        raceListEl.innerHTML = items
-          .map(function (r) {
-            var label = raceRowLabel(r);
-            return (
-              '<option value="' +
-              escapeHtml(r.race_id) +
-              '"' +
-              (r.race_id === state.raceId ? " selected" : "") +
-              ">" +
-              escapeHtml(label) +
-              "</option>"
-            );
-          })
-          .join("");
-        return;
-      }
-      raceListEl.innerHTML = items
-        .map(function (r) {
-          var on = r.race_id === state.raceId;
+
+      raceListEl.innerHTML = order
+        .map(function (venue) {
+          var races = groups[venue] || [];
+          var open = openVenue === venue;
           return (
-            '<button type="button" class="odds-race-item' +
-            (on ? " is-active" : "") +
-            '" role="option" aria-selected="' +
-            (on ? "true" : "false") +
-            '" data-race-id="' +
-            escapeHtml(r.race_id) +
+            '<div class="odds-venue-acc-item' +
+            (open ? " is-open" : "") +
+            '" data-venue-group="' +
+            escapeHtml(venue) +
+            '" role="listitem">' +
+            '<button type="button" class="odds-venue-acc-trigger" aria-expanded="' +
+            (open ? "true" : "false") +
             '">' +
-            '<span class="odds-race-item__main">' +
-            escapeHtml(raceRowLabel(r)) +
+            '<span class="odds-venue-acc-chevron" aria-hidden="true"></span>' +
+            '<span class="odds-venue-acc-name">' +
+            escapeHtml(venue) +
             "</span>" +
-            '<span class="odds-race-item__meta">' +
-            escapeHtml(dateLabel(itemDate(r))) +
-            (itemVenue(r) ? " · " + escapeHtml(itemVenue(r)) : "") +
-            "</span></button>"
+            '<span class="odds-venue-acc-count">' +
+            races.length +
+            "</span></button>" +
+            '<div class="odds-venue-acc-panel"' +
+            (open ? "" : " hidden") +
+            ">" +
+            races
+              .map(function (r) {
+                var on = r.race_id === state.raceId;
+                return (
+                  '<button type="button" class="odds-venue-race' +
+                  (on ? " is-active" : "") +
+                  '" data-race-id="' +
+                  escapeHtml(r.race_id) +
+                  '">' +
+                  escapeHtml(raceShortLabel(r)) +
+                  "</button>"
+                );
+              })
+              .join("") +
+            "</div></div>"
           );
         })
         .join("");
@@ -699,6 +701,8 @@
     function selectRace(raceId) {
       if (!raceId) return;
       state.raceId = raceId;
+      state.accordionClosed = true;
+      state.openVenue = null;
       paintRaceList();
       load(false);
       startTimer();
@@ -710,6 +714,8 @@
     }
 
     function applyFilterChange() {
+      state.accordionClosed = false;
+      state.openVenue = null;
       paintRaceList();
       var items = filteredItems();
       var stillVisible = items.some(function (r) {
@@ -748,17 +754,23 @@
         applyFilterChange();
       });
     }
-    if (raceListEl.tagName === "SELECT") {
-      raceListEl.addEventListener("change", function () {
-        selectRace(raceListEl.value || "");
-      });
-    } else {
-      raceListEl.addEventListener("click", function (e) {
-        var btn = e.target.closest("[data-race-id]");
-        if (!btn) return;
-        selectRace(btn.getAttribute("data-race-id") || "");
-      });
-    }
+    raceListEl.addEventListener("click", function (e) {
+      var trigger = e.target.closest(".odds-venue-acc-trigger");
+      if (trigger && raceListEl.contains(trigger)) {
+        e.preventDefault();
+        var item = trigger.closest(".odds-venue-acc-item");
+        if (!item) return;
+        var venue = item.getAttribute("data-venue-group") || "";
+        var willOpen = !item.classList.contains("is-open");
+        state.accordionClosed = !willOpen;
+        state.openVenue = willOpen ? venue : null;
+        paintRaceList();
+        return;
+      }
+      var raceBtn = e.target.closest("[data-race-id]");
+      if (!raceBtn || !raceListEl.contains(raceBtn)) return;
+      selectRace(raceBtn.getAttribute("data-race-id") || "");
+    });
     global.addEventListener("pagehide", function () {
       if (state.timer) clearInterval(state.timer);
     });
@@ -777,16 +789,13 @@
           ? "開催日 " + dates.map(dateLabel).join("・") + " のレースを読み込み中…"
           : "レースを読み込み中…";
     }
-    if (global.ExpectUx && raceListEl.tagName !== "SELECT") {
+    if (global.ExpectUx) {
       ExpectUx.showLoading(raceListEl, {
         replace: true,
         compact: true,
         title: "レース一覧を準備中...",
         message: "開催レースを読み込んでいます。",
       });
-    } else if (raceListEl.tagName === "SELECT") {
-      raceListEl.innerHTML = '<option value="">レースを読み込み中…</option>';
-      raceListEl.disabled = true;
     }
 
     function listForDate(date) {

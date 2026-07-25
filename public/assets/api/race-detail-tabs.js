@@ -75,12 +75,36 @@
     }
   }
 
+  function resolveHorseNumber(e) {
+    if (!e || typeof e !== "object") return null;
+    var raw =
+      e.horse_number != null
+        ? e.horse_number
+        : e.number != null
+          ? e.number
+          : e.umaban != null
+            ? e.umaban
+            : null;
+    var n = Number(raw);
+    if (!Number.isFinite(n) || n < 1) return null;
+    return n;
+  }
+
+  function resolvePopularity(e) {
+    if (!e || typeof e !== "object") return null;
+    var raw = e.popularity != null ? e.popularity : e.ninki != null ? e.ninki : null;
+    var n = Number(raw);
+    if (!Number.isFinite(n) || n < 1) return null;
+    return n;
+  }
+
   function shutubaHtml(entries) {
     if (!entries || !entries.length) {
       return '<p class="muted">出馬表データを取得できませんでした。</p>';
     }
     var rows = entries
       .map(function (e) {
+        var hn = resolveHorseNumber(e);
         return (
           "<tr>" +
           '<td class="col-frame"><span class="' +
@@ -89,7 +113,7 @@
           escapeHtml(displayFrame(e.frame_number)) +
           "</span></td>" +
           '<td class="col-num">' +
-          escapeHtml(e.horse_number != null ? e.horse_number : "—") +
+          escapeHtml(hn != null ? hn : "—") +
           "</td>" +
           '<td class="col-name">' +
           escapeHtml(cleanHorseName(e.horse_name)) +
@@ -128,23 +152,22 @@
       var oa = a.odds != null && Math.abs(Number(a.odds) - 99.9) >= 0.05 ? Number(a.odds) : 9999;
       var ob = b.odds != null && Math.abs(Number(b.odds) - 99.9) >= 0.05 ? Number(b.odds) : 9999;
       if (oa !== ob) return oa - ob;
-      return (a.horse_number || 0) - (b.horse_number || 0);
+      var ha = resolveHorseNumber(a) || 0;
+      var hb = resolveHorseNumber(b) || 0;
+      return ha - hb;
     });
     var rows = sorted
       .map(function (e, i) {
-        var pop =
-          e.popularity != null
-            ? e.popularity
-            : published
-              ? i + 1
-              : "—";
+        var hn = resolveHorseNumber(e);
+        var pop = resolvePopularity(e);
+        if (pop == null && published) pop = i + 1;
         return (
           "<tr>" +
           '<td class="col-pop">' +
-          escapeHtml(pop) +
+          escapeHtml(pop != null ? pop : "—") +
           "</td>" +
           '<td class="col-num">' +
-          escapeHtml(e.horse_number != null ? e.horse_number : "—") +
+          escapeHtml(hn != null ? hn : "—") +
           "</td>" +
           '<td class="col-name">' +
           escapeHtml(cleanHorseName(e.horse_name)) +
@@ -227,28 +250,20 @@
   }
 
   function recentRaceHtml(r) {
-    var lines = [];
     var date = formatHistoryDate(r && r.date);
-    if (date) lines.push('<div class="board-acc-line board-acc-line--date">' + escapeHtml(date) + "</div>");
-    lines.push(
-      '<div class="board-acc-line board-acc-line--finish">' +
-        escapeHtml(formatFinish(r && r.finish)) +
-        "</div>"
+    var compactDate = date
+      ? date.replace(/^(\d{4})\/0?(\d+)\/0?(\d+)$/, function (_, y, m, d) {
+          return y + "/" + Number(m) + "/" + Number(d);
+        })
+      : "";
+    var finish = formatFinish(r && r.finish);
+    var line = [compactDate, finish].filter(Boolean).join(" ");
+    return (
+      '<li class="board-acc-race">' +
+      '<div class="board-acc-line board-acc-line--compact">' +
+      escapeHtml(line || "—") +
+      "</div></li>"
     );
-    if (r && r.race_name) {
-      lines.push(
-        '<div class="board-acc-line board-acc-line--race">' +
-          escapeHtml(r.race_name) +
-          "</div>"
-      );
-    }
-    var sd = formatSurfaceDistance(r);
-    if (sd) {
-      lines.push(
-        '<div class="board-acc-line board-acc-line--track">' + escapeHtml(sd) + "</div>"
-      );
-    }
-    return '<li class="board-acc-race">' + lines.join("") + "</li>";
   }
 
   function historyHtml(history, entries) {
@@ -272,6 +287,7 @@
               recent.map(recentRaceHtml).join("") +
               "</ul>";
           }
+          var hn = h.horse_number != null ? h.horse_number : "—";
           return (
             '<div class="board-acc-item" role="listitem">' +
             '<button type="button" class="board-acc-trigger" aria-expanded="false" aria-controls="' +
@@ -280,7 +296,7 @@
             id +
             '-btn">' +
             '<span class="board-acc-num">' +
-            escapeHtml(circleHorseNum(h.horse_number)) +
+            escapeHtml(String(hn)) +
             "</span>" +
             '<span class="board-acc-name">' +
             escapeHtml(cleanHorseName(h.horse_name)) +
@@ -311,11 +327,19 @@
       e.preventDefault();
       var item = btn.closest(".board-acc-item");
       if (!item) return;
+      var willOpen = !item.classList.contains("is-open");
+      root.querySelectorAll(".board-acc-item.is-open").forEach(function (other) {
+        if (other === item) return;
+        other.classList.remove("is-open");
+        var ob = other.querySelector(".board-acc-trigger");
+        var op = other.querySelector(".board-acc-panel");
+        if (ob) ob.setAttribute("aria-expanded", "false");
+        if (op) op.setAttribute("aria-hidden", "true");
+      });
       var panel = item.querySelector(".board-acc-panel");
-      var open = !item.classList.contains("is-open");
-      item.classList.toggle("is-open", open);
-      btn.setAttribute("aria-expanded", open ? "true" : "false");
-      if (panel) panel.setAttribute("aria-hidden", open ? "false" : "true");
+      item.classList.toggle("is-open", willOpen);
+      btn.setAttribute("aria-expanded", willOpen ? "true" : "false");
+      if (panel) panel.setAttribute("aria-hidden", willOpen ? "false" : "true");
     });
   }
 
