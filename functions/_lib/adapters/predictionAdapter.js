@@ -339,8 +339,12 @@ export async function adaptPredictionGet(context, raceId) {
     const fromPi = await fetchFromPiGet(context, raceId);
     if (fromPi && fromPi.ok) return fromPi;
 
-    // PI 不通・タイムアウト時のみ AI へフェイルオーバー（画面固着防止）
-    if (useAiProxy(env)) {
+    // PI 不通・タイムアウト時のみ AI へフェイルオーバー（同一オリジンならスキップ）
+    const sameOriginFailover =
+      env.AI_BASE_URL &&
+      env.PI_BASE_URL &&
+      String(env.AI_BASE_URL).replace(/\/$/, "") === String(env.PI_BASE_URL).replace(/\/$/, "");
+    if (useAiProxy(env) && !sameOriginFailover) {
       const fromPy = await fetchFromPythonGet(context, raceId);
       if (fromPy && fromPy.ok) {
         if (fromPy.provenanceMeta) {
