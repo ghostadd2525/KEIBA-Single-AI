@@ -127,7 +127,7 @@
   <script src="assets/api/race-cards.js?v=15"></script>
   <script src="assets/api/prediction.js?v=15"></script>
   <script src="assets/api/race-id-meta.js?v=15"></script>
-  <script src="assets/api/prediction-bind.js?v=32"></script>
+  <script src="assets/api/prediction-bind.js?v=33"></script>
   <script src="assets/api/real-data-bind.js?v=16"></script>
   <script src="assets/ux.js?v=21"></script>
   <script src="assets/api/ui-features.js?v=15"></script>
@@ -1112,7 +1112,14 @@
       function loadV2(dateOpt) {
         raceListController.mode = "v2";
         if (!window.ExpectApi || !ExpectApi.Race || !window.ExpectPredictionBind) {
-          renderError("Race API クライアントが読み込めていません。");
+          var missing = [];
+          if (!window.ExpectApi || !ExpectApi.Race) missing.push("Race");
+          if (!window.ExpectPredictionBind) missing.push("PredictionBind");
+          renderError(
+            "レース表示用スクリプトが読み込めていません（" +
+              missing.join(", ") +
+              "）。"
+          );
           return;
         }
 

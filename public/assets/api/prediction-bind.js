@@ -13,14 +13,6 @@
       .replace(/"/g, "&quot;");
   }
 
-  function raceDetailHref(raceId) {
-    var rid = String(raceId || "");
-    if (global.ExpectRaceIdMeta && ExpectRaceIdMeta.normalizeRaceIdYear) {
-      rid = ExpectRaceIdMeta.normalizeRaceIdYear(rid) || rid;
-    }
-    return "race.html?race_id=" + encodeURIComponent(rid);
-  }
-
   /** "15:10" / "9:50" / "15:10:00" → "15:10" */
   function normalizePostTime(raw) {
     var m = String(raw == null ? "" : raw).trim().match(/^(\d{1,2}):(\d{2})/);
@@ -298,8 +290,8 @@
     return (
       '<a class="race-item race-item--bg' +
       bg +
-      '" href="' +
-      raceDetailHref(rid) +
+      '" href="race.html?race_id=' +
+      encodeURIComponent(rid) +
       '" data-race-date="' +
       escapeHtml(dateAttr) +
       '" data-race-venue="' +
@@ -401,8 +393,8 @@
     return (
       '<a class="race-item race-item--bg' +
       bg +
-      '" href="' +
-      raceDetailHref(rid) +
+      '" href="race.html?race_id=' +
+      encodeURIComponent(rid) +
       '" data-race-date="' +
       escapeHtml(info.date || dLabel) +
       '" data-race-venue="' +
@@ -489,7 +481,7 @@
     if (!snapshot || !snapshot.race_id) return false;
     var card = document.querySelector(".ai-card--predict");
     if (!card) return false;
-    card.setAttribute("href", raceDetailHref(snapshot.race_id));
+    card.setAttribute("href", "race.html?race_id=" + encodeURIComponent(snapshot.race_id));
     var score = snapshot.score != null ? Number(snapshot.score) : 0;
     var gauge = card.querySelector(".ai-gauge");
     var num = card.querySelector(".ai-gauge-num");
@@ -510,7 +502,7 @@
     if (!bundle || !bundle.race_id) return;
     var card = document.querySelector(".ai-card--predict");
     if (!card) return;
-    card.setAttribute("href", raceDetailHref(bundle.race_id));
+    card.setAttribute("href", "race.html?race_id=" + encodeURIComponent(bundle.race_id));
     var score = scorePercent(bundle) || 0;
     var gauge = card.querySelector(".ai-gauge");
     var num = card.querySelector(".ai-gauge-num");
@@ -912,23 +904,6 @@
         p.textContent = "AI本命 · 自信度：" + bandLabel;
       }
       if (stars && conf != null) stars.textContent = starsFromBand(band);
-    } else if (card) {
-      var isProjection =
-        (meta && meta.engine_source === "pi_catalog_projection") ||
-        (meta && meta.fallback_reason === "pi_prediction_unavailable_catalog_projection");
-      var num2 = card.querySelector(".honmei-num");
-      var h22 = card.querySelector("h2");
-      var p2 = card.querySelector("p");
-      var stars2 = card.querySelector(".race-stars");
-      if (num2) num2.textContent = "—";
-      if (h22) h22.textContent = isProjection ? "予想データ準備中" : "本命未確定";
-      if (p2) {
-        p2.textContent = isProjection
-          ? "レース情報のみ取得済み · 予想本体を再取得中です"
-          : "AI本命 · 自信度：—";
-      }
-      if (stars2) stars2.textContent = "☆☆☆☆☆";
-    }
 
       // v2_explain: 本命カード下に決定打 1 行（Flag OFF 時は要素を除去して v1.1 恒等）
       var dkHost = card.querySelector(".explain-honmei-decision");
@@ -955,6 +930,25 @@
       } else if (dkHost) {
         dkHost.remove();
       }
+    } else if (card) {
+      var isProjection =
+        (meta && meta.engine_source === "pi_catalog_projection") ||
+        (meta &&
+          meta.fallback_reason === "pi_prediction_unavailable_catalog_projection");
+      var num2 = card.querySelector(".honmei-num");
+      var h22 = card.querySelector("h2");
+      var p2 = card.querySelector("p");
+      var stars2 = card.querySelector(".race-stars");
+      if (num2) num2.textContent = "—";
+      if (h22) h22.textContent = isProjection ? "予想データ準備中" : "本命未確定";
+      if (p2) {
+        p2.textContent = isProjection
+          ? "レース情報のみ取得済み · 予想本体を再取得中です"
+          : "AI本命 · 自信度：—";
+      }
+      if (stars2) stars2.textContent = "☆☆☆☆☆";
+      var dkEmpty = card.querySelector(".explain-honmei-decision");
+      if (dkEmpty) dkEmpty.remove();
     }
 
     var confEl = document.getElementById("raceConfidenceDetail");
