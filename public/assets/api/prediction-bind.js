@@ -912,6 +912,23 @@
         p.textContent = "AI本命 · 自信度：" + bandLabel;
       }
       if (stars && conf != null) stars.textContent = starsFromBand(band);
+    } else if (card) {
+      var isProjection =
+        (meta && meta.engine_source === "pi_catalog_projection") ||
+        (meta && meta.fallback_reason === "pi_prediction_unavailable_catalog_projection");
+      var num2 = card.querySelector(".honmei-num");
+      var h22 = card.querySelector("h2");
+      var p2 = card.querySelector("p");
+      var stars2 = card.querySelector(".race-stars");
+      if (num2) num2.textContent = "—";
+      if (h22) h22.textContent = isProjection ? "予想データ準備中" : "本命未確定";
+      if (p2) {
+        p2.textContent = isProjection
+          ? "レース情報のみ取得済み · 予想本体を再取得中です"
+          : "AI本命 · 自信度：—";
+      }
+      if (stars2) stars2.textContent = "☆☆☆☆☆";
+    }
 
       // v2_explain: 本命カード下に決定打 1 行（Flag OFF 時は要素を除去して v1.1 恒等）
       var dkHost = card.querySelector(".explain-honmei-decision");

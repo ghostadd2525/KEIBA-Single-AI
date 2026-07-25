@@ -11,6 +11,7 @@ import { getEnv, useAiProxy } from "../env.js";
 import { mapPiPredictionToBundle, piProvenanceItem } from "../piPredictionMapper.js";
 import { piFetch, usePiProxy } from "../piProxy.js";
 import { findPiRaceInCatalog } from "../raceIdResolve.js";
+import { normalizeRaceIdYear } from "../raceIdYear.js";
 
 function bffMockItem(bundle) {
   return {
@@ -56,12 +57,14 @@ function normalizeEngineSource(source) {
   return source;
 }
 
-async function fetchFromPiGet(context, raceId, catalogRace = null) {
-  // 個別予想は Netkeiba 依存で固まりやすい。短く切って AI フェイルオーバーへ回す
+async function fetchFromPiGet(context, raceId, catalogRace = null, opts = {}) {
+  // 詳細は余裕を持たせる。一覧ファンアウト時だけ短く切る
+  const timeoutMs =
+    typeof opts.timeoutMs === "number" && opts.timeoutMs > 0 ? opts.timeoutMs : 20000;
   const proxied = await piFetch(
     context,
     `/v1/predictions/${encodeURIComponent(raceId)}`,
-    { timeoutMs: 4000 }
+    { timeoutMs }
   );
   if (proxied instanceof Response) {
     // タイムアウト/不通はソフト失敗扱い（errorResponse だと後続 AI が遅延しうる）
@@ -148,7 +151,11 @@ async function fetchFromPiList(context, query = {}) {
       chunk.map((race) => {
         const rid = String(race.race_id || "");
         if (!rid) return Promise.resolve(null);
-        return fetchFromPiGet(context, rid, race).then((one) => ({ race, rid, one }));
+        return fetchFromPiGet(context, rid, race, { timeoutMs: 4000 }).then((one) => ({
+          race,
+          rid,
+          one,
+        }));
       })
     );
     for (const row of results) {
@@ -335,9 +342,19 @@ export async function adaptPredictionList(context, query = {}) {
 /** 1件: PI →（失敗/タイムアウト時）Python AI → カタログ投影 →（未設定時）bff_mock */
 export async function adaptPredictionGet(context, raceId) {
   const env = getEnv(context);
+  const normalizedId = normalizeRaceIdYear(raceId);
+  const idChanged = normalizedId && normalizedId !== String(raceId || "").trim();
+
   if (usePiProxy(env)) {
-    const fromPi = await fetchFromPiGet(context, raceId);
-    if (fromPi && fromPi.ok) return fromPi;
+    const fromPi = await fetchFromPiGet(context, normalizedId);
+    if (fromPi && fromPi.ok) {
+      if (idChanged && fromPi.provenanceMeta) {
+        fromPi.provenanceMeta.requested_race_id = raceId;
+        fromPi.provenanceMeta.race_id = normalizedId;
+        fromPi.provenanceMeta.year_corrected = true;
+      }
+      return fromPi;
+    }
 
     // PI 不通・タイムアウト時のみ AI へフェイルオーバー（同一オリジンならスキップ）
     const sameOriginFailover =
@@ -345,18 +362,22 @@ export async function adaptPredictionGet(context, raceId) {
       env.PI_BASE_URL &&
       String(env.AI_BASE_URL).replace(/\/$/, "") === String(env.PI_BASE_URL).replace(/\/$/, "");
     if (useAiProxy(env) && !sameOriginFailover) {
-      const fromPy = await fetchFromPythonGet(context, raceId);
+      const fromPy = await fetchFromPythonGet(context, normalizedId);
       if (fromPy && fromPy.ok) {
         if (fromPy.provenanceMeta) {
           fromPy.provenanceMeta.fallback_reason = "pi_unavailable_ai_failover";
           fromPy.provenanceMeta.pi_error = fromPi?.error || "pi_failed";
+          if (idChanged) {
+            fromPy.provenanceMeta.requested_race_id = raceId;
+            fromPy.provenanceMeta.year_corrected = true;
+          }
         }
         return fromPy;
       }
     }
 
     // 最終手段: カタログ行から最低限の Bundle を組み立て（詳細ページが真っ白にならない）
-    const m = String(raceId || "").match(/^(\d{4}-\d{2}-\d{2})/);
+    const m = String(normalizedId || "").match(/^(\d{4}-\d{2}-\d{2})/);
     if (m) {
       const catalogProxied = await piFetch(context, `/v1/races?date=${encodeURIComponent(m[1])}`, {
         timeoutMs: 6000,
@@ -365,10 +386,10 @@ export async function adaptPredictionGet(context, raceId) {
         const races = Array.isArray(catalogProxied.payload.races)
           ? catalogProxied.payload.races
           : [];
-        const row = races.find((r) => String(r.race_id || "") === String(raceId));
+        const row = races.find((r) => String(r.race_id || "") === String(normalizedId));
         if (row) {
           const bundle = catalogToPredictionBundle({
-            race_id: String(row.race_id || raceId),
+            race_id: String(row.race_id || normalizedId),
             date: row.date || m[1],
             venue: row.course || row.venue,
             race_no: row.race_number != null ? row.race_number : row.race_no,
@@ -384,7 +405,9 @@ export async function adaptPredictionGet(context, raceId) {
             provenanceMeta: {
               engine: "n/a",
               engine_source: "pi_catalog_projection",
-              race_id: raceId,
+              race_id: normalizedId,
+              requested_race_id: idChanged ? raceId : undefined,
+              year_corrected: idChanged || undefined,
               fallback_reason: "pi_prediction_unavailable_catalog_projection",
               pi_error: fromPi?.error || "pi_failed",
             },
@@ -401,12 +424,12 @@ export async function adaptPredictionGet(context, raceId) {
     };
   }
   if (useAiProxy(env)) {
-    const fromPy = await fetchFromPythonGet(context, raceId);
+    const fromPy = await fetchFromPythonGet(context, normalizedId);
     if (fromPy && fromPy.ok) return fromPy;
     if (fromPy && fromPy.errorResponse) return fromPy;
     return { ok: false, error: "Prediction unavailable", status: 502 };
   }
-  return fetchFromMockGet(context, raceId);
+  return fetchFromMockGet(context, normalizedId);
 }
 
 export const PredictionAdapter = {

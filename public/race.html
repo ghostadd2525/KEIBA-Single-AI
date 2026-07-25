@@ -178,7 +178,7 @@
         ? ExpectRaceIdMeta.correctRaceIdYear(id)
         : null;
     if (raceIdYearFixed) {
-      location.replace("race.html?race_id=" + encodeURIComponent(raceIdYearFixed));
+      location.replace("race?race_id=" + encodeURIComponent(raceIdYearFixed));
     } else {
 
     if (window.ExpectConversationUi) ExpectConversationUi.mountRaceCtas(id);
@@ -300,6 +300,21 @@
         .then(function (result) {
           var bundle = result.bundle;
           var envelopeMeta = result.meta || {};
+          // サーバー側で年補正されたら URL を正規化
+          if (
+            envelopeMeta.year_corrected &&
+            envelopeMeta.race_id &&
+            String(envelopeMeta.race_id) !== String(id)
+          ) {
+            try {
+              history.replaceState(
+                {},
+                "",
+                "race?race_id=" + encodeURIComponent(envelopeMeta.race_id)
+              );
+              id = String(envelopeMeta.race_id);
+            } catch (e) { /* ignore */ }
+          }
           var pbCheck =
             (bundle && bundle.__contract) ||
             (window.ExpectContractGuard && ExpectContractGuard.validatePredictionBundle(bundle)) ||
