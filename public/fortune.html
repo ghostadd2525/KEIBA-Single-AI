@@ -9,9 +9,9 @@
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Noto+Sans+JP:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="assets/styles.css?v=17" />
   <link rel="stylesheet" href="assets/screens.css" />
-  <script src="assets/api/calendar-weekend.js?v=11"></script>
+  <script src="assets/api/calendar-weekend.js?v=13"></script>
   <script src="assets/auto-maintenance.js?v=11.5"></script>
-  <script src="assets/auth.js"></script>
+  <script src="assets/auth.js?v=3"></script>
   <script>
     if (ExpectAuth.requireAuth() && window.ExpectAutoMaintenance) {
       ExpectAutoMaintenance.run();
@@ -82,15 +82,23 @@
   <script src="assets/api/mock-gate.js"></script>
   <script src="assets/api/auth.js"></script>
   <script src="assets/api/race-list-url.js?v=12"></script>
-  <script src="assets/api/prediction.js"></script>
+  <script src="assets/api/race.js"></script>
   <script src="assets/api/real-data-bind.js"></script>
-  <script src="assets/favorites.js"></script>
+  <script src="assets/favorites.js?v=3"></script>
   <script src="assets/shell.js"></script>
   <script src="assets/reminders.js"></script>
   <script src="assets/partials-nav.js"></script>
   <script>
     (function () {
       var FORTUNE_KEY = "expect_fortune_daily_v1";
+      var POOLS_KEY = "expect_fortune_pools_v1";
+      var RACE_LIST_CACHE_KEY = "expect_race_list_cache_v2";
+      var HOME_HONMEI_KEY = "expect_home_honmei_v1";
+      var CATALOG_TIMEOUT_MS = 12000;
+      var NUMBER_FALLBACK = [
+        "1", "2", "3", "4", "5", "6", "7", "8", "9",
+        "10", "11", "12", "13", "14", "15", "16", "17", "18"
+      ];
       var EMOTIONS = {
         joy:     { src: "assets/images/kaoba-emotion-joy.png?v=3",     label: "喜（よろこび）" },
         anger:   { src: "assets/images/kaoba-emotion-anger.png?v=3",   label: "怒（いかり）" },
@@ -127,6 +135,7 @@
       var racePools = null;
       var raceDateIso = "";
       var dateLabel = "—";
+      var poolsReady = false;
 
       function hashStr(s) {
         var h = 0;
@@ -152,10 +161,51 @@
         return out;
       }
 
+      function emptyPools() {
+        return { venues: [], numbers: [], styles: [], bets: [] };
+      }
+
+      function mergePools() {
+        var out = emptyPools();
+        for (var i = 0; i < arguments.length; i++) {
+          var p = arguments[i] || emptyPools();
+          out.venues = out.venues.concat(p.venues || []);
+          out.numbers = out.numbers.concat(p.numbers || []);
+          out.styles = out.styles.concat(p.styles || []);
+          out.bets = out.bets.concat(p.bets || []);
+        }
+        return {
+          venues: unique(out.venues),
+          numbers: unique(out.numbers),
+          styles: unique(out.styles),
+          bets: unique(out.bets),
+        };
+      }
+
+      function finalizePools(raw) {
+        var venues = unique((raw && raw.venues) || []);
+        var numbers = unique((raw && raw.numbers) || []);
+        var styles = unique((raw && raw.styles) || []);
+        var bets = unique((raw && raw.bets) || []);
+        if (venues.length && !numbers.length) numbers = NUMBER_FALLBACK.slice();
+        else {
+          numbers = numbers.sort(function (a, b) {
+            return Number(a) - Number(b);
+          });
+        }
+        if (!styles.length) styles = STYLE_FALLBACK.slice();
+        if (!bets.length) bets = BET_FALLBACK.slice();
+        return { venues: venues, numbers: numbers, styles: styles, bets: bets };
+      }
+
       function jstDateIso() {
         if (window.ExpectRealDataBind && ExpectRealDataBind.resolveHomeDate) {
           var d = ExpectRealDataBind.resolveHomeDate();
           if (d) return d;
+        }
+        if (window.ExpectApi && ExpectApi.Race && ExpectApi.Race.resolveListDate) {
+          var rd = ExpectApi.Race.resolveListDate({});
+          if (rd) return rd;
         }
         if (window.ExpectWeekendCalendar && ExpectWeekendCalendar.decide) {
           var cal = ExpectWeekendCalendar.decide(new Date());
@@ -202,7 +252,76 @@
         } catch (e) { /* ignore */ }
       }
 
-      function extractPools(bundles) {
+      function readPoolsCache(dateKey) {
+        try {
+          var o = JSON.parse(localStorage.getItem(POOLS_KEY) || "null");
+          if (!o || !o.pools || o.date !== dateKey) return null;
+          return o.pools;
+        } catch (e) {
+          return null;
+        }
+      }
+
+      function writePoolsCache(dateKey, pools) {
+        try {
+          localStorage.setItem(
+            POOLS_KEY,
+            JSON.stringify({ date: dateKey, pools: pools, at: Date.now() })
+          );
+        } catch (e) { /* ignore */ }
+      }
+
+      function readRaceListCards(dateKey) {
+        try {
+          var store = JSON.parse(localStorage.getItem(RACE_LIST_CACHE_KEY) || "null");
+          if (!store || !store.entries) return null;
+          var hit = store.entries["v2:" + dateKey];
+          if (!hit || !hit.payload) return null;
+          return hit.payload.race_cards || null;
+        } catch (e) {
+          return null;
+        }
+      }
+
+      function readHonmeiSnap(dateKey) {
+        try {
+          var o = JSON.parse(localStorage.getItem(HOME_HONMEI_KEY) || "null");
+          if (!o || !o.race_id) return null;
+          if (dateKey && o.date && o.date !== dateKey) return null;
+          return o;
+        } catch (e) {
+          return null;
+        }
+      }
+
+      function withTimeout(promise, ms, label) {
+        return new Promise(function (resolve, reject) {
+          var settled = false;
+          var timer = setTimeout(function () {
+            if (settled) return;
+            settled = true;
+            var err = new Error(label || "timeout");
+            err.code = "TIMEOUT";
+            reject(err);
+          }, ms);
+          Promise.resolve(promise).then(
+            function (value) {
+              if (settled) return;
+              settled = true;
+              clearTimeout(timer);
+              resolve(value);
+            },
+            function (err) {
+              if (settled) return;
+              settled = true;
+              clearTimeout(timer);
+              reject(err);
+            }
+          );
+        });
+      }
+
+      function extractPoolsFromBundles(bundles) {
         var venues = [];
         var numbers = [];
         var styles = [];
@@ -244,11 +363,65 @@
 
         return {
           venues: unique(venues),
-          numbers: unique(numbers).sort(function (a, b) {
-            return Number(a) - Number(b);
-          }),
-          styles: unique(styles).length ? unique(styles) : STYLE_FALLBACK.slice(),
-          bets: unique(bets).length ? unique(bets) : BET_FALLBACK.slice(),
+          numbers: unique(numbers),
+          styles: unique(styles),
+          bets: unique(bets),
+        };
+      }
+
+      function extractPoolsFromRaceCards(cards) {
+        var venues = [];
+        var numbers = [];
+        (cards || []).forEach(function (c) {
+          var info = (c && c.race_info) || {};
+          if (info.venue) venues.push(info.venue);
+          var sum = (c && c.summary) || {};
+          if (sum.honmei && sum.honmei.horse_number != null) {
+            numbers.push(String(sum.honmei.horse_number));
+          }
+          if (sum.taikou && sum.taikou.horse_number != null) {
+            numbers.push(String(sum.taikou.horse_number));
+          }
+          if (Array.isArray(sum.top_runners)) {
+            sum.top_runners.forEach(function (r) {
+              if (r && r.horse_number != null) numbers.push(String(r.horse_number));
+            });
+          }
+        });
+        return {
+          venues: unique(venues),
+          numbers: unique(numbers),
+          styles: [],
+          bets: [],
+        };
+      }
+
+      function extractPoolsFromCatalog(items) {
+        var venues = [];
+        (items || []).forEach(function (item) {
+          var info = (item && item.race_info) || {};
+          var v = info.venue || item.course || "";
+          if (v) venues.push(v);
+        });
+        return {
+          venues: unique(venues),
+          numbers: [],
+          styles: [],
+          bets: [],
+        };
+      }
+
+      function extractPoolsFromHonmei(snap) {
+        if (!snap) return emptyPools();
+        var venues = Array.isArray(snap.venues) ? snap.venues.slice() : [];
+        var numbers = [];
+        var m = String(snap.desc || "").match(/(\d+)\s*番/);
+        if (m) numbers.push(m[1]);
+        return {
+          venues: unique(venues),
+          numbers: unique(numbers),
+          styles: [],
+          bets: [],
         };
       }
 
@@ -325,12 +498,71 @@
         drawBtn.textContent = "運試しカードを引く";
       }
 
-      function setLoading(on) {
-        drawBtn.disabled = !!on;
-        if (on) drawBtn.textContent = "当日レースを読込中…";
+      function setSoftLoading(on) {
+        if (on) {
+          document.getElementById("fortuneMessage").textContent =
+            "当日レースを準備中…すぐ引けるよ";
+        }
+      }
+
+      function bootWithPools(rawPools) {
+        racePools = finalizePools(rawPools);
+        poolsReady = true;
+        var stored = readStored();
+        if (stored && stored.date === raceDateIso && stored.result) {
+          render(stored.result, dateLabel, { locked: true });
+          return;
+        }
+        renderIdle(dateLabel);
+        if (!racePools.venues.length) {
+          drawBtn.disabled = true;
+          drawBtn.textContent = "レースデータ待ち";
+          document.getElementById("fortuneMessage").textContent =
+            "当日の開催レースがまだ取れません。開催日に再度お試しください。";
+          return;
+        }
+        writePoolsCache(raceDateIso, racePools);
+      }
+
+      function collectLocalPools() {
+        var pools = emptyPools();
+        var cachedPools = readPoolsCache(raceDateIso);
+        if (cachedPools) pools = mergePools(pools, cachedPools);
+
+        var cards = readRaceListCards(raceDateIso);
+        if (cards && cards.length) {
+          pools = mergePools(pools, extractPoolsFromRaceCards(cards));
+        }
+
+        var honmei = readHonmeiSnap(raceDateIso);
+        if (honmei) pools = mergePools(pools, extractPoolsFromHonmei(honmei));
+
+        return pools;
+      }
+
+      function fetchCatalogPools() {
+        if (!window.ExpectApi || !ExpectApi.Race || typeof ExpectApi.Race.list !== "function") {
+          return Promise.resolve(emptyPools());
+        }
+        return withTimeout(
+          ExpectApi.Race.list({ date: raceDateIso }),
+          CATALOG_TIMEOUT_MS,
+          "races catalog timeout"
+        )
+          .then(function (catalog) {
+            return extractPoolsFromCatalog((catalog && catalog.items) || []);
+          })
+          .catch(function () {
+            return emptyPools();
+          });
       }
 
       function drawOnce() {
+        if (!poolsReady) {
+          document.getElementById("fortuneMessage").textContent =
+            "もう少し待ってね。当日レースを準備中…";
+          return;
+        }
         if (!racePools || !racePools.venues.length) {
           document.getElementById("fortuneMessage").textContent =
             "当日のレースデータがまだありません。開催日にもう一度試してね。";
@@ -359,22 +591,6 @@
         }
       }
 
-      function bootWithBundles(bundles) {
-        racePools = extractPools(bundles || []);
-        var stored = readStored();
-        if (stored && stored.date === raceDateIso && stored.result) {
-          render(stored.result, dateLabel, { locked: true });
-          return;
-        }
-        renderIdle(dateLabel);
-        if (!racePools.venues.length) {
-          drawBtn.disabled = true;
-          drawBtn.textContent = "レースデータ待ち";
-          document.getElementById("fortuneMessage").textContent =
-            "当日の開催レースがまだ取れません。開催日に再度お試しください。";
-        }
-      }
-
       raceDateIso = jstDateIso();
       dateLabel = formatDateLabel(raceDateIso);
       document.getElementById("fortuneDate").textContent = dateLabel;
@@ -392,26 +608,34 @@
       var existing = readStored();
       if (existing && existing.date === raceDateIso && existing.result) {
         render(existing.result, dateLabel, { locked: true });
-      } else {
-        renderIdle(dateLabel);
-      }
-
-      setLoading(true);
-      if (!window.ExpectApi || !ExpectApi.Prediction) {
-        setLoading(false);
-        bootWithBundles([]);
+        // 引済みでもプールは裏で温める（翌日以降の高速化用ではないが無害）
+        var warm = collectLocalPools();
+        if (warm.venues.length) {
+          racePools = finalizePools(warm);
+          poolsReady = true;
+          writePoolsCache(raceDateIso, racePools);
+        } else {
+          fetchCatalogPools().then(function (cat) {
+            racePools = finalizePools(mergePools(warm, cat));
+            poolsReady = true;
+            if (racePools.venues.length) writePoolsCache(raceDateIso, racePools);
+          });
+        }
         return;
       }
 
-      ExpectApi.Prediction.list({ date: raceDateIso })
-        .then(function (bundles) {
-          setLoading(false);
-          bootWithBundles(bundles || []);
-        })
-        .catch(function () {
-          setLoading(false);
-          bootWithBundles([]);
-        });
+      renderIdle(dateLabel);
+
+      var local = collectLocalPools();
+      if (local.venues.length) {
+        bootWithPools(local);
+        return;
+      }
+
+      setSoftLoading(true);
+      fetchCatalogPools().then(function (cat) {
+        bootWithPools(mergePools(local, cat));
+      });
     })();
   </script>
 </body>

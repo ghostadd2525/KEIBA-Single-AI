@@ -53,8 +53,38 @@
     };
   }
 
+  /**
+   * 今週末（または次の土日）の開催日 ISO 一覧。
+   * 例: 金曜 → [土, 日] / 土曜 → [土, 日] / 日曜 → [土, 日]
+   * @returns {string[]}
+   */
+  function weekendRaceDates(instant) {
+    var parts = jstParts(instant || new Date());
+    var sat;
+    var sun;
+    if (parts.weekday === 6) {
+      sat = parts.date_jst;
+      sun = addDaysJst(parts.y, parts.m, parts.d, 1);
+    } else if (parts.weekday === 0) {
+      sun = parts.date_jst;
+      sat = addDaysJst(parts.y, parts.m, parts.d, -1);
+    } else {
+      var daysUntilSat = (6 - parts.weekday + 7) % 7 || 7;
+      sat = addDaysJst(parts.y, parts.m, parts.d, daysUntilSat);
+      var satParts = jstParts(new Date(Date.UTC(
+        Number(sat.slice(0, 4)),
+        Number(sat.slice(5, 7)) - 1,
+        Number(sat.slice(8, 10)),
+        3, 0, 0
+      )));
+      sun = addDaysJst(satParts.y, satParts.m, satParts.d, 1);
+    }
+    return [sat, sun];
+  }
+
   global.ExpectWeekendCalendar = {
     decide: decide,
     jstParts: jstParts,
+    weekendRaceDates: weekendRaceDates,
   };
 })(window);

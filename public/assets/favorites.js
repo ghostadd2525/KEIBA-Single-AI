@@ -7,6 +7,43 @@
   var KEY = "expect_favorites_v1";
   var MAX = 3;
 
+  /** ログイン中ユーザー ID（未ログインは空） */
+  function currentUserId() {
+    try {
+      if (global.ExpectAuth && typeof ExpectAuth.current === "function") {
+        var cur = ExpectAuth.current();
+        if (cur && cur.id) return String(cur.id);
+      }
+      var raw = global.localStorage.getItem("expect_auth_v1");
+      var parsed = raw ? JSON.parse(raw) : null;
+      return parsed && parsed.id ? String(parsed.id) : "";
+    } catch (e) {
+      return "";
+    }
+  }
+
+  /**
+   * お気に入りはユーザーごとに分離する。
+   * 旧キー expect_favorites_v1 はログイン時にそのユーザー枠へ一度だけ移行。
+   */
+  function storageKey() {
+    var uid = currentUserId();
+    return uid ? KEY + ":" + uid : KEY + ":guest";
+  }
+
+  function migrateLegacyFavorites(store, key) {
+    if (!store) return;
+    try {
+      var legacy = store.getItem(KEY);
+      if (!legacy) return;
+      if (!store.getItem(key)) {
+        store.setItem(key, legacy);
+      }
+      // 共有キーを消して他ユーザーへ漏れないようにする
+      store.removeItem(KEY);
+    } catch (e) { /* ignore */ }
+  }
+
   /** @deprecated dev fallback — Prefer cacheBundles() from Prediction API */
   var CATALOG = {
     "20260719_tokyo_11": {
@@ -161,14 +198,17 @@
   }
 
   function aiFromBundle(b) {
+    if (global.ExpectAnalysisBind && typeof ExpectAnalysisBind.toAiParams === "function") {
+      return ExpectAnalysisBind.toAiParams(b, null);
+    }
     var overall = scoreFromBundle(b) || 70;
     return {
       overall: overall,
-      pedigree: overall,
-      pace: overall,
-      jockey: overall,
-      form: overall,
-      odds: overall,
+      history: overall,
+      distance: overall,
+      style_fit: overall,
+      front: overall,
+      pace_resilience: overall,
     };
   }
 
@@ -217,6 +257,10 @@
         updated.postTime = meta.postTime;
         changed = true;
       }
+      if (meta.date && updated.date !== meta.date) {
+        updated.date = meta.date;
+        changed = true;
+      }
       if (meta.dateLabel && updated.dateLabel !== meta.dateLabel) {
         updated.dateLabel = meta.dateLabel;
         changed = true;
@@ -225,7 +269,9 @@
     });
     if (!changed) return;
     try {
-      store.setItem(KEY, JSON.stringify(next));
+      var key = storageKey();
+      migrateLegacyFavorites(store, key);
+      store.setItem(key, JSON.stringify(next));
     } catch (e) {
       /* ignore */
     }
@@ -246,15 +292,22 @@
   }
 
   var AI_PARAM_LABELS = {
-    pedigree: "血統適性",
-    pace: "展開予測",
-    jockey: "騎手相性",
-    form: "近走内容",
-    odds: "オッズ妙味"
+    history: "近走成績",
+    distance: "距離適性",
+    style_fit: "脚質×距離",
+    front: "先行傾向",
+    pace_resilience: "展開耐性",
   };
 
   function defaultAi() {
-    return { overall: 70, pedigree: 70, pace: 70, jockey: 70, form: 70, odds: 70 };
+    return {
+      overall: 70,
+      history: 70,
+      distance: 70,
+      style_fit: 70,
+      front: 70,
+      pace_resilience: 70,
+    };
   }
 
   function allowCatalog() {
@@ -283,7 +336,9 @@
     var store = storage();
     if (!store) return [];
     try {
-      var list = JSON.parse(store.getItem(KEY) || "[]");
+      var key = storageKey();
+      migrateLegacyFavorites(store, key);
+      var list = JSON.parse(store.getItem(key) || "[]");
       return Array.isArray(list) ? list : [];
     } catch (e) {
       return [];
@@ -294,12 +349,32 @@
     var store = storage();
     if (!store) return false;
     try {
-      store.setItem(KEY, JSON.stringify(list));
+      var key = storageKey();
+      migrateLegacyFavorites(store, key);
+      store.setItem(key, JSON.stringify(list));
       scheduleServerSync();
       return true;
     } catch (e) {
       return false;
     }
+  }
+
+  /** ログイン切替後に UI を当該ユーザーの枠へ載せ替える */
+  function bindToCurrentUser(opts) {
+    opts = opts || {};
+    var store = storage();
+    if (store) migrateLegacyFavorites(store, storageKey());
+    if (opts.clearGuest) {
+      try {
+        if (store) store.removeItem(KEY + ":guest");
+      } catch (e) { /* ignore */ }
+    }
+    global.dispatchEvent(
+      new CustomEvent("expect:favorites-changed", {
+        detail: { list: list(), source: "user-switch" },
+      })
+    );
+    return list();
   }
 
   var _syncTimer = null;
@@ -375,7 +450,9 @@
     var store = storage();
     if (store) {
       try {
-        store.setItem(KEY, JSON.stringify(next));
+        var key = storageKey();
+        migrateLegacyFavorites(store, key);
+        store.setItem(key, JSON.stringify(next));
       } catch (e) { /* ignore */ }
     }
     global.dispatchEvent(
@@ -435,7 +512,7 @@
     }
     return ExpectApi.Auth.getFavorites()
       .then(function (fav) {
-        importFromServer(fav, { merge: true });
+        importFromServer(fav, { merge: false });
         return { ok: true, favorites: fav };
       })
       .catch(function (err) {
@@ -624,7 +701,7 @@
         (metaLine ? '<span class="fav-meta-sep"> · </span>' : "") +
         '<span class="fav-time">' +
         escapeHtml(time) +
-        "発走</span>";
+        "出走</span>";
     }
     var removeBtn = editing
       ? '<button type="button" class="fav-card-remove" data-fav-remove="' +
@@ -692,10 +769,44 @@
     return escapeHtml(s).replace(/'/g, "&#39;");
   }
 
+  /** race_id / date から YYYY-MM-DD を取る */
+  function raceDateIso(item) {
+    var d = String((item && item.date) || "").trim();
+    if (/^\d{4}-\d{2}-\d{2}$/.test(d)) return d;
+    var id = String((item && item.id) || "");
+    var m = id.match(/^(\d{4}-\d{2}-\d{2})/);
+    return m ? m[1] : "";
+  }
+
+  /** 出走時刻を過ぎたお気に入りか（時刻不明なら false＝表示継続） */
+  function isFavoriteStarted(item) {
+    var date = raceDateIso(item);
+    var time = item && item.postTime != null ? String(item.postTime) : "";
+    if (
+      global.ExpectRaceSearch &&
+      typeof ExpectRaceSearch.isPostTimePassed === "function"
+    ) {
+      return ExpectRaceSearch.isPostTimePassed(date, time);
+    }
+    var m = time.trim().match(/^(\d{1,2}):(\d{2})/);
+    if (!m || !date) return false;
+    var hh = String(Number(m[1])).padStart(2, "0");
+    var at = Date.parse(date + "T" + hh + ":" + m[2] + ":00+09:00");
+    if (!Number.isFinite(at)) return false;
+    return Date.now() >= at;
+  }
+
+  /** ホーム表示用：出走前のお気に入りのみ */
+  function listUpcoming() {
+    return list().filter(function (item) {
+      return !isFavoriteStarted(item);
+    });
+  }
+
   function syncEditButton() {
     var btn = document.getElementById("favEditBtn");
     if (!btn) return;
-    var items = list();
+    var items = listUpcoming();
     btn.disabled = !items.length && !homeEditMode;
     btn.textContent = homeEditMode ? "完了" : "編集";
     btn.setAttribute("aria-pressed", homeEditMode ? "true" : "false");
@@ -704,7 +815,7 @@
 
   function renderHome(railEl, emptyEl) {
     if (!railEl) return;
-    var items = list();
+    var items = listUpcoming();
     if (!items.length) {
       homeEditMode = false;
       railEl.classList.remove("is-editing");
@@ -783,7 +894,7 @@
     bindHomeCardNavigation(rail);
 
     btn.addEventListener("click", function () {
-      if (!list().length && !homeEditMode) return;
+      if (!listUpcoming().length && !homeEditMode) return;
       homeEditMode = !homeEditMode;
       renderHome(rail);
       global.dispatchEvent(
@@ -817,6 +928,12 @@
         }
       }
     });
+
+    // 出走時刻経過後にホームのカードを落とす
+    setInterval(function () {
+      if (!document.getElementById("favoritesRail")) return;
+      renderHome(rail);
+    }, 60000);
 
     syncEditButton();
   }
@@ -901,7 +1018,10 @@
 
   // 別タブ／bfcache 復帰時も同期
   global.addEventListener("storage", function (e) {
-    if (e.key === KEY) syncStarButtons(document);
+    if (!e.key) return;
+    if (e.key === storageKey() || e.key === KEY || e.key.indexOf(KEY + ":") === 0) {
+      syncStarButtons(document);
+    }
   });
   global.addEventListener("pageshow", function () {
     syncStarButtons(document);
@@ -912,6 +1032,8 @@
     CATALOG: CATALOG,
     AI_PARAM_LABELS: AI_PARAM_LABELS,
     list: list,
+    listUpcoming: listUpcoming,
+    isFavoriteStarted: isFavoriteStarted,
     has: has,
     add: add,
     remove: remove,
@@ -929,6 +1051,8 @@
     syncNow: syncNow,
     pullFromServer: pullFromServer,
     canSync: canSync,
+    bindToCurrentUser: bindToCurrentUser,
+    storageKey: storageKey,
     cacheBundles: cacheBundles,
     cacheBundle: cacheBundle,
     isRaceCardSummary: isRaceCardSummary,

@@ -131,8 +131,12 @@
       acceptTerms();
     }
     try {
+      // ユーザー枠へ切替（他ユーザー／ゲストのお気に入りを混ぜない）
+      if (global.ExpectFavorites && ExpectFavorites.bindToCurrentUser) {
+        ExpectFavorites.bindToCurrentUser({ clearGuest: true });
+      }
       if (data && data.favorites && global.ExpectFavorites && ExpectFavorites.importFromServer) {
-        ExpectFavorites.importFromServer(data.favorites, { merge: true });
+        ExpectFavorites.importFromServer(data.favorites, { merge: false });
       }
       if (global.ExpectFavorites && ExpectFavorites.syncNow) {
         ExpectFavorites.syncNow({ reason: "login" }).catch(function () { /* ignore */ });
@@ -143,11 +147,16 @@
 
   /** 正式ログイン（ログインID + パスワード） */
   function loginWithApi(id, password) {
+    var prev = readAuth();
+    var sameUser = !!(prev && prev.id && String(prev.id) === String(id));
     var creds = {
       id: String(id),
       password: password != null ? String(password) : "",
-      favorites: localFavoritesPayload(),
     };
+    // 別アカウントログイン時は端末に残った他ユーザーのお気に入りを送らない
+    if (sameUser) {
+      creds.favorites = localFavoritesPayload();
+    }
 
     if (global.ExpectApi && ExpectApi.Auth && typeof ExpectApi.Auth.login === "function") {
       return ExpectApi.Auth.login(creds).then(function (data) {
@@ -230,7 +239,7 @@
         });
       }
       if (data && data.favorites && global.ExpectFavorites && ExpectFavorites.importFromServer) {
-        ExpectFavorites.importFromServer(data.favorites, { merge: true });
+        ExpectFavorites.importFromServer(data.favorites, { merge: false });
       }
       return data;
     });
