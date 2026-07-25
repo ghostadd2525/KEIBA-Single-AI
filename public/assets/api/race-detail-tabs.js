@@ -167,54 +167,154 @@
     );
   }
 
-  function historyHtml(history) {
-    if (!history || !history.length) {
+  function circleHorseNum(n) {
+    var num = Number(n);
+    if (Number.isFinite(num) && num >= 1 && num <= 20) {
+      return String.fromCharCode(0x245f + num);
+    }
+    return num != null && Number.isFinite(num) ? String(num) : "—";
+  }
+
+  function formatHistoryDate(v) {
+    var s = String(v == null ? "" : v).trim();
+    if (!s) return "";
+    var m = s.match(/(\d{4})[\/\-]?(\d{1,2})[\/\-]?(\d{1,2})/);
+    if (!m) return s;
+    return (
+      m[1] +
+      "/" +
+      String(Number(m[2])).padStart(2, "0") +
+      "/" +
+      String(Number(m[3])).padStart(2, "0")
+    );
+  }
+
+  function formatSurfaceDistance(r) {
+    var surface = String((r && r.surface) || "").trim();
+    var dist = r && r.distance != null && r.distance !== "" ? Number(r.distance) : NaN;
+    var distLabel = Number.isFinite(dist) ? String(dist) + "m" : "";
+    if (surface && distLabel) {
+      if (/m$/i.test(surface) || surface.indexOf(String(dist)) >= 0) return surface;
+      return surface + distLabel;
+    }
+    return surface || distLabel || "";
+  }
+
+  function mergeHistoryRows(entries, history) {
+    var byNum = Object.create(null);
+    (history || []).forEach(function (h) {
+      if (h && h.horse_number != null) {
+        byNum[String(h.horse_number)] = h;
+      }
+    });
+    if (entries && entries.length) {
+      return entries.map(function (e) {
+        var hit = byNum[String(e.horse_number)];
+        return {
+          horse_number: e.horse_number,
+          horse_name: e.horse_name,
+          recent: hit && Array.isArray(hit.recent) ? hit.recent : [],
+        };
+      });
+    }
+    return (history || []).map(function (h) {
+      return {
+        horse_number: h.horse_number,
+        horse_name: h.horse_name,
+        recent: Array.isArray(h.recent) ? h.recent : [],
+      };
+    });
+  }
+
+  function recentRaceHtml(r) {
+    var lines = [];
+    var date = formatHistoryDate(r && r.date);
+    if (date) lines.push('<div class="board-acc-line board-acc-line--date">' + escapeHtml(date) + "</div>");
+    lines.push(
+      '<div class="board-acc-line board-acc-line--finish">' +
+        escapeHtml(formatFinish(r && r.finish)) +
+        "</div>"
+    );
+    if (r && r.race_name) {
+      lines.push(
+        '<div class="board-acc-line board-acc-line--race">' +
+          escapeHtml(r.race_name) +
+          "</div>"
+      );
+    }
+    var sd = formatSurfaceDistance(r);
+    if (sd) {
+      lines.push(
+        '<div class="board-acc-line board-acc-line--track">' + escapeHtml(sd) + "</div>"
+      );
+    }
+    return '<li class="board-acc-race">' + lines.join("") + "</li>";
+  }
+
+  function historyHtml(history, entries) {
+    var rows = mergeHistoryRows(entries || [], history || []);
+    if (!rows.length) {
       return '<p class="muted">近走データはありません</p>';
     }
-    return history
-      .map(function (h) {
-        var recent = (h.recent || []).slice(0, 3);
-        var body;
-        if (!recent.length) {
-          body = '<p class="board-history-empty muted">近走データはありません</p>';
-        } else {
-          body =
-            '<ul class="board-history-list">' +
-            recent
-              .map(function (r) {
-                var bits = [];
-                if (r.date) bits.push(escapeHtml(r.date));
-                bits.push(escapeHtml(formatFinish(r.finish)));
-                if (r.race_name) bits.push(escapeHtml(r.race_name));
-                if (r.distance != null && r.distance !== "") {
-                  bits.push(escapeHtml(String(r.distance) + "m"));
-                }
-                if (r.surface) bits.push(escapeHtml(r.surface));
-                return (
-                  "<li>" +
-                  '<span class="board-history-meta">' +
-                  bits.join(" · ") +
-                  "</span>" +
-                  "</li>"
-                );
-              })
-              .join("") +
-            "</ul>";
-        }
-        return (
-          '<article class="board-history-card">' +
-          '<header class="board-history-head">' +
-          '<span class="board-history-num">' +
-          escapeHtml(h.horse_number != null ? h.horse_number : "—") +
-          "</span>" +
-          '<span class="board-history-name">' +
-          escapeHtml(cleanHorseName(h.horse_name)) +
-          "</span></header>" +
-          body +
-          "</article>"
-        );
-      })
-      .join("");
+    return (
+      '<div class="board-acc" role="list">' +
+      rows
+        .map(function (h, idx) {
+          var id = "board-acc-" + idx;
+          var recent = (h.recent || []).slice(0, 3);
+          var panelBody;
+          if (!recent.length) {
+            panelBody =
+              '<p class="board-history-empty muted">近走データはありません</p>';
+          } else {
+            panelBody =
+              '<ul class="board-acc-races">' +
+              recent.map(recentRaceHtml).join("") +
+              "</ul>";
+          }
+          return (
+            '<div class="board-acc-item" role="listitem">' +
+            '<button type="button" class="board-acc-trigger" aria-expanded="false" aria-controls="' +
+            id +
+            '" id="' +
+            id +
+            '-btn">' +
+            '<span class="board-acc-num">' +
+            escapeHtml(circleHorseNum(h.horse_number)) +
+            "</span>" +
+            '<span class="board-acc-name">' +
+            escapeHtml(cleanHorseName(h.horse_name)) +
+            "</span>" +
+            '<span class="board-acc-chevron" aria-hidden="true"></span>' +
+            "</button>" +
+            '<div class="board-acc-panel" id="' +
+            id +
+            '" role="region" aria-labelledby="' +
+            id +
+            '-btn">' +
+            '<div class="board-acc-panel-inner">' +
+            panelBody +
+            "</div></div></div>"
+          );
+        })
+        .join("") +
+      "</div>"
+    );
+  }
+
+  function bindHistoryAccordion(root) {
+    if (!root || root.dataset.accBound === "1") return;
+    root.dataset.accBound = "1";
+    root.addEventListener("click", function (e) {
+      var btn = e.target.closest(".board-acc-trigger");
+      if (!btn || !root.contains(btn)) return;
+      e.preventDefault();
+      var item = btn.closest(".board-acc-item");
+      if (!item) return;
+      var open = !item.classList.contains("is-open");
+      item.classList.toggle("is-open", open);
+      btn.setAttribute("aria-expanded", open ? "true" : "false");
+    });
   }
 
   function bindTabs(raceId) {
@@ -331,14 +431,34 @@
         title: "近走データを準備中...",
         message: "各馬の近走を取得しています。少し時間がかかることがあります。",
       });
+
+      function renderRows(rows) {
+        hideTabLoading(el);
+        el.dataset.accBound = "";
+        el.innerHTML = historyHtml(rows.history, rows.entries);
+        bindHistoryAccordion(el);
+      }
+
       ensureHistory()
         .then(function (history) {
-          hideTabLoading(el);
-          el.innerHTML = historyHtml(history);
+          var entries =
+            (cache.board && cache.board.entries) ||
+            [];
+          renderRows({ history: history || [], entries: entries });
         })
         .catch(function () {
-          hideTabLoading(el);
-          el.innerHTML = '<p class="muted">近走データの取得に失敗しました。</p>';
+          return ensureBoard()
+            .then(function (data) {
+              renderRows({
+                history: [],
+                entries: (data && data.entries) || [],
+              });
+            })
+            .catch(function () {
+              hideTabLoading(el);
+              el.innerHTML =
+                '<p class="muted">近走データの取得に失敗しました。</p>';
+            });
         });
     }
 

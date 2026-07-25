@@ -870,7 +870,143 @@ body.v2-race-list-ui .race-conf {
 
 .board-history-empty {
   margin: 0;
+  padding: 4px 2px 10px;
   font-size: 12px;
+}
+
+/* データタブ：近走アコーディオン */
+.board-acc {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.board-acc-item {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.board-acc-item:last-child {
+  border-bottom: 0;
+}
+
+.board-acc-trigger {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  margin: 0;
+  padding: 14px 2px;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+.board-acc-trigger:focus-visible {
+  outline: 2px solid var(--gold-soft, #e5c78f);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+.board-acc-num {
+  flex: 0 0 auto;
+  min-width: 1.6em;
+  font-weight: 700;
+  color: var(--gold-soft, #e5c78f);
+  font-variant-numeric: tabular-nums;
+}
+
+.board-acc-name {
+  flex: 1 1 auto;
+  min-width: 0;
+  font-weight: 700;
+  color: #fff;
+  font-size: 15px;
+  line-height: 1.35;
+  word-break: break-word;
+}
+
+.board-acc-chevron {
+  flex: 0 0 auto;
+  width: 0.55em;
+  height: 0.55em;
+  border-right: 2px solid var(--muted, #9aa3b2);
+  border-bottom: 2px solid var(--muted, #9aa3b2);
+  transform: rotate(-45deg);
+  transition: transform 0.22s ease;
+  margin-right: 4px;
+}
+
+.board-acc-item.is-open .board-acc-chevron {
+  transform: rotate(45deg);
+  border-color: var(--gold-soft, #e5c78f);
+}
+
+.board-acc-panel {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.28s ease;
+}
+
+.board-acc-item.is-open .board-acc-panel {
+  grid-template-rows: 1fr;
+}
+
+.board-acc-panel-inner {
+  overflow: hidden;
+  min-height: 0;
+}
+
+.board-acc-races {
+  list-style: none;
+  margin: 0;
+  padding: 0 2px 14px;
+  display: grid;
+  gap: 12px;
+}
+
+.board-acc-race {
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  display: grid;
+  gap: 4px;
+}
+
+.board-acc-line {
+  font-size: 13px;
+  line-height: 1.4;
+  color: var(--muted, #9aa3b2);
+}
+
+.board-acc-line--date {
+  font-variant-numeric: tabular-nums;
+}
+
+.board-acc-line--finish {
+  font-weight: 700;
+  color: #fff;
+  font-size: 14px;
+}
+
+.board-acc-line--race {
+  color: #e8edf5;
+}
+
+.board-acc-line--track {
+  color: var(--gold-soft, #e5c78f);
+  font-variant-numeric: tabular-nums;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .board-acc-panel,
+  .board-acc-chevron {
+    transition: none;
+  }
 }
 
 /* —— レース詳細 —— */
