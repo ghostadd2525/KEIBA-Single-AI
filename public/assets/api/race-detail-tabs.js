@@ -35,6 +35,23 @@
     return String(v);
   }
 
+  /** PI 出馬表の混入（性齢・DBリンク・騎手・斤量）を馬名から除去 */
+  function cleanHorseName(name) {
+    var n = String(name == null ? "" : name).trim();
+    if (!n || n === "—") return "—";
+    var sexCut = n.match(/^(.+?)\s+[牡牝セ]\s*\d/);
+    if (sexCut && sexCut[1]) return sexCut[1].trim();
+    var dbIdx = n.indexOf("のデータベース");
+    if (dbIdx > 0) return n.slice(0, dbIdx).replace(/\s+[牡牝セ]\s*\d.*$/, "").trim() || n;
+    return n;
+  }
+
+  function displayFrame(frame) {
+    var n = Number(frame);
+    if (!Number.isFinite(n) || n < 1) return "—";
+    return String(n);
+  }
+
   function showTabLoading(el, opts) {
     opts = opts || {};
     if (!el) return;
@@ -69,13 +86,13 @@
           '<td class="col-frame"><span class="' +
           frameClass(e.frame_number) +
           '">' +
-          escapeHtml(e.frame_number != null ? e.frame_number : "—") +
+          escapeHtml(displayFrame(e.frame_number)) +
           "</span></td>" +
           '<td class="col-num">' +
           escapeHtml(e.horse_number != null ? e.horse_number : "—") +
           "</td>" +
           '<td class="col-name">' +
-          escapeHtml(e.horse_name || "—") +
+          escapeHtml(cleanHorseName(e.horse_name)) +
           "</td>" +
           "</tr>"
         );
@@ -130,7 +147,7 @@
           escapeHtml(e.horse_number != null ? e.horse_number : "—") +
           "</td>" +
           '<td class="col-name">' +
-          escapeHtml(e.horse_name || "—") +
+          escapeHtml(cleanHorseName(e.horse_name)) +
           "</td>" +
           '<td class="col-odds">' +
           escapeHtml(formatOdds(e.odds)) +
@@ -191,7 +208,7 @@
           escapeHtml(h.horse_number != null ? h.horse_number : "—") +
           "</span>" +
           '<span class="board-history-name">' +
-          escapeHtml(h.horse_name || "—") +
+          escapeHtml(cleanHorseName(h.horse_name)) +
           "</span></header>" +
           body +
           "</article>"
