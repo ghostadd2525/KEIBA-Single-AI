@@ -31,6 +31,43 @@
       .replace(/"/g, "&quot;");
   }
 
+  function shortRaceName(raw) {
+    var s = String(raw == null ? "" : raw).trim();
+    if (!s) return "";
+    var m = s.match(
+      /^(.+?)\s+\d{1,2}:\d{2}(?:芝|ダート|ダ|障)?\d*m?\d*頭?\s*$/u
+    );
+    if (m && m[1]) return String(m[1]).trim();
+    s = s
+      .replace(/\s+\d{1,2}:\d{2}(?:芝|ダート|ダ|障)\d+m\d+頭\s*$/u, "")
+      .replace(/\s+\d{1,2}:\d{2}\S*\s*$/u, "")
+      .trim();
+    return s || String(raw).trim();
+  }
+
+  function formatPostLabel(post) {
+    var p = String(post == null ? "" : post).trim();
+    var m = p.match(/^(\d{1,2}):(\d{2})/);
+    if (m) {
+      return (
+        String(Number(m[1])).padStart(2, "0") + ":" + m[2] + "出走"
+      );
+    }
+    if (!p) return "";
+    return p.indexOf("出走") >= 0 ? p : p + "出走";
+  }
+
+  function raceMetaLabel(data) {
+    data = data || {};
+    var bits = [];
+    if (data.race_label) bits.push(String(data.race_label));
+    var name = shortRaceName(data.race_name || "");
+    if (name) bits.push(name);
+    var postLabel = formatPostLabel(data.post_time);
+    if (postLabel) bits.push(postLabel);
+    return bits.join(" · ");
+  }
+
   function jstToday() {
     var fmt = new Intl.DateTimeFormat("en-CA", {
       timeZone: "Asia/Tokyo",
@@ -374,25 +411,9 @@
 
       var pc = data.point_count || 0;
       if (metaEl) {
-        var metaName = shortRaceName(data.race_name || "");
-        var metaPost = String(data.post_time || "").trim();
-        var metaPostM = metaPost.match(/^(\d{1,2}):(\d{2})/);
-        var metaPostLabel = metaPostM
-          ? String(Number(metaPostM[1])).padStart(2, "0") +
-            ":" +
-            metaPostM[2] +
-            "出走"
-          : metaPost
-            ? metaPost.indexOf("出走") >= 0
-              ? metaPost
-              : metaPost + "出走"
-            : "";
-        var metaBits = [];
-        if (data.race_label) metaBits.push(String(data.race_label));
-        if (metaName) metaBits.push(metaName);
-        if (metaPostLabel) metaBits.push(metaPostLabel);
-        metaBits.push("記録 " + pc + "点");
-        metaEl.textContent = metaBits.join(" · ");
+        var base = raceMetaLabel(data);
+        metaEl.textContent =
+          (base ? base + " · " : "") + "記録 " + pc + "点";
       }
       if (noteEl) {
         if (pc < 2) {
