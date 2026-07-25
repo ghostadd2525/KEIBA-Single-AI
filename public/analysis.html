@@ -83,7 +83,7 @@
   <script src="assets/api/contract-guard.js"></script>
   <script src="assets/api/prediction.js"></script>
   <script src="assets/api/analysis.js"></script>
-  <script src="assets/api/analysis-bind.js"></script>
+  <script src="assets/api/analysis-bind.js?v=19"></script>
   <script src="assets/ux.js?v=15"></script>
   <script src="assets/favorites.js"></script>
   <script src="assets/shell.js"></script>
@@ -92,14 +92,19 @@
   <script>
     (function () {
       var COLORS = ["#c1a26d", "#7eb8a8", "#d4a574", "#8fa4d4", "#c98989"];
-      var PARAM_KEYS = ["pedigree", "pace", "jockey", "form", "odds"];
-      var LABELS = (window.ExpectFavorites && ExpectFavorites.AI_PARAM_LABELS) || {
-        pedigree: "血統適性",
-        pace: "展開予測",
-        jockey: "騎手相性",
-        form: "近走内容",
-        odds: "オッズ妙味"
-      };
+      var PARAM_KEYS =
+        (window.ExpectAnalysisBind && ExpectAnalysisBind.KEYS) ||
+        ["history", "distance", "style_fit", "front", "pace_resilience"];
+      var LABELS =
+        (window.ExpectAnalysisBind && ExpectAnalysisBind.DEFAULT_LABELS) ||
+        (window.ExpectFavorites && ExpectFavorites.AI_PARAM_LABELS) ||
+        {
+          history: "近走成績",
+          distance: "距離適性",
+          style_fit: "脚質×距離",
+          front: "先行傾向",
+          pace_resilience: "展開耐性",
+        };
 
       function escapeHtml(s) {
         return String(s)
@@ -136,9 +141,23 @@
 
       function avgParams(list) {
         if (!list.length) {
-          return { overall: 0, pedigree: 0, pace: 0, jockey: 0, form: 0, odds: 0 };
+          return {
+            overall: 0,
+            history: 0,
+            distance: 0,
+            style_fit: 0,
+            front: 0,
+            pace_resilience: 0,
+          };
         }
-        var acc = { overall: 0, pedigree: 0, pace: 0, jockey: 0, form: 0, odds: 0 };
+        var acc = {
+          overall: 0,
+          history: 0,
+          distance: 0,
+          style_fit: 0,
+          front: 0,
+          pace_resilience: 0,
+        };
         list.forEach(function (item) {
           var ai = item.ai || ExpectFavorites.getAi(item.id);
           Object.keys(acc).forEach(function (k) {

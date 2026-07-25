@@ -511,6 +511,19 @@ body.v2-race-list-ui .race-item-status-note {
   font-size: 12px;
 }
 
+/* 自信度ボックス内の状態表記（予想準備中など） */
+.race-conf-status,
+body.v2-race-list-ui .race-conf-status {
+  display: block;
+  font-family: var(--font);
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.25;
+  letter-spacing: 0.02em;
+  color: #ffe9a8;
+  white-space: nowrap;
+}
+
 body.v2-race-list-ui .race-item[data-prediction-status="processing"],
 body.v2-race-list-ui .race-item[data-prediction-status="failed"],
 body.v2-race-list-ui .race-item[data-prediction-status="missing"] {
@@ -639,6 +652,227 @@ body.v2-race-list-ui .race-conf {
   font-size: 13px;
 }
 
+/* —— レース詳細：出走情報 —— */
+.race-meta-card {
+  margin: 0;
+  padding: 12px 14px;
+  border-radius: var(--radius, 16px);
+  border: 1px solid rgba(193, 162, 109, 0.28);
+  background: linear-gradient(145deg, rgba(26, 31, 42, 0.95), rgba(14, 18, 26, 0.92));
+}
+
+.race-meta-name {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+  color: #fff;
+  line-height: 1.35;
+}
+
+.race-meta-line {
+  margin: 6px 0 0;
+  font-size: 13px;
+  color: var(--gold-soft, #e5c78f);
+  letter-spacing: 0.02em;
+  line-height: 1.45;
+}
+
+.page-race-detail .brand-name {
+  font-size: 22px;
+}
+
+.page-race-detail .brand-sub {
+  display: block;
+  margin-top: 4px;
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  color: var(--gold-soft, #e5c78f);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: min(52vw, 220px);
+}
+
+/*
+ * 詳細タブが sticky ヘッダー／次カードに食われないようにする。
+ * page-tab は flex でヘッダー固定済みなので sticky は不要（描画が被る端末対策）。
+ */
+.page-race-detail.page-tab .topbar {
+  position: relative;
+  z-index: 40;
+}
+
+.page-race-detail .screen {
+  padding-top: 4px;
+}
+
+.page-race-detail #detailTabs.chip-row {
+  position: relative;
+  z-index: 2;
+  flex-shrink: 0;
+  align-items: center;
+  min-height: 44px;
+  gap: 8px;
+  margin: 0;
+  padding: 2px 0 4px;
+  overflow-x: auto;
+  overflow-y: visible;
+}
+
+.page-race-detail #detailTabs .chip {
+  min-height: 40px;
+  height: 40px;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.page-race-detail .race-meta-card {
+  position: relative;
+  z-index: 0;
+  margin-top: 2px;
+}
+
+/* 出馬表・オッズ・近走 */
+.board-odds-note {
+  margin: 0 0 10px;
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.board-table-wrap {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.board-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.board-table th,
+.board-table td {
+  padding: 10px 8px;
+  text-align: left;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.board-table th {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--muted, #9aa3b2);
+  letter-spacing: 0.04em;
+}
+
+.board-table .col-frame,
+.board-table .col-num,
+.board-table .col-pop {
+  width: 52px;
+  text-align: center;
+}
+
+.board-table .col-odds {
+  width: 64px;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  color: var(--gold-soft, #e5c78f);
+}
+
+.board-table .col-name {
+  font-weight: 600;
+  color: #fff;
+}
+
+.frame-badge {
+  display: inline-grid;
+  place-items: center;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 4px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.frame-badge--1 { background: #f5f5f5; color: #111; }
+.frame-badge--2 { background: #1a1a1a; color: #fff; border: 1px solid #555; }
+.frame-badge--3 { background: #c62828; color: #fff; }
+.frame-badge--4 { background: #1565c0; color: #fff; }
+.frame-badge--5 { background: #f9a825; color: #1a1204; }
+.frame-badge--6 { background: #2e7d32; color: #fff; }
+.frame-badge--7 { background: #ef6c00; color: #fff; }
+.frame-badge--8 { background: #ec407a; color: #fff; }
+.frame-badge--0 { background: rgba(255,255,255,0.08); color: var(--muted); }
+
+.board-history-card {
+  padding: 12px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.board-history-card:last-child {
+  border-bottom: 0;
+  padding-bottom: 0;
+}
+
+.board-history-head {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.board-history-num {
+  min-width: 28px;
+  font-weight: 700;
+  color: var(--gold-soft, #e5c78f);
+}
+
+.board-history-name {
+  font-weight: 700;
+  color: #fff;
+}
+
+.board-history-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 6px;
+}
+
+.board-history-list li {
+  display: grid;
+  grid-template-columns: 48px 1fr auto;
+  gap: 8px;
+  align-items: start;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.board-history-finish {
+  font-weight: 700;
+  color: #fff;
+}
+
+.board-history-meta {
+  color: var(--muted, #9aa3b2);
+}
+
+.board-history-odds {
+  color: var(--gold-soft, #e5c78f);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.board-history-empty {
+  margin: 0;
+  font-size: 12px;
+}
+
 /* —— レース詳細 —— */
 .detail-head h1 {
   margin: 0;
@@ -707,18 +941,34 @@ body.v2-race-list-ui .race-conf {
   box-shadow: 0 0 0 1px rgba(193, 162, 109, 0.25);
 }
 
-.radar-box span {
+.radar-box > span {
   position: absolute;
-  inset: 18px;
+  inset: 14px;
   border-radius: 50%;
   background: #12161e;
-  display: grid;
-  place-items: center;
-  font-size: 11px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1px;
+  font-size: 9px;
   font-weight: 700;
   color: var(--gold);
   text-align: center;
   line-height: 1.2;
+  padding: 4px 2px;
+}
+
+.radar-box .radar-line {
+  display: block;
+  max-width: 100%;
+}
+
+.radar-box .radar-x {
+  display: block;
+  font-size: 9px;
+  line-height: 1;
+  opacity: 0.95;
 }
 
 .pace-card {
@@ -741,11 +991,18 @@ body.v2-race-list-ui .race-conf {
   line-height: 1.5;
 }
 
+.pace-finish-note {
+  margin: 0 0 6px;
+  font-size: 11px;
+  color: var(--muted);
+}
+
 .pace-track {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 6px;
-  overflow-x: auto;
+  overflow: visible;
   padding: 4px 0;
 }
 
@@ -828,6 +1085,13 @@ body.v2-race-list-ui .race-conf {
 .strategy-hero-stats b {
   font-size: 14px;
   color: var(--gold-soft);
+}
+
+.strategy-hero-note {
+  margin: 10px 0 0;
+  font-size: 12px;
+  line-height: 1.45;
+  color: var(--muted);
 }
 
 .strategy-axis,
@@ -1341,6 +1605,181 @@ body.v2-race-list-ui .race-conf {
   display: block;
 }
 
+/* —— オッズ変動AI（フィルタ固定・レース選択のみスクロール） —— */
+.page-odds .screen {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-content: stretch;
+  min-height: 0;
+  height: 100%;
+  padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+  overflow: hidden !important;
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+}
+
+.page-odds.page-tab .screen::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}
+
+.page-odds .odds-filters {
+  position: relative;
+  z-index: 22;
+  flex: 0 0 auto;
+  display: grid;
+  gap: 10px;
+  margin: 0 calc(-1 * var(--pad));
+  padding: 0 var(--pad) 10px;
+  background: #0b1018;
+  box-shadow: 0 10px 16px -8px #0b1018;
+}
+
+.page-odds .odds-race-panel {
+  flex: 0 1 auto;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  max-height: min(42vh, 320px);
+  overflow: hidden;
+}
+
+.page-odds .odds-race-panel h3 {
+  margin: 0 0 10px;
+  flex: 0 0 auto;
+}
+
+.page-odds .odds-race-list {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: grid;
+  gap: 8px;
+  align-content: start;
+  overflow-x: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: contain;
+  padding-right: 2px;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(193, 162, 109, 0.55) rgba(255, 255, 255, 0.06);
+  -ms-overflow-style: auto;
+}
+
+.page-odds .odds-race-list::-webkit-scrollbar {
+  display: block;
+  width: 7px;
+}
+
+.page-odds .odds-race-list::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 999px;
+}
+
+.page-odds .odds-race-list::-webkit-scrollbar-thumb {
+  background: rgba(193, 162, 109, 0.45);
+  border-radius: 999px;
+}
+
+.page-odds .odds-race-list::-webkit-scrollbar-thumb:hover {
+  background: rgba(193, 162, 109, 0.7);
+}
+
+.page-odds .odds-chart-card {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(193, 162, 109, 0.55) rgba(255, 255, 255, 0.06);
+}
+
+.odds-race-item {
+  display: grid;
+  gap: 4px;
+  width: 100%;
+  text-align: left;
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 1px solid rgba(193, 162, 109, 0.22);
+  background: rgba(8, 12, 18, 0.72);
+  color: #fff;
+  cursor: pointer;
+}
+
+.odds-race-item.is-active {
+  border-color: rgba(193, 162, 109, 0.7);
+  background: rgba(193, 162, 109, 0.12);
+  box-shadow: inset 0 0 0 1px rgba(193, 162, 109, 0.25);
+}
+
+.odds-race-item__main {
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.odds-race-item__meta {
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.odds-chart-mount {
+  position: relative;
+  min-height: 200px;
+  margin: 8px 0 12px;
+  border-radius: 12px;
+  background:
+    radial-gradient(120% 80% at 50% 0%, rgba(193, 162, 109, 0.08), transparent 55%),
+    rgba(0, 0, 0, 0.22);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  overflow: hidden;
+}
+
+.odds-line-chart {
+  display: block;
+  width: 100%;
+  height: auto;
+  min-height: 200px;
+}
+
+.odds-legend-wrap .odds-legend,
+.odds-legend {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+
+.odds-legend li {
+  display: grid;
+  grid-template-columns: 10px 1fr auto;
+  gap: 8px;
+  align-items: center;
+  font-size: 12px;
+  color: #e8e4d8;
+}
+
+.odds-legend li i {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  display: block;
+}
+
+.odds-legend li b {
+  font-variant-numeric: tabular-nums;
+  color: var(--gold-soft);
+}
+
+.odds-chart-note {
+  margin: 12px 0 0;
+  font-size: 12px;
+  line-height: 1.45;
+}
+
 .bar-list { display: grid; gap: 8px; }
 
 .bar-item {
@@ -1708,6 +2147,170 @@ body.v2-race-list-ui .race-conf {
   background: linear-gradient(90deg, #8c6e42, #d4b37d);
 }
 
+.profile-edit-lead {
+  margin: 0 0 12px;
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.profile-avatar-preview {
+  display: flex;
+  justify-content: center;
+  margin: 0 0 14px;
+}
+
+.profile-avatar-preview img {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid rgba(193, 162, 109, 0.45);
+  background: #1a2030;
+}
+
+.profile-hint {
+  display: block;
+  margin-top: 4px;
+  font-size: 11px;
+  line-height: 1.4;
+  color: var(--muted);
+  font-weight: 400;
+}
+
+.profile-form {
+  display: grid;
+  gap: 12px;
+}
+
+.profile-field {
+  display: grid;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.profile-field em {
+  font-style: normal;
+  opacity: 0.7;
+  margin-left: 4px;
+}
+
+.profile-field input,
+.profile-field select {
+  width: 100%;
+  border-radius: 10px;
+  border: 1px solid rgba(193, 162, 109, 0.28);
+  background: rgba(8, 12, 18, 0.9);
+  color: #fff;
+  padding: 10px 12px;
+  font-size: 14px;
+}
+
+.profile-prefs {
+  margin: 0;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(193, 162, 109, 0.2);
+}
+
+.profile-prefs legend {
+  padding: 0 4px;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.profile-check {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 6px 0;
+  font-size: 13px;
+  color: #e8e4d8;
+}
+
+.profile-readonly {
+  display: grid;
+  gap: 6px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px dashed rgba(193, 162, 109, 0.22);
+}
+
+.profile-readonly p {
+  margin: 0;
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.profile-readonly b {
+  color: #fff;
+  font-weight: 600;
+}
+
+.profile-form-msg {
+  margin: 0;
+  min-height: 1.2em;
+  font-size: 12px;
+}
+
+.profile-save {
+  border: 0;
+  border-radius: 999px;
+  padding: 12px 16px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #1a1204;
+  background: linear-gradient(180deg, #e5c78f, #c1a26d);
+  cursor: pointer;
+}
+
+.profile-save:disabled {
+  opacity: 0.55;
+  cursor: wait;
+}
+
+.profile-save--ghost {
+  background: transparent;
+  color: var(--gold-soft);
+  border: 1px solid rgba(193, 162, 109, 0.45);
+}
+
+.invite-result {
+  margin-top: 12px;
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(193, 162, 109, 0.35);
+  background: rgba(193, 162, 109, 0.08);
+}
+
+.invite-result code,
+.invite-list code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  color: var(--gold-soft);
+}
+
+.invite-list {
+  margin-top: 14px;
+}
+
+.invite-list-title {
+  margin: 0 0 8px;
+  font-size: 13px;
+}
+
+.invite-list ul {
+  margin: 0;
+  padding-left: 18px;
+  display: grid;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--muted);
+}
+
 .stats-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -1747,10 +2350,23 @@ body.v2-race-list-ui .race-conf {
 .menu-list {
   display: grid;
   gap: 2px;
+  margin: 8px 0 16px;
   border-radius: var(--radius);
   overflow: hidden;
-  border: 1px solid rgba(193, 162, 109, 0.16);
-  background: var(--card);
+  border: 1px solid rgba(193, 162, 109, 0.28);
+  background: var(--card, rgba(28, 24, 20, 0.92));
+}
+
+.mypage-menu-section {
+  margin: 16px 0;
+}
+
+.mypage-menu-heading {
+  margin: 0 0 8px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--gold-soft, #d4b46a);
+  letter-spacing: 0.04em;
 }
 
 .menu-list a {
@@ -1761,7 +2377,13 @@ body.v2-race-list-ui .race-conf {
   font-size: 13px;
   font-weight: 600;
   color: #fff;
+  text-decoration: none;
   border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.menu-list a.menu-list-chat {
+  background: rgba(193, 162, 109, 0.12);
+  color: var(--gold-soft, #e5c78f);
 }
 
 .menu-list a:last-child { border-bottom: 0; }
@@ -1938,3 +2560,40 @@ body.v2-race-list-ui .race-conf {
   text-underline-offset: 2px;
 }
 .explain-honmei-decision { margin: 6px 0 0; font-size: 12px; }
+
+/* V5 Phase 3 — Conversation UI CTAs（race AI タブ） */
+.v5-conversation-ctas {
+  margin-top: 16px;
+}
+.v5-conversation-ctas h3 {
+  margin: 0 0 10px;
+  font-size: 15px;
+  font-weight: 700;
+}
+.v5-conversation-cta-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.v5-conversation-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 14px;
+  border-radius: 10px;
+  background: var(--gold-soft, #d4b46a);
+  color: #1a1208;
+  font-size: 13px;
+  font-weight: 650;
+  text-decoration: none;
+  line-height: 1.3;
+}
+.v5-conversation-cta--secondary {
+  background: transparent;
+  color: var(--gold-soft, #d4b46a);
+  border: 1px solid color-mix(in srgb, var(--gold-soft, #d4b46a) 55%, transparent);
+}
+.v5-conversation-note {
+  margin: 10px 0 0;
+  font-size: 12px;
+}

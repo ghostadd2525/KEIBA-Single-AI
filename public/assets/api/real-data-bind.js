@@ -469,6 +469,26 @@
 
   function applyRacesFilters(bundles) {
     var chips = buildFilterChips(bundles);
+    // 今週末の土日タブを常に含める（データ未取得日も選択可能に）
+    if (global.ExpectWeekendCalendar && ExpectWeekendCalendar.weekendRaceDates) {
+      var week = ExpectWeekendCalendar.weekendRaceDates(new Date()) || [];
+      var have = {};
+      (chips.dates || []).forEach(function (d) {
+        have[d.iso] = d;
+      });
+      week.forEach(function (iso) {
+        if (!have[iso]) {
+          var label =
+            global.ExpectRaceListUrl && ExpectRaceListUrl.dateLabelFromIso
+              ? ExpectRaceListUrl.dateLabelFromIso(iso)
+              : iso;
+          chips.dates.push({ iso: iso, label: label });
+        }
+      });
+      chips.dates.sort(function (a, b) {
+        return String(a.iso).localeCompare(String(b.iso));
+      });
+    }
     renderDateTabs(document.getElementById("dateTabs"), chips.dates);
     renderChipRow(document.getElementById("venueChips"), "venue", chips.venues);
     renderDateSearchChips(document.getElementById("raceSearchDates"), chips.dates);
@@ -498,7 +518,8 @@
     if (h2) h2.textContent = p.display_name || me.login_id || "ユーザー";
     if (metas[0]) metas[0].textContent = "login_id · " + (me.login_id || "—");
     if (badge) {
-      badge.textContent = me.status === "active" ? "Active Member" : me.status || "Member";
+      var role = me.role || (me.user && me.user.role) || "";
+      badge.textContent = role ? String(role) : me.status || "USER";
     }
     if (metas[1]) {
       var histN = (history && history.count) || 0;

@@ -8,11 +8,11 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Noto+Sans+JP:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="assets/styles.css?v=18" />
-  <link rel="stylesheet" href="assets/screens.css?v=19" />
+  <link rel="stylesheet" href="assets/screens.css?v=33" />
   <link rel="stylesheet" href="assets/ux.css?v=16" />
   <link rel="stylesheet" href="assets/vqa.css" />
   <link rel="stylesheet" href="assets/v11.css?v=11" />
-  <script src="assets/api/calendar-weekend.js?v=11"></script>
+  <script src="assets/api/calendar-weekend.js?v=12"></script>
   <script src="assets/auto-maintenance.js?v=11.3"></script>
   <script src="assets/auth.js"></script>
   <script>
@@ -124,14 +124,14 @@
   <script src="assets/api/contract-guard.js"></script>
   <script src="assets/api/race-list-url.js?v=12"></script>
   <script src="assets/api/race.js"></script>
-  <script src="assets/api/race-cards.js?v=12"></script>
+  <script src="assets/api/race-cards.js?v=13"></script>
   <script src="assets/api/prediction.js"></script>
   <script src="assets/api/race-id-meta.js"></script>
-  <script src="assets/api/prediction-bind.js?v=14"></script>
-  <script src="assets/api/real-data-bind.js"></script>
+  <script src="assets/api/prediction-bind.js?v=26"></script>
+  <script src="assets/api/real-data-bind.js?v=13"></script>
   <script src="assets/ux.js?v=15"></script>
   <script src="assets/api/ui-features.js?v=12"></script>
-  <script src="assets/api/race-search.js?v=13"></script>
+  <script src="assets/api/race-search.js?v=14"></script>
   <script src="assets/v11.js?v=11"></script>
   <script src="assets/favorites.js"></script>
   <script src="assets/shell.js"></script>
@@ -222,9 +222,17 @@
         var venue = item.getAttribute("data-race-venue") || "";
         var name = item.getAttribute("data-race-name") || "";
         var place = item.getAttribute("data-race-place") || "";
+        var time = item.getAttribute("data-race-time") || "";
         var hay = (date + " " + venue + " " + name + " " + place).toLowerCase();
         if (state.date !== "all" && date !== state.date) return false;
         if (state.venue !== "all" && venue !== state.venue) return false;
+        if (
+          window.ExpectRaceSearch &&
+          ExpectRaceSearch.isPostTimePassed &&
+          ExpectRaceSearch.isPostTimePassed(date, time)
+        ) {
+          return false;
+        }
         if (state.q) {
           var tokens = state.q.toLowerCase().split(/\s+/).filter(Boolean);
           for (var i = 0; i < tokens.length; i++) {
@@ -237,16 +245,46 @@
       function applyFilters() {
         var shown = 0;
         var emptyNow = document.getElementById("raceListEmpty");
-        items().forEach(function (item) {
+        var rows = items();
+        rows.forEach(function (item) {
           var ok = match(item);
           item.hidden = !ok;
           item.classList.toggle("is-filtered-out", !ok);
           if (ok) shown += 1;
         });
-        if (emptyNow) emptyNow.hidden = shown > 0;
+        // 選択日のカードが DOM に無い → その日を再ロード（誤った日のまま絞り込みしている状態を救済）
+        if (
+          shown === 0 &&
+          rows.length > 0 &&
+          state.date &&
+          state.date !== "all" &&
+          raceListController.mode === "v2" &&
+          typeof raceListController.reload === "function"
+        ) {
+          var hasSelectedDate = rows.some(function (item) {
+            var d = item.getAttribute("data-race-date") || "";
+            if (window.ExpectRaceSearch && ExpectRaceSearch.matchRaceSearch) {
+              return ExpectRaceSearch.matchRaceSearch({ date: d }, { date: state.date, venue: "all" });
+            }
+            return d === state.date;
+          });
+          if (!hasSelectedDate && raceListController.loadedDate !== state.date) {
+            raceListController.reload(state.date);
+            return;
+          }
+        }
+        if (emptyNow) {
+          emptyNow.hidden = shown > 0;
+          if (shown === 0) {
+            emptyNow.textContent =
+              rows.length === 0
+                ? "レースがありません。"
+                : "条件に合うレースがありません。検索条件を変えてみてください。";
+          }
+        }
         if (countEl) {
           countEl.textContent =
-            shown + "件のレースが見つかりました（全" + items().length + "件中）";
+            shown + "件のレースが見つかりました（全" + rows.length + "件中）";
         }
         if (noteEl) {
           var parts = [];
@@ -347,14 +385,14 @@
 
       function onDateSelected(nextDate) {
         state.date = nextDate || "all";
+        // 日付切替時は会場フィルタをリセット（別日に会場だけ残って 0 件になるのを防ぐ）
+        state.venue = "all";
         writeDateUrl(state.date, "push");
         if (
           raceListController.mode === "v2" &&
-          state.date !== "all" &&
-          state.date !== raceListController.loadedDate &&
           typeof raceListController.reload === "function"
         ) {
-          raceListController.reload(state.date);
+          raceListController.reload(state.date === "all" ? "all" : state.date);
           return;
         }
         applyFilters();
@@ -379,6 +417,11 @@
       syncDateFromUrl({ normalize: true });
       applyFilters();
 
+      // 出走時刻経過後にカードを落とすため、1分ごとに再フィルタ
+      setInterval(function () {
+        applyFilters();
+      }, 60000);
+
       window.addEventListener("expect:race-filters-ready", function () {
         applyFilters();
       });
@@ -388,11 +431,10 @@
           syncDateFromUrl({ normalize: false });
           if (
             raceListController.mode === "v2" &&
-            state.date !== "all" &&
-            state.date !== raceListController.loadedDate &&
-            typeof raceListController.reload === "function"
+            typeof raceListController.reload === "function" &&
+            (state.date === "all" || state.date !== raceListController.loadedDate)
           ) {
-            raceListController.reload(state.date);
+            raceListController.reload(state.date === "all" ? "all" : state.date);
             return;
           }
           applyFilters();
@@ -499,13 +541,21 @@
       var list = document.getElementById("raceList");
       if (!list) return;
 
-      var RACE_LIST_CACHE_KEY = "expect_race_list_cache_v1";
+      // v4: 日付フィルタ不整合キャッシュを破棄
+      var RACE_LIST_CACHE_KEY = "expect_race_list_cache_v4";
+      var RACE_CARDS_TIMEOUT_MS = 65000;
+      var RACE_LIST_CACHE_TTL_MS = 5 * 60 * 1000;
 
-      function resolveCacheDate(dateOpt) {
+      function resolveListDate(dateOpt) {
+        if (window.ExpectApi && ExpectApi.RaceCards && ExpectApi.RaceCards.resolveDate) {
+          return ExpectApi.RaceCards.resolveDate({ date: dateOpt || undefined }) || "";
+        }
+        if (window.ExpectApi && ExpectApi.Race && ExpectApi.Race.resolveListDate) {
+          return ExpectApi.Race.resolveListDate({ date: dateOpt || undefined }) || "";
+        }
         if (dateOpt) return String(dateOpt);
-        if (window.ExpectRaceListUrl && ExpectRaceListUrl.resolveFromLocation) {
-          var resolved = ExpectRaceListUrl.resolveFromLocation();
-          if (resolved && resolved.date) return String(resolved.date);
+        if (window.ExpectRaceListUrl && ExpectRaceListUrl.calendarFallbackDate) {
+          return ExpectRaceListUrl.calendarFallbackDate(new Date()) || "";
         }
         return "";
       }
@@ -537,10 +587,22 @@
         var store = readRaceListStore();
         var hit = store.entries[cacheSlotKey(mode, dateKey)];
         if (!hit || !hit.payload) return null;
+        if (hit.at && Date.now() - Number(hit.at) > RACE_LIST_CACHE_TTL_MS) {
+          return null;
+        }
+        // missing / processing のみのスナップショットは自信度欠落の原因になるので使わない
+        if (mode === "v2" && !cacheHasReadyCards(hit.payload)) {
+          return null;
+        }
         return hit;
       }
 
       function writeRaceListCache(mode, dateKey, payload) {
+        if (!dateKey && mode === "v2") return;
+        // カタログ先行表示や enrich 失敗結果は永続化しない
+        if (mode === "v2" && !cacheHasReadyCards(payload)) {
+          return;
+        }
         var store = readRaceListStore();
         store.entries[cacheSlotKey(mode, dateKey)] = {
           mode: mode,
@@ -549,6 +611,71 @@
           at: Date.now(),
         };
         writeRaceListStore(store);
+      }
+
+      function withTimeout(promise, ms, label) {
+        return new Promise(function (resolve, reject) {
+          var settled = false;
+          var timer = setTimeout(function () {
+            if (settled) return;
+            settled = true;
+            var err = new Error(label || "timeout");
+            err.code = "TIMEOUT";
+            reject(err);
+          }, ms);
+          Promise.resolve(promise).then(
+            function (value) {
+              if (settled) return;
+              settled = true;
+              clearTimeout(timer);
+              resolve(value);
+            },
+            function (err) {
+              if (settled) return;
+              settled = true;
+              clearTimeout(timer);
+              reject(err);
+            }
+          );
+        });
+      }
+
+      function catalogItemsToRaceCards(items, listDate) {
+        return (items || []).map(function (item) {
+          var info = (item && item.race_info) || {};
+          var raceNo =
+            info.race_no != null
+              ? info.race_no
+              : item.race_number != null
+                ? item.race_number
+                : null;
+          return {
+            schema_version: "expect-race-card-summary/1.0",
+            race_id: item.race_id,
+            race_info: {
+              venue: info.venue || item.course || "",
+              race_number: raceNo,
+              race_name: info.race_name || item.race_name || "",
+              post_time: info.post_time || null,
+              date: info.date || listDate || "",
+              date_label: info.date_label || "",
+              date_full: info.date_full || "",
+              race_label: info.race_label || item.race_label || "",
+              class_label: info.class_label || "",
+            },
+            prediction: { status: "processing", engine_source: null },
+            summary: null,
+          };
+        });
+      }
+
+      function cacheHasReadyCards(payload) {
+        var cards = (payload && payload.race_cards) || [];
+        if (!cards.length) return false;
+        if (payload && payload.enriched === true) return true;
+        return cards.some(function (c) {
+          return c && c.prediction && c.prediction.status === "ready";
+        });
       }
 
       function renderError(message) {
@@ -580,17 +707,22 @@
             c && c.summary && c.summary.confidence && typeof c.summary.confidence.score === "number"
               ? c.summary.confidence.score
               : null;
+          var iso =
+            String(info.date || "").trim() ||
+            (String(c.race_id || "").match(/^(\d{4}-\d{2}-\d{2})/) || [])[1] ||
+            listDate ||
+            "";
           return {
             race_id: c.race_id,
             race_info: {
-              date: listDate || "",
+              date: iso,
               venue: info.venue || "",
               race_no: info.race_number,
               race_name: info.race_name || "",
               post_time: info.post_time || "",
               date_label:
                 window.ExpectRaceListUrl && ExpectRaceListUrl.dateLabelFromIso
-                  ? ExpectRaceListUrl.dateLabelFromIso(listDate)
+                  ? ExpectRaceListUrl.dateLabelFromIso(iso)
                   : "",
             },
             ai_confidence: { score: conf },
@@ -633,7 +765,7 @@
           ExpectRealDataBind.applyRacesFilters(races);
         }
         if (!opts.fromCache) {
-          writeRaceListCache("v1", "", { bundles: races });
+          writeRaceListCache("v1", "all", { bundles: races });
         }
         bootRaceUi();
       }
@@ -643,10 +775,21 @@
         if (window.ExpectUx && ExpectUx.hideLoading) ExpectUx.hideLoading(list);
         var cards = (payload && payload.race_cards) || [];
         var listDate = (payload && payload.date) || "";
-        raceListController.loadedDate = listDate;
+        // loadedDate: 複数日は all、単日はその ISO
+        if (payload && payload.dates && payload.dates.length > 1) {
+          raceListController.loadedDate = "all";
+        } else if (listDate) {
+          raceListController.loadedDate = listDate;
+        }
         var html = cards
           .map(function (card) {
-            return ExpectPredictionBind.raceCardSummaryHtml(card, { listDate: listDate });
+            // カード個別の日付を優先（weekend 混在時の誤ラベル防止）
+            var cardDate =
+              (card && card.race_info && card.race_info.date) ||
+              (String((card && card.race_id) || "").match(/^(\d{4}-\d{2}-\d{2})/) ||
+                [])[1] ||
+              listDate;
+            return ExpectPredictionBind.raceCardSummaryHtml(card, { listDate: cardDate });
           })
           .join("");
         list.setAttribute("aria-busy", "false");
@@ -669,9 +812,278 @@
           ExpectFavorites.cacheBundles(cards);
         }
         if (!opts.fromCache) {
-          writeRaceListCache("v2", listDate || resolveCacheDate(""), payload);
+          writeRaceListCache("v2", listDate || resolveListDate(""), payload);
         }
         bootRaceUi();
+      }
+
+      function enrichFromRaceCards(dateKey, dateOpt) {
+        if (!window.ExpectApi || !ExpectApi.RaceCards) return Promise.resolve(null);
+        return withTimeout(
+          ExpectApi.RaceCards.list({ date: dateOpt || dateKey }),
+          RACE_CARDS_TIMEOUT_MS,
+          "race-cards timeout"
+        )
+          .then(function (payload) {
+            if (!payload) return null;
+            payload.enriched = true;
+            renderV2Cards(payload);
+            return payload;
+          })
+          .catch(function (err) {
+            if (!list.querySelector(".race-item")) {
+              var timedOut = err && err.code === "TIMEOUT";
+              renderError(
+                timedOut
+                  ? "予想データの取得がタイムアウトしました。再読み込みしてください。"
+                  : "予想データの取得に失敗しました。通信環境を確認して再読み込みしてください。"
+              );
+            }
+            return null;
+          });
+      }
+
+      function weekendDates() {
+        if (window.ExpectWeekendCalendar && ExpectWeekendCalendar.weekendRaceDates) {
+          return ExpectWeekendCalendar.weekendRaceDates(new Date()).filter(Boolean);
+        }
+        var one = resolveListDate("");
+        return one ? [one] : [];
+      }
+
+      function resolveLoadDates(dateOpt) {
+        // 明示指定（単日）
+        if (dateOpt && dateOpt !== "all") {
+          return [String(dateOpt)];
+        }
+        // 明示的に「すべて」(null) → URL に date が残っていても土日両方
+        if (dateOpt === null || dateOpt === "all") {
+          var daysAll = weekendDates();
+          return daysAll.length ? daysAll : [resolveListDate("")].filter(Boolean);
+        }
+        // 初期ロードなど: URL 優先、なければ今週末
+        if (window.ExpectRaceListUrl) {
+          var fromUrl = ExpectRaceListUrl.resolveFromLocation().date;
+          if (fromUrl) return [fromUrl];
+        }
+        var days = weekendDates();
+        return days.length ? days : [resolveListDate("")].filter(Boolean);
+      }
+
+      function paintWeekendDateTabs(extraDates) {
+        var map = {};
+        weekendDates().forEach(function (iso) {
+          map[iso] = window.ExpectRaceListUrl && ExpectRaceListUrl.dateLabelFromIso
+            ? ExpectRaceListUrl.dateLabelFromIso(iso)
+            : iso;
+        });
+        (extraDates || []).forEach(function (d) {
+          var iso = typeof d === "object" ? d.iso : d;
+          var label = typeof d === "object" ? d.label : d;
+          if (iso) map[iso] = label || map[iso] || iso;
+        });
+        var dates = Object.keys(map)
+          .sort()
+          .map(function (iso) {
+            return { iso: iso, label: map[iso] };
+          });
+        if (window.ExpectRealDataBind && ExpectRealDataBind.applyRacesFilters) {
+          /* tabs are refreshed in renderV2Cards via applyRacesFilters; seed here too */
+        }
+        var tabs = document.getElementById("dateTabs");
+        if (!tabs || !dates.length) return;
+        var html =
+          '<button type="button" class="tab-pill" data-filter-date="all">すべて</button>';
+        dates.forEach(function (d) {
+          html +=
+            '<button type="button" class="tab-pill" data-filter-date="' +
+            d.iso +
+            '">' +
+            d.label +
+            "</button>";
+        });
+        tabs.innerHTML = html;
+      }
+
+      /**
+       * 一覧自信度: 1レースずつ Prediction を取り、揃い次第カードを更新
+       * （race-cards 一括が CF 制限で落ちても自信度が出る）
+       */
+      function enrichProgressive(seedPayload) {
+        if (
+          !window.ExpectApi ||
+          !ExpectApi.Prediction ||
+          !window.ExpectPredictionBind ||
+          !ExpectPredictionBind.bundleToRaceCardSummary
+        ) {
+          return Promise.resolve(seedPayload);
+        }
+        var cards = (seedPayload && seedPayload.race_cards) || [];
+        if (!cards.length) return Promise.resolve(seedPayload);
+
+        var byId = {};
+        cards.forEach(function (c) {
+          byId[c.race_id] = c;
+        });
+        var ids = cards.map(function (c) {
+          return c.race_id;
+        });
+        var concurrency = 8;
+        var next = 0;
+        var done = 0;
+        var readyCount = 0;
+
+        function snapshot() {
+          return {
+            schema_version: "expect-race-cards/1.0",
+            date: seedPayload.date,
+            dates: seedPayload.dates,
+            count: ids.length,
+            race_cards: ids.map(function (id) {
+              return byId[id];
+            }),
+            enriched: readyCount > 0,
+          };
+        }
+
+        function paint() {
+          renderV2Cards(snapshot());
+        }
+
+        function worker() {
+          return new Promise(function (resolve) {
+            function step() {
+              var i = next++;
+              if (i >= ids.length) {
+                resolve();
+                return;
+              }
+              var rid = ids[i];
+              var seed = byId[rid];
+              var getter =
+                typeof ExpectApi.Prediction.getWithMeta === "function"
+                  ? ExpectApi.Prediction.getWithMeta(rid)
+                  : ExpectApi.Prediction.get(rid).then(function (b) {
+                      return { bundle: b, meta: {} };
+                    });
+              withTimeout(getter, 20000, "pred " + rid)
+                .then(function (result) {
+                  var bundle = result && result.bundle ? result.bundle : result;
+                  if (bundle && bundle.race_id) {
+                    byId[rid] = ExpectPredictionBind.bundleToRaceCardSummary(bundle, seed);
+                    readyCount += 1;
+                  } else {
+                    byId[rid] = Object.assign({}, seed, {
+                      prediction: { status: "missing", engine_source: null },
+                      summary: null,
+                    });
+                  }
+                })
+                .catch(function () {
+                  byId[rid] = Object.assign({}, seed, {
+                    prediction: { status: "missing", engine_source: null },
+                    summary: null,
+                  });
+                })
+                .then(function () {
+                  done += 1;
+                  if (done % 4 === 0 || done === ids.length) paint();
+                  step();
+                });
+            }
+            step();
+          });
+        }
+
+        var workers = [];
+        for (var w = 0; w < Math.min(concurrency, ids.length); w++) {
+          workers.push(worker());
+        }
+        return Promise.all(workers).then(function () {
+          var finalPayload = snapshot();
+          finalPayload.enriched = true;
+          renderV2Cards(finalPayload);
+          return finalPayload;
+        });
+      }
+
+      function loadCatalogsForDates(dates) {
+        if (!window.ExpectApi || !ExpectApi.Race) {
+          return Promise.reject(new Error("Race catalog unavailable"));
+        }
+        return Promise.all(
+          dates.map(function (d) {
+            return withTimeout(
+              ExpectApi.Race.list({ date: d }),
+              12000,
+              "catalog " + d
+            ).then(
+              function (catalog) {
+                return { date: d, items: (catalog && catalog.items) || [] };
+              },
+              function () {
+                return { date: d, items: [] };
+              }
+            );
+          })
+        ).then(function (rows) {
+          var items = [];
+          rows.forEach(function (row) {
+            (row.items || []).forEach(function (it) {
+              items.push(it);
+            });
+          });
+          return { dates: dates, items: items };
+        });
+      }
+
+      function enrichDates(dates, seedPayload) {
+        // 1) 可能なら race-cards（日付ごと・edge cache あり）
+        // 2) 並行で progressive Prediction（確実に自信度を埋める）
+        var raceCardsPromise = Promise.resolve(null);
+        if (window.ExpectApi && ExpectApi.RaceCards && dates.length === 1) {
+          raceCardsPromise = enrichFromRaceCards(dates[0], dates[0]);
+        } else if (window.ExpectApi && ExpectApi.RaceCards && dates.length > 1) {
+          raceCardsPromise = Promise.all(
+            dates.map(function (d) {
+              return withTimeout(
+                ExpectApi.RaceCards.list({ date: d }),
+                RACE_CARDS_TIMEOUT_MS,
+                "race-cards " + d
+              ).catch(function () {
+                return null;
+              });
+            })
+          ).then(function (parts) {
+            var merged = [];
+            parts.forEach(function (p) {
+              if (p && Array.isArray(p.race_cards)) {
+                merged = merged.concat(p.race_cards);
+              }
+            });
+            if (!merged.length) return null;
+            var payload = {
+              schema_version: "expect-race-cards/1.0",
+              date: dates[0],
+              dates: dates,
+              count: merged.length,
+              race_cards: merged,
+              enriched: true,
+            };
+            renderV2Cards(payload);
+            return payload;
+          });
+        }
+
+        var progressivePromise = enrichProgressive(seedPayload);
+
+        // 先に揃った方で表示。最終は progressive 完了を優先（欠けを埋める）
+        raceCardsPromise.then(function (p) {
+          if (p && cacheHasReadyCards(p)) {
+            /* already rendered inside enrichFromRaceCards / merge */
+          }
+        });
+        return progressivePromise;
       }
 
       function loadV1() {
@@ -680,7 +1092,7 @@
           renderError("API クライアントが読み込めていません。");
           return;
         }
-        var cached = readRaceListCache("v1", "");
+        var cached = readRaceListCache("v1", "all");
         if (cached && cached.payload && Array.isArray(cached.payload.bundles)) {
           renderV1Bundles(cached.payload.bundles, { fromCache: true });
           return;
@@ -688,43 +1100,85 @@
         if (window.ExpectUx && ExpectUx.showLoading) {
           ExpectUx.showLoading(list);
         }
-        ExpectApi.Prediction.list({})
+        withTimeout(ExpectApi.Prediction.list({}), RACE_CARDS_TIMEOUT_MS, "predictions timeout")
           .then(function (bundles) {
             renderV1Bundles(bundles);
           })
           .catch(function () {
-            renderError("通信エラーのため一覧を更新できませんでした。");
+            renderError("通信エラーまたはタイムアウトのため一覧を更新できませんでした。");
           });
       }
 
       function loadV2(dateOpt) {
         raceListController.mode = "v2";
-        if (!window.ExpectApi || !ExpectApi.RaceCards || !window.ExpectPredictionBind) {
-          renderError("RaceCardSummary クライアントが読み込めていません。");
+        if (!window.ExpectApi || !ExpectApi.Race || !window.ExpectPredictionBind) {
+          renderError("Race API クライアントが読み込めていません。");
           return;
         }
-        var dateKey = resolveCacheDate(dateOpt);
-        var cached = readRaceListCache("v2", dateKey);
+
+        var dates = resolveLoadDates(dateOpt);
+        if (!dates.length) {
+          renderError("開催日を特定できませんでした。");
+          return;
+        }
+
+        var cacheKey = dates.length === 1 ? dates[0] : "weekend:" + dates.join(",");
+        raceListController.loadedDate =
+          dateOpt == null || dateOpt === "all" || dates.length > 1 ? "all" : dates[0];
+
+        paintWeekendDateTabs();
+
+        var cached = readRaceListCache("v2", cacheKey);
         if (cached && cached.payload && Array.isArray(cached.payload.race_cards)) {
           renderV2Cards(cached.payload, { fromCache: true });
+          enrichDates(dates, cached.payload);
           return;
         }
+
         if (window.ExpectUx && ExpectUx.showLoading) {
-          ExpectUx.showLoading(list);
+          ExpectUx.showLoading(list, {
+            compact: true,
+            title: "ロード中...",
+            message: "レース一覧を準備しています。",
+          });
         } else {
           list.setAttribute("aria-busy", "true");
         }
-        ExpectApi.RaceCards.list({ date: dateOpt || undefined })
-          .then(function (payload) {
+
+        loadCatalogsForDates(dates)
+          .then(function (cat) {
+            var cards = catalogItemsToRaceCards(cat.items, dates[0]);
+            var payload = {
+              schema_version: "expect-race-cards/1.0",
+              date: dates.length === 1 ? dates[0] : dates[0],
+              dates: dates,
+              count: cards.length,
+              race_cards: cards,
+              enriched: false,
+            };
+            // cache write key
+            payload._cacheKey = cacheKey;
             renderV2Cards(payload);
+            return enrichDates(dates, payload);
           })
-          .catch(function (err) {
-            renderError(
-              (err && err.message) ||
-                "通信エラーのため一覧を更新できませんでした。"
-            );
+          .catch(function () {
+            if (!list.querySelector(".race-item")) {
+              renderError("通信エラーのため一覧を更新できませんでした。");
+            }
           });
       }
+
+      // cache key: weekend multi-day
+      var _writeRaceListCacheOrig = writeRaceListCache;
+      writeRaceListCache = function (mode, dateKey, payload) {
+        var key =
+          payload && payload._cacheKey
+            ? payload._cacheKey
+            : payload && payload.dates && payload.dates.length > 1
+              ? "weekend:" + payload.dates.join(",")
+              : dateKey;
+        return _writeRaceListCacheOrig(mode, key, payload);
+      };
 
       raceListController.reload = function (date) {
         loadV2(date);
@@ -746,7 +1200,7 @@
       } else {
         start();
       }
-    })();    })();
+    })();
   </script>
 </body>
 </html>

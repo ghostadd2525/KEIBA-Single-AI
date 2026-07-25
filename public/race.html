@@ -7,12 +7,12 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Noto+Sans+JP:wght@400;500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="assets/styles.css?v=17" />
-  <link rel="stylesheet" href="assets/screens.css" />
-  <link rel="stylesheet" href="assets/ux.css?v=15" />
+  <link rel="stylesheet" href="assets/styles.css?v=18" />
+  <link rel="stylesheet" href="assets/screens.css?v=27" />
+  <link rel="stylesheet" href="assets/ux.css?v=19" />
   <link rel="stylesheet" href="assets/vqa.css" />
   <link rel="stylesheet" href="assets/v11.css?v=11" />
-  <script src="assets/api/calendar-weekend.js?v=11"></script>
+  <script src="assets/api/calendar-weekend.js?v=12"></script>
   <script src="assets/auto-maintenance.js?v=11.3"></script>
   <script src="assets/auth.js"></script>
   <script>
@@ -27,7 +27,7 @@
       <div class="topbar-inner">
         <div class="topbar-left">
           <a class="back-btn" href="races.html" aria-label="戻る">‹</a>
-          <div class="brand-block topbar-text topbar-title-only">
+          <div class="brand-block topbar-text">
             <p class="brand-name" id="raceTitle">レース詳細</p>
             <p class="brand-sub" id="raceSub">読み込み中…</p>
           </div>
@@ -49,14 +49,20 @@
     <div class="screen">
       <div class="chip-row" id="detailTabs" role="tablist" aria-label="レース詳細タブ">
         <button type="button" class="chip is-active" role="tab" aria-selected="true" data-tab="ai">AI予想</button>
-        <button type="button" class="chip is-soon" role="tab" aria-selected="false" disabled aria-disabled="true" title="準備中">出馬表<span class="chip-soon">準備中</span></button>
-        <button type="button" class="chip is-soon" role="tab" aria-selected="false" disabled aria-disabled="true" title="準備中">オッズ<span class="chip-soon">準備中</span></button>
-        <button type="button" class="chip is-soon" role="tab" aria-selected="false" disabled aria-disabled="true" title="準備中">データ<span class="chip-soon">準備中</span></button>
+        <button type="button" class="chip" role="tab" aria-selected="false" data-tab="shutuba">出馬表</button>
+        <button type="button" class="chip" role="tab" aria-selected="false" data-tab="odds">オッズ</button>
+        <button type="button" class="chip" role="tab" aria-selected="false" data-tab="data">データ</button>
         <button type="button" class="chip is-soon" role="tab" aria-selected="false" disabled aria-disabled="true" title="準備中">結果<span class="chip-soon">準備中</span></button>
       </div>
 
+      <section class="race-meta-card" id="raceMetaCard" aria-label="レース情報">
+        <p class="race-meta-name" id="raceMetaName">—</p>
+        <p class="race-meta-line" id="raceMetaLine">読み込み中…</p>
+      </section>
+
       <div id="raceProvenance" class="race-provenance-wrap" hidden></div>
 
+      <div data-tab-panel="ai" id="tabPanelAi">
       <section class="chart-card" id="marksSection">
         <h3>印</h3>
         <div id="marksSectionBody"><p class="muted">読み込み中…</p></div>
@@ -74,34 +80,25 @@
           <p>AI本命 · 信頼度 —</p>
           <p class="race-stars" style="margin-top:6px">☆☆☆☆☆</p>
         </div>
-        <div class="radar-box" aria-label="能力レーダー">
-          <span>血統<br>展開<br>騎手</span>
+        <div class="radar-box" aria-label="強み項目">
+          <span>—</span>
         </div>
       </article>
 
       <section class="pace-card" id="paceCard">
-        <h3>展開予想</h3>
+        <h3>最終着順予想（左→右　着順）</h3>
         <p>レースデータを読み込んでいます…</p>
-        <div class="pace-track" aria-label="位置取りイメージ">
-          <span class="pace-label">スタート</span>
-          <span class="pace-dot">3</span>
-          <span class="pace-dot">1</span>
-          <span class="pace-dot is-dim">5</span>
-          <span class="pace-dot">7</span>
-          <span class="pace-dot is-dim">9</span>
-          <span class="pace-dot">4</span>
-          <span class="pace-label">ゴール</span>
-        </div>
+        <div class="pace-track" id="paceTrack" aria-label="最終着順予想（左が1着）"></div>
       </section>
 
       <section class="chart-card is-loading" id="chartCard">
         <h3>評価内訳</h3>
         <div class="score-list">
-          <div class="score-row"><span>血統適性</span><div class="score-bar"><i style="width:0%"></i></div><b>—</b></div>
-          <div class="score-row"><span>展開予測</span><div class="score-bar"><i style="width:0%"></i></div><b>—</b></div>
-          <div class="score-row"><span>騎手相性</span><div class="score-bar"><i style="width:0%"></i></div><b>—</b></div>
-          <div class="score-row"><span>近走内容</span><div class="score-bar"><i style="width:0%"></i></div><b>—</b></div>
-          <div class="score-row"><span>オッズ妙味</span><div class="score-bar"><i style="width:0%"></i></div><b>—</b></div>
+          <div class="score-row"><span>近走成績</span><div class="score-bar"><i style="width:0%"></i></div><b>—</b></div>
+          <div class="score-row"><span>距離適性</span><div class="score-bar"><i style="width:0%"></i></div><b>—</b></div>
+          <div class="score-row"><span>脚質×距離</span><div class="score-bar"><i style="width:0%"></i></div><b>—</b></div>
+          <div class="score-row"><span>先行傾向</span><div class="score-bar"><i style="width:0%"></i></div><b>—</b></div>
+          <div class="score-row"><span>展開耐性</span><div class="score-bar"><i style="width:0%"></i></div><b>—</b></div>
         </div>
       </section>
 
@@ -118,6 +115,22 @@
       <div class="fab-bet">
         <a id="strategyLink" href="strategy.html">買い目戦略を詳しく見る</a>
       </div>
+      </div>
+
+      <section class="chart-card" data-tab-panel="shutuba" id="tabPanelShutuba" hidden>
+        <h3>出馬表</h3>
+        <div id="tabShutubaBody"><p class="muted">タブを開くと読み込みます</p></div>
+      </section>
+
+      <section class="chart-card" data-tab-panel="odds" id="tabPanelOdds" hidden>
+        <h3>単勝オッズ</h3>
+        <div id="tabOddsBody"><p class="muted">タブを開くと読み込みます</p></div>
+      </section>
+
+      <section class="chart-card" data-tab-panel="data" id="tabPanelData" hidden>
+        <h3>近走データ（各馬3件）</h3>
+        <div id="tabDataBody"><p class="muted">タブを開くと読み込みます</p></div>
+      </section>
     </div>
 
     <aside class="mascot-ka0ba" id="mascotKa0ba" data-mascot-mode="png">
@@ -134,10 +147,14 @@
   <script src="assets/api/auth.js"></script>
   <script src="assets/api/contract-guard.js"></script>
   <script src="assets/api/prediction.js"></script>
-  <script src="assets/api/prediction-bind.js"></script>
+  <script src="assets/api/prediction-bind.js?v=25"></script>
+  <script src="assets/api/race-board.js?v=2"></script>
+  <script src="assets/api/race-detail-tabs.js?v=3"></script>
   <script src="assets/api/analysis.js"></script>
-  <script src="assets/api/analysis-bind.js"></script>
-  <script src="assets/ux.js?v=15"></script>
+  <script src="assets/api/analysis-bind.js?v=22"></script>
+  <script src="assets/ux.js?v=17"></script>
+  <script src="assets/api/conversation.js?v=6"></script>
+  <script src="assets/api/conversation-ui.js?v=6"></script>
   <script src="assets/api/ui-features.js?v=11"></script>
   <script src="assets/v11.js?v=11"></script>
   <script src="assets/favorites.js"></script>
@@ -155,6 +172,33 @@
       document.querySelector(".screen").innerHTML =
         "<p class='muted' style='padding:24px'>race_id を指定してください。<a href='races.html'>レース一覧</a></p>";
     } else {
+    // 誤年 race_id（例: 2024-07-25-…）を開催カレンダー年へ補正
+    var raceIdYearFixed = null;
+    (function maybeFixRaceIdYear() {
+      var m = String(id).match(/^(\d{4})-(\d{2}-\d{2})-(.+)$/);
+      if (!m) return;
+      var calDate = "";
+      if (window.ExpectWeekendCalendar && ExpectWeekendCalendar.decide) {
+        var cal = ExpectWeekendCalendar.decide(new Date());
+        if (cal && cal.is_race_day && cal.date_jst) calDate = cal.date_jst;
+        else if (cal && cal.next_open_date_jst) calDate = cal.next_open_date_jst;
+      }
+      if (!calDate && window.ExpectRaceListUrl && ExpectRaceListUrl.calendarFallbackDate) {
+        calDate = ExpectRaceListUrl.calendarFallbackDate(new Date()) || "";
+      }
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(calDate)) return;
+      var idDate = m[1] + "-" + m[2];
+      if (idDate === calDate) return;
+      if (m[2] === calDate.slice(5) && m[1] !== calDate.slice(0, 4)) {
+        raceIdYearFixed = calDate.slice(0, 4) + "-" + m[2] + "-" + m[3];
+      }
+    })();
+    if (raceIdYearFixed) {
+      location.replace("race.html?race_id=" + encodeURIComponent(raceIdYearFixed));
+    } else {
+
+    if (window.ExpectConversationUi) ExpectConversationUi.mountRaceCtas(id);
+    if (window.ExpectRaceDetailTabs) ExpectRaceDetailTabs.bind(id);
     var meta = ExpectFavorites.getMeta(id);
     var titleEl = document.getElementById("raceTitle");
     var subEl = document.getElementById("raceSub") || document.querySelector(".brand-sub");
@@ -164,10 +208,41 @@
       "レース";
     if (titleEl) titleEl.textContent = placeHint;
     if (subEl) {
-      subEl.textContent =
-        meta.name || meta.badge
-          ? (meta.name || "") + (meta.badge ? " · " + meta.badge : "")
-          : "読み込み中…";
+      var subBits = [];
+      if (meta.name) subBits.push(meta.name);
+      if (meta.postTime) {
+        var pt = String(meta.postTime).trim();
+        var m = pt.match(/^(\d{1,2}):(\d{2})/);
+        subBits.push(
+          m
+            ? String(Number(m[1])).padStart(2, "0") + ":" + m[2] + "出走"
+            : pt.indexOf("出走") >= 0
+              ? pt
+              : pt + "出走"
+        );
+      } else if (meta.badge) {
+        subBits.push(meta.badge);
+      }
+      subEl.textContent = subBits.length ? subBits.join(" · ") : "読み込み中…";
+    }
+    var metaNameEl = document.getElementById("raceMetaName");
+    var metaLineEl = document.getElementById("raceMetaLine");
+    if (metaNameEl) metaNameEl.textContent = meta.name || placeHint || "—";
+    if (metaLineEl) {
+      var lineBits = [];
+      if (meta.dateLabel) lineBits.push(meta.dateLabel);
+      if (meta.postTime) {
+        var pt2 = String(meta.postTime).trim();
+        var m2 = pt2.match(/^(\d{1,2}):(\d{2})/);
+        lineBits.push(
+          m2
+            ? String(Number(m2[1])).padStart(2, "0") + ":" + m2[2] + "出走"
+            : pt2.indexOf("出走") >= 0
+              ? pt2
+              : pt2 + "出走"
+        );
+      }
+      metaLineEl.textContent = lineBits.length ? lineBits.join(" · ") : "読み込み中…";
     }
 
     var favBtn = document.getElementById("raceFavBtn");
@@ -198,16 +273,43 @@
       if (chartCard) chartCard.classList.remove("is-loading");
     }
 
+    function withTimeout(promise, ms, label) {
+      return new Promise(function (resolve, reject) {
+        var settled = false;
+        var timer = setTimeout(function () {
+          if (settled) return;
+          settled = true;
+          var err = new Error(label || "timeout");
+          err.code = "TIMEOUT";
+          reject(err);
+        }, ms);
+        Promise.resolve(promise).then(
+          function (value) {
+            if (settled) return;
+            settled = true;
+            clearTimeout(timer);
+            resolve(value);
+          },
+          function (err) {
+            if (settled) return;
+            settled = true;
+            clearTimeout(timer);
+            reject(err);
+          }
+        );
+      });
+    }
+
     if (window.ExpectApi && ExpectApi.Prediction && window.ExpectPredictionBind) {
       var startDetail = function () {
       if (window.ExpectUx && ExpectUx.showLoading) {
         ExpectUx.showLoading(detailMount, {
           replace: false,
           title: "ロード中...",
-          message: "しばらくお待ちください。",
+          message: "レース詳細を準備しています。",
         });
       }
-      ExpectApi.Prediction.getWithMeta(id)
+      withTimeout(ExpectApi.Prediction.getWithMeta(id), 14000, "prediction timeout")
         .then(function (result) {
           var bundle = result.bundle;
           var envelopeMeta = result.meta || {};
@@ -234,6 +336,15 @@
           }
 
           var applied = ExpectPredictionBind.applyRaceDetail(bundle, envelopeMeta, id);
+          // Prediction 反映時点でオーバーレイを閉じる（Analysis 待ちで固まるのを防ぐ）
+          markReady();
+          var chartsFromPb = false;
+          if (window.ExpectAnalysisBind && ExpectAnalysisBind.applyFromPredictionBundle) {
+            chartsFromPb = !!ExpectAnalysisBind.applyFromPredictionBundle(bundle);
+            if (chartsFromPb && chartCard) {
+              chartCard.classList.remove("is-loading");
+            }
+          }
           if (applied && applied.mismatch && window.ExpectUx && detailMount) {
             detailMount.insertBefore(
               ExpectUx.stateCard({
@@ -254,6 +365,7 @@
             honmeiCard.classList.remove("is-loading");
             honmeiCard.classList.add("is-ready");
           }
+          if (!chartsFromPb && chartCard) chartCard.classList.add("is-loading");
           if (applied && favBtn) {
             favBtn.setAttribute("data-fav-place", applied.place || meta.place || "");
             favBtn.setAttribute("data-fav-name", applied.name || meta.name || "");
@@ -272,7 +384,7 @@
                 (window.ExpectContractGuard && ExpectContractGuard.validateAnalysis(analysis)) ||
                 { ok: true, errors: [] };
               if (!aCheck.ok) {
-                if (window.ExpectContractGuard) {
+                if (!chartsFromPb && window.ExpectContractGuard) {
                   ExpectContractGuard.showErrorCard(detailMount, {
                     title: "評価内訳を更新できません",
                     message: "Analysis が契約と一致しません。本命カード等は Prediction のままです。",
@@ -280,7 +392,16 @@
                   });
                 }
               } else if (window.ExpectAnalysisBind) {
-                ExpectAnalysisBind.applyRaceDetailAnalysis(analysis);
+                // PB 由来の評価内訳がある場合は mock Analysis で上書きしない
+                if (!chartsFromPb) {
+                  ExpectAnalysisBind.applyRaceDetailAnalysis(analysis);
+                } else if (analysis.narrative) {
+                  var narrativeEl = document.querySelector(".pace-card p");
+                  if (narrativeEl) {
+                    var current = (narrativeEl.textContent || "").trim();
+                    if (!current) narrativeEl.textContent = analysis.narrative;
+                  }
+                }
                 if (!narrative && analysis.narrative) narrative = analysis.narrative;
               }
             }
@@ -291,9 +412,11 @@
           }
 
           if (ExpectApi.Analysis) {
-            return ExpectApi.Analysis.get(raceId).then(afterAnalysis).catch(function () {
-              afterAnalysis(null);
-            });
+            return withTimeout(ExpectApi.Analysis.get(raceId), 15000, "analysis timeout")
+              .then(afterAnalysis)
+              .catch(function () {
+                afterAnalysis(null);
+              });
           }
           afterAnalysis(null);
         })
@@ -304,7 +427,7 @@
               ExpectUx.stateCard({
                 kind: "error",
                 title: "レース詳細を更新できません",
-                message: "PredictionBundle の取得に失敗しました。",
+                message: "PredictionBundle の取得に失敗またはタイムアウトしました。",
                 onRetry: function () {
                   location.reload();
                 },
@@ -320,16 +443,14 @@
           ExpectFavorites.bindButtons();
         });
       };
-      if (window.ExpectUiFeatures && ExpectUiFeatures.ready) {
-        ExpectUiFeatures.ready(startDetail);
-      } else {
-        startDetail();
-      }
+      // Feature flag 取得と並行して Prediction を開始（beta.json 待ちで遅延させない）
+      startDetail();
     } else {
       markReady();
       ExpectFavorites.bindButtons();
     }
-    }
+    } // raceIdYearFixed else
+    } // !id else
   </script>
 </body>
 </html>
