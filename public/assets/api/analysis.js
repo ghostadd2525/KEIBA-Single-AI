@@ -124,9 +124,22 @@
       return { ok: true, errors: [], contract: "Analysis" };
     },
 
-    /** charts[] → { pedigree: n, ... , overall } */
+    /** charts[] → score map（能力値キー + 旧キー互換） */
     chartMap: function (analysis) {
-      var map = { pedigree: 0, pace: 0, jockey: 0, form: 0, odds: 0, overall: 0 };
+      var map = {
+        history: 0,
+        distance: 0,
+        style_fit: 0,
+        front: 0,
+        pace_resilience: 0,
+        overall: 0,
+        pedigree: 0,
+        pace: 0,
+        jockey: 0,
+        form: 0,
+        odds: 0,
+        style: 0,
+      };
       if (!analysis) return map;
       if (analysis.overall != null) map.overall = Number(analysis.overall) || 0;
       (analysis.charts || []).forEach(function (c) {

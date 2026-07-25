@@ -223,7 +223,29 @@
     }, 5200);
   }
 
+  function notificationsAllowed() {
+    if (global.ExpectUserPrefs && typeof ExpectUserPrefs.notificationsEnabled === "function") {
+      return ExpectUserPrefs.notificationsEnabled();
+    }
+    try {
+      var raw = global.localStorage.getItem("expect_user_prefs_v1");
+      var p = raw ? JSON.parse(raw) : {};
+      return p.notify !== false;
+    } catch (e) {
+      return true;
+    }
+  }
+
   function notifySystem(ev) {
+    if (!notificationsAllowed()) return;
+    if (global.ExpectUserPrefs && typeof ExpectUserPrefs.notify === "function") {
+      ExpectUserPrefs.notify(
+        ev.typeLabel + "リマインダー",
+        ev.label + "（" + ev.note + " / 発走 " + formatClock(ev.postAt) + "）",
+        ev.key
+      );
+      return;
+    }
     if (!("Notification" in global)) return;
     if (Notification.permission !== "granted") return;
     try {

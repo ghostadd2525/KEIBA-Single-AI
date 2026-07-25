@@ -445,6 +445,11 @@
   animation: expect-fade-up 0.34s ease both;
 }
 
+/* 先頭タブはアニメの translate でヘッダーと重ならないよう除外 */
+.page-race-detail .screen > #detailTabs {
+  animation: none;
+}
+
 .page-race-detail .honmei-card { animation-delay: 0.02s; }
 .page-race-detail .pace-card { animation-delay: 0.08s; }
 .page-race-detail .chart-card { animation-delay: 0.14s; }
@@ -613,6 +618,8 @@
 
   .page-race-detail .pace-track {
     gap: 4px;
+    flex-wrap: wrap;
+    overflow: visible;
   }
 
   .page-race-detail .pace-dot {

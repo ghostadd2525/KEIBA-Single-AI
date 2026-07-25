@@ -34,18 +34,19 @@
   function readExpectedMs() {
     try {
       var v = parseFloat(sessionStorage.getItem(LOAD_AVG_KEY) || "");
-      if (isFinite(v) && v >= 600 && v <= 30000) return v;
+      // 過去の極端に遅い計測で「目安 14秒」などに張り付かないよう上限を抑える
+      if (isFinite(v) && v >= 600 && v <= 8000) return v;
     } catch (e) {}
     return DEFAULT_EXPECTED_MS;
   }
 
   function rememberLoadMs(ms) {
     if (!isFinite(ms) || ms < 80) return;
-    ms = Math.min(30000, Math.max(200, ms));
+    ms = Math.min(8000, Math.max(200, ms));
     try {
       var prev = parseFloat(sessionStorage.getItem(LOAD_AVG_KEY) || "");
       var next = isFinite(prev) && prev > 0 ? prev * 0.65 + ms * 0.35 : ms;
-      sessionStorage.setItem(LOAD_AVG_KEY, String(Math.round(next)));
+      sessionStorage.setItem(LOAD_AVG_KEY, String(Math.round(Math.min(8000, next))));
     } catch (e) {}
   }
 

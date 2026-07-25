@@ -70,9 +70,15 @@
       (badge && badge !== "—" ? "（" + badge + "）" : "") +
       "</p>" +
       '<div class="race-item-meta">' +
-      "<span>" +
-      (postTime || "—") +
-      "発走</span>" +
+      (postTime
+        ? "<span>" +
+          (function (raw) {
+            var m = String(raw).trim().match(/^(\d{1,2}):(\d{2})/);
+            if (!m) return String(raw);
+            return String(Number(m[1])).padStart(2, "0") + ":" + m[2];
+          })(postTime) +
+          "出走</span>"
+        : "") +
       '<span class="race-stars">' +
       starsFromConf(conf) +
       "</span></div></div>" +

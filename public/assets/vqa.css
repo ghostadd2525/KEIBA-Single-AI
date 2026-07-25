@@ -11,10 +11,14 @@
 }
 
 /* —— 共通: 余白・セーフエリア —— */
-.page-home .home-chrome,
 .page-screen .screen,
 .page-races .screen {
   padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+}
+
+/* ホーム: マスコット＋下ナビに◎的中率が埋まらないよう余白を確保 */
+.page-home .home-chrome {
+  padding-bottom: calc(148px + env(safe-area-inset-bottom, 0px));
 }
 
 .page-race-detail .screen {
@@ -26,6 +30,11 @@
 .page-analysis .screen {
   padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px));
   gap: 14px;
+}
+
+.page-odds .screen {
+  padding-bottom: 0;
+  gap: 10px;
 }
 
 .page-chat .chat-shell {
