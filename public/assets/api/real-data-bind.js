@@ -273,15 +273,88 @@
       });
   }
 
+  function uniqueVenuesFromRaces(races) {
+    var out = [];
+    (races || []).forEach(function (r) {
+      var v = (r && (r.venue || (r.race_info && r.race_info.venue))) || "";
+      v = String(v || "").trim();
+      if (v && out.indexOf(v) < 0) out.push(v);
+    });
+    return out;
+  }
+
+  /** その週（週末開催）のレース会場一覧を解決 */
+  function resolveWeekVenues() {
+    var dates = [];
+    if (global.ExpectWeekendCalendar && ExpectWeekendCalendar.weekendRaceDates) {
+      dates = ExpectWeekendCalendar.weekendRaceDates(new Date()) || [];
+    }
+    if (!dates.length) {
+      var home = resolveHomeDate();
+      if (home) dates = [home];
+    }
+    if (!dates.length) return Promise.resolve([]);
+
+    var fetchDate = function (iso) {
+      if (global.ExpectApi && ExpectApi.Race && ExpectApi.Race.list) {
+        return ExpectApi.Race.list({ date: iso })
+          .then(function (catalog) {
+            return (catalog && (catalog.races || catalog.items)) || [];
+          })
+          .catch(function () {
+            return [];
+          });
+      }
+      return fetch("/api/races?date=" + encodeURIComponent(iso))
+        .then(function (res) {
+          return res.json();
+        })
+        .then(function (payload) {
+          var data = payload && payload.data != null ? payload.data : payload;
+          return (data && data.races) || [];
+        })
+        .catch(function () {
+          return [];
+        });
+    };
+
+    return Promise.all(dates.map(fetchDate)).then(function (lists) {
+      var venues = [];
+      lists.forEach(function (races) {
+        uniqueVenuesFromRaces(races).forEach(function (v) {
+          if (venues.indexOf(v) < 0) venues.push(v);
+        });
+      });
+      return venues;
+    });
+  }
+
   function startHeatmapPolling(opts) {
     opts = opts || {};
     heatmapPollOpts = opts;
     var intervalMs = opts.intervalMs || 60000;
     if (heatmapPollTimer) clearInterval(heatmapPollTimer);
+
     function tick() {
-      fetchAndPaintHeatmap(heatmapPollOpts || {}).catch(function () {
-        /* 前回表示を維持 */
-      });
+      var base = heatmapPollOpts || {};
+      var run = function (venues) {
+        var next = Object.assign({}, base);
+        if (venues && venues.length) next.venues = venues;
+        heatmapPollOpts = next;
+        return fetchAndPaintHeatmap(next);
+      };
+      // 会場未指定時は週次会場に絞る（全10場の羅列を避ける）
+      if (base.venues && base.venues.length) {
+        fetchAndPaintHeatmap(base).catch(function () {});
+        return;
+      }
+      resolveWeekVenues()
+        .then(function (venues) {
+          return run(venues);
+        })
+        .catch(function () {
+          fetchAndPaintHeatmap(base).catch(function () {});
+        });
     }
     tick();
     heatmapPollTimer = setInterval(tick, intervalMs);
@@ -637,6 +710,7 @@
     paintHeatmapFromStats: paintHeatmapFromStats,
     fetchAndPaintHeatmap: fetchAndPaintHeatmap,
     startHeatmapPolling: startHeatmapPolling,
+    resolveWeekVenues: resolveWeekVenues,
     resolveHomeDate: resolveHomeDate,
     paintDashMetrics: paintDashMetrics,
     applyRacesFilters: applyRacesFilters,

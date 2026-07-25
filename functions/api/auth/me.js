@@ -1,6 +1,8 @@
 import { getBearer, verifyStubToken } from "../../_lib/auth.js";
 import { toMeResponse } from "../../_lib/authDomain.js";
 import { jsonError, jsonOk } from "../../_lib/errors.js";
+import { resolveAuthorization } from "../../_lib/authorization.js";
+import { getBetaConfig } from "../../_lib/betaConfig.js";
 import { UserRepository } from "../../_lib/userRepository.js";
 import { getUserState } from "../../_lib/userStore.js";
 
@@ -11,6 +13,11 @@ export async function onRequestGet(context) {
   if (!session) {
     return jsonError("UNAUTHORIZED", "login required", 401);
   }
+
+  context.data = context.data || {};
+  context.data.user = session;
+  const beta = await getBetaConfig(context);
+  const authz = await resolveAuthorization(context, beta);
 
   const profile = await UserRepository.get(context, session.id);
   const display_name = profile
@@ -23,7 +30,7 @@ export async function onRequestGet(context) {
       {
         id: session.id,
         display_name,
-        role: profile && profile.role ? profile.role : session.role || "USER",
+        role: authz.role,
       },
       state.favorites
     ),
@@ -32,6 +39,7 @@ export async function onRequestGet(context) {
       service: "AuthService",
       contract: "AuthMeResponse",
       cache: "bypass",
+      authz_source: authz.source,
     },
     { cacheControl: "no-store" }
   );

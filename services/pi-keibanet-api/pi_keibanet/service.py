@@ -3,7 +3,9 @@
 from __future__ import annotations
 
 import os
+import re
 import sys
+import time
 from pathlib import Path
 from typing import Any
 
@@ -20,6 +22,7 @@ from .netkeiba.client import NetkeibaClient, NetkeibaFetchError
 from .netkeiba.parse import (
     find_numeric_race_id,
     parse_entries_from_shutuba,
+    parse_jra_win_odds_payload,
     parse_list_races_from_race_list,
     parse_meetings_from_race_list,
     parse_odds_from_entries,
@@ -31,6 +34,22 @@ from .netkeiba.horse_history import (
     build_history_rows,
     fetch_horse_history,
 )
+
+# 単勝オッズ / board メモリキャッシュ（netkeiba 負荷抑制・既定 5 分）
+_ODDS_CACHE_TTL_SEC = float(os.environ.get("PI_ODDS_CACHE_TTL_SEC", "300"))
+_BOARD_CACHE_TTL_SEC = float(os.environ.get("PI_BOARD_CACHE_TTL_SEC", "300"))
+_ODDS_SERIES_MIN_GAP_SEC = float(os.environ.get("PI_ODDS_SERIES_MIN_GAP_SEC", "300"))
+_ODDS_SERIES_MAX_POINTS = int(os.environ.get("PI_ODDS_SERIES_MAX_POINTS", "48"))
+_ODDS_SERIES_DIR = Path(
+    os.environ.get(
+        "PI_ODDS_SERIES_DIR",
+        str(Path(__file__).resolve().parents[1] / "data" / "odds_series"),
+    )
+)
+_odds_cache: dict[str, tuple[float, list[dict[str, Any]], str]] = {}
+_board_cache: dict[str, tuple[float, dict[str, Any]]] = {}
+# numeric_race_id → [{ts, odds: {horse_number: win}}, ...]
+_odds_series: dict[str, list[dict[str, Any]]] = {}
 
 
 class RaceNotFoundError(LookupError):
@@ -123,6 +142,12 @@ class PiKeibaNetService:
         races: list[dict[str, Any]] = []
         for r in listed:
             win5_id = make_win5_race_id(date, r.venue, r.race_no, venue_labels)
+            extra: dict[str, Any] = {
+                "collector_race_id": collector_race_id(date, r.venue, r.race_no),
+            }
+            post_time = getattr(r, "post_time", "") or ""
+            if post_time:
+                extra["post_time"] = post_time
             races.append(
                 build_race_summary(
                     race_id=win5_id,
@@ -132,9 +157,7 @@ class PiKeibaNetService:
                     race_name=getattr(r, "race_name", "") or "",
                     numeric_race_id=r.race_id,
                     status="published",
-                    extra={
-                        "collector_race_id": collector_race_id(date, r.venue, r.race_no),
-                    },
+                    extra=extra,
                 )
             )
 
@@ -201,7 +224,7 @@ class PiKeibaNetService:
             )
 
         win5_id = make_win5_race_id(date, course, race_number, venue_labels)
-        return {
+        out: dict[str, Any] = {
             "race_id": win5_id,
             "race_date": date,
             "course": course,
@@ -211,10 +234,17 @@ class PiKeibaNetService:
             "numeric_race_id": hit.race_id,
             "collector_race_id": collector_race_id(date, course, race_number),
         }
+        post_time = getattr(hit, "post_time", "") or ""
+        if post_time:
+            out["post_time"] = post_time
+        return out
 
     def get_race(self, race_id: str, *, enrich: bool = True) -> dict[str, Any]:
         """GET /v1/races/{race_id} — display identity + optional shutuba meta."""
         ref = self.resolve_race_ref(race_id)
+        summary_extra: dict[str, Any] = {"collector_race_id": ref["collector_race_id"]}
+        if ref.get("post_time"):
+            summary_extra["post_time"] = ref["post_time"]
         summary = build_race_summary(
             race_id=ref["race_id"],
             race_date=ref["race_date"],
@@ -223,7 +253,7 @@ class PiKeibaNetService:
             race_name=ref.get("race_name") or "",
             numeric_race_id=ref["numeric_race_id"],
             status="published",
-            extra={"collector_race_id": ref["collector_race_id"]},
+            extra=summary_extra,
         )
         if not enrich:
             return summary
@@ -248,6 +278,8 @@ class PiKeibaNetService:
         )
         if meta.get("race_name"):
             summary["race_name"] = meta["race_name"]
+        if meta.get("post_time"):
+            summary["post_time"] = meta["post_time"]
         summary["distance"] = meta.get("distance")
         summary["surface"] = meta.get("surface") or meta.get("target_surface")
         summary["turn"] = meta.get("turn")
@@ -263,6 +295,9 @@ class PiKeibaNetService:
         Prediction uses race_id as key; course/race_number/race_label are display-only.
         """
         ref = self.resolve_race_ref(race_id)
+        display_extra: dict[str, Any] = {"collector_race_id": ref["collector_race_id"]}
+        if ref.get("post_time"):
+            display_extra["post_time"] = ref["post_time"]
         display = build_race_summary(
             race_id=ref["race_id"],
             race_date=ref["race_date"],
@@ -270,7 +305,7 @@ class PiKeibaNetService:
             race_number=ref["race_number"],
             race_name=ref.get("race_name") or "",
             numeric_race_id=ref["numeric_race_id"],
-            extra={"collector_race_id": ref["collector_race_id"]},
+            extra=display_extra,
         )
 
         ai_root = _resolve_ai_platform_root()
@@ -376,17 +411,8 @@ class PiKeibaNetService:
         }
 
     def odds(self, *, date: str, venue: str, race_no: int) -> dict[str, Any]:
-        _, html = self.resolve(date=date, venue=venue, race_no=race_no)
-        raw_entries = parse_entries_from_shutuba(html)
-        odds_rows = parse_odds_from_entries(raw_entries)
-        if not odds_rows:
-            odds_rows = [
-                {"horse_number": e["horse_number"], "win": 99.9}
-                for e in raw_entries
-                if e.get("horse_number") is not None
-            ]
-        if not odds_rows:
-            raise RaceNotFoundError("parse_entries_empty", "odds empty")
+        numeric, html = self.resolve(date=date, venue=venue, race_no=race_no)
+        odds_rows, odds_status = self._load_win_odds(numeric_race_id=numeric, shutuba_html=html)
         return {
             "race_id": collector_race_id(date, venue, race_no),
             "date": date,
@@ -397,6 +423,217 @@ class PiKeibaNetService:
             "race_number": race_no,
             "race_label": race_label(venue, race_no),
             "odds": odds_rows,
+            "odds_status": odds_status,
+            "odds_updated_at": time.strftime("%Y-%m-%dT%H:%M:%S+09:00", time.localtime()),
+            "cache_ttl_sec": int(_ODDS_CACHE_TTL_SEC),
+        }
+
+    def _load_win_odds(
+        self,
+        *,
+        numeric_race_id: str,
+        shutuba_html: str | None = None,
+        force: bool = False,
+    ) -> tuple[list[dict[str, Any]], str]:
+        """
+        単勝オッズ取得。優先: JRA odds API → shutuba 埋め込み。
+        偽の 99.9 は返さない。キャッシュで netkeiba アクセスを間引く。
+        returns (rows, status) status=published|unpublished|error
+        """
+        rid = str(numeric_race_id)
+        now = time.monotonic()
+        if not force and rid in _odds_cache:
+            ts, rows, status = _odds_cache[rid]
+            if now - ts < _ODDS_CACHE_TTL_SEC:
+                return rows, status
+
+        rows: list[dict[str, Any]] = []
+        status = "unpublished"
+        try:
+            raw = self.client.fetch_jra_odds_json(rid)
+            rows = parse_jra_win_odds_payload(raw)
+            if rows:
+                status = "published"
+        except NetkeibaFetchError as exc:
+            print(f"[pi-keibanet] jra odds fetch failed race_id={rid}: {exc}")
+            status = "error"
+
+        if not rows and shutuba_html:
+            try:
+                raw_entries = parse_entries_from_shutuba(shutuba_html)
+                rows = parse_odds_from_entries(raw_entries)
+                if rows:
+                    status = "published"
+            except Exception as exc:
+                print(f"[pi-keibanet] shutuba odds parse failed race_id={rid}: {exc}")
+
+        _odds_cache[rid] = (now, rows, status)
+        if status == "published" and rows:
+            self._record_odds_snapshot(rid, rows)
+        return rows, status
+
+    def _series_path(self, numeric_race_id: str) -> Path:
+        return _ODDS_SERIES_DIR / f"{numeric_race_id}.json"
+
+    def _load_odds_series_disk(self, numeric_race_id: str) -> list[dict[str, Any]]:
+        rid = str(numeric_race_id)
+        if rid in _odds_series:
+            return _odds_series[rid]
+        path = self._series_path(rid)
+        points: list[dict[str, Any]] = []
+        if path.is_file():
+            try:
+                import json
+
+                raw = json.loads(path.read_text(encoding="utf-8"))
+                if isinstance(raw, dict) and isinstance(raw.get("points"), list):
+                    points = raw["points"]
+                elif isinstance(raw, list):
+                    points = raw
+            except Exception as exc:
+                print(f"[pi-keibanet] odds series load failed {rid}: {exc}")
+        _odds_series[rid] = points
+        return points
+
+    def _save_odds_series_disk(self, numeric_race_id: str, points: list[dict[str, Any]]) -> None:
+        rid = str(numeric_race_id)
+        try:
+            _ODDS_SERIES_DIR.mkdir(parents=True, exist_ok=True)
+            import json
+
+            payload = {
+                "numeric_race_id": rid,
+                "updated_at": time.strftime("%Y-%m-%dT%H:%M:%S+09:00", time.localtime()),
+                "points": points[-_ODDS_SERIES_MAX_POINTS:],
+            }
+            self._series_path(rid).write_text(
+                json.dumps(payload, ensure_ascii=False),
+                encoding="utf-8",
+            )
+        except Exception as exc:
+            print(f"[pi-keibanet] odds series save failed {rid}: {exc}")
+
+    def _record_odds_snapshot(
+        self,
+        numeric_race_id: str,
+        rows: list[dict[str, Any]],
+    ) -> None:
+        """5分以上空けて単勝オッズを時系列に追記（netkeiba 連打はしない）。"""
+        rid = str(numeric_race_id)
+        if not rid or not rows:
+            return
+        odds_map: dict[str, float] = {}
+        for r in rows:
+            hn = r.get("horse_number")
+            win = r.get("win")
+            if hn is None or win is None:
+                continue
+            try:
+                odds_map[str(int(hn))] = float(win)
+            except (TypeError, ValueError):
+                continue
+        if not odds_map:
+            return
+
+        points = self._load_odds_series_disk(rid)
+        now_wall = time.time()
+        if points:
+            try:
+                last_ts = float(points[-1].get("ts") or 0)
+            except (TypeError, ValueError):
+                last_ts = 0.0
+            if now_wall - last_ts < _ODDS_SERIES_MIN_GAP_SEC:
+                return
+
+        points.append(
+            {
+                "ts": now_wall,
+                "at": time.strftime("%Y-%m-%dT%H:%M:%S+09:00", time.localtime(now_wall)),
+                "odds": odds_map,
+            }
+        )
+        points = points[-_ODDS_SERIES_MAX_POINTS:]
+        _odds_series[rid] = points
+        self._save_odds_series_disk(rid, points)
+
+    def get_odds_series(self, race_id: str, *, refresh: bool = False) -> dict[str, Any]:
+        """
+        単勝オッズ時系列（折れ線用）。
+        refresh=true でもキャッシュ TTL 内なら netkeiba を叩かない（_load_win_odds 側）。
+        """
+        ref = self.resolve_race_ref(race_id)
+        numeric = str(ref.get("numeric_race_id") or "")
+        if not numeric:
+            raise RaceNotFoundError("no_numeric_id", f"numeric_race_id missing for {race_id}")
+
+        if refresh:
+            self._load_win_odds(numeric_race_id=numeric, shutuba_html=None)
+        else:
+            # キャッシュが空なら一度だけ取得してシリーズ起点を作る
+            points0 = self._load_odds_series_disk(numeric)
+            if not points0:
+                self._load_win_odds(numeric_race_id=numeric, shutuba_html=None)
+
+        points = self._load_odds_series_disk(numeric)
+        # 馬名は odds snapshot から推定（get_race_board は重いので呼ばない）
+        names: dict[str, str] = {}
+        board: dict[str, Any] = {}
+        try:
+            cached = getattr(self, "_board_cache", None) or {}
+            board = cached.get(ref["race_id"]) or {}
+            for e in board.get("entries") or []:
+                hn = e.get("horse_number")
+                if hn is not None:
+                    names[str(int(hn))] = str(e.get("horse_name") or "")
+        except Exception:
+            board = {}
+            names = {}
+
+        series: list[dict[str, Any]] = []
+        horse_nums = sorted({int(k) for p in points for k in (p.get("odds") or {}) if str(k).isdigit()})
+        for hn in horse_nums:
+            key = str(hn)
+            values = []
+            for p in points:
+                od = (p.get("odds") or {}).get(key)
+                values.append(
+                    {
+                        "ts": p.get("ts"),
+                        "at": p.get("at"),
+                        "odds": float(od) if od is not None else None,
+                    }
+                )
+            latest = next((v["odds"] for v in reversed(values) if v["odds"] is not None), None)
+            series.append(
+                {
+                    "horse_number": hn,
+                    "horse_name": names.get(key) or f"{hn}番",
+                    "latest_odds": latest,
+                    "points": values,
+                }
+            )
+        series.sort(
+            key=lambda s: (
+                s["latest_odds"] is None,
+                float(s["latest_odds"]) if s["latest_odds"] is not None else 9999.0,
+                s["horse_number"],
+            )
+        )
+
+        return {
+            "schema_version": "expect-odds-series/1.0",
+            "race_id": ref["race_id"],
+            "race_label": ref.get("race_label") or race_label(ref["course"], int(ref["race_number"])),
+            "race_name": (board or {}).get("race_name") or ref.get("race_name") or "",
+            "date": ref["race_date"],
+            "venue": ref["course"],
+            "race_no": int(ref["race_number"]),
+            "post_time": ref.get("post_time") or (board or {}).get("post_time"),
+            "numeric_race_id": numeric,
+            "sample_interval_sec": int(_ODDS_SERIES_MIN_GAP_SEC),
+            "point_count": len(points),
+            "timestamps": [p.get("at") for p in points],
+            "series": series,
         }
 
     def track(self, *, date: str, venue: str, race_no: int) -> dict[str, Any]:
@@ -449,6 +686,158 @@ class PiKeibaNetService:
             "race_name": meta.get("race_name") or "",
             "entries": entries,
         }
+
+    def get_race_board(self, race_id: str, *, include_history: bool = False) -> dict[str, Any]:
+        """Web GUI: 出馬表 + オッズ（entries_full）。optional 近走。"""
+        rid = str(race_id).strip()
+        # 近走なし board は 5 分キャッシュ（クライアント 5 分ポーリングと揃えて netkeiba 連打を防ぐ）
+        if not include_history and rid in _board_cache:
+            ts, cached = _board_cache[rid]
+            if time.monotonic() - ts < _BOARD_CACHE_TTL_SEC:
+                out = dict(cached)
+                out["entries"] = [dict(e) for e in (cached.get("entries") or [])]
+                return out
+
+        ref = self.resolve_race_ref(rid)
+        full = self.entries_full(
+            date=ref["race_date"],
+            venue=ref["course"],
+            race_no=int(ref["race_number"]),
+        )
+        entries = list(full.get("entries") or [])
+        odds_rows, odds_status = self._load_win_odds(
+            numeric_race_id=str(ref.get("numeric_race_id") or full.get("numeric_race_id") or ""),
+            shutuba_html=None,
+        )
+        if not odds_rows and ref.get("numeric_race_id"):
+            try:
+                html = self.client.fetch_shutuba(str(ref["numeric_race_id"]))
+                odds_rows, odds_status = self._load_win_odds(
+                    numeric_race_id=str(ref["numeric_race_id"]),
+                    shutuba_html=html,
+                    force=True,
+                )
+            except Exception as exc:
+                print(f"[pi-keibanet] board odds shutuba fallback skipped: {exc}")
+
+        by_num = {int(o["horse_number"]): o for o in odds_rows if o.get("horse_number") is not None}
+        for e in entries:
+            hn = e.get("horse_number")
+            hit = by_num.get(int(hn)) if hn is not None else None
+            if hit:
+                e["odds"] = hit.get("win")
+                if hit.get("popularity") is not None:
+                    e["popularity"] = hit.get("popularity")
+            else:
+                if e.get("odds") in (99.9, "99.9"):
+                    e["odds"] = None
+
+        with_odds = [e for e in entries if e.get("odds") is not None]
+        if with_odds and all(e.get("popularity") is None for e in with_odds):
+            ranked = sorted(with_odds, key=lambda x: float(x["odds"]))
+            for i, e in enumerate(ranked, start=1):
+                e["popularity"] = i
+
+        payload: dict[str, Any] = {
+            "schema_version": "expect-race-board/1.0",
+            "race_id": ref["race_id"],
+            "race_label": ref.get("race_label") or race_label(ref["course"], int(ref["race_number"])),
+            "race_name": full.get("race_name") or ref.get("race_name") or "",
+            "date": ref["race_date"],
+            "venue": ref["course"],
+            "race_no": int(ref["race_number"]),
+            "post_time": ref.get("post_time") or full.get("post_time"),
+            "entries": entries,
+            "count": len(entries),
+            "numeric_race_id": ref.get("numeric_race_id") or full.get("numeric_race_id"),
+            "odds_status": odds_status,
+            "odds_cache_ttl_sec": int(_ODDS_CACHE_TTL_SEC),
+        }
+        if not include_history:
+            _board_cache[rid] = (
+                time.monotonic(),
+                {**payload, "entries": [dict(e) for e in entries]},
+            )
+        if include_history:
+            payload["history"] = self._history_grouped(
+                entries,
+                race_context={
+                    "date": ref["race_date"],
+                    "venue": ref["course"],
+                    "race_no": int(ref["race_number"]),
+                    "race_id": ref["race_id"],
+                    "numeric_race_id": ref.get("numeric_race_id"),
+                    "race_name": payload["race_name"],
+                },
+                limit=3,
+            )
+        return payload
+
+    def get_race_history(self, race_id: str, *, limit: int = 3) -> dict[str, Any]:
+        """Web GUI: 各馬の近走（日付新しい順に limit 件）。"""
+        board = self.get_race_board(race_id, include_history=True)
+        return {
+            "schema_version": "expect-race-history/1.0",
+            "race_id": board.get("race_id"),
+            "race_label": board.get("race_label"),
+            "history": board.get("history") or [],
+            "count": len(board.get("history") or []),
+        }
+
+    def _history_grouped(
+        self,
+        entries: list[dict[str, Any]],
+        *,
+        race_context: dict[str, Any] | None = None,
+        limit: int = 3,
+    ) -> list[dict[str, Any]]:
+        rows = self.horse_history(entries=entries, race_context=race_context)
+        by_key: dict[str, dict[str, Any]] = {}
+
+        def date_key(val: Any) -> int:
+            s = str(val or "")
+            m = re.search(r"(\d{4})[/\-]?(\d{1,2})[/\-]?(\d{1,2})", s)
+            if not m:
+                return 0
+            return int(m.group(1)) * 10000 + int(m.group(2)) * 100 + int(m.group(3))
+
+        for row in rows:
+            horse_id = str(row.get("horse_id") or "").strip()
+            horse_number = row.get("horse_number")
+            key = horse_id or (f"n:{horse_number}" if horse_number is not None else "")
+            if not key:
+                continue
+            if key not in by_key:
+                by_key[key] = {
+                    "horse_id": horse_id or None,
+                    "horse_number": horse_number,
+                    "horse_name": str(row.get("horse_name") or "") or "—",
+                    "recent": [],
+                }
+            bucket = by_key[key]
+            if (not bucket.get("horse_name") or bucket["horse_name"] == "—") and row.get("horse_name"):
+                bucket["horse_name"] = str(row.get("horse_name"))
+            bucket["recent"].append(
+                {
+                    "date": row.get("history_date"),
+                    "place": row.get("history_place"),
+                    "race_name": row.get("history_race_name"),
+                    "finish": row.get("history_finish"),
+                    "odds": row.get("history_odds"),
+                    "distance": row.get("history_distance"),
+                    "surface": row.get("history_surface"),
+                    "last3f": row.get("history_last3f"),
+                    "_sort": date_key(row.get("history_date")),
+                }
+            )
+
+        out: list[dict[str, Any]] = []
+        for bucket in by_key.values():
+            recent = sorted(bucket["recent"], key=lambda r: int(r.get("_sort") or 0), reverse=True)
+            bucket["recent"] = [{k: v for k, v in r.items() if k != "_sort"} for r in recent[:limit]]
+            out.append(bucket)
+        out.sort(key=lambda b: int(b.get("horse_number") or 99))
+        return out
 
     def horse_history(
         self,

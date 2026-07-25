@@ -1,10 +1,10 @@
 {
   "schema_version": "expect-beta-config/1.0",
-  "beta_name": "Expect KEIBA AI — Invitation Beta",
+  "beta_name": "Expect KEIBA AI  EInvitation Beta",
   "maintenance_mode": false,
-  "maintenance_message": "ただいまメンテナンス中です。しばらくしてから再度お試しください。",
+  "maintenance_message": "ただぁE��メンチE��ンス中です。しばらくしてから再度お試しください、E,
   "ops_mode": null,
-  "admin_user_ids": ["admin-20260721"],
+  "admin_user_ids": ["admin-20260721", "admin-smoke"],
   "terms_version": "2026-07-19",
   "invitation_required": true,
   "max_concurrent_sessions": null,
@@ -29,5 +29,5 @@
     "v2_explain": true,
     "v2_ops_dashboard": true
   },
-  "notes": "Version 2 Production Release 2026-07-22。v2_* および Ops Dashboard を ON。Accuracy PE は EC2 env。"
+  "notes": "Version 2 Production Release 2026-07-22。v2_* および Ops Dashboard めEON、Eccuracy PE は EC2 env、E
 }

@@ -9,7 +9,9 @@ import { getBearer, verifyStubToken } from "../../_lib/auth.js";
 import { jsonError, jsonOk } from "../../_lib/errors.js";
 import { InvitationRepository } from "../../_lib/invitationRepository.js";
 import { UserRepository } from "../../_lib/userRepository.js";
-import { isPrivilegedOpsRole, normalizeRole } from "../../_lib/roles.js";
+import { resolveAuthorization } from "../../_lib/authorization.js";
+import { getBetaConfig } from "../../_lib/betaConfig.js";
+import { isPrivilegedOpsRole } from "../../_lib/roles.js";
 import { writeAudit } from "../../_lib/auditLog.js";
 
 function unauthorized() {
@@ -24,12 +26,18 @@ async function requireAdmin(context) {
   const token = getBearer(context.request);
   const session = verifyStubToken(token, { purpose: "access" });
   if (!session) return { ok: false, response: unauthorized() };
-  const user = await UserRepository.get(context, session.id);
-  const role = normalizeRole((user && user.role) || session.role || "USER");
-  if (!isPrivilegedOpsRole(role)) {
+  context.data = context.data || {};
+  context.data.user = session;
+  const beta = await getBetaConfig(context);
+  const authz = await resolveAuthorization(context, beta);
+  if (!isPrivilegedOpsRole(authz.role)) {
     return { ok: false, response: forbidden() };
   }
-  return { ok: true, user, role, session };
+  const user = (await UserRepository.get(context, session.id)) || {
+    user_id: session.id,
+    role: authz.role,
+  };
+  return { ok: true, user, role: authz.role, session };
 }
 
 /** 最近使用（activated）5件。activated_at 降順 */

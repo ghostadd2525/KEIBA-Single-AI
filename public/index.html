@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Noto+Sans+JP:wght@400;500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="assets/styles.css?v=20" />
+  <link rel="stylesheet" href="assets/styles.css?v=21" />
   <link rel="stylesheet" href="assets/screens.css?v=28" />
   <link rel="stylesheet" href="assets/ux.css?v=16" />
   <link rel="stylesheet" href="assets/vqa.css?v=2" />
@@ -248,7 +248,7 @@
   <script src="assets/api/race-id-meta.js"></script>
   <script src="assets/api/prediction-bind.js?v=14"></script>
   <script src="assets/api/user.js"></script>
-  <script src="assets/api/real-data-bind.js"></script>
+  <script src="assets/api/real-data-bind.js?v=15"></script>
   <script src="assets/ux.js?v=15"></script>
   <script src="assets/api/ui-features.js?v=11"></script>
   <script src="assets/v11.js?v=11"></script>
@@ -368,6 +368,7 @@
         if (!window.ExpectApi || !ExpectApi.Prediction || !window.ExpectPredictionBind) return;
 
         if (window.ExpectRealDataBind && ExpectRealDataBind.startHeatmapPolling) {
+          // 会場は週次解決（全場表示を避ける）
           ExpectRealDataBind.startHeatmapPolling({ intervalMs: 60000 });
         }
 
@@ -391,8 +392,14 @@
             if (!venues.length && honmeiCached && honmeiCached.venues) {
               venues = honmeiCached.venues.slice();
             }
-            if (venues.length && ExpectRealDataBind.fetchAndPaintHeatmap) {
-              ExpectRealDataBind.fetchAndPaintHeatmap({ venues: venues });
+            function applyVenues(vlist) {
+              if (vlist && vlist.length && ExpectRealDataBind.fetchAndPaintHeatmap) {
+                ExpectRealDataBind.fetchAndPaintHeatmap({ venues: vlist });
+              }
+            }
+            if (venues.length) applyVenues(venues);
+            else if (ExpectRealDataBind.resolveWeekVenues) {
+              ExpectRealDataBind.resolveWeekVenues().then(applyVenues).catch(function () {});
             }
           }
         }

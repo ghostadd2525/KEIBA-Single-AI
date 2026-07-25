@@ -77,8 +77,25 @@ export async function getUser(context, userId) {
   await ensureSeed(context);
   const id = normalizeUserId(userId);
   if (!id) return null;
-  if (runtimeUsers.has(id)) return runtimeUsers.get(id);
+  const seeded = runtimeUsers.get(id) || null;
   const fromKv = coerceUser(await authStoreGet(context, userKvKey(id)));
+  if (seeded) {
+    // users.json の role / password を正本にする（KV の古い USER で ADMIN を潰さない）
+    if (fromKv) {
+      const merged = {
+        ...fromKv,
+        ...seeded,
+        avatar_url: fromKv.avatar_url || seeded.avatar_url || "",
+        locale: fromKv.locale || seeded.locale || "ja",
+        preferences: fromKv.preferences || seeded.preferences || {},
+        display_name: fromKv.display_name || seeded.display_name,
+        updated_at: fromKv.updated_at || seeded.updated_at,
+      };
+      runtimeUsers.set(id, merged);
+      return merged;
+    }
+    return seeded;
+  }
   if (fromKv) {
     runtimeUsers.set(id, fromKv);
     return fromKv;
