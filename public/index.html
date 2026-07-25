@@ -529,7 +529,7 @@
           // ホームは本命カード用。全レース予想の一括取得は重いので短めに打ち切る
           withTimeout(
             ExpectApi.Prediction.list({ date: listDate }),
-            12000,
+            18000,
             "predictions timeout"
           ),
         ];

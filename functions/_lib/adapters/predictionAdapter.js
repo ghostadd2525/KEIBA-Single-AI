@@ -61,7 +61,7 @@ async function fetchFromPiGet(context, raceId, catalogRace = null) {
   const proxied = await piFetch(
     context,
     `/v1/predictions/${encodeURIComponent(raceId)}`,
-    { timeoutMs: 5000 }
+    { timeoutMs: 4000 }
   );
   if (proxied instanceof Response) {
     // タイムアウト/不通はソフト失敗扱い（errorResponse だと後続 AI が遅延しうる）
@@ -139,7 +139,7 @@ async function fetchFromPiList(context, query = {}) {
   const items = [];
   // 逐次だと日付一覧が数十秒かかるため並列取得（上限付き）
   // PI 予想が重い日は全件取得しない（ホーム固着防止）
-  const MAX_LIST = 8;
+  const MAX_LIST = 4;
   const slice = races.slice(0, MAX_LIST);
   const CONCURRENCY = 4;
   for (let i = 0; i < slice.length; i += CONCURRENCY) {
