@@ -195,11 +195,42 @@ class Handler(BaseHTTPRequestHandler):
             return
 
         if path == "/v1/conversation/health":
-            from .conversation.v4 import health as v4_health
+            from .ops.conversation_observability import build_component_health
+
+            # Additive Observability health (Platform health embedded; structure unchanged)
+            self._send(
+                200,
+                ok(
+                    build_component_health(),
+                    {"service": "ConversationObservability", "platform": "v4"},
+                ),
+            )
+            return
+
+        if path == "/v1/ops/conversation/metrics":
+            from .ops.conversation_observability import get_observability
 
             self._send(
                 200,
-                ok(v4_health(), {"service": "ConversationOrchestrator", "platform": "v4"}),
+                ok(get_observability().snapshot(), {"service": "ConversationObservability"}),
+            )
+            return
+
+        if path == "/v1/ops/conversation/dashboard":
+            from .ops.conversation_observability import dashboard_payload
+
+            self._send(
+                200,
+                ok(dashboard_payload(), {"service": "ConversationObservability"}),
+            )
+            return
+
+        if path == "/v1/ops/conversation/alerts":
+            from .ops.conversation_observability import evaluate_alerts
+
+            self._send(
+                200,
+                ok({"alerts": evaluate_alerts()}, {"service": "ConversationObservability"}),
             )
             return
 
@@ -425,7 +456,18 @@ class Handler(BaseHTTPRequestHandler):
             if ctx:
                 body = dict(body if isinstance(body, dict) else {})
                 body["_user_id"] = ctx.user_id
+            t0 = time.perf_counter()
             result = conversation.chat(body if isinstance(body, dict) else {})
+            latency_ms = (time.perf_counter() - t0) * 1000.0
+            try:
+                from .ops.conversation_observability import get_observability
+
+                get_observability().record_response(
+                    result if isinstance(result, dict) else {},
+                    latency_ms=latency_ms,
+                )
+            except Exception:
+                pass
             meta = {
                 "service": "ConversationService",
                 "layer": "conversation",

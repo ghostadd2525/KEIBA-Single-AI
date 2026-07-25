@@ -19,6 +19,8 @@ export const ALERT_BY_CHECK = {
   etl: "ALT-E09",
   bff: "ALT-E01",
   python_api: "ALT-E01",
+  conversation_api: "ALT-C02",
+  conversation_health: "ALT-C04",
 };
 
 export const ALERT_SEVERITY = {
@@ -29,9 +31,13 @@ export const ALERT_SEVERITY = {
   "ALT-E05": "critical",
   "ALT-E08": "warning",
   "ALT-E09": "warning",
+  "ALT-C01": "warning",
+  "ALT-C02": "critical",
+  "ALT-C03": "warning",
+  "ALT-C04": "critical",
 };
 
-/** Alert → Runbook アンカー（docs/ops/v2-operations-runbook.md） */
+/** Alert → Runbook アンカー */
 export const ALERT_RUNBOOK = {
   "ALT-E01": "docs/ops/v2-operations-runbook.md#alt-e01",
   "ALT-E02": "docs/ops/v2-operations-runbook.md#alt-e02",
@@ -40,6 +46,10 @@ export const ALERT_RUNBOOK = {
   "ALT-E05": "docs/ops/v2-operations-runbook.md#alt-e05",
   "ALT-E08": "docs/ops/v2-operations-runbook.md#alt-e08",
   "ALT-E09": "docs/ops/v2-operations-runbook.md#alt-e09",
+  "ALT-C01": "docs/ops/conversation-observability-runbook.md#alt-c01",
+  "ALT-C02": "docs/ops/conversation-observability-runbook.md#alt-c02",
+  "ALT-C03": "docs/ops/conversation-observability-runbook.md#alt-c03",
+  "ALT-C04": "docs/ops/conversation-observability-runbook.md#alt-c04",
 };
 
 export const MONITOR_INVENTORY = [
@@ -56,7 +66,13 @@ export const MONITOR_INVENTORY = [
   { id: "ALT-E05", layer: "Alert", status: "wired", via: "pi_systemd → Slack SLK-N01" },
   { id: "SLK-N01", layer: "Notification", status: "wired", via: "OPS_SLACK_WEBHOOK_URL" },
   { id: "SLK-N02", layer: "Notification", status: "wired", via: "warning webhook / shared" },
-  { id: "GRF-D01", layer: "Observability", status: "prepared", via: "promtail example → Loki" },
+  { id: "CONV-H01", layer: "Conversation", status: "wired", via: "GET /v1/conversation/health" },
+  { id: "CONV-M01", layer: "Conversation", status: "wired", via: "GET /v1/ops/conversation/metrics" },
+  { id: "CONV-D01", layer: "Conversation", status: "wired", via: "GET /api/ops/conversation + ops.html" },
+  { id: "ALT-C01", layer: "Alert", status: "wired", via: "Ollama timeout" },
+  { id: "ALT-C02", layer: "Alert", status: "wired", via: "Conversation error rate / conversation_api" },
+  { id: "ALT-C03", layer: "Alert", status: "wired", via: "Knowledge Runtime failure" },
+  { id: "ALT-C04", layer: "Alert", status: "wired", via: "conversation_health NG" },
 ];
 
 /**

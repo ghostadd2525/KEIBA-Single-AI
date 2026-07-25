@@ -43,6 +43,16 @@
         <div class="ops-grid" id="opsGrid" aria-live="polite"></div>
         <!-- v2_ops_dashboard 配下のみ（Flag OFF ≡ v1.1・セクション非表示） -->
         <div id="opsV2Root" hidden>
+          <section id="opsConversationSection" class="ops-pi-section">
+            <div class="ops-section-head">
+              <h2 class="ops-section-title">Conversation Metrics</h2>
+              <button type="button" class="ops-refresh-btn" id="opsConvRefreshBtn">再取得</button>
+            </div>
+            <p class="ops-note">出典: GET /api/ops/conversation · Conversation / Ollama / Knowledge / Security</p>
+            <div class="ops-grid" id="opsConvHealthGrid" aria-live="polite"></div>
+            <div class="ops-grid" id="opsConvMetricsGrid" aria-live="polite"></div>
+            <div class="ops-table-wrap" id="opsConvAlertsTableWrap"></div>
+          </section>
           <section id="opsOverviewSection" class="ops-pi-section">
             <div class="ops-section-head">
               <h2 class="ops-section-title">Overview</h2>
@@ -307,6 +317,12 @@
               runMetrics(_opsFeatures || features);
             };
           }
+          var convRefresh = document.getElementById("opsConvRefreshBtn");
+          if (convRefresh && features.v2_ops_dashboard) {
+            convRefresh.onclick = function () {
+              runMetrics(_opsFeatures || features);
+            };
+          }
         });
       });
 
@@ -357,6 +373,7 @@
             : Promise.resolve();
 
         var dashP = Promise.resolve(null);
+        var convP = Promise.resolve(null);
         if (features && features.v2_ops_dashboard) {
           var token =
             window.ExpectAuth && ExpectAuth.getAccessToken
@@ -374,10 +391,21 @@
             .catch(function () {
               return null;
             });
+          convP = fetch("/api/ops/conversation", { headers: headers, cache: "no-store" })
+            .then(function (res) {
+              return res.json().then(function (body) {
+                if (!res.ok || !body || !body.ok) return null;
+                return body.data || null;
+              });
+            })
+            .catch(function () {
+              return null;
+            });
         }
 
-        Promise.all([healthP, predP, dashP]).then(function (parts) {
+        Promise.all([healthP, predP, dashP, convP]).then(function (parts) {
           var dash = parts[2];
+          var conv = parts[3];
           var fbRate = total ? Math.round((fallback / total) * 1000) / 10 : 0;
           var aiRate = total ? Math.round((real / total) * 1000) / 10 : 0;
           if (grid) {
@@ -404,11 +432,91 @@
 
           if (v2Root) v2Root.hidden = false;
           renderV2(dash);
+          renderConversationObs(conv);
           if (latNote) {
             latNote.textContent =
-              "v2 Ops Phase 3: Overview / Inventory / Notifications / Runbook は Flag `v2_ops_dashboard` 配下。出典 GET /api/ops/dashboard。";
+              "v2 Ops + Conversation Observability: GET /api/ops/dashboard · /api/ops/conversation";
           }
         });
+      }
+
+      function renderConversationObs(data) {
+        var healthGrid = document.getElementById("opsConvHealthGrid");
+        var metricsGrid = document.getElementById("opsConvMetricsGrid");
+        var alertsWrap = document.getElementById("opsConvAlertsTableWrap");
+        if (!healthGrid || !metricsGrid) return;
+        if (!data) {
+          healthGrid.innerHTML = card("Conversation Observability", "取得失敗", "bad");
+          metricsGrid.innerHTML = "";
+          if (alertsWrap) alertsWrap.innerHTML = "";
+          return;
+        }
+        var comps = (data.health && data.health.components) || {};
+        var cat = data.categories || {};
+        var conv = cat.conversation || {};
+        var ollama = cat.ollama || {};
+        var knowledge = cat.knowledge || {};
+        var security = cat.security || {};
+        var lat = conv.latency_ms || {};
+        var oLat = ollama.response_time_ms || {};
+
+        function compTone(c) {
+          if (!c) return "muted";
+          if (c.skipped) return "muted";
+          return c.ok ? "ok" : "bad";
+        }
+        function compLabel(c) {
+          if (!c) return "—";
+          if (c.skipped) return "skipped";
+          return c.ok ? "OK" : "NG";
+        }
+
+        healthGrid.innerHTML = [
+          card("Overall", data.health && data.health.overall_ok ? "OK" : "NG", data.health && data.health.overall_ok ? "ok" : "bad"),
+          card("Conversation API", compLabel(comps.conversation_api), compTone(comps.conversation_api)),
+          card("Ollama", compLabel(comps.ollama), compTone(comps.ollama)),
+          card("Knowledge Runtime", compLabel(comps.knowledge_runtime), compTone(comps.knowledge_runtime)),
+          card("Tool Manager", compLabel(comps.tool_manager), compTone(comps.tool_manager)),
+          card("Prediction Connector", compLabel(comps.prediction_connector), compTone(comps.prediction_connector)),
+        ].join("");
+
+        metricsGrid.innerHTML = [
+          card("Requests", String(conv.request_count || 0)),
+          card("Error rate", String(conv.error_rate != null ? conv.error_rate : "—")),
+          card("Latency p50", (lat.p50 != null ? lat.p50 : "—") + " ms"),
+          card("Latency p95", (lat.p95 != null ? lat.p95 : "—") + " ms"),
+          card("Latency p99", (lat.p99 != null ? lat.p99 : "—") + " ms"),
+          card("Chat / Review / Explain", (conv.chat_count || 0) + " / " + (conv.review_count || 0) + " / " + (conv.explain_count || 0)),
+          card("Ollama model", ollama.model_name || "—"),
+          card("Ollama p95", (oLat.p95 != null ? oLat.p95 : "—") + " ms"),
+          card("Ollama timeouts", String(ollama.timeout_count || 0)),
+          card("Knowledge searches", String(knowledge.search_count || 0)),
+          card("Knowledge hit/miss", (knowledge.retrieval_hit || 0) + " / " + (knowledge.retrieval_miss || 0)),
+          card("Security block/allow", (security.block_count || 0) + " / " + (security.allow_count || 0)),
+        ].join("");
+
+        var alerts = data.alerts || [];
+        if (alertsWrap) {
+          var rows = alerts
+            .map(function (a) {
+              return (
+                "<tr><td>" +
+                esc(a.id) +
+                "</td><td>" +
+                esc(a.severity) +
+                "</td><td>" +
+                esc(a.title) +
+                "</td><td>" +
+                esc(a.detail) +
+                "</td></tr>"
+              );
+            })
+            .join("");
+          alertsWrap.innerHTML =
+            '<table class="ops-table"><thead><tr><th>Alert</th><th>Severity</th><th>Title</th><th>Detail</th></tr></thead><tbody>' +
+            (rows || '<tr><td colspan="4">active alert なし</td></tr>') +
+            "</tbody></table>";
+        }
       }
 
       function renderV2(dash) {

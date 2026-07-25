@@ -162,6 +162,57 @@ export async function probeConversationApi(context) {
   };
 }
 
+export async function probeConversationHealth(context) {
+  const start = Date.now();
+  const env = getEnv(context);
+  if (!useAiProxy(env)) {
+    return {
+      name: "conversation_health",
+      ok: false,
+      skipped: true,
+      error: "AI_BASE_URL not configured",
+      latency_ms: 0,
+    };
+  }
+  try {
+    const proxied = await withTimeout(
+      aiFetch(context, "/v1/conversation/health"),
+      PROBE_TIMEOUT_MS
+    );
+    const latency = Date.now() - start;
+    if (!proxied || !proxied.ok) {
+      return {
+        name: "conversation_health",
+        ok: false,
+        error:
+          (proxied && proxied.error && proxied.error.message) ||
+          "conversation health probe failed",
+        latency_ms: latency,
+      };
+    }
+    const data =
+      proxied.payload && proxied.payload.data != null ? proxied.payload.data : proxied.payload;
+    const overallOk = data && (data.overall_ok === true || data.status === "ok");
+    return {
+      name: "conversation_health",
+      ok: !!overallOk,
+      latency_ms: latency,
+      detail: {
+        status: data && data.status,
+        components: data && data.components,
+      },
+      error: overallOk ? null : "conversation health degraded",
+    };
+  } catch (e) {
+    return {
+      name: "conversation_health",
+      ok: false,
+      error: String((e && e.message) || e),
+      latency_ms: Date.now() - start,
+    };
+  }
+}
+
 export async function probeEtlStatus(context) {
   const start = Date.now();
   const env = getEnv(context);
@@ -263,13 +314,14 @@ export async function runAllProbes(context) {
     },
   };
 
-  const [python, tunnel, piHealth, prediction, conversation, etl, resultAutomation] =
+  const [python, tunnel, piHealth, prediction, conversation, conversationHealth, etl, resultAutomation] =
     await Promise.all([
       probePythonHealth(context),
       probeCloudflareTunnel(context),
       probePiHealth(context),
       probePredictionApi(context),
       probeConversationApi(context),
+      probeConversationHealth(context),
       probeEtlStatus(context),
       probeResultAutomation(context),
     ]);
@@ -281,6 +333,7 @@ export async function runAllProbes(context) {
     piHealth,
     prediction,
     conversation,
+    conversationHealth,
     etl,
     resultAutomation,
   ];
