@@ -432,24 +432,55 @@
           }
           afterAnalysis(null);
         })
-        .catch(function () {
+        .catch(function (err) {
           markReady();
+          var status = err && err.status;
+          var code = err && err.code;
+          var msg = String((err && err.message) || "");
+          var isUnauthorized =
+            status === 401 ||
+            code === "UNAUTHORIZED" ||
+            /unauthorized|invalid token/i.test(msg);
           if (window.ExpectUx && detailMount) {
-            detailMount.insertBefore(
-              ExpectUx.stateCard({
-                kind: "error",
-                title: "レース詳細を更新できません",
-                message: "PredictionBundle の取得に失敗またはタイムアウトしました。",
-                onRetry: function () {
-                  location.reload();
-                },
-              }),
-              detailMount.firstChild
-            );
+            if (isUnauthorized) {
+              detailMount.insertBefore(
+                ExpectUx.stateCard({
+                  kind: "error",
+                  title: "ログインの有効期限切れ",
+                  message:
+                    "ログイン情報の有効期限が切れました。もう一度ログインしてください。",
+                  retryLabel: "再ログイン",
+                  onRetry: function () {
+                    try {
+                      localStorage.removeItem("expect_access_token_v1");
+                    } catch (e) { /* ignore */ }
+                    location.href = "login.html";
+                  },
+                }),
+                detailMount.firstChild
+              );
+            } else {
+              detailMount.insertBefore(
+                ExpectUx.stateCard({
+                  kind: "error",
+                  title: "レース詳細を更新できません",
+                  message:
+                    "PredictionBundle の取得に失敗またはタイムアウトしました。",
+                  onRetry: function () {
+                    location.reload();
+                  },
+                }),
+                detailMount.firstChild
+              );
+            }
           } else if (window.ExpectContractGuard) {
             ExpectContractGuard.showErrorCard(detailMount, {
-              title: "レース詳細を更新できません",
-              message: "PredictionBundle の取得に失敗しました。",
+              title: isUnauthorized
+                ? "ログインの有効期限切れ"
+                : "レース詳細を更新できません",
+              message: isUnauthorized
+                ? "ログイン情報の有効期限が切れました。もう一度ログインしてください。"
+                : "PredictionBundle の取得に失敗しました。",
             });
           }
           ExpectFavorites.bindButtons();
