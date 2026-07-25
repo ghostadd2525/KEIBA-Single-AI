@@ -9,10 +9,10 @@
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Noto+Sans+JP:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="assets/styles.css?v=18" />
   <link rel="stylesheet" href="assets/screens.css?v=36" />
-  <link rel="stylesheet" href="assets/ux.css?v=21" />
+  <link rel="stylesheet" href="assets/ux.css?v=20" />
   <link rel="stylesheet" href="assets/vqa.css" />
   <link rel="stylesheet" href="assets/v11.css?v=11" />
-  <script src="assets/api/calendar-weekend.js?v=14"></script>
+  <script src="assets/api/calendar-weekend.js?v=15"></script>
   <script src="assets/auto-maintenance.js?v=11.3"></script>
   <script src="assets/auth.js?v=4"></script>
   <script>
@@ -143,11 +143,11 @@
     <div data-expect-nav></div>
   </div>
   <script src="assets/api/mock-gate.js"></script>
-  <script src="assets/api/race-id-meta.js?v=5"></script>
+  <script src="assets/api/race-id-meta.js?v=2"></script>
   <script src="assets/api/auth.js"></script>
   <script src="assets/api/contract-guard.js"></script>
-  <script src="assets/api/prediction.js?v=11"></script>
-  <script src="assets/api/prediction-bind.js?v=31"></script>
+  <script src="assets/api/prediction.js?v=10"></script>
+  <script src="assets/api/prediction-bind.js?v=30"></script>
   <script src="assets/api/race-board.js?v=10"></script>
   <script src="assets/api/race-detail-tabs.js?v=10"></script>
   <script src="assets/api/analysis.js?v=10"></script>
@@ -157,7 +157,7 @@
   <script src="assets/api/conversation-ui.js?v=7"></script>
   <script src="assets/api/ui-features.js?v=11"></script>
   <script src="assets/v11.js?v=11"></script>
-  <script src="assets/favorites.js?v=5"></script>
+  <script src="assets/favorites.js?v=4"></script>
   <script src="assets/shell.js"></script>
   <script src="assets/reminders.js?v=2"></script>
   <script src="assets/partials-nav.js"></script>
@@ -172,11 +172,36 @@
       document.querySelector(".screen").innerHTML =
         "<p class='muted' style='padding:24px'>race_id を指定してください。<a href='races.html'>レース一覧</a></p>";
     } else {
-    // 誤年 race_id（例: 2024-07-25-…）を今週末の年へ補正
-    var raceIdYearFixed =
-      window.ExpectRaceIdMeta && ExpectRaceIdMeta.correctRaceIdYear
-        ? ExpectRaceIdMeta.correctRaceIdYear(id)
-        : null;
+    // 誤年 race_id（例: 2024-07-25-…）を開催カレンダー年へ補正
+    var raceIdYearFixed = null;
+    (function maybeFixRaceIdYear() {
+      var m = String(id).match(/^(\d{4})-(\d{2}-\d{2})-(.+)$/);
+      if (!m) return;
+      var week = [];
+      if (window.ExpectWeekendCalendar && ExpectWeekendCalendar.weekendRaceDates) {
+        week = ExpectWeekendCalendar.weekendRaceDates(new Date()).filter(Boolean);
+      }
+      var matchIso = null;
+      for (var i = 0; i < week.length; i++) {
+        if (String(week[i]).slice(5) === m[2]) {
+          matchIso = week[i];
+          break;
+        }
+      }
+      if (!matchIso) {
+        var calDate = "";
+        if (window.ExpectWeekendCalendar && ExpectWeekendCalendar.decide) {
+          var cal = ExpectWeekendCalendar.decide(new Date());
+          if (cal && cal.is_race_day && cal.date_jst) calDate = cal.date_jst;
+          else if (cal && cal.next_open_date_jst) calDate = cal.next_open_date_jst;
+        }
+        if (calDate && calDate.slice(5) === m[2]) matchIso = calDate;
+      }
+      if (!matchIso || !/^\d{4}-\d{2}-\d{2}$/.test(matchIso)) return;
+      if (m[1] !== matchIso.slice(0, 4)) {
+        raceIdYearFixed = matchIso.slice(0, 4) + "-" + m[2] + "-" + m[3];
+      }
+    })();
     if (raceIdYearFixed) {
       location.replace("race?race_id=" + encodeURIComponent(raceIdYearFixed));
     } else {
@@ -296,25 +321,10 @@
           message: "レース詳細を準備しています。",
         });
       }
-      withTimeout(ExpectApi.Prediction.getWithMeta(id), 22000, "prediction timeout")
+      withTimeout(ExpectApi.Prediction.getWithMeta(id), 14000, "prediction timeout")
         .then(function (result) {
           var bundle = result.bundle;
           var envelopeMeta = result.meta || {};
-          // サーバー側で年補正されたら URL を正規化
-          if (
-            envelopeMeta.year_corrected &&
-            envelopeMeta.race_id &&
-            String(envelopeMeta.race_id) !== String(id)
-          ) {
-            try {
-              history.replaceState(
-                {},
-                "",
-                "race?race_id=" + encodeURIComponent(envelopeMeta.race_id)
-              );
-              id = String(envelopeMeta.race_id);
-            } catch (e) { /* ignore */ }
-          }
           var pbCheck =
             (bundle && bundle.__contract) ||
             (window.ExpectContractGuard && ExpectContractGuard.validatePredictionBundle(bundle)) ||

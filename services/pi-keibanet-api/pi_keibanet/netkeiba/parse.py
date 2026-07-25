@@ -21,6 +21,14 @@ _LIST_ITEM_RE = re.compile(
     re.I,
 )
 _HORSE_LIST_RE = re.compile(r'<tr class="HorseList"[^>]*>([\s\S]*?)</tr>', re.I)
+_SP_DAY_WRAP_RE = re.compile(
+    r'<div class="RaceListDayWrap"([^>]*)>([\s\S]*?)(?=<div class="RaceListDayWrap"|$)',
+    re.I,
+)
+_SP_MAIN_BOX_RE = re.compile(
+    r'<div class="RaceList_Main_Box">([\s\S]*?)<div class="RaceList_Menu_Box">',
+    re.I,
+)
 
 
 def _strip_tags(text: str) -> str:
@@ -52,6 +60,7 @@ class _ListRace:
     race_no: int
     race_id: str
     race_name: str = ""
+    post_time: str = ""
 
 
 def _year_token(date: str) -> str:
@@ -60,6 +69,82 @@ def _year_token(date: str) -> str:
 
 def _build_race_id(*, year: str, venue_code: str, kai: str, day: str, race_no: int) -> str:
     return f"{year}{venue_code}{kai}{day}{int(race_no):02d}"
+
+
+def _sp_active_day_html(html: str) -> str:
+    """SP レース一覧は土日が同一HTML。表示中（display:none 以外）の日だけ使う。"""
+    blocks = _SP_DAY_WRAP_RE.findall(html or "")
+    if not blocks:
+        return html or ""
+    visible: list[str] = []
+    hidden: list[str] = []
+    for attrs, body in blocks:
+        compact = re.sub(r"\s+", "", attrs or "").lower()
+        if "display:none" in compact:
+            hidden.append(body)
+        else:
+            visible.append(body)
+    if visible:
+        return "\n".join(visible)
+    return "\n".join(hidden) if hidden else (html or "")
+
+
+def _parse_meetings_from_sp(html: str) -> list[_Meeting]:
+    day_html = _sp_active_day_html(html)
+    seen: set[tuple[str, str, str]] = set()
+    meetings: list[_Meeting] = []
+    for box in _SP_MAIN_BOX_RE.findall(day_html):
+        m_id = _RACE_ID_RE.search(box)
+        if not m_id:
+            continue
+        rid = m_id.group(1)
+        if len(rid) < 10:
+            continue
+        venue_code, kai, day = rid[4:6], rid[6:8], rid[8:10]
+        venue = COURSE_CODE_TO_NAME.get(venue_code)
+        if not venue:
+            continue
+        key = (venue_code, kai, day)
+        if key in seen:
+            continue
+        seen.add(key)
+        meetings.append(_Meeting(venue=venue, venue_code=venue_code, kai=kai, day=day))
+    return meetings
+
+
+def _parse_list_races_from_sp(html: str) -> list[_ListRace]:
+    day_html = _sp_active_day_html(html)
+    races: list[_ListRace] = []
+    seen: set[str] = set()
+    for box in _SP_MAIN_BOX_RE.findall(day_html):
+        m_id = _RACE_ID_RE.search(box)
+        m_num = re.search(r"Race_Num[^>]*>\s*<span>\s*(\d+)\s*R\s*</span>", box, re.I)
+        if not m_id or not m_num:
+            continue
+        rid = m_id.group(1)
+        if rid in seen:
+            continue
+        seen.add(rid)
+        venue = COURSE_CODE_TO_NAME.get(rid[4:6], "")
+        if not venue:
+            continue
+        m_name = re.search(r'class="Race_Name"[^>]*>([\s\S]*?)</div>', box, re.I)
+        race_name = _normalize(m_name.group(1)) if m_name else ""
+        m_time = re.search(r'class="Race_Data"[^>]*>[\s\S]*?(\d{1,2}:\d{2})', box, re.I)
+        post_time = ""
+        if m_time:
+            hh, mm = m_time.group(1).split(":")
+            post_time = f"{int(hh):02d}:{mm}"
+        races.append(
+            _ListRace(
+                venue=venue,
+                race_no=int(m_num.group(1)),
+                race_id=rid,
+                race_name=race_name,
+                post_time=post_time,
+            )
+        )
+    return races
 
 
 def parse_meetings_from_race_list(html: str) -> list[_Meeting]:
@@ -81,7 +166,9 @@ def parse_meetings_from_race_list(html: str) -> list[_Meeting]:
                 day=f"{int(day_raw):02d}",
             )
         )
-    return meetings
+    if meetings:
+        return meetings
+    return _parse_meetings_from_sp(html)
 
 
 def parse_list_races_from_race_list(html: str) -> list[_ListRace]:
@@ -102,15 +189,27 @@ def parse_list_races_from_race_list(html: str) -> list[_ListRace]:
             if not m_name:
                 m_name = re.search(r'class="RaceList_ItemTitle"[^>]*>[\s\S]*?<span[^>]*>([^<]+)', item, re.I)
             race_name = _normalize(m_name.group(1)) if m_name else ""
+            m_time = re.search(
+                r'class="RaceList_Itemtime"[^>]*>\s*(\d{1,2}:\d{2})',
+                item,
+                re.I,
+            )
+            post_time = ""
+            if m_time:
+                hh, mm = m_time.group(1).split(":")
+                post_time = f"{int(hh):02d}:{mm}"
             races.append(
                 _ListRace(
                     venue=venue,
                     race_no=int(m_num.group(1)),
                     race_id=m_id.group(1),
                     race_name=race_name,
+                    post_time=post_time,
                 )
             )
-    return races
+    if races:
+        return races
+    return _parse_list_races_from_sp(html)
 
 
 def find_numeric_race_id(html: str, *, date: str, venue: str, race_no: int) -> str | None:
@@ -222,6 +321,16 @@ def parse_race_meta_from_shutuba(
         m_name = re.search(r'<h1[^>]*>[\s\S]*?RaceName[^>]*>(.*?)</span>', html, re.I | re.S)
     race_name = _normalize(m_name.group(1)) if m_name else ""
 
+    post_time = ""
+    m_post = re.search(r"(\d{1,2}):(\d{2})\s*発走", compact)
+    if m_post:
+        post_time = f"{int(m_post.group(1)):02d}:{m_post.group(2)}"
+    elif race_name:
+        m_in_name = re.search(r"(\d{1,2}):(\d{2})\s*発走", race_name)
+        if m_in_name:
+            post_time = f"{int(m_in_name.group(1)):02d}:{m_in_name.group(2)}"
+            race_name = _normalize(re.sub(r"\s*\d{1,2}:\d{2}\s*発走", "", race_name))
+
     entries = parse_entries_from_shutuba(html)
     field_size = len(entries)
     if field_size == 0:
@@ -233,7 +342,7 @@ def parse_race_meta_from_shutuba(
 
     from ..venues import collector_race_id
 
-    return {
+    payload: dict[str, Any] = {
         "race_id": collector_race_id(date, venue, race_no),
         "date": date,
         "venue": venue,
@@ -245,6 +354,9 @@ def parse_race_meta_from_shutuba(
         "numeric_race_id": numeric_race_id,
         **conditions,
     }
+    if post_time:
+        payload["post_time"] = post_time
+    return payload
 
 
 def _parse_horse_list_row(tr_html: str, *, fallback_number: int) -> dict[str, Any] | None:
@@ -483,6 +595,67 @@ def parse_odds_from_entries(entries: list[dict[str, Any]]) -> list[dict[str, Any
             continue
         odds.append({"horse_number": e["horse_number"], "win": float(win)})
     return odds
+
+
+def parse_jra_win_odds_payload(payload: dict[str, Any] | str) -> list[dict[str, Any]]:
+    """
+    api_get_jra_odds.html (type=1) → [{horse_number, win, popularity?}, ...]
+
+    data.odds['1']['01'] = ['3.7', '0', '3']  # win, ?, popularity
+    status が middle でも data に値が入ることがある（発売中）。
+    """
+    if isinstance(payload, str):
+        import json
+
+        try:
+            payload = json.loads(payload)
+        except json.JSONDecodeError:
+            return []
+    if not isinstance(payload, dict):
+        return []
+
+    data = payload.get("data")
+    if isinstance(data, str):
+        if not data.strip():
+            return []
+        import json
+
+        try:
+            data = json.loads(data)
+        except json.JSONDecodeError:
+            return []
+    if not isinstance(data, dict):
+        return []
+
+    odds_root = data.get("odds") if isinstance(data.get("odds"), dict) else data
+    tan = odds_root.get("1") if isinstance(odds_root, dict) else None
+    if not isinstance(tan, dict):
+        return []
+
+    rows: list[dict[str, Any]] = []
+    for key, val in tan.items():
+        try:
+            horse_number = int(str(key).lstrip("0") or "0")
+        except ValueError:
+            continue
+        if horse_number <= 0:
+            continue
+        win = None
+        popularity = None
+        if isinstance(val, (list, tuple)) and val:
+            win = _to_float(str(val[0]))
+            if len(val) >= 3:
+                popularity = _to_int(str(val[2]))
+        elif isinstance(val, (int, float, str)):
+            win = _to_float(str(val))
+        if win is None:
+            continue
+        row: dict[str, Any] = {"horse_number": horse_number, "win": float(win)}
+        if popularity is not None:
+            row["popularity"] = popularity
+        rows.append(row)
+    rows.sort(key=lambda r: int(r["horse_number"]))
+    return rows
 
 
 def _to_int(text: str) -> int | None:

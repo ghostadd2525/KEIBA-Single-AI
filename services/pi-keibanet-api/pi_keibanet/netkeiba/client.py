@@ -11,11 +11,17 @@ from typing import Callable
 from .debug_log import log_fetch
 
 DEFAULT_UA = (
-    "Mozilla/5.0 (compatible; Expect-PI-KeibaNet/1.0; +https://expect-keiba.com)"
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
+    "(KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
 )
 RACE_LIST_SUB_URL = "https://race.netkeiba.com/top/race_list_sub.html?kaisai_date={date}"
 RACE_LIST_SP_URL = "https://race.sp.netkeiba.com/?pid=race_list&kaisai_date={date}"
 SHUTUBA_URL = "https://race.netkeiba.com/race/shutuba.html?race_id={race_id}"
+SHUTUBA_SP_URL = "https://race.sp.netkeiba.com/race/shutuba.html?race_id={race_id}"
+JRA_ODDS_API_URL = (
+    "https://race.netkeiba.com/api/api_get_jra_odds.html"
+    "?race_id={race_id}&type=1&action=init"
+)
 
 
 class NetkeibaFetchError(Exception):
@@ -76,14 +82,59 @@ class NetkeibaClient:
         token = date_yyyy_mm_dd.replace("-", "")
         sub_url = RACE_LIST_SUB_URL.format(date=token)
         sp_url = RACE_LIST_SP_URL.format(date=token)
-        sub_html = self.fetch(sub_url, label=f"race_list_sub_{token}")
+        parts: list[str] = []
+        # PC版 race_list_sub は 400 になることがある → SP を正にフォールバック
         try:
-            sp_html = self.fetch(sp_url, label=f"race_list_sp_{token}")
+            parts.append(self.fetch(sub_url, label=f"race_list_sub_{token}"))
         except NetkeibaFetchError as exc:
-            print(f"[pi-keibanet] sp race_list skipped: {exc}")
-            sp_html = ""
-        return sub_html + "\n<!-- merged -->\n" + sp_html
+            print(f"[pi-keibanet] race_list_sub skipped: {exc}")
+        try:
+            parts.append(self.fetch(sp_url, label=f"race_list_sp_{token}"))
+        except NetkeibaFetchError as exc:
+            print(f"[pi-keibanet] race_list_sp skipped: {exc}")
+        if not parts:
+            raise NetkeibaFetchError(
+                f"HTML取得失敗: race list unavailable for {date_yyyy_mm_dd}"
+            )
+        return "\n<!-- merged -->\n".join(parts)
 
     def fetch_shutuba(self, numeric_race_id: str) -> str:
         url = SHUTUBA_URL.format(race_id=numeric_race_id)
-        return self.fetch(url, label=f"shutuba_{numeric_race_id}")
+        try:
+            return self.fetch(url, label=f"shutuba_{numeric_race_id}")
+        except NetkeibaFetchError as exc:
+            print(f"[pi-keibanet] shutuba pc skipped: {exc}")
+            sp_url = SHUTUBA_SP_URL.format(race_id=numeric_race_id)
+            return self.fetch(sp_url, label=f"shutuba_sp_{numeric_race_id}")
+
+    def fetch_jra_odds_json(self, numeric_race_id: str) -> str:
+        """単勝オッズ JSON（api_get_jra_odds）。HTML 出馬表には載らないことが多い。"""
+        url = JRA_ODDS_API_URL.format(race_id=numeric_race_id)
+        elapsed = time.monotonic() - self._last_fetch
+        if elapsed < self.min_interval:
+            time.sleep(self.min_interval - elapsed)
+        req = urllib.request.Request(
+            url,
+            headers={
+                "User-Agent": self.user_agent,
+                "Accept-Language": "ja,en-US;q=0.9,en;q=0.8",
+                "Accept": "application/json,text/javascript,*/*;q=0.01",
+                "X-Requested-With": "XMLHttpRequest",
+                "Referer": (
+                    "https://race.netkeiba.com/odds/index.html"
+                    f"?type=b1&race_id={numeric_race_id}&rf=shutuba_submenu"
+                ),
+            },
+            method="GET",
+        )
+        try:
+            with self._opener(req, timeout=self.timeout) as resp:
+                raw = resp.read()
+                self._last_fetch = time.monotonic()
+        except urllib.error.HTTPError as exc:
+            raise NetkeibaFetchError(f"オッズ取得失敗 HTTP {exc.code}: {url}") from exc
+        except urllib.error.URLError as exc:
+            raise NetkeibaFetchError(f"オッズ取得失敗: {url}: {exc.reason}") from exc
+        text = raw.decode("utf-8", errors="replace")
+        log_fetch(url=url, html=text[:4000], label=f"jra_odds_{numeric_race_id}")
+        return text
