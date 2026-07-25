@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="ja">
 <head>
   <meta charset="UTF-8" />
@@ -7,10 +7,11 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Noto+Sans+JP:wght@400;500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="assets/styles.css?v=17" />
-  <link rel="stylesheet" href="assets/screens.css" />
+  <link rel="stylesheet" href="assets/styles.css?v=19" />
+  <link rel="stylesheet" href="assets/screens.css?v=34" />
+  <link rel="stylesheet" href="assets/ux.css?v=17" />
   <script src="assets/api/calendar-weekend.js?v=11"></script>
-  <script src="assets/auto-maintenance.js?v=11.3"></script>
+  <script src="assets/auto-maintenance.js?v=11.5"></script>
   <script src="assets/auth.js"></script>
   <script>
     if (ExpectAuth.requireAuth() && window.ExpectAutoMaintenance) {
@@ -40,27 +41,50 @@
 
     <div class="screen">
       <section class="profile-card">
-        <img class="profile-avatar" src="assets/images/mascot-ka0ba.png?v=10" alt="" />
+        <img class="profile-avatar" id="profileAvatarImg" src="assets/images/mascot-ka0ba.png?v=10" alt="" />
         <div>
-          <h2>KAOBA Fan</h2>
-          <p class="meta">会員ID · EX-204185</p>
-          <span class="badge-premium">Premium Member</span>
-          <p class="meta" style="margin-top:8px">Lv.12</p>
+          <h2 id="profileDisplayName">—</h2>
+          <p class="meta" id="profileLoginMeta">会員ID · —</p>
+          <span class="badge-premium" id="profileRoleBadge">—</span>
+          <p class="meta" id="profileActivityMeta" style="margin-top:8px">Lv. —</p>
           <div class="level-bar" aria-hidden="true"><i></i></div>
         </div>
       </section>
 
       <section class="stats-grid">
         <h3>今月の成績</h3>
-        <div class="stat-cell"><span>的中率</span><b>71%</b></div>
-        <div class="stat-cell"><span>回収率</span><b>132%</b></div>
-        <div class="stat-cell"><span>収支</span><b>+58,400</b></div>
-        <div class="stat-cell"><span>的中数</span><b>23R</b></div>
+        <div class="stat-cell"><span>的中率</span><b>—</b></div>
+        <div class="stat-cell"><span>回収率</span><b>—</b></div>
+        <div class="stat-cell"><span>収支</span><b>—</b></div>
+        <div class="stat-cell"><span>的中数</span><b>—</b></div>
       </section>
 
-      <section class="chart-card" id="userProfilePanel">
-        <h3>プロフィール（User Domain）</h3>
-        <div id="userProfileBody"><p class="muted">読み込み中…</p></div>
+      <section class="mypage-menu-section" aria-labelledby="mypageMenuHeading">
+        <h3 id="mypageMenuHeading" class="mypage-menu-heading">メニュー</h3>
+        <nav class="menu-list" id="mypageMenu" aria-label="マイページメニュー">
+          <a href="chat.html?mode=chat" id="mypagePersonalChatLink" class="menu-list-chat">チャットルーム <span>›</span></a>
+          <a href="profile.html" id="mypageProfileLink">プロフィール設定 <span>›</span></a>
+          <a href="profile.html#notify" id="mypageNotifyLink">通知設定 <span>›</span></a>
+          <a href="saved.html" id="mypageSavedLink">今月の成績 <span>›</span></a>
+          <a href="analysis.html">購入履歴 <span>›</span></a>
+          <a href="analysis.html">年間成績レポート <span>›</span></a>
+          <a href="#" id="logoutLink">ログアウト <span>›</span></a>
+        </nav>
+      </section>
+
+      <section class="chart-card" id="adminInvitePanel" hidden>
+        <h3>管理者 · 一時ID発行</h3>
+        <p class="muted">ログイン画面の「一時ID」欄で使える招待コードを自動発行します。有効日数は期限切れ判定に反映されます。</p>
+        <form id="inviteForm" class="profile-form" autocomplete="off">
+          <label class="profile-field">
+            <span>有効日数</span>
+            <input type="number" id="inviteDays" name="expires_days" min="1" max="90" value="14" required />
+          </label>
+          <p class="profile-form-msg muted" id="inviteFormMsg" role="status"></p>
+          <button type="submit" class="profile-save" id="inviteIssueBtn">一時IDを発行</button>
+        </form>
+        <div id="inviteResult" class="invite-result" hidden></div>
+        <div id="inviteList" class="invite-list"></div>
       </section>
 
       <section class="chart-card" id="supplyPanel">
@@ -68,14 +92,6 @@
         <div id="supplyPanelBody"><p class="muted">読み込み中…</p></div>
       </section>
 
-      <nav class="menu-list" aria-label="マイページメニュー">
-        <a href="saved.html">今月の成績 <span>›</span></a>
-        <a href="analysis.html">購入履歴 <span>›</span></a>
-        <a href="analysis.html">年間成績レポート <span>›</span></a>
-        <a href="chat.html">KAOBAチャット履歴 <span>›</span></a>
-        <a href="#settings">設定 <span>›</span></a>
-        <a href="#" id="logoutLink">ログアウト <span>›</span></a>
-      </nav>
     </div>
 
     <aside class="mascot-ka0ba" id="mascotKa0ba" data-mascot-mode="png">
@@ -90,118 +106,208 @@
   <script src="assets/api/mock-gate.js"></script>
   <script src="assets/api/auth.js"></script>
   <script src="assets/api/supply.js"></script>
-  <script src="assets/api/user.js"></script>
-  <script src="assets/api/real-data-bind.js"></script>
+  <script src="assets/api/user.js?v=2"></script>
+  <script src="assets/api/user-prefs.js?v=1"></script>
+  <script src="assets/api/i18n.js?v=1"></script>
+  <script src="assets/api/real-data-bind.js?v=14"></script>
+  <script src="assets/api/conversation.js?v=6"></script>
+  <script src="assets/api/conversation-ui.js?v=6"></script>
   <script src="assets/favorites.js"></script>
   <script src="assets/shell.js"></script>
   <script src="assets/reminders.js"></script>
   <script src="assets/partials-nav.js"></script>
   <script>
-    ExpectShell.initMascotTalk([
-      "今月も好調だね！<br>この調子で一緒に<br>頑張ろう！",
-      "チャットで何でも<br>聞いてね♪"
-    ]);
-    document.getElementById("logoutLink").addEventListener("click", function (e) {
-      e.preventDefault();
-      Promise.resolve(ExpectAuth.logout()).finally(function () {
-        location.href = "login.html";
-      });
-    });
+    if (window.ExpectConversationUi) {
+      ExpectConversationUi.ensureMypageMenu();
+      ExpectConversationUi.bindMypagePersonalChat();
+    }
+  </script>
+  <script>
     (function () {
-      var profileEl = document.getElementById("userProfileBody");
-      if (profileEl && window.ExpectApi && ExpectApi.User) {
-        Promise.all([
-          ExpectApi.User.me().catch(function () {
-            return null;
-          }),
-          ExpectApi.User.history().catch(function () {
-            return null;
-          }),
-          ExpectApi.User.chat().catch(function () {
-            return null;
-          }),
-        ]).then(function (parts) {
-          var me = parts[0];
-          var hist = parts[1];
-          var chat = parts[2];
-          if (window.ExpectRealDataBind && me) {
-            ExpectRealDataBind.bindMypageProfile(me, hist, chat);
-          }
-          if (!me) {
-            profileEl.innerHTML =
-              "<p class='muted'>ログイン後に User Service からプロフィールを表示します。</p>";
-            return;
-          }
-          var p = me.profile || {};
-          profileEl.innerHTML =
-            "<p><strong>" +
-            (p.display_name || me.login_id) +
-            "</strong> · " +
-            me.status +
-            "</p>" +
-            "<p class='muted'>login_id: " +
-            me.login_id +
-            "</p>" +
-            "<p>予測履歴: " +
-            ((hist && hist.count) || 0) +
-            " 件 · チャット: " +
-            ((chat && chat.count) || 0) +
-            " セッション</p>" +
-            (me.subscription
-              ? "<p>プラン: " + me.subscription.plan_id + " (" + me.subscription.status + ")</p>"
-              : "<p class='muted'>サブスクリプション未設定</p>");
-        });
+      function escapeHtml(s) {
+        return String(s == null ? "" : s)
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;");
       }
-    })();
-    (function () {
-      var el = document.getElementById("supplyPanelBody");
-      if (!el || !window.ExpectApi || !ExpectApi.Supply) return;
-      Promise.all([
-        ExpectApi.Supply.coverage().catch(function () {
-          return null;
-        }),
-        ExpectApi.Supply.diagnosticsMissing().catch(function () {
-          return null;
-        }),
-      ]).then(function (pair) {
-        var cov = pair[0];
-        var diag = pair[1];
-        var html = "";
-        if (cov) {
-          var total = Number(cov.race_total) || 0;
-          var real = Number(cov.real_ai) || 0;
-          var rate = total ? Math.round((real / total) * 1000) / 10 : 0;
-          html +=
-            "<p><strong>Coverage</strong> " +
-            rate +
-            "% (" +
-            real +
-            "/" +
-            total +
-            " real_ai)</p>";
-          if (cov.by_reason) {
-            html += "<ul>";
-            Object.keys(cov.by_reason).forEach(function (k) {
-              html += "<li>" + k + ": " + cov.by_reason[k] + "</li>";
+
+      function isAdminRole(role) {
+        var r = String(role || "").toUpperCase();
+        return r === "ADMIN" || r === "OPS" || r === "DEVELOPER";
+      }
+
+      function paintHeader(me, hist, chat) {
+        if (window.ExpectRealDataBind && me) {
+          ExpectRealDataBind.bindMypageProfile(me, hist, chat);
+        }
+        var badge = document.getElementById("profileRoleBadge");
+        if (badge) badge.textContent = me.role || "USER";
+        var loginMeta = document.getElementById("profileLoginMeta");
+        if (loginMeta) loginMeta.textContent = "会員ID · " + (me.login_id || me.user_id || "—");
+        var av = document.getElementById("profileAvatarImg");
+        if (av && me.profile && me.profile.avatar_url) av.src = me.profile.avatar_url;
+        if (window.ExpectUserPrefs) ExpectUserPrefs.fromMe(me);
+        if (window.ExpectI18n) ExpectI18n.apply();
+      }
+
+      function renderInviteList(items) {
+        var el = document.getElementById("inviteList");
+        if (!el) return;
+        if (!items || !items.length) {
+          el.innerHTML = '<p class="muted">最近使用された一時IDはまだありません。</p>';
+          return;
+        }
+        el.innerHTML =
+          "<h4 class='invite-list-title'>最近使用された一時ID（最大5件）</h4><ul>" +
+          items
+            .slice(0, 5)
+            .map(function (inv) {
+              return (
+                "<li><code>" +
+                escapeHtml(inv.invite_id) +
+                "</code> · " +
+                escapeHtml(inv.status) +
+                (inv.activated_at
+                  ? " · 使用 " + escapeHtml(String(inv.activated_at).slice(0, 10))
+                  : "") +
+                "</li>"
+              );
+            })
+            .join("") +
+          "</ul>";
+      }
+
+      function loadAdminInvites() {
+        ExpectApi.User.listInvites()
+          .then(function (data) {
+            renderInviteList((data && (data.recent_used || data.invitations)) || []);
+          })
+          .catch(function () {
+            renderInviteList([]);
+          });
+      }
+
+      ExpectShell.initMascotTalk([
+        "プロフィール編集から<br>表示名や通知を変えられるよ♪",
+        "チャットで何でも<br>聞いてね♪",
+      ]);
+
+      document.getElementById("logoutLink").addEventListener("click", function (e) {
+        e.preventDefault();
+        Promise.resolve(ExpectAuth.logout()).finally(function () {
+          location.href = "login.html";
+        });
+      });
+
+      document.getElementById("inviteForm").addEventListener("submit", function (e) {
+        e.preventDefault();
+        var msg = document.getElementById("inviteFormMsg");
+        var btn = document.getElementById("inviteIssueBtn");
+        var result = document.getElementById("inviteResult");
+        var days = Number(document.getElementById("inviteDays").value) || 14;
+        btn.disabled = true;
+        msg.textContent = "発行中…";
+        ExpectApi.User.issueInvite({ expires_days: days })
+          .then(function (data) {
+            var inv = data && data.invite;
+            msg.textContent =
+              "発行しました（有効 " +
+              (data.expires_days || days) +
+              "日 · 期限 " +
+              String((inv && inv.expires_at) || "").slice(0, 10) +
+              "）";
+            result.hidden = false;
+            result.innerHTML =
+              "<p><strong>一時ID:</strong> <code>" +
+              escapeHtml(inv && inv.invite_id) +
+              "</code></p>" +
+              "<p class='muted'>" +
+              escapeHtml((data && data.login_hint) || "") +
+              "</p>" +
+              "<button type='button' class='profile-save profile-save--ghost' id='copyInviteBtn'>コピー</button>";
+            document.getElementById("copyInviteBtn").addEventListener("click", function () {
+              var code = inv && inv.invite_id;
+              if (!code || !navigator.clipboard) return;
+              navigator.clipboard.writeText(code).then(function () {
+                msg.textContent = "コピーしました。";
+              });
             });
-            html += "</ul>";
+            loadAdminInvites();
+          })
+          .catch(function (err) {
+            msg.textContent = (err && err.message) || "発行に失敗しました。";
+            result.hidden = true;
+          })
+          .finally(function () {
+            btn.disabled = false;
+          });
+      });
+
+      Promise.all([
+        ExpectApi.User.me().catch(function () {
+          return null;
+        }),
+        ExpectApi.User.history().catch(function () {
+          return null;
+        }),
+        ExpectApi.User.chat().catch(function () {
+          return null;
+        }),
+      ]).then(function (parts) {
+        var me = parts[0];
+        if (!me) return;
+        paintHeader(me, parts[1], parts[2]);
+        if (isAdminRole(me.role)) {
+          document.getElementById("adminInvitePanel").hidden = false;
+          loadAdminInvites();
+        }
+      });
+
+      (function () {
+        var el = document.getElementById("supplyPanelBody");
+        if (!el || !ExpectApi.Supply) return;
+        Promise.all([
+          ExpectApi.Supply.coverage().catch(function () {
+            return null;
+          }),
+          ExpectApi.Supply.diagnosticsMissing().catch(function () {
+            return null;
+          }),
+        ]).then(function (pair) {
+          var cov = pair[0];
+          var diag = pair[1];
+          var html = "";
+          if (cov) {
+            var total = Number(cov.race_total) || 0;
+            var real = Number(cov.real_ai) || 0;
+            var rate = total ? Math.round((real / total) * 1000) / 10 : 0;
+            html +=
+              "<p><strong>Coverage</strong> " +
+              rate +
+              "% (" +
+              real +
+              "/" +
+              total +
+              " real_ai)</p>";
           }
-        }
-        if (diag && diag.summary) {
-          html += "<p><strong>Diagnostics</strong> " + diag.summary + "</p>";
-        }
-        el.innerHTML = html || "<p class='muted'>Supply API 未接続（AI_BASE_URL 設定時に表示）</p>";
-      });
-    })();
-    (function () {
-      var btn = document.getElementById("brightnessBtn");
-      if (!btn || !window.ExpectShell) return;
-      ExpectShell.syncBrightnessButton(btn);
-      btn.addEventListener("click", function () {
-        ExpectShell.toggleBrightness();
+          if (diag && diag.summary) html += "<p><strong>Diagnostics</strong> " + diag.summary + "</p>";
+          el.innerHTML = html || "<p class='muted'>Supply API 未接続</p>";
+        });
+      })();
+
+      (function () {
+        var btn = document.getElementById("brightnessBtn");
+        if (!btn || !window.ExpectShell) return;
         ExpectShell.syncBrightnessButton(btn);
-      });
+        btn.addEventListener("click", function () {
+          ExpectShell.toggleBrightness();
+          ExpectShell.syncBrightnessButton(btn);
+        });
+      })();
     })();
   </script>
 </body>
 </html>
+
+ -->

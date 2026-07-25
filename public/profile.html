@@ -1,0 +1,186 @@
+﻿<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Expect ～ KEIBA AI ～ · プロフィール編集</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Noto+Sans+JP:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="assets/styles.css?v=19" />
+  <link rel="stylesheet" href="assets/screens.css?v=32" />
+  <link rel="stylesheet" href="assets/ux.css?v=16" />
+  <script src="assets/api/calendar-weekend.js?v=11"></script>
+  <script src="assets/auto-maintenance.js?v=11.5"></script>
+  <script src="assets/auth.js"></script>
+  <script>
+    if (ExpectAuth.requireAuth() && window.ExpectAutoMaintenance) {
+      ExpectAutoMaintenance.run();
+    }
+  </script>
+</head>
+<body class="page-screen page-profile page-tab" data-nav="mypage">
+  <div class="app">
+    <header class="topbar">
+      <div class="topbar-inner">
+        <div class="topbar-left">
+          <a class="back-btn" href="mypage.html" aria-label="戻る">‹</a>
+          <div class="brand-block topbar-text topbar-title-only">
+            <p class="brand-name" data-i18n="profile.title">プロフィール編集</p>
+          </div>
+        </div>
+        <div class="topbar-tools" aria-hidden="true"></div>
+      </div>
+    </header>
+
+    <div class="screen">
+      <section class="chart-card">
+        <p class="muted profile-edit-lead" data-i18n="profile.lead">
+          表示名・画像・言語・通知を変更できます。ユーザーID・role・パスワードは変更できません。
+        </p>
+        <div class="profile-avatar-preview">
+          <img id="avatarPreview" src="assets/images/mascot-ka0ba.png?v=10" alt="" width="72" height="72" />
+        </div>
+        <form id="profileForm" class="profile-form" autocomplete="off">
+          <label class="profile-field">
+            <span data-i18n="profile.display_name">表示名</span>
+            <input type="text" id="pfDisplayName" name="display_name" maxlength="40" required />
+          </label>
+          <label class="profile-field">
+            <span data-i18n="profile.avatar_url">プロフィール画像URL</span>
+            <input type="text" id="pfAvatarUrl" name="avatar_url" placeholder="https://example.com/me.png" />
+            <small class="profile-hint" data-i18n="profile.avatar_hint">
+              画像のURLを入れるとマイページのアイコンが変わります（空欄でデフォルト画像）。
+            </small>
+          </label>
+          <label class="profile-field">
+            <span data-i18n="profile.locale">言語</span>
+            <select id="pfLocale" name="locale">
+              <option value="ja">日本語 (ja)</option>
+              <option value="en">English (en)</option>
+            </select>
+          </label>
+          <fieldset class="profile-prefs" id="notify">
+            <legend data-i18n="profile.notify">通知設定</legend>
+            <label class="profile-check">
+              <input type="checkbox" id="pfPrefNotify" />
+              <span data-i18n="profile.notify_receive">通知を受け取る</span>
+            </label>
+            <label class="profile-check">
+              <input type="checkbox" id="pfPrefOdds" />
+              <span data-i18n="profile.odds_alert">オッズ変動アラート</span>
+            </label>
+          </fieldset>
+          <div class="profile-readonly">
+            <p><span data-i18n="profile.user_id">ユーザーID</span><b id="pfUserId">—</b></p>
+            <p><span data-i18n="profile.role">role</span><b id="pfRole">—</b></p>
+            <p class="muted" data-i18n="profile.password_note">パスワード変更はこの画面ではできません。</p>
+          </div>
+          <p class="profile-form-msg muted" id="profileFormMsg" role="status"></p>
+          <button type="submit" class="profile-save" id="profileSaveBtn" data-i18n="profile.save">保存する</button>
+          <a class="profile-save profile-save--ghost" href="mypage.html" data-i18n="profile.back">マイページへ戻る</a>
+        </form>
+      </section>
+    </div>
+
+    <aside class="mascot-ka0ba" id="mascotKa0ba" data-mascot-mode="png">
+      <div class="mascot-bubble" id="mascotBubble" role="status" aria-live="polite"></div>
+      <button type="button" class="mascot-figure" id="mascotTalkBtn" aria-label="KA0BA">
+        <img data-mascot-fallback src="assets/images/mascot-ka0ba.png?v=10" alt="" height="140" draggable="false" />
+      </button>
+    </aside>
+    <div data-expect-nav></div>
+  </div>
+  <script src="assets/api/mock-gate.js"></script>
+  <script src="assets/api/auth.js"></script>
+  <script src="assets/api/user.js?v=2"></script>
+  <script src="assets/api/user-prefs.js?v=1"></script>
+  <script src="assets/api/i18n.js?v=1"></script>
+  <script src="assets/shell.js"></script>
+  <script src="assets/partials-nav.js"></script>
+  <script>
+    (function () {
+      var DEFAULT_AVATAR = "assets/images/mascot-ka0ba.png?v=10";
+
+      function fill(me) {
+        var p = (me && me.profile) || {};
+        var prefs = p.preferences || {};
+        document.getElementById("pfDisplayName").value = p.display_name || me.login_id || "";
+        document.getElementById("pfAvatarUrl").value = p.avatar_url || "";
+        document.getElementById("pfLocale").value = p.locale === "en" ? "en" : "ja";
+        document.getElementById("pfPrefNotify").checked = prefs.notify !== false;
+        document.getElementById("pfPrefOdds").checked = !!prefs.odds_alert;
+        document.getElementById("pfUserId").textContent = me.login_id || me.user_id || "—";
+        document.getElementById("pfRole").textContent = me.role || "USER";
+        document.getElementById("avatarPreview").src = p.avatar_url || DEFAULT_AVATAR;
+        if (window.ExpectUserPrefs) ExpectUserPrefs.fromMe(me);
+        if (window.ExpectI18n) ExpectI18n.apply();
+      }
+
+      document.getElementById("pfAvatarUrl").addEventListener("input", function () {
+        var v = this.value.trim();
+        document.getElementById("avatarPreview").src = v || DEFAULT_AVATAR;
+      });
+
+      document.getElementById("pfLocale").addEventListener("change", function () {
+        if (window.ExpectUserPrefs) {
+          var cur = ExpectUserPrefs.get();
+          ExpectUserPrefs.write({
+            notify: cur.notify,
+            odds_alert: cur.odds_alert,
+            locale: this.value,
+          });
+        }
+        if (window.ExpectI18n) ExpectI18n.apply();
+      });
+
+      document.getElementById("profileForm").addEventListener("submit", function (e) {
+        e.preventDefault();
+        var msg = document.getElementById("profileFormMsg");
+        var btn = document.getElementById("profileSaveBtn");
+        btn.disabled = true;
+        msg.textContent = ExpectI18n ? ExpectI18n.t("profile.saving") : "保存中…";
+        var notifyOn = document.getElementById("pfPrefNotify").checked;
+        ExpectApi.User.patchMe({
+          display_name: document.getElementById("pfDisplayName").value,
+          avatar_url: document.getElementById("pfAvatarUrl").value,
+          locale: document.getElementById("pfLocale").value,
+          preferences: {
+            notify: notifyOn,
+            odds_alert: document.getElementById("pfPrefOdds").checked,
+          },
+        })
+          .then(function (me) {
+            fill(me);
+            if (notifyOn && window.ExpectUserPrefs) {
+              return ExpectUserPrefs.ensurePermission().then(function () {
+                return me;
+              });
+            }
+            return me;
+          })
+          .then(function () {
+            msg.textContent = ExpectI18n ? ExpectI18n.t("profile.saved") : "保存しました。";
+          })
+          .catch(function (err) {
+            msg.textContent =
+              (err && err.message) ||
+              (ExpectI18n ? ExpectI18n.t("profile.fail") : "保存に失敗しました。");
+          })
+          .finally(function () {
+            btn.disabled = false;
+          });
+      });
+
+      ExpectApi.User.me()
+        .then(fill)
+        .catch(function () {
+          document.getElementById("profileFormMsg").textContent =
+            "プロフィールを取得できませんでした。";
+        });
+    })();
+  </script>
+</body>
+</html>
+
+ -->
