@@ -374,13 +374,25 @@
 
       var pc = data.point_count || 0;
       if (metaEl) {
-        metaEl.textContent =
-          (data.race_label || "") +
-          (data.race_name ? " · " + data.race_name : "") +
-          (data.post_time ? " · " + data.post_time + "出走" : "") +
-          " · 記録 " +
-          pc +
-          "点";
+        var metaName = shortRaceName(data.race_name || "");
+        var metaPost = String(data.post_time || "").trim();
+        var metaPostM = metaPost.match(/^(\d{1,2}):(\d{2})/);
+        var metaPostLabel = metaPostM
+          ? String(Number(metaPostM[1])).padStart(2, "0") +
+            ":" +
+            metaPostM[2] +
+            "出走"
+          : metaPost
+            ? metaPost.indexOf("出走") >= 0
+              ? metaPost
+              : metaPost + "出走"
+            : "";
+        var metaBits = [];
+        if (data.race_label) metaBits.push(String(data.race_label));
+        if (metaName) metaBits.push(metaName);
+        if (metaPostLabel) metaBits.push(metaPostLabel);
+        metaBits.push("記録 " + pc + "点");
+        metaEl.textContent = metaBits.join(" · ");
       }
       if (noteEl) {
         if (pc < 2) {
