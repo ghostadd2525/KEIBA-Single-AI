@@ -565,13 +565,48 @@
       }
     }
 
-    function raceRowLabel(r) {
-      return (
-        (r.race_label ||
-          (r.course || "") + (r.race_number != null ? r.race_number + "R" : "")) +
-        (r.race_name ? " · " + r.race_name : "") +
-        (r.race_info && r.race_info.post_time ? " · " + r.race_info.post_time : "")
+    function shortRaceName(raw) {
+      var s = String(raw == null ? "" : raw).trim();
+      if (!s) return "";
+      var m = s.match(
+        /^(.+?)\s+\d{1,2}:\d{2}(?:芝|ダート|ダ|障)?\d*m?\d*頭?\s*$/u
       );
+      if (m && m[1]) return String(m[1]).trim();
+      s = s
+        .replace(/\s+\d{1,2}:\d{2}(?:芝|ダート|ダ|障)\d+m\d+頭\s*$/u, "")
+        .replace(/\s+\d{1,2}:\d{2}\S*\s*$/u, "")
+        .trim();
+      return s || String(raw).trim();
+    }
+
+    function raceRowLabel(r) {
+      var place =
+        r.race_label ||
+        (r.course || "") + (r.race_number != null ? r.race_number + "R" : "");
+      var name = shortRaceName(
+        r.race_name ||
+          (r.race_info && (r.race_info.race_name || r.race_info.class_label)) ||
+          ""
+      );
+      var post = String(
+        (r.race_info && r.race_info.post_time) || r.post_time || ""
+      ).trim();
+      var postM = post.match(/^(\d{1,2}):(\d{2})/);
+      var postLabel = postM
+        ? String(Number(postM[1])).padStart(2, "0") +
+          ":" +
+          postM[2] +
+          "出走"
+        : post
+          ? post.indexOf("出走") >= 0
+            ? post
+            : post + "出走"
+          : "";
+      var bits = [];
+      if (place) bits.push(place);
+      if (name) bits.push(name);
+      if (postLabel) bits.push(postLabel);
+      return bits.join(" · ");
     }
 
     function paintRaceList() {

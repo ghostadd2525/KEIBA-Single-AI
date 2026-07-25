@@ -143,7 +143,7 @@
       note +
       '<div class="board-table-wrap">' +
       '<table class="board-table board-table--odds">' +
-      "<thead><tr><th>人気</th><th>馬番</th><th>馬名</th><th>単勝</th></tr></thead>" +
+      "<thead><tr><th>人気</th><th>馬番</th><th>馬名</th><th>単勝オッズ</th></tr></thead>" +
       "<tbody>" +
       rows +
       "</tbody></table></div>"
@@ -152,14 +152,14 @@
 
   function historyHtml(history) {
     if (!history || !history.length) {
-      return '<p class="muted">近走データを取得できませんでした。</p>';
+      return '<p class="muted">近走データはありません</p>';
     }
     return history
       .map(function (h) {
-        var recent = h.recent || [];
+        var recent = (h.recent || []).slice(0, 3);
         var body;
         if (!recent.length) {
-          body = '<p class="board-history-empty muted">近走なし</p>';
+          body = '<p class="board-history-empty muted">近走データはありません</p>';
         } else {
           body =
             '<ul class="board-history-list">' +
@@ -167,29 +167,17 @@
               .map(function (r) {
                 var bits = [];
                 if (r.date) bits.push(escapeHtml(r.date));
-                if (r.place) bits.push(escapeHtml(r.place));
-                if (r.surface || r.distance) {
-                  bits.push(
-                    escapeHtml(
-                      String(r.surface || "") +
-                        (r.distance != null ? String(r.distance) + "m" : "")
-                    )
-                  );
-                }
+                bits.push(escapeHtml(formatFinish(r.finish)));
                 if (r.race_name) bits.push(escapeHtml(r.race_name));
+                if (r.distance != null && r.distance !== "") {
+                  bits.push(escapeHtml(String(r.distance) + "m"));
+                }
+                if (r.surface) bits.push(escapeHtml(r.surface));
                 return (
                   "<li>" +
-                  '<span class="board-history-finish">' +
-                  escapeHtml(formatFinish(r.finish)) +
-                  "</span>" +
                   '<span class="board-history-meta">' +
                   bits.join(" · ") +
                   "</span>" +
-                  (r.odds != null
-                    ? '<span class="board-history-odds">' +
-                      escapeHtml(formatOdds(r.odds)) +
-                      "倍</span>"
-                    : "") +
                   "</li>"
                 );
               })

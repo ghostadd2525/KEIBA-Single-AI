@@ -20,6 +20,21 @@
     return String(Number(m[1])).padStart(2, "0") + ":" + m[2];
   }
 
+  /** "2歳新馬 10:20芝1600m9頭" → "2歳新馬" */
+  function shortRaceName(raw) {
+    var s = String(raw == null ? "" : raw).trim();
+    if (!s) return "";
+    var m = s.match(
+      /^(.+?)\s+\d{1,2}:\d{2}(?:芝|ダート|ダ|障)?\d*m?\d*頭?\s*$/u
+    );
+    if (m && m[1]) return String(m[1]).trim();
+    s = s
+      .replace(/\s+\d{1,2}:\d{2}(?:芝|ダート|ダ|障)\d+m\d+頭\s*$/u, "")
+      .replace(/\s+\d{1,2}:\d{2}\S*\s*$/u, "")
+      .trim();
+    return s || String(raw).trim();
+  }
+
   function horseLabel(name, num) {
     if (global.ExpectRaceIdMeta && ExpectRaceIdMeta.displayHorseName) {
       return ExpectRaceIdMeta.displayHorseName(name, num);
@@ -211,7 +226,7 @@
     var place =
       info.race_label ||
       (info.venue || "") + (raceNo != null ? " " + raceNo + "R" : "");
-    var name = info.race_name || info.class_label || "レース";
+    var name = shortRaceName(info.race_name || info.class_label || "レース");
     var grade = info.grade || "";
     var post = info.post_time != null ? String(info.post_time) : "";
     var listDate =
@@ -236,7 +251,7 @@
         : dateLabel({ date: listDate }));
     var dFull = info.date_full || dateFull({ date: listDate, date_label: dLabel });
     var bg = bgClass(info, raceNo);
-    var nameDisp = name + (grade && grade !== "—" ? "（" + grade + "）" : "");
+    var nameDisp = name;
     var eng = pred.engine_source || "";
 
     var confPct = null;
@@ -374,7 +389,7 @@
     var place =
       info.race_label ||
       (info.venue || "") + (info.race_no != null ? " " + info.race_no + "R" : "");
-    var name = info.race_name || info.class_label || "レース";
+    var name = shortRaceName(info.race_name || info.class_label || "レース");
     var grade = info.grade || "";
     var conf = scorePercent(bundle) || 0;
     var band = bandFromNormalizedScore(
@@ -385,7 +400,7 @@
     var dFull = dateFull(info);
     var post = info.post_time || "";
     var bg = bgClass(info, info.race_no);
-    var nameDisp = name + (grade && grade !== "—" ? "（" + grade + "）" : "");
+    var nameDisp = name;
     var eng =
       (bundle && bundle.__meta && bundle.__meta.engine_source) ||
       "";
@@ -831,11 +846,9 @@
 
   function paintRaceMeta(info) {
     info = info || {};
-    var name = info.race_name || info.class_label || "";
-    var grade = info.grade && String(info.grade) !== "—" ? String(info.grade) : "";
-    var nameDisp = name + (grade ? "（" + grade + "）" : "");
+    var name = shortRaceName(info.race_name || info.class_label || "");
+    var nameDisp = name;
     var postLabel = formatPostTimeLabel(info.post_time);
-    var course = raceCourseLine(info);
     var dateBit = "";
     if (info.date_label) dateBit = String(info.date_label);
     else if (info.date && /^\d{4}-\d{2}-\d{2}$/.test(String(info.date))) {
@@ -858,7 +871,6 @@
       var lineBits = [];
       if (dateBit) lineBits.push(dateBit);
       if (postLabel) lineBits.push(postLabel);
-      if (course) lineBits.push(course);
       lineEl.textContent = lineBits.join(" · ") || "レース情報を取得中…";
     }
   }
