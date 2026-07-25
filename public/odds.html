@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Noto+Sans+JP:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="assets/styles.css?v=19" />
-  <link rel="stylesheet" href="assets/screens.css?v=33" />
+  <link rel="stylesheet" href="assets/screens.css?v=34" />
   <link rel="stylesheet" href="assets/ux.css?v=16" />
   <link rel="stylesheet" href="assets/vqa.css?v=2" />
   <script src="assets/api/calendar-weekend.js?v=11"></script>
@@ -44,7 +44,9 @@
 
       <section class="chart-card odds-race-panel" aria-labelledby="oddsRaceListTitle">
         <h3 id="oddsRaceListTitle">レースを選択</h3>
-        <div class="odds-race-list" id="oddsRaceList" role="listbox" aria-label="レース一覧"></div>
+        <label class="odds-race-select-label" for="oddsRaceSelect">
+          <select id="oddsRaceSelect" class="odds-race-select" aria-label="レース一覧"></select>
+        </label>
       </section>
 
       <section class="chart-card odds-chart-card" id="oddsChartCard" aria-labelledby="oddsChartTitle">
@@ -73,7 +75,7 @@
   <script src="assets/api/race.js"></script>
   <script src="assets/api/odds-series.js?v=1"></script>
   <script src="assets/api/user-prefs.js?v=1"></script>
-  <script src="assets/api/odds-chart.js?v=6"></script>
+  <script src="assets/api/odds-chart.js?v=7"></script>
   <script src="assets/ux.js?v=15"></script>
   <script src="assets/shell.js"></script>
   <script src="assets/reminders.js"></script>
@@ -89,6 +91,3 @@
   </script>
 </body>
 </html>
-
- -->
-

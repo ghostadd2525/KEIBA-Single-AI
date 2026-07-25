@@ -1630,25 +1630,71 @@ body.v2-race-list-ui .race-conf {
   z-index: 22;
   flex: 0 0 auto;
   display: grid;
-  gap: 10px;
+  gap: 6px;
   margin: 0 calc(-1 * var(--pad));
-  padding: 0 var(--pad) 10px;
+  padding: 0 var(--pad) 8px;
   background: #0b1018;
   box-shadow: 0 10px 16px -8px #0b1018;
+  justify-items: start;
+}
+
+.page-odds .odds-filters .chip-row,
+.page-odds .odds-filters .tab-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+  overflow: visible;
+}
+
+.page-odds .odds-filters .tab-pill,
+.page-odds .odds-filters .chip {
+  height: 24px;
+  min-height: 24px;
+  padding: 0 8px;
+  font-size: 11px;
+  line-height: 1;
+  border-radius: 999px;
+  flex: 0 0 auto;
+}
+
+.page-odds .odds-filters .race-filters-note {
+  margin: 0;
+  font-size: 11px;
+  text-align: left;
 }
 
 .page-odds .odds-race-panel {
-  flex: 0 1 auto;
+  flex: 0 0 auto;
   display: flex;
   flex-direction: column;
   min-height: 0;
-  max-height: min(42vh, 320px);
-  overflow: hidden;
+  max-height: none;
+  overflow: visible;
 }
 
 .page-odds .odds-race-panel h3 {
-  margin: 0 0 10px;
+  margin: 0 0 8px;
   flex: 0 0 auto;
+}
+
+.page-odds .odds-race-select-label {
+  display: block;
+  width: 100%;
+}
+
+.page-odds .odds-race-select {
+  width: 100%;
+  min-height: 42px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(193, 162, 109, 0.35);
+  background: rgba(12, 18, 28, 0.92);
+  color: #f3efe6;
+  font-size: 13px;
+  font-family: inherit;
 }
 
 .page-odds .odds-race-list {

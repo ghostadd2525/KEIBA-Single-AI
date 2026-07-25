@@ -53,7 +53,9 @@ def normalize_prediction_bundle(raw: dict[str, Any], race_id: str | None = None)
 
 
 def catalog_to_prediction_bundle(race: dict[str, Any], base: dict[str, Any] | None = None) -> dict[str, Any]:
-    race_id = race["race_id"]
+    race_id = str(race.get("race_id") or race.get("public_race_id") or "").strip()
+    if not race_id:
+        raise KeyError("race_id")
     hint = race.get("ai_confidence")
     base_n = normalize_prediction_bundle(base, race_id) if base else None
     band = "unknown"

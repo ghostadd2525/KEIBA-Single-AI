@@ -179,9 +179,20 @@ class RealAiPredictionSource:
             return domains.normalize_prediction_bundle(data.load_bundle(rid), rid)
         template = data.load_bundle("20260719_hanshin_11")
         if race:
-            return domains.catalog_to_prediction_bundle(race, template)
+            # RaceResolver.as_meta() 等は race_id 欠落があり得る → 補完して投影
+            row = dict(race)
+            row.setdefault("race_id", rid)
+            if not row.get("race_id"):
+                row["race_id"] = rid
+            try:
+                return domains.catalog_to_prediction_bundle(row, template)
+            except (KeyError, TypeError, ValueError):
+                pass
         fb, _ = self._fallback.get_with_meta(rid)
-        return fb  # type: ignore[return-value]
+        if isinstance(fb, dict):
+            return fb
+        # 最終フォールバック: テンプレを race_id 差し替え
+        return domains.normalize_prediction_bundle(template, rid)
 
     def _infer(
         self,

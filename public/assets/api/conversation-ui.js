@@ -53,33 +53,13 @@
   }
 
   /**
-   * レース詳細 AI タブに Review / Explain CTA を挿入（既存構造を壊さない）
+   * レース詳細では prediction-bind の「KAOBAに◎の理由を聞く」リンクのみ残す。
+   * 旧 CTA カード（相談ボタン / Prediction Read Only）はマウントしない。
    */
   function mountRaceCtas(raceId) {
     if (!raceId) return;
-    var host =
-      document.getElementById("reasonsSection") ||
-      document.getElementById("tabPanelAi") ||
-      document.querySelector("[data-tab-panel='ai']");
-    if (!host) return;
-    if (document.getElementById("v5ConversationCtas")) return;
-
-    var wrap = document.createElement("section");
-    wrap.className = "chart-card v5-conversation-ctas";
-    wrap.id = "v5ConversationCtas";
-    wrap.setAttribute("aria-label", "KAOBA Conversation");
-    wrap.innerHTML =
-      "<h3>KAOBAに聞く</h3>" +
-      '<div class="v5-conversation-cta-row">' +
-      '<a class="v5-conversation-cta" id="v5CtaExplain" href="' +
-      explainUrl(raceId) +
-      '">KAOBAに◎の理由を聞く</a>' +
-      '<a class="v5-conversation-cta v5-conversation-cta--secondary" id="v5CtaReview" href="' +
-      reviewUrl(raceId) +
-      '">KAOBAに相談</a>' +
-      "</div>" +
-      '<p class="muted v5-conversation-note">予想の印・順位は変更しません（Prediction Read Only）。</p>';
-    host.appendChild(wrap);
+    var legacy = document.getElementById("v5ConversationCtas");
+    if (legacy && legacy.parentNode) legacy.parentNode.removeChild(legacy);
   }
 
   function ensureMenuLink(nav, id, href, label) {

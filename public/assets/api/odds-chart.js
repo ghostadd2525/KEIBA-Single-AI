@@ -259,7 +259,9 @@
   }
 
   function bind() {
-    var raceListEl = document.getElementById("oddsRaceList");
+    var raceListEl =
+      document.getElementById("oddsRaceSelect") ||
+      document.getElementById("oddsRaceList");
     var dateTabs = document.getElementById("oddsDateTabs");
     var venueChips = document.getElementById("oddsVenueChips");
     var filterNote = document.getElementById("oddsFilterNote");
@@ -531,8 +533,37 @@
     function paintRaceList() {
       var items = filteredItems();
       if (!items.length) {
-        raceListEl.innerHTML =
-          '<p class="race-list-empty">この条件に合うレースがありません。</p>';
+        if (raceListEl.tagName === "SELECT") {
+          raceListEl.innerHTML =
+            '<option value="">この条件に合うレースがありません</option>';
+          raceListEl.disabled = true;
+        } else {
+          raceListEl.innerHTML =
+            '<p class="race-list-empty">この条件に合うレースがありません。</p>';
+        }
+        return;
+      }
+      if (raceListEl.tagName === "SELECT") {
+        raceListEl.disabled = false;
+        raceListEl.innerHTML = items
+          .map(function (r) {
+            var label =
+              raceRowLabel(r) +
+              "（" +
+              dateLabel(itemDate(r)) +
+              (itemVenue(r) ? " · " + itemVenue(r) : "") +
+              "）";
+            return (
+              '<option value="' +
+              escapeHtml(r.race_id) +
+              '"' +
+              (r.race_id === state.raceId ? " selected" : "") +
+              ">" +
+              escapeHtml(label) +
+              "</option>"
+            );
+          })
+          .join("");
         return;
       }
       raceListEl.innerHTML = items
@@ -610,12 +641,17 @@
         applyFilterChange();
       });
     }
-    raceListEl.addEventListener("click", function (e) {
-      var btn = e.target.closest("[data-race-id]");
-      if (!btn) return;
-      selectRace(btn.getAttribute("data-race-id") || "");
-    });
-
+    if (raceListEl.tagName === "SELECT") {
+      raceListEl.addEventListener("change", function () {
+        selectRace(raceListEl.value || "");
+      });
+    } else {
+      raceListEl.addEventListener("click", function (e) {
+        var btn = e.target.closest("[data-race-id]");
+        if (!btn) return;
+        selectRace(btn.getAttribute("data-race-id") || "");
+      });
+    }
     global.addEventListener("pagehide", function () {
       if (state.timer) clearInterval(state.timer);
     });
@@ -634,13 +670,16 @@
           ? "開催日 " + dates.map(dateLabel).join("・") + " のレースを読み込み中…"
           : "レースを読み込み中…";
     }
-    if (global.ExpectUx) {
+    if (global.ExpectUx && raceListEl.tagName !== "SELECT") {
       ExpectUx.showLoading(raceListEl, {
         replace: true,
         compact: true,
         title: "レース一覧を準備中...",
         message: "開催レースを読み込んでいます。",
       });
+    } else if (raceListEl.tagName === "SELECT") {
+      raceListEl.innerHTML = '<option value="">レースを読み込み中…</option>';
+      raceListEl.disabled = true;
     }
 
     function listForDate(date) {

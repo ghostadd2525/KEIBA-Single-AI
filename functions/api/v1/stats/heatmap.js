@@ -43,11 +43,17 @@ export async function onRequestGet(context) {
     if (proxied && proxied instanceof Response) return proxied;
     if (proxied && proxied.ok && proxied.payload?.data) {
       const data = normalizeHeatmapPayload(proxied.payload.data, venueFilter);
-      return jsonOk(data, {
-        ...(proxied.payload.meta || {}),
-        source: proxied.payload.data?.source || "stats_db",
-        cache: "public, max-age=30",
-      }, { cacheControl: "public, max-age=30" });
+      const hasRows =
+        (data?.distance?.venues && data.distance.venues.length > 0) ||
+        Number(data?.races_evaluated || 0) > 0;
+      // stats_db が空のときは静的コーパスへフォールバック（ホーム空表示を防ぐ）
+      if (hasRows) {
+        return jsonOk(data, {
+          ...(proxied.payload.meta || {}),
+          source: proxied.payload.data?.source || "stats_db",
+          cache: "public, max-age=30",
+        }, { cacheControl: "public, max-age=30" });
+      }
     }
   }
 

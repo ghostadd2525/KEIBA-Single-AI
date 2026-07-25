@@ -171,14 +171,18 @@
     var dist = (data && data.distance) || {};
     var cond = (data && data.condition) || {};
     var venues = dist.venues || [];
-    if (venueFilter && venueFilter.length) {
+    var appliedFilter = venueFilter && venueFilter.length ? venueFilter : null;
+    if (appliedFilter) {
       var allow = {};
-      venueFilter.forEach(function (v) {
+      appliedFilter.forEach(function (v) {
         allow[v] = true;
       });
-      venues = venues.filter(function (v) {
+      var filtered = venues.filter(function (v) {
         return allow[v];
       });
+      // 当日会場名とセグメントキーが一致しない場合は全会場表示へフォールバック
+      if (filtered.length) venues = filtered;
+      else appliedFilter = null;
     }
 
     var distBody = document.querySelector("#heatmapBody");
@@ -208,9 +212,9 @@
     var condBody = document.querySelector("#conditionHeatmapBody");
     if (condBody) {
       var condRows = cond.rows || [];
-      if (venueFilter && venueFilter.length) {
+      if (appliedFilter) {
         var allowVenues = {};
-        venueFilter.forEach(function (v) {
+        appliedFilter.forEach(function (v) {
           allowVenues[v] = true;
         });
         condRows = condRows.filter(function (row) {

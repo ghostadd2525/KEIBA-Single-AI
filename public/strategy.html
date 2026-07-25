@@ -7,10 +7,11 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Noto+Sans+JP:wght@400;500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="assets/styles.css?v=17" />
-  <link rel="stylesheet" href="assets/screens.css" />
+  <link rel="stylesheet" href="assets/styles.css?v=19" />
+  <link rel="stylesheet" href="assets/screens.css?v=29" />
+  <link rel="stylesheet" href="assets/ux.css?v=16" />
   <script src="assets/api/calendar-weekend.js?v=11"></script>
-  <script src="assets/auto-maintenance.js?v=11.3"></script>
+  <script src="assets/auto-maintenance.js?v=11.5"></script>
   <script src="assets/auth.js"></script>
   <script>
     if (ExpectAuth.requireAuth() && window.ExpectAutoMaintenance) {
@@ -33,9 +34,7 @@
       </div>
     </header>
 
-    <div class="screen" id="strategyScreen">
-      <p class="muted">読み込み中…</p>
-    </div>
+    <div class="screen" id="strategyScreen" aria-busy="true"></div>
 
     <aside class="mascot-ka0ba" id="mascotKa0ba" data-mascot-mode="png">
       <div class="mascot-bubble" id="mascotBubble" role="status" aria-live="polite"></div>
@@ -51,53 +50,94 @@
   <script src="assets/api/auth.js"></script>
   <script src="assets/api/prediction.js"></script>
   <script src="assets/api/analysis.js"></script>
+  <script src="assets/api/analysis-bind.js?v=19"></script>
   <script src="assets/api/prediction-bind.js"></script>
+  <script src="assets/api/race-board.js?v=2"></script>
+  <script src="assets/api/odds-series.js?v=1"></script>
+  <script src="assets/api/strategy-stakes.js?v=1"></script>
+  <script src="assets/ux.js?v=15"></script>
   <script src="assets/favorites.js"></script>
   <script src="assets/shell.js"></script>
   <script src="assets/reminders.js"></script>
   <script src="assets/partials-nav.js"></script>
   <script>
     (function () {
+      var screen = document.getElementById("strategyScreen");
       var id = new URLSearchParams(location.search).get("race_id") || "";
       if (!id) {
-        document.getElementById("strategyScreen").innerHTML =
+        if (window.ExpectUx) ExpectUx.hideLoading(screen);
+        screen.innerHTML =
           "<p class='muted'>race_id を指定してください。<a href='races.html'>レース一覧</a></p>";
         return;
+      }
+      if (window.ExpectUx) {
+        ExpectUx.showLoading(screen, {
+          replace: true,
+          title: "買い目戦略を準備中...",
+          message: "AI評価とオッズを読み込んでいます。",
+          progress: true,
+        });
+      } else {
+        screen.innerHTML = "<p class='muted'>読み込み中…</p>";
       }
       var meta = ExpectFavorites.getMeta(id);
       var ai = ExpectFavorites.getAi(id);
 
-      function fallbackStrategy() {
+      function applyStakes(base, conf, board, series) {
+        var stakes = window.ExpectStrategyStakes;
+        if (!stakes) return base;
+        var axisNum = base.axis && base.axis.num;
+        var axisOdds = stakes.oddsFromBoard(board, axisNum);
+        var driftInfo = stakes.seriesDrift(series, axisNum);
+        if (axisOdds == null && driftInfo.latest != null) axisOdds = driftInfo.latest;
+        var bank = stakes.computeBankroll({
+          confidence: conf,
+          axisOdds: axisOdds,
+          driftPct: driftInfo.driftPct,
+        });
+        var display = stakes.toDisplayBankroll(bank);
+        base.axis.odds =
+          axisOdds != null
+            ? axisOdds.toFixed(1) +
+              (Math.abs(driftInfo.driftPct) >= 1
+                ? "（" + (driftInfo.driftPct > 0 ? "↑" : "↓") + Math.abs(driftInfo.driftPct).toFixed(1) + "%）"
+                : "")
+            : "—";
+        base.tickets = stakes.buildTickets(bank, { confidence: conf });
+        base.bankroll = display;
+        base.risk = bank.risk + " " + bank.note;
+        base.aiOverall = conf;
+        return base;
+      }
+
+      function fallbackStrategy(board, series) {
         var overall = ai.overall || 75;
-        return {
+        var base = {
           axis: {
             num: "—",
             name: meta.name || "本命候補",
             role: "本命軸",
-            odds: "—"
+            odds: "—",
           },
           rivals: [
             { num: "—", name: "対抗候補", role: "対抗", reason: "展開・枠順の噛み合いを評価" },
             { num: "—", name: "穴候補", role: "単穴", reason: "上がり期待と人気薄妙味" },
-            { num: "—", name: "連下候補", role: "連下", reason: "安定感で点数の土台に" }
+            { num: "—", name: "連下候補", role: "連下", reason: "安定感で点数の土台に" },
           ],
-          tickets: [
-            { type: "馬連", legs: "軸→相手3頭", points: "3点", stake: "¥1,500", note: "信頼度 " + overall + "% を軸に構築" },
-            { type: "ワイド", legs: "軸→相手2頭", points: "2点", stake: "¥1,000", note: "的中率を確保" },
-            { type: "三連複", legs: "軸＋相手2〜3", points: "2-3点", stake: "¥1,000", note: "点数を抑えたフォーメーション" },
-            { type: "三連単", legs: "1着固定マルチ抑制", points: "6点前後", stake: "¥1,200", note: "資金配分の上限を守る" }
-          ],
+          tickets: [],
           scenarios: [
             { title: "基本シナリオ", body: "AI総合 " + overall + "%。好位〜中団から差し切る展開を主軸に組み立てる。" },
             { title: "崩しシナリオ", body: "ペースが想定と異なる場合は対抗を厚めに残し、深追いは避ける。" },
-            { title: "波乱シナリオ", body: "馬場・枠のバイアスが出た場合のみ穴を1頭まで許容する。" }
+            { title: "波乱シナリオ", body: "馬場・枠のバイアスが出た場合のみ穴を1頭まで許容する。" },
           ],
-          risk: "総合評価が80%未満のレースは点数を増やさず、ワイド中心で抑える。",
-          bankroll: { total: "¥4,700", main: "55%", cover: "30%", lottery: "15%" }
+          risk: "",
+          bankroll: { total: "—", main: "—", cover: "—", lottery: "—" },
+          aiOverall: overall,
         };
+        return applyStakes(base, overall, board, series);
       }
 
-      function strategyFromBundle(bundle) {
+      function strategyFromBundle(bundle, board, series) {
         if (!bundle) return null;
         var bind = window.ExpectPredictionBind || {};
         var honmei = bind.honmeiRunner ? bind.honmeiRunner(bundle) : null;
@@ -105,6 +145,7 @@
         var ana = bind.runnerByMark ? bind.runnerByMark(bundle, "ana") : null;
         var chuuken = bind.runnerByMark ? bind.runnerByMark(bundle, "chuuken") : null;
         var conf = bind.scorePercent ? bind.scorePercent(bundle) : null;
+        if (conf == null) conf = ai.overall || 70;
         var reasons = ((bundle.explain || {}).reasons) || [];
         function horseName(r) {
           if (!r) return "";
@@ -148,45 +189,26 @@
             reason: reasonFor(chuuken.horse_number),
           });
         }
-        var BET_JA = {
-          win: "単勝",
-          place: "複勝",
-          quinella: "馬連",
-          exacta: "馬単",
-          wide: "ワイド",
-          trio: "三連複",
-          trifecta: "三連単",
-        };
-        var items = ((bundle.betting_recommendations || {}).items) || [];
-        var tickets = items.slice(0, 6).map(function (it) {
-          var rawType = String(it.bet_type || "買い目");
-          return {
-            type: BET_JA[rawType.toLowerCase()] || rawType,
-            legs: it.legs_display || "—",
-            points: it.recommendation_rank != null ? "#" + it.recommendation_rank : "—",
-            stake: it.recommendation_score != null ? "優先度 " + it.recommendation_score : "—",
-            note: it.comment || "",
-          };
-        });
-        return {
+        var base = {
           axis: {
             num: honmei ? String(honmei.horse_number) : "—",
             name: honmei ? horseName(honmei) || "本命" : "本命候補",
             role: "本命軸",
             odds: "—",
           },
-          rivals: rivals.length ? rivals : fallbackStrategy().rivals,
-          tickets: tickets.length ? tickets : fallbackStrategy().tickets,
+          rivals: rivals.length ? rivals : fallbackStrategy(board, series).rivals,
+          tickets: [],
           scenarios: [
             {
               title: "基本シナリオ",
               body: (bundle.explain && bundle.explain.narrative) || "AI評価に基づく基本シナリオです。",
             },
           ],
-          risk: "推奨買い目に準拠。点数は増やしすぎない。",
-          bankroll: { total: "推奨額", main: "55%", cover: "30%", lottery: "15%" },
+          risk: "",
+          bankroll: { total: "—", main: "—", cover: "—", lottery: "—" },
           aiOverall: conf,
         };
+        return applyStakes(base, conf, board, series);
       }
 
       function escapeHtml(s) {
@@ -197,12 +219,22 @@
           .replace(/"/g, "&quot;");
       }
 
-      function paramRows(analysisData) {
-        var labels = ExpectFavorites.AI_PARAM_LABELS;
-        var keys = ["pedigree", "pace", "jockey", "form", "odds"];
-        var chart = analysisData && ExpectApi.Analysis.chartMap
-          ? ExpectApi.Analysis.chartMap(analysisData)
-          : ai;
+      function paramRows(analysisData, bundle) {
+        var labels =
+          (window.ExpectAnalysisBind && ExpectAnalysisBind.DEFAULT_LABELS) ||
+          ExpectFavorites.AI_PARAM_LABELS;
+        var keys =
+          (window.ExpectAnalysisBind && ExpectAnalysisBind.KEYS) ||
+          ["history", "distance", "style_fit", "front", "pace_resilience"];
+        var chart = null;
+        if (bundle && window.ExpectAnalysisBind && ExpectAnalysisBind.chartsFromPredictionBundle) {
+          var derived = ExpectAnalysisBind.chartsFromPredictionBundle(bundle);
+          if (derived) chart = ExpectAnalysisBind.chartMap(derived);
+        }
+        if (!chart && analysisData && ExpectApi.Analysis && ExpectApi.Analysis.chartMap) {
+          chart = ExpectApi.Analysis.chartMap(analysisData);
+        }
+        if (!chart) chart = ai;
         return keys
           .map(function (k) {
             var v = chart[k] || 0;
@@ -220,6 +252,7 @@
       }
 
       function paintStrategy(data, analysisData, bundle) {
+        if (window.ExpectUx) ExpectUx.hideLoading(screen);
         var back = document.getElementById("strategyBack");
         var sub = document.getElementById("strategySub");
         if (back) back.href = "race.html?race_id=" + encodeURIComponent(id);
@@ -238,214 +271,245 @@
         if (sub) sub.textContent = (meta.place || "レース") + (meta.name ? " · " + meta.name : "");
 
         var rivalsHtml = data.rivals
-        .map(function (r) {
-          return (
-            '<li class="strategy-rival">' +
-            '<span class="strategy-num">' +
-            escapeHtml(r.num) +
-            "</span>" +
-            "<div><strong>" +
-            escapeHtml(r.name) +
-            ' <em>' +
-            escapeHtml(r.role) +
-            "</em></strong>" +
-            "<p>" +
-            escapeHtml(r.reason) +
-            "</p></div></li>"
-          );
-        })
-        .join("");
+          .map(function (r) {
+            return (
+              '<li class="strategy-rival">' +
+              '<span class="strategy-num">' +
+              escapeHtml(r.num) +
+              "</span>" +
+              "<div><strong>" +
+              escapeHtml(r.name) +
+              " <em>" +
+              escapeHtml(r.role) +
+              "</em></strong>" +
+              "<p>" +
+              escapeHtml(r.reason) +
+              "</p></div></li>"
+            );
+          })
+          .join("");
 
-      var ticketsHtml = data.tickets
-        .map(function (t, i) {
-          return (
-            '<article class="strategy-ticket' +
-            (i === 0 ? " is-main" : "") +
-            '">' +
-            '<div class="strategy-ticket-top">' +
-            "<h4>" +
-            escapeHtml(t.type) +
-            "</h4>" +
-            "<b>" +
-            escapeHtml(t.stake) +
-            "</b></div>" +
-            '<p class="strategy-legs">' +
-            escapeHtml(t.legs) +
-            "</p>" +
-            '<p class="strategy-ticket-meta">' +
-            escapeHtml(t.points) +
-            " · " +
-            escapeHtml(t.note) +
-            "</p></article>"
-          );
-        })
-        .join("");
+        var ticketsHtml = data.tickets
+          .map(function (t, i) {
+            return (
+              '<article class="strategy-ticket' +
+              (i === 0 ? " is-main" : "") +
+              '">' +
+              '<div class="strategy-ticket-top">' +
+              "<h4>" +
+              escapeHtml(t.type) +
+              "</h4>" +
+              "<b>" +
+              escapeHtml(t.stake) +
+              "</b></div>" +
+              '<p class="strategy-legs">' +
+              escapeHtml(t.legs) +
+              "</p>" +
+              '<p class="strategy-ticket-meta">' +
+              escapeHtml(t.points) +
+              " · " +
+              escapeHtml(t.note) +
+              "</p></article>"
+            );
+          })
+          .join("");
 
-      var scenariosHtml = data.scenarios
-        .map(function (s) {
-          return (
-            '<li><strong>' +
-            escapeHtml(s.title) +
-            "</strong><p>" +
-            escapeHtml(s.body) +
-            "</p></li>"
-          );
-        })
-        .join("");
+        var scenariosHtml = data.scenarios
+          .map(function (s) {
+            return (
+              "<li><strong>" +
+              escapeHtml(s.title) +
+              "</strong><p>" +
+              escapeHtml(s.body) +
+              "</p></li>"
+            );
+          })
+          .join("");
 
-      document.getElementById("strategyScreen").innerHTML =
-        '<section class="strategy-hero">' +
-        '<p class="strategy-kicker">買い目の組み立て</p>' +
-        "<h2>" +
-        escapeHtml(meta.place || "レース") +
-        "</h2>" +
-        "<p>" +
-        escapeHtml(meta.name || "") +
-        (meta.badge ? " · " + escapeHtml(meta.badge) : "") +
-        (meta.postTime ? " · 発走 " + escapeHtml(meta.postTime) : "") +
-        "</p>" +
-        '<div class="strategy-hero-stats">' +
-        "<div><span>AI総合</span><b>" +
-        (data.aiOverall != null ? data.aiOverall : ai.overall || "—") +
-        "%</b></div>" +
-        "<div><span>推奨総額</span><b>" +
-        escapeHtml(data.bankroll.total) +
-        "</b></div>" +
-        "<div><span>主軸配分</span><b>" +
-        escapeHtml(data.bankroll.main) +
-        "</b></div>" +
-        "</div></section>" +
-        '<section class="chart-card">' +
-        "<h3>軸馬と相手評価</h3>" +
-        '<div class="strategy-axis">' +
-        '<span class="strategy-num strategy-num--axis">' +
-        escapeHtml(data.axis.num) +
-        "</span>" +
-        "<div><strong>" +
-        escapeHtml(data.axis.name) +
-        "</strong>" +
-        "<p>" +
-        escapeHtml(data.axis.role) +
-        " · 想定オッズ " +
-        escapeHtml(data.axis.odds) +
-        "</p></div></div>" +
-        '<ul class="strategy-rivals">' +
-        rivalsHtml +
-        "</ul></section>" +
-        '<section class="chart-card">' +
-        "<h3>推奨買い目フォーメーション</h3>" +
-        '<div class="strategy-tickets">' +
-        ticketsHtml +
-        "</div></section>" +
-        '<section class="chart-card">' +
-        "<h3>展開シナリオ別の立ち回り</h3>" +
-        '<ol class="strategy-scenarios">' +
-        scenariosHtml +
-        "</ol></section>" +
-        '<section class="chart-card">' +
-        "<h3>資金配分</h3>" +
-        '<div class="strategy-bank">' +
-        "<div><span>主軸（馬連・ワイド）</span><b>" +
-        escapeHtml(data.bankroll.main) +
-        "</b></div>" +
-        "<div><span>保険（三連複）</span><b>" +
-        escapeHtml(data.bankroll.cover) +
-        "</b></div>" +
-        "<div><span>一発（三連単）</span><b>" +
-        escapeHtml(data.bankroll.lottery) +
-        "</b></div>" +
-        "</div>" +
-        '<p class="strategy-risk"><strong>リスク管理:</strong> ' +
-        escapeHtml(data.risk) +
-        "</p></section>" +
-        '<section class="chart-card">' +
-        "<h3>AIパラメータ根拠</h3>" +
-        '<div class="score-list">' +
-        paramRows(analysisData) +
-        "</div></section>" +
-        '<div class="strategy-actions">' +
-        '<a class="strategy-btn strategy-btn--ghost" href="race.html?race_id=' +
-        encodeURIComponent(id) +
-        '">レース詳細へ戻る</a>' +
-        '<button type="button" class="strategy-btn" id="consultKaobaBtn">KAOBAに相談する</button>' +
-        "</div>";
-
-      document.getElementById("consultKaobaBtn").addEventListener("click", function () {
-        var payload = {
-          type: "strategy_review",
-          raceId: id,
-          place: meta.place || "",
-          name: meta.name || "",
-          badge: meta.badge || "",
-          postTime: meta.postTime || "",
-          ai: ai,
-          axis: data.axis,
-          rivals: data.rivals,
-          tickets: data.tickets,
-          scenarios: data.scenarios,
-          bankroll: data.bankroll,
-          risk: data.risk,
-          summaryText:
-            "このレース（" +
-            (meta.place || id) +
-            (meta.name ? " " + meta.name : "") +
-            "）の買い目戦略を評価して。軸は " +
-            data.axis.num +
-            "番、AI総合" +
-            (ai.overall || "—") +
-            "%。改善点と最終おすすめを短く教えて。",
-          displaySummary:
-            (meta.place || "対象レース") +
-            " · 軸 " +
-            data.axis.num +
-            "番 · AI総合 " +
-            (ai.overall || "—") +
-            "%",
-        };
-
-        try {
-          sessionStorage.setItem("expect_chat_context_v1", JSON.stringify(payload));
-        } catch (e) {}
-        location.href = "chat.html?from=strategy&race_id=" + encodeURIComponent(id);
-      });
-
-      ExpectShell.initMascotTalk([
-        "買い目は点数を抑えつつ<br>軸を明確にするのがコツだよ！",
-        "<strong>" +
+        document.getElementById("strategyScreen").innerHTML =
+          '<section class="strategy-hero">' +
+          '<p class="strategy-kicker">買い目の組み立て</p>' +
+          "<h2>" +
+          escapeHtml(meta.place || "レース") +
+          "</h2>" +
+          "<p>" +
+          escapeHtml(meta.name || "") +
+          (meta.badge ? " · " + escapeHtml(meta.badge) : "") +
+          (meta.postTime ? " · 発走 " + escapeHtml(meta.postTime) : "") +
+          "</p>" +
+          '<div class="strategy-hero-stats">' +
+          "<div><span>AI総合</span><b>" +
+          (data.aiOverall != null ? data.aiOverall : ai.overall || "—") +
+          "%</b></div>" +
+          "<div><span>推奨総額</span><b>" +
+          escapeHtml(data.bankroll.total) +
+          "</b></div>" +
+          "<div><span>主軸配分</span><b>" +
+          escapeHtml(data.bankroll.main) +
+          "</b></div>" +
+          "</div>" +
+          (data.bankroll.note
+            ? '<p class="strategy-hero-note">' + escapeHtml(data.bankroll.note) + "</p>"
+            : "") +
+          "</section>" +
+          '<section class="chart-card">' +
+          "<h3>軸馬と相手評価</h3>" +
+          '<div class="strategy-axis">' +
+          '<span class="strategy-num strategy-num--axis">' +
+          escapeHtml(data.axis.num) +
+          "</span>" +
+          "<div><strong>" +
           escapeHtml(data.axis.name) +
-          "</strong> を軸に<br>シナリオ別で相手を変えよう♪"
-      ]);
+          "</strong>" +
+          "<p>" +
+          escapeHtml(data.axis.role) +
+          " · 想定オッズ " +
+          escapeHtml(data.axis.odds) +
+          "</p></div></div>" +
+          '<ul class="strategy-rivals">' +
+          rivalsHtml +
+          "</ul></section>" +
+          '<section class="chart-card">' +
+          "<h3>推奨買い目フォーメーション</h3>" +
+          '<div class="strategy-tickets">' +
+          ticketsHtml +
+          "</div></section>" +
+          '<section class="chart-card">' +
+          "<h3>展開シナリオ別の立ち回り</h3>" +
+          '<ol class="strategy-scenarios">' +
+          scenariosHtml +
+          "</ol></section>" +
+          '<section class="chart-card">' +
+          "<h3>資金配分</h3>" +
+          '<div class="strategy-bank">' +
+          "<div><span>主軸（馬連・ワイド）</span><b>" +
+          escapeHtml(data.bankroll.main) +
+          "</b></div>" +
+          "<div><span>保険（三連複）</span><b>" +
+          escapeHtml(data.bankroll.cover) +
+          "</b></div>" +
+          "<div><span>一発（三連単）</span><b>" +
+          escapeHtml(data.bankroll.lottery) +
+          "</b></div>" +
+          "</div>" +
+          '<p class="strategy-risk"><strong>リスク管理:</strong> ' +
+          escapeHtml(data.risk) +
+          "</p></section>" +
+          '<section class="chart-card">' +
+          "<h3>AIパラメータ根拠</h3>" +
+          '<div class="score-list">' +
+          paramRows(analysisData, bundle) +
+          "</div></section>" +
+          '<div class="strategy-actions">' +
+          '<a class="strategy-btn strategy-btn--ghost" href="race.html?race_id=' +
+          encodeURIComponent(id) +
+          '">レース詳細へ戻る</a>' +
+          '<button type="button" class="strategy-btn" id="consultKaobaBtn">KAOBAに相談する</button>' +
+          "</div>";
+
+        document.getElementById("consultKaobaBtn").addEventListener("click", function () {
+          var payload = {
+            type: "strategy_review",
+            raceId: id,
+            place: meta.place || "",
+            name: meta.name || "",
+            badge: meta.badge || "",
+            postTime: meta.postTime || "",
+            ai: ai,
+            axis: data.axis,
+            rivals: data.rivals,
+            tickets: data.tickets,
+            scenarios: data.scenarios,
+            bankroll: data.bankroll,
+            risk: data.risk,
+            summaryText:
+              "買い目戦略の相談です。" +
+              (meta.place || id) +
+              (meta.name ? " " + meta.name : "") +
+              " について、軸 " +
+              data.axis.num +
+              "番（" +
+              (data.axis.name || "本命") +
+              "）・AI総合 " +
+              (ai.overall || "—") +
+              "% の内容を評価して。改善点と最終おすすめを短く教えて。印や順位は変えないでね。",
+            // チャット吹き出し（ユーザー表示）— 旧形式を維持
+            displaySummary:
+              (meta.place || "対象レース") +
+              " · 軸 " +
+              data.axis.num +
+              "番 · AI総合 " +
+              (ai.overall || "—") +
+              "%",
+          };
+
+          try {
+            sessionStorage.setItem("expect_chat_context_v1", JSON.stringify(payload));
+          } catch (e) {}
+          location.href =
+            "chat.html?mode=review&from=strategy&race_id=" + encodeURIComponent(id);
+        });
+
+        ExpectShell.initMascotTalk([
+          "買い目は点数を抑えつつ<br>軸を明確にするのがコツだよ！",
+          "<strong>" +
+            escapeHtml(data.axis.name) +
+            "</strong> を軸に<br>シナリオ別で相手を変えよう♪",
+        ]);
       }
 
       function loadAndPaint() {
+        var boardP =
+          window.ExpectApi && ExpectApi.RaceBoard
+            ? ExpectApi.RaceBoard.getBoard(id, { includeHistory: false }).catch(function () {
+                return null;
+              })
+            : Promise.resolve(null);
+        var seriesP =
+          window.ExpectApi && ExpectApi.OddsSeries
+            ? ExpectApi.OddsSeries.getSeries(id, { refresh: false }).catch(function () {
+                return null;
+              })
+            : Promise.resolve(null);
+
         if (window.ExpectApi && ExpectApi.Prediction && ExpectApi.Prediction.getWithMeta) {
           Promise.all([
             ExpectApi.Prediction.getWithMeta(id),
             ExpectApi.Analysis
-              ? ExpectApi.Analysis.get(id).catch(function () { return null; })
+              ? ExpectApi.Analysis.get(id).catch(function () {
+                  return null;
+                })
               : Promise.resolve(null),
+            boardP,
+            seriesP,
           ])
             .then(function (parts) {
               var result = parts[0];
               var analysisData = parts[1];
+              var board = parts[2];
+              var series = parts[3];
               if (result && result.bundle && ExpectFavorites.cacheBundle) {
                 ExpectFavorites.cacheBundle(result.bundle);
                 meta = ExpectFavorites.getMeta(id);
                 ai = ExpectFavorites.getAi(id);
               }
-              var fromBundle = strategyFromBundle(result.bundle);
-              var data = fromBundle || fallbackStrategy();
+              var fromBundle = strategyFromBundle(result.bundle, board, series);
+              var data = fromBundle || fallbackStrategy(board, series);
               if (fromBundle && fromBundle.aiOverall != null) {
                 ai.overall = fromBundle.aiOverall;
               }
               paintStrategy(data, analysisData, result.bundle);
             })
             .catch(function () {
-              paintStrategy(fallbackStrategy(), null, null);
+              Promise.all([boardP, seriesP]).then(function (extra) {
+                paintStrategy(fallbackStrategy(extra[0], extra[1]), null, null);
+              });
             });
           return;
         }
-        paintStrategy(fallbackStrategy(), null, null);
+        Promise.all([boardP, seriesP]).then(function (extra) {
+          paintStrategy(fallbackStrategy(extra[0], extra[1]), null, null);
+        });
       }
 
       loadAndPaint();

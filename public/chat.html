@@ -69,7 +69,7 @@
   <script src="assets/api/mock-gate.js"></script>
   <script src="assets/api/auth.js"></script>
   <script src="assets/api/conversation.js?v=6"></script>
-  <script src="assets/api/conversation-ui.js?v=6"></script>
+  <script src="assets/api/conversation-ui.js?v=7"></script>
   <script src="assets/api/kaoba.js"></script>
   <script src="assets/ux.js?v=14"></script>
   <script>
@@ -233,30 +233,8 @@
       }
 
       function renderConversationExtras(data) {
-        var parts = [];
-        if (data && data.mode) {
-          parts.push("<p class='muted'>mode: " + String(data.mode) + "</p>");
-        }
-        if (data && data.agent) {
-          parts.push("<p class='muted'>agent: " + String(data.agent) + "</p>");
-        }
-        if (data && data.llm) {
-          var llm = data.llm;
-          if (llm.ollama_called && llm.used) {
-            parts.push("<p class='muted'>LLM: Ollama（" + String(llm.model || "connected") + "）</p>");
-          } else if (llm.role === "personal_chat_template" || data.fallback === "template_no_ollama_flag") {
-            parts.push("<p class='muted'>LLM: テンプレ（Ollama Flag OFF）</p>");
-          } else if (String(data.fallback || "").indexOf("personal_chat") >= 0) {
-            parts.push("<p class='muted'>LLM: 未接続（Personal Chat 準備中）</p>");
-          }
-        }
-        if (data && data.prediction_meta && data.prediction_meta.mutated === false) {
-          parts.push("<p class='muted'>Prediction Read Only（変更なし）</p>");
-        }
-        if (data && data.prediction_meta && data.prediction_meta.engine_source === "real_ai") {
-          parts.push("<p class='muted'>AI予想を参照して回答しています</p>");
-        }
-        return parts.join("");
+        // 本番チャット吹き出しに mode / agent / LLM / Prediction Read Only は出さない
+        return "";
       }
 
       function buildContext() {
