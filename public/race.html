@@ -296,7 +296,7 @@
           message: "レース詳細を準備しています。",
         });
       }
-      withTimeout(ExpectApi.Prediction.getWithMeta(id), 14000, "prediction timeout")
+      withTimeout(ExpectApi.Prediction.getWithMeta(id), 22000, "prediction timeout")
         .then(function (result) {
           var bundle = result.bundle;
           var envelopeMeta = result.meta || {};

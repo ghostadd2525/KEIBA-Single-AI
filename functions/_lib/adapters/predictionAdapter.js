@@ -57,12 +57,27 @@ function normalizeEngineSource(source) {
 }
 
 async function fetchFromPiGet(context, raceId, catalogRace = null) {
+  // 個別予想は Netkeiba 依存で固まりやすい。短く切って AI フェイルオーバーへ回す
   const proxied = await piFetch(
     context,
-    `/v1/predictions/${encodeURIComponent(raceId)}`
+    `/v1/predictions/${encodeURIComponent(raceId)}`,
+    { timeoutMs: 5000 }
   );
   if (proxied instanceof Response) {
-    return { ok: false, errorResponse: proxied };
+    // タイムアウト/不通はソフト失敗扱い（errorResponse だと後続 AI が遅延しうる）
+    const status = proxied.status;
+    let code = "PI_ERROR";
+    try {
+      const body = await proxied.clone().json();
+      code = (body && body.error && body.error.code) || code;
+    } catch {
+      /* ignore */
+    }
+    return {
+      ok: false,
+      error: code === "PI_TIMEOUT" ? "PI prediction timeout" : "PI prediction failed",
+      status: status || 502,
+    };
   }
   if (!proxied || !proxied.ok) {
     return { ok: false, error: "PI prediction fetch failed", status: 502 };
@@ -122,15 +137,49 @@ async function fetchFromPiList(context, query = {}) {
 
   const bundles = [];
   const items = [];
-  for (const race of races) {
-    const rid = String(race.race_id || "");
-    if (!rid) continue;
-    const one = await fetchFromPiGet(context, rid, race);
-    if (one && one.ok) {
-      bundles.push(one.bundle);
+  // 逐次だと日付一覧が数十秒かかるため並列取得（上限付き）
+  // PI 予想が重い日は全件取得しない（ホーム固着防止）
+  const MAX_LIST = 8;
+  const slice = races.slice(0, MAX_LIST);
+  const CONCURRENCY = 4;
+  for (let i = 0; i < slice.length; i += CONCURRENCY) {
+    const chunk = slice.slice(i, i + CONCURRENCY);
+    const results = await Promise.all(
+      chunk.map((race) => {
+        const rid = String(race.race_id || "");
+        if (!rid) return Promise.resolve(null);
+        return fetchFromPiGet(context, rid, race).then((one) => ({ race, rid, one }));
+      })
+    );
+    for (const row of results) {
+      if (!row || !row.one || !row.one.ok) continue;
+      bundles.push(row.one.bundle);
       items.push(
-        piProvenanceItem(rid, one.bundle, {
+        piProvenanceItem(row.rid, row.one.bundle, {
+          numeric_race_id: row.race.numeric_race_id || null,
+        })
+      );
+    }
+  }
+
+  if (!bundles.length) {
+    // 予想本体が全滅してもカタログ投影で一覧/ホームを生かす
+    for (const race of races) {
+      const projected = catalogToPredictionBundle({
+        race_id: String(race.race_id || ""),
+        date: race.date,
+        venue: race.course || race.venue,
+        race_no: race.race_number != null ? race.race_number : race.race_no,
+        post_time: race.post_time,
+        class_label: race.race_name || race.race_label || "",
+        status: race.status || "scheduled",
+      });
+      if (!projected || !projected.race_id) continue;
+      bundles.push(projected);
+      items.push(
+        piProvenanceItem(projected.race_id, projected, {
           numeric_race_id: race.numeric_race_id || null,
+          engine_source: "pi_catalog_projection",
         })
       );
     }
@@ -214,7 +263,9 @@ async function fetchFromMockList(context, query) {
 }
 
 async function fetchFromPythonGet(context, raceId) {
-  const proxied = await aiFetch(context, `/v1/predictions/${encodeURIComponent(raceId)}`);
+  const proxied = await aiFetch(context, `/v1/predictions/${encodeURIComponent(raceId)}`, {
+    timeoutMs: 10000,
+  });
   if (proxied && proxied instanceof Response) {
     return { ok: false, errorResponse: proxied };
   }
@@ -281,12 +332,63 @@ export async function adaptPredictionList(context, query = {}) {
   return fetchFromMockList(context, query);
 }
 
-/** 1件: PI →（未設定時）Python AI →（未設定時）bff_mock */
+/** 1件: PI →（失敗/タイムアウト時）Python AI → カタログ投影 →（未設定時）bff_mock */
 export async function adaptPredictionGet(context, raceId) {
   const env = getEnv(context);
   if (usePiProxy(env)) {
     const fromPi = await fetchFromPiGet(context, raceId);
     if (fromPi && fromPi.ok) return fromPi;
+
+    // PI 不通・タイムアウト時のみ AI へフェイルオーバー（画面固着防止）
+    if (useAiProxy(env)) {
+      const fromPy = await fetchFromPythonGet(context, raceId);
+      if (fromPy && fromPy.ok) {
+        if (fromPy.provenanceMeta) {
+          fromPy.provenanceMeta.fallback_reason = "pi_unavailable_ai_failover";
+          fromPy.provenanceMeta.pi_error = fromPi?.error || "pi_failed";
+        }
+        return fromPy;
+      }
+    }
+
+    // 最終手段: カタログ行から最低限の Bundle を組み立て（詳細ページが真っ白にならない）
+    const m = String(raceId || "").match(/^(\d{4}-\d{2}-\d{2})/);
+    if (m) {
+      const catalogProxied = await piFetch(context, `/v1/races?date=${encodeURIComponent(m[1])}`, {
+        timeoutMs: 6000,
+      });
+      if (catalogProxied && !(catalogProxied instanceof Response) && catalogProxied.ok) {
+        const races = Array.isArray(catalogProxied.payload.races)
+          ? catalogProxied.payload.races
+          : [];
+        const row = races.find((r) => String(r.race_id || "") === String(raceId));
+        if (row) {
+          const bundle = catalogToPredictionBundle({
+            race_id: String(row.race_id || raceId),
+            date: row.date || m[1],
+            venue: row.course || row.venue,
+            race_no: row.race_number != null ? row.race_number : row.race_no,
+            post_time: row.post_time,
+            class_label: row.race_name || row.race_label || "",
+            status: row.status || "scheduled",
+          });
+          return {
+            ok: true,
+            bundle,
+            source: "pi-keibanet-api",
+            provider: "pi",
+            provenanceMeta: {
+              engine: "n/a",
+              engine_source: "pi_catalog_projection",
+              race_id: raceId,
+              fallback_reason: "pi_prediction_unavailable_catalog_projection",
+              pi_error: fromPi?.error || "pi_failed",
+            },
+          };
+        }
+      }
+    }
+
     if (fromPi && fromPi.errorResponse) return fromPi;
     return {
       ok: false,
