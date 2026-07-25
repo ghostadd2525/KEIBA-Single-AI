@@ -52,10 +52,9 @@
     var reply = "（オフライン）いい質問！通信が戻ったらもっと詳しく答えるね。";
     if (/展開|ペース/.test(message)) {
       reply = "（オフライン）展開は差し有利のイメージで見てみよう。";
-    } else if (/買い目|戦略/.test(message)) {
+    } else     if (/買い目|戦略/.test(message)) {
       reply = "（オフライン）買い目は軸1頭流しで点数を抑えるのがおすすめだよ。";
     }
-    if (raceId) reply += "\n（対象: " + raceId + "）";
     return Promise.resolve(
       normalizeResponse(
         {

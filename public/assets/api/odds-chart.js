@@ -422,6 +422,9 @@
     function startTimer() {
       if (state.timer) clearInterval(state.timer);
       state.timer = setInterval(function () {
+        // 発走済みを候補から落とす
+        renderFilters();
+        applyFilterChange();
         load(true);
       }, REFRESH_MS);
     }
@@ -438,8 +441,46 @@
       return (r.race_info && r.race_info.venue) || r.course || "";
     }
 
+    function itemPostTime(r) {
+      return (
+        (r.race_info && r.race_info.post_time) ||
+        r.post_time ||
+        ""
+      );
+    }
+
+    /** 発走時刻を過ぎたレースは候補から除外（レースカードと同様） */
+    function itemPostAt(r) {
+      var date = itemDate(r);
+      var time = String(itemPostTime(r) || "").trim();
+      if (!date || !time) return null;
+      var m = time.match(/^(\d{1,2}):(\d{2})/);
+      if (!m) return null;
+      var h = parseInt(m[1], 10);
+      var min = parseInt(m[2], 10);
+      if (!Number.isFinite(h) || !Number.isFinite(min)) return null;
+      // JST として解釈（ブラウザローカルが JST 想定。ISO オフセット付きで安定化）
+      var iso =
+        date +
+        "T" +
+        String(h).padStart(2, "0") +
+        ":" +
+        String(min).padStart(2, "0") +
+        ":00+09:00";
+      var d = new Date(iso);
+      if (isNaN(d.getTime())) return null;
+      return d;
+    }
+
+    function isRaceStarted(r) {
+      var at = itemPostAt(r);
+      if (!at) return false;
+      return Date.now() >= at.getTime();
+    }
+
     function filteredItems() {
       return state.allItems.filter(function (r) {
+        if (isRaceStarted(r)) return false;
         if (state.date !== "all" && itemDate(r) !== state.date) return false;
         if (state.venue !== "all" && itemVenue(r) !== state.venue) return false;
         return true;
@@ -458,7 +499,10 @@
       var venues = [];
       var seenD = {};
       var seenV = {};
-      state.allItems.forEach(function (r) {
+      var openItems = state.allItems.filter(function (r) {
+        return !isRaceStarted(r);
+      });
+      openItems.forEach(function (r) {
         var d = itemDate(r);
         var v = itemVenue(r);
         if (d && !seenD[d]) {
@@ -514,10 +558,10 @@
       if (filterNote) {
         filterNote.textContent =
           "対象 " +
-          state.allItems.length +
+          openItems.length +
           "レース · 会場 " +
           venues.length +
-          "場（日付・会場で絞り込み）";
+          "場（発走済みは非表示）";
       }
     }
 

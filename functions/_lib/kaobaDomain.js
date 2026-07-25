@@ -77,6 +77,12 @@ export function generateKaobaReply(input) {
   const analysis = refs.analysis || null;
   const raceId = refs.race_id || input.race_id || null;
   const hasStrategy = ctx.ui === "strategy" || ctx.type === "strategy_review";
+  const mode = String(ctx.mode || input.mode || "").toLowerCase();
+  const isExplain =
+    mode === "explain" ||
+    mode === "explain_pick" ||
+    ctx.type === "honmei_reason" ||
+    ctx.type === "explain_pick";
 
   const info = (bundle && bundle.race_info) || {};
   const h = honmei(bundle);
@@ -106,11 +112,46 @@ export function generateKaobaReply(input) {
     }
   }
 
-  if (!reply && hasStrategy) {
+  // 質問意図を先に見る（strategy コンテキストでも同じ定型を連発しない）
+  if (!reply && /リスク|危険|不安|弱点/.test(message)) {
     reply =
-      "戦略データ受け取ったよ！軸は明確にして、点数を抑えめがおすすめ。主軸→保険→一発の順で入れてね。";
+      "リスクは展開の崩れと相手関係の入れ替わりだよ。" +
+      "ペースが想定と違うと軸の位置取りが苦しくなるから、点数は抑えめが安心だよ。";
+    if (h) {
+      reply += `\n軸の ${h.horse_number}番は維持しつつ、保険を厚くするのがおすすめ。`;
+    }
+    emotion = "fun";
+    suggestions = ["保険の入れ方は？", "点数を抑える案", "展開を詳しく"];
+  } else if (
+    !reply &&
+    (isExplain || isExplainPickIntent(message) || /理由|なぜ|根拠|どうして/.test(message))
+  ) {
+    if (h) {
+      reply = `本命は ${h.horse_number}番${h.horse_name ? " " + h.horse_name : ""}`.trim();
+      if (conf != null) reply += `（AI信頼度 ${conf}%）`;
+      reply +=
+        "。選んだ理由は総合評価の分離とコース／展開適性のバランスだよ。" +
+        "対抗との差は「再現性の安定」側で見ているよ。";
+      if (narrative) reply += `\n${narrative}`;
+    } else if (/対抗|差|比較/.test(message)) {
+      reply =
+        "対抗との差は、本命の方が総合スコアと位置取り想定で一貫している点だよ。" +
+        "対抗は展開が噛み合えば伸びる余地があるから、差し込みリスクは残るよ。";
+    } else {
+      reply =
+        "本命（◎）の理由は、総合評価の分離と適性のバランスだよ。" +
+        "印や順位は変えず、レース画面の説明もあわせて見てね。";
+      if (narrative) reply += `\n${narrative}`;
+    }
     emotion = "joy";
-    suggestions = ["点数を抑える案", "軸を見直す", "リスクを教えて"];
+    suggestions = ["対抗との差は？", "信頼度の根拠は？", "展開を詳しく"];
+  } else if (!reply && hasStrategy) {
+    reply =
+      "戦略内容は受け取ったよ。軸は明確でいいね。" +
+      "点数は抑えめにして、主軸→保険→一発の順で入れると破綻しにくいよ。" +
+      "改善するなら相手頭数を減らして、保険側の再現性を確認しよう。";
+    emotion = "joy";
+    suggestions = ["リスクはどこ？", "点数を抑える案", "軸を見直す"];
     if (h) {
       reply += `\n軸候補の目安は ${h.horse_number}番 ${h.horse_name || ""}`.trim() + "。";
     }
@@ -147,23 +188,20 @@ export function generateKaobaReply(input) {
     emotion = "joy";
     suggestions = ["なぜ◎なの？", "展開を詳しく", "買い目を提案して"];
   } else if (!reply && (bundle || analysis)) {
-    reply = "いい質問！";
-    if (place) reply += `${place} を見ているよ。`;
     if (h) {
-      reply += `本命目線は ${h.horse_number}番${h.horse_name ? " " + h.horse_name : ""}`;
+      reply = `本命目線は ${h.horse_number}番${h.horse_name ? " " + h.horse_name : ""}`;
       if (conf != null) reply += `（信頼度 ${conf}%）`;
-      reply += "。";
+      reply += "。理由やリスク、展開のどれを深掘りする？";
+      if (narrative) reply += `\n${narrative}`;
     } else {
-      reply += "いまのところ本命評価に大きな変動はないよ。";
+      reply =
+        "内容は受け取ったよ。「理由」「リスク」「展開」のどれかで聞いてくれると答えやすいよ。";
     }
-    if (narrative) reply += `\n${narrative}`;
     emotion = "joy";
-    if (isExplainPickIntent(message) && !(bundle && bundle.explain && bundle.explain.reason)) {
-      suggestions = ["本命を教えて", "買い目を提案して", "展開を詳しく"];
-    }
+    suggestions = ["本命の理由は？", "リスクはどこ？", "展開を詳しく"];
   } else if (!reply) {
     reply =
-      "いい質問！レースを指定してもらえると、予想データに沿ってもっと具体的に答えられるよ。";
+      "レースを指定してもらえると、予想データに沿ってもっと具体的に答えられるよ。";
     emotion = "joy";
     suggestions = ["展開予想を教えて", "血統について教えて", "買い目を提案して"];
   }

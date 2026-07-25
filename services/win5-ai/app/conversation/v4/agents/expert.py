@@ -195,17 +195,28 @@ class ExpertAgent:
         cfg: dict[str, Any],
         context: ReviewContext,
     ) -> tuple[str, bool]:
-        rid = context.race_id or "（レース未指定）"
         pred = context.prediction if isinstance(context.prediction, dict) else {}
         summary = pred.get("explain_summary") or (
             (pred.get("summary") or {}).get("honmei")
             if isinstance(pred.get("summary"), dict)
             else None
         )
+        honmei = None
+        if isinstance(pred.get("summary"), dict):
+            honmei = pred["summary"].get("honmei")
+        tops = pred.get("top_runners") if isinstance(pred.get("top_runners"), list) else []
+        top_line = ""
+        if tops:
+            t0 = tops[0] if isinstance(tops[0], dict) else {}
+            num = t0.get("umaban") or ""
+            name = t0.get("name") or ""
+            if num or name:
+                top_line = f"本命目線は {num}番{(' ' + name) if name else ''}。"
+        reason = summary or honmei or "総合評価の分離とコース／展開適性のバランスを重視しているよ。"
         template = (
-            f"◎の理由（Explain Mode / レース: {rid}）\n"
-            f"{summary or 'Official Prediction の選定理由を説明します。'}\n"
-            "※ 順位・印・買い目は変更しません。Prediction AI が唯一の正解です。"
+            f"{top_line}{reason}\n"
+            "対抗との差は再現性の安定さで見ているよ。"
+            "※ 順位・印・買い目は変更しません。"
         )
         if not conversation_ollama_enabled():
             return template, False
@@ -230,9 +241,8 @@ class ExpertAgent:
     ) -> tuple[str, bool]:
         rid = routed.race_id or "（レース未指定）"
         template = (
-            f"◎の理由（Explain Mode / レース: {rid}）\n"
-            f"{(tool_data.get('explain') or {}).get('summary') or 'Prediction の選定理由を説明します。'}\n"
-            "※ 順位・印・買い目は変更しません。Prediction AI が唯一の正解です。"
+            f"{(tool_data.get('explain') or {}).get('summary') or '総合評価の分離と適性バランスを重視しているよ。'}\n"
+            "※ 順位・印・買い目は変更しません。"
         )
         if not conversation_ollama_enabled():
             return template, False

@@ -159,38 +159,84 @@ def to_analysis(row: dict[str, Any], race_id: str) -> dict[str, Any]:
 
 
 def kaoba_reply(body: dict[str, Any]) -> dict[str, Any]:
+    """
+    Kaoba rule fallback（Conversation 不通時）。
+    同じ定型を連発せず、質問意図ごとに返す。race_id の「（対象: …）」は付けない。
+    """
     message = str(body.get("message") or "")
     race_id = str(body.get("race_id") or "")
     ctx = body.get("context") or {}
-    has_strategy = ctx.get("ui") == "strategy" or ctx.get("type") == "strategy_review"
+    mode = str(ctx.get("mode") or body.get("mode") or "").lower()
+    ctx_type = str(ctx.get("type") or "")
+    has_strategy = ctx.get("ui") == "strategy" or ctx_type in (
+        "strategy_review",
+        "consult",
+    )
+    is_explain = mode in ("explain", "explain_pick") or ctx_type in (
+        "honmei_reason",
+        "explain_pick",
+    )
 
-    if has_strategy:
+    if is_explain or any(k in message for k in ("理由", "なぜ", "根拠", "どうして", "本命")):
         reply = (
-            "戦略データ受け取ったよ！軸は明確にして、点数は抑えめがおすすめ。"
-            "主軸→保険→一発の順で入れてね。"
+            "本命（◎）にした理由は、総合評価の分離とコース適性・展開適性のバランスだよ。"
+            "上位候補との差は「安定した再現性」側で見ているよ。"
+            "印や順位は変えず、レース画面の説明タブもあわせて確認してね。"
         )
+        if any(k in message for k in ("対抗", "差", "比較")):
+            reply = (
+                "対抗との差は、本命の方が総合スコアと位置取り想定で一貫している点だよ。"
+                "対抗は展開が噛み合えば伸びる余地があるから、差し込みのリスクは残るよ。"
+            )
         emotion = "joy"
+        suggestions = ["対抗との差は？", "信頼度の根拠は？", "展開を詳しく"]
+    elif any(k in message for k in ("リスク", "危険", "不安", "弱点")):
+        reply = (
+            "リスクは展開の崩れと相手関係の入れ替わりだよ。"
+            "ペースが想定と違うと軸の位置取りが苦しくなるから、発走前後の気配も見ておこう。"
+            "点数は抑えめにして、主軸→保険の順が安心だよ。"
+        )
+        emotion = "fun"
+        suggestions = ["保険の入れ方は？", "点数を抑える案", "展開を詳しく"]
+    elif has_strategy or any(k in message for k in ("戦略", "買い目", "評価して", "相談")):
+        if any(k in message for k in ("リスク", "危険")):
+            reply = (
+                "この戦略のリスクは点数の広がりと展開依存だよ。"
+                "軸は維持しつつ、相手は絞って保険を厚くするのがおすすめ。"
+            )
+        else:
+            reply = (
+                "戦略内容は受け取ったよ。軸は明確でいいね。"
+                "点数は抑えめにして、主軸→保険→一発の順で入れると破綻しにくいよ。"
+                "改善するなら相手頭数を減らして、保険側の再現性を確認しよう。"
+            )
+        emotion = "joy"
+        suggestions = ["リスクはどこ？", "点数を抑える案", "軸を見直す"]
     elif any(k in message for k in ("買い目", "戦略")):
         reply = "買い目は軸1頭流しで点数を抑えるのがおすすめ！相手は最大3頭までにしてみよう。"
         emotion = "joy"
+        suggestions = ["展開予想を教えて", "リスクを教えて", "血統について教えて"]
     elif any(k in message for k in ("展開", "ペース")):
         reply = "データ上は差し馬の評価が伸びてるよ。中盤でペースが上がる想定だね。"
         emotion = "fun"
+        suggestions = ["本命を教えて", "買い目を提案して", "血統について教えて"]
     elif "血統" in message:
         reply = "血統面ではコース適性が高い産駒が目立ってるよ。"
         emotion = "fun"
+        suggestions = ["展開予想を教えて", "本命を教えて", "買い目を提案して"]
     else:
-        reply = "いい質問！いまのところ本命評価に大きな変動はないよ。安心して見てて！"
+        reply = (
+            "内容は受け取ったよ。もう少し具体的に「理由」「リスク」「展開」のどれかで聞いてくれると答えやすいよ。"
+        )
         emotion = "joy"
+        suggestions = ["本命の理由は？", "リスクはどこ？", "展開を詳しく"]
 
-    if race_id:
-        reply += f"\n（対象: {race_id}）"
-
+    # race_id は referenced_race_id のみ。吹き出しに（対象: …）は出さない。
     return {
         "schema_version": "expect-kaoba/1.0",
         "reply": reply,
         "emotion": emotion,
-        "suggestions": ["買い目を整理", "リスクを教えて", "展開を詳しく"],
+        "suggestions": suggestions,
         "referenced_race_id": race_id or None,
         "provider": "rule",
         "live2d": {
