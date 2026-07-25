@@ -1,34 +1,11 @@
 #!/usr/bin/env bash
-# =============================================================================
-# Production Deploy — Conversation Version 5 (Platform + Knowledge Runtime)
-#
-# Purpose:
-#   Reflect Conversation V4/V5 onto the expect-ai EC2 host and enable flags.
-#   Prediction AI / Ranking / Confidence / Purchase are NOT modified.
-#
-# Usage (on EC2 as ubuntu with sudo):
-#   cd /home/ubuntu/KEIBA-Single-AI
-#   sudo bash scripts/ops/deploy-conversation-v5-prod.sh
-#
-# Options:
-#   --skip-git      do not git pull
-#   --skip-ollama   do not install/start Ollama
-#   --model NAME    Ollama model (default from conversation.env or qwen2.5:1.5b)
-#   --verify-only   only run health / chat smoke (no code/env changes)
-#
-# Why enable-conversation-v5-prod.sh was missing on EC2:
-#   V4/V5 packages and ops scripts lived only in a local working tree and were
-#   never committed/pushed to origin/main. EC2 main stopped at Version 2.
-# =============================================================================
+# Production Deploy — Conversation Version 5
+# Usage: sudo bash scripts/ops/deploy-conversation-v5-prod.sh [--skip-git] [--skip-ollama] [--model NAME] [--verify-only]
 set -euo pipefail
 
 REPO_ROOT="${REPO_ROOT:-/home/ubuntu/KEIBA-Single-AI}"
 SERVICE_UNIT="/etc/systemd/system/expect-ai.service"
 ENV_DST="/etc/expect-ai/conversation.env"
-ENV_SRC_CANDIDATES=(
-  "${REPO_ROOT}/services/win5-ai/config/production/conversation.env"
-  "${REPO_ROOT}/infra/aws/systemd/conversation.env.example"
-)
 SKIP_GIT=0
 SKIP_OLLAMA=0
 VERIFY_ONLY=0
@@ -40,14 +17,8 @@ while [[ $# -gt 0 ]]; do
     --skip-ollama) SKIP_OLLAMA=1 ;;
     --verify-only) VERIFY_ONLY=1 ;;
     --model) MODEL_OVERRIDE="${2:-}"; shift ;;
-    -h|--help)
-      sed -n '2,30p' "$0"
-      exit 0
-      ;;
-    *)
-      echo "unknown arg: $1" >&2
-      exit 2
-      ;;
+    -h|--help) echo "see docs/releases/v5-production-deployment-report.md"; exit 0 ;;
+    *) echo "unknown arg: $1" >&2; exit 2 ;;
   esac
   shift
 done
@@ -55,49 +26,44 @@ done
 log() { printf '[deploy-v5] %s\n' "$*"; }
 die() { printf '[deploy-v5] ERROR: %s\n' "$*" >&2; exit 1; }
 
-need_root() {
-  if [[ "${EUID}" -ne 0 ]]; then
-    die "run with sudo"
-  fi
-}
-
 verify_smoke() {
   log "health"
   curl -sf --max-time 5 http://127.0.0.1:8000/health | head -c 240 || true
   echo
   log "conversation health"
   curl -sf --max-time 8 http://127.0.0.1:8000/v1/conversation/health | head -c 500 \
-    || die "conversation health failed — V4/V5 code or flags missing"
+    || die "conversation health failed"
   echo
   log "personal chat smoke"
   local body
-  body="$(curl -sf --max-time 45 -X POST http://127.0.0.1:8000/v1/conversation/chat \
+  body="$(curl -sf --max-time 60 -X POST http://127.0.0.1:8000/v1/conversation/chat \
     -H 'Content-Type: application/json' \
-    -d '{"message":"今日の気分は？","mode":"chat","context":{"type":"personal_chat","mode":"chat"}}")"
+    -d '{"message":"hello","mode":"chat","context":{"type":"personal_chat","mode":"chat"}}')"
   printf '%s\n' "$body" | head -c 900
   echo
-  CHAT_BODY="$body" python3 - <<'PY'
+  export CHAT_BODY="$body"
+  python3 - <<'PY'
 import json, os, sys
-raw = os.environ.get("CHAT_BODY") or ""
-d = json.loads(raw)
+d = json.loads(os.environ.get("CHAT_BODY") or "")
 data = d.get("data") or d
 meta = d.get("meta") or {}
 agent = data.get("agent")
 orch = bool(data.get("orchestrator"))
 llm = data.get("llm") or {}
 platform = meta.get("platform") or data.get("platform")
+service = str(meta.get("service") or "")
 print("--- parse ---")
 print("agent=", agent)
 print("orchestrator=", orch)
 print("platform=", platform)
-print("service=", meta.get("service"))
+print("service=", service)
 print("ollama_called=", llm.get("ollama_called"))
 print("llm.used=", llm.get("used"))
-ok = agent == "chat" and (orch or platform == "v4" or str(meta.get("service", "")).endswith("Orchestrator"))
+ok = agent == "chat" and (orch or platform == "v4" or service.endswith("Orchestrator"))
 if not ok:
-    raise SystemExit("FAIL: Conversation V5/V4 orchestrator path not active")
+    sys.exit("FAIL: Conversation V5/V4 orchestrator path not active")
 if llm.get("ollama_called") is not True:
-    raise SystemExit("FAIL: llm.ollama_called is not true")
+    sys.exit("FAIL: llm.ollama_called is not true")
 print("PASS")
 PY
 }
@@ -107,39 +73,26 @@ if [[ "$VERIFY_ONLY" -eq 1 ]]; then
   exit 0
 fi
 
-need_root
-
+[[ "${EUID}" -eq 0 ]] || die "run with sudo"
 [[ -d "$REPO_ROOT" ]] || die "repo not found: $REPO_ROOT"
 cd "$REPO_ROOT"
 
 if [[ "$SKIP_GIT" -eq 0 ]]; then
-  log "git fetch/pull (preserve local PI/collector dirty files)"
-  if [[ -d .git ]]; then
-    sudo -u ubuntu git fetch origin
-    # Prefer origin/main tip; keep local modifications outside conversation if any
-    sudo -u ubuntu git checkout main
-    sudo -u ubuntu git pull --ff-only origin main || {
-      log "ff-only failed — attempting conversation-path checkout from origin/main"
-      sudo -u ubuntu git checkout origin/main -- \
-        services/win5-ai/app/conversation \
-        services/win5-ai/app/main.py \
-        services/win5-ai/config/production/conversation.env \
-        infra/aws/systemd/conversation.env.example \
-        infra/aws/systemd/expect-ai.service.example \
-        scripts/ops/deploy-conversation-v5-prod.sh \
-        scripts/ops/enable-conversation-v5-prod.sh \
-        || die "could not sync conversation paths from origin/main"
-    }
-  else
-    die "not a git checkout; sync code first"
-  fi
+  log "git fetch/pull"
+  [[ -d .git ]] || die "not a git checkout"
+  sudo -u ubuntu git fetch origin
+  sudo -u ubuntu git checkout main
+  sudo -u ubuntu git pull --ff-only origin main || die "git pull failed"
 fi
 
-[[ -d services/win5-ai/app/conversation/v4 ]] || die "missing conversation/v4 after sync"
-[[ -d services/win5-ai/app/conversation/v5 ]] || die "missing conversation/v5 after sync"
+[[ -d services/win5-ai/app/conversation/v4 ]] || die "missing conversation/v4"
+[[ -d services/win5-ai/app/conversation/v5 ]] || die "missing conversation/v5"
 
 ENV_SRC=""
-for c in "${ENV_SRC_CANDIDATES[@]}"; do
+for c in \
+  "${REPO_ROOT}/services/win5-ai/config/production/conversation.env" \
+  "${REPO_ROOT}/infra/aws/systemd/conversation.env.example"
+do
   if [[ -f "$c" ]]; then ENV_SRC="$c"; break; fi
 done
 [[ -n "$ENV_SRC" ]] || die "conversation.env source missing"
@@ -147,7 +100,6 @@ done
 log "install $ENV_DST from $ENV_SRC"
 mkdir -p /etc/expect-ai
 cp -f "$ENV_SRC" "$ENV_DST"
-# EC2 t3.small (~2GiB): prefer small chat model unless operator overrides
 if [[ -n "$MODEL_OVERRIDE" ]]; then
   if grep -q '^CONVERSATION_DEFAULT_MODEL=' "$ENV_DST"; then
     sed -i "s|^CONVERSATION_DEFAULT_MODEL=.*|CONVERSATION_DEFAULT_MODEL=${MODEL_OVERRIDE}|" "$ENV_DST"
@@ -195,16 +147,16 @@ PY
 fi
 
 MODEL="$(grep -E '^CONVERSATION_DEFAULT_MODEL=' "$ENV_DST" | tail -1 | cut -d= -f2- || true)"
-MODEL="${MODEL_OVERRIDE:-${MODEL:-qwen2.5:1.5b}}"
+if [[ -n "$MODEL_OVERRIDE" ]]; then MODEL="$MODEL_OVERRIDE"; fi
+if [[ -z "$MODEL" ]]; then MODEL="qwen2.5:1.5b"; fi
 
 if [[ "$SKIP_OLLAMA" -eq 0 ]]; then
-  log "ensure Ollama (model=$MODEL)"
+  log "ensure Ollama model=$MODEL"
   if ! command -v ollama >/dev/null 2>&1; then
     curl -fsSL https://ollama.com/install.sh | sh
   fi
-  # Small instance safety: add swap if none
   if [[ "$(swapon --show | wc -l)" -eq 0 ]]; then
-    log "creating 2G swapfile for LLM headroom"
+    log "creating 2G swapfile"
     if [[ ! -f /swapfile ]]; then
       fallocate -l 2G /swapfile || dd if=/dev/zero of=/swapfile bs=1M count=2048
       chmod 600 /swapfile
@@ -216,13 +168,12 @@ if [[ "$SKIP_OLLAMA" -eq 0 ]]; then
   systemctl enable --now ollama
   sleep 2
   curl -sf --max-time 3 http://127.0.0.1:11434/api/tags >/dev/null \
-    || die "Ollama not reachable on 127.0.0.1:11434"
-  # Pull only if missing
+    || die "Ollama not reachable"
   if ! ollama list 2>/dev/null | awk '{print $1}' | grep -qx "$MODEL"; then
     log "ollama pull $MODEL"
     ollama pull "$MODEL"
   else
-    log "model already present: $MODEL"
+    log "model present: $MODEL"
   fi
 fi
 
