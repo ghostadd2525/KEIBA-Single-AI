@@ -311,9 +311,11 @@
       e.preventDefault();
       var item = btn.closest(".board-acc-item");
       if (!item) return;
+      var panel = item.querySelector(".board-acc-panel");
       var open = !item.classList.contains("is-open");
       item.classList.toggle("is-open", open);
       btn.setAttribute("aria-expanded", open ? "true" : "false");
+      if (panel) panel.setAttribute("aria-hidden", open ? "false" : "true");
     });
   }
 

@@ -946,17 +946,18 @@ body.v2-race-list-ui .race-conf {
 }
 
 .board-acc-panel {
-  display: grid;
-  grid-template-rows: 0fr;
-  transition: grid-template-rows 0.28s ease;
+  max-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  transition: max-height 0.28s ease, opacity 0.2s ease;
 }
 
 .board-acc-item.is-open .board-acc-panel {
-  grid-template-rows: 1fr;
+  max-height: 32rem;
+  opacity: 1;
 }
 
 .board-acc-panel-inner {
-  overflow: hidden;
   min-height: 0;
 }
 
