@@ -856,12 +856,14 @@
 
   function venueOnly(info) {
     info = info || {};
-    var v = info.venue || info.course || "";
-    if (v) return String(v);
+    var v = String(info.venue || info.course || "")
+      .replace(/\s*\d{1,2}\s*R\s*$/u, "")
+      .trim();
+    if (v) return v;
     var label = String(info.race_label || "");
-    var m = label.match(/^(.+?)(\d{1,2})\s*R$/);
-    if (m) return m[1];
-    return label || "レース";
+    var m = label.match(/^(.+?)\s*\d{1,2}\s*R\s*$/u);
+    if (m) return m[1].trim();
+    return label.replace(/\s*\d{1,2}\s*R\s*$/u, "").trim() || "レース";
   }
 
   function paintRaceMeta(info) {
@@ -997,15 +999,13 @@
       narrativeEl.textContent = bundle.explain.narrative;
     }
 
-    var place =
-      info.race_label ||
-      (info.venue || "") + (raceNo != null ? " " + raceNo + "R" : "");
+    var place = venueOnly(info);
     return {
       raceId: bundle.race_id,
       place: place,
-      name: info.race_name || info.class_label || "",
+      name: shortRaceName(info.race_name || info.class_label || ""),
       badge: info.grade || "",
-      postTime: info.post_time || "",
+      postTime: extractPostTime(info) || "",
       dateLabel: dateFull(info),
       conf: conf,
       meta: meta,
