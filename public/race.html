@@ -8,8 +8,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Noto+Sans+JP:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="assets/styles.css?v=18" />
-  <link rel="stylesheet" href="assets/screens.css?v=27" />
-  <link rel="stylesheet" href="assets/ux.css?v=19" />
+  <link rel="stylesheet" href="assets/screens.css?v=36" />
+  <link rel="stylesheet" href="assets/ux.css?v=20" />
   <link rel="stylesheet" href="assets/vqa.css" />
   <link rel="stylesheet" href="assets/v11.css?v=11" />
   <script src="assets/api/calendar-weekend.js?v=14"></script>
@@ -143,23 +143,23 @@
     <div data-expect-nav></div>
   </div>
   <script src="assets/api/mock-gate.js"></script>
-  <script src="assets/api/race-id-meta.js"></script>
+  <script src="assets/api/race-id-meta.js?v=2"></script>
   <script src="assets/api/auth.js"></script>
   <script src="assets/api/contract-guard.js"></script>
-  <script src="assets/api/prediction.js"></script>
-  <script src="assets/api/prediction-bind.js?v=25"></script>
-  <script src="assets/api/race-board.js?v=2"></script>
-  <script src="assets/api/race-detail-tabs.js?v=3"></script>
-  <script src="assets/api/analysis.js"></script>
-  <script src="assets/api/analysis-bind.js?v=22"></script>
-  <script src="assets/ux.js?v=17"></script>
+  <script src="assets/api/prediction.js?v=10"></script>
+  <script src="assets/api/prediction-bind.js?v=30"></script>
+  <script src="assets/api/race-board.js?v=10"></script>
+  <script src="assets/api/race-detail-tabs.js?v=10"></script>
+  <script src="assets/api/analysis.js?v=10"></script>
+  <script src="assets/api/analysis-bind.js?v=30"></script>
+  <script src="assets/ux.js?v=20"></script>
   <script src="assets/api/conversation.js?v=6"></script>
   <script src="assets/api/conversation-ui.js?v=7"></script>
   <script src="assets/api/ui-features.js?v=11"></script>
   <script src="assets/v11.js?v=11"></script>
   <script src="assets/favorites.js?v=4"></script>
   <script src="assets/shell.js"></script>
-  <script src="assets/reminders.js"></script>
+  <script src="assets/reminders.js?v=2"></script>
   <script src="assets/partials-nav.js"></script>
   <script>
     ExpectShell.initMascotTalk([
@@ -199,7 +199,10 @@
 
     if (window.ExpectConversationUi) ExpectConversationUi.mountRaceCtas(id);
     if (window.ExpectRaceDetailTabs) ExpectRaceDetailTabs.bind(id);
-    var meta = ExpectFavorites.getMeta(id);
+    var meta =
+      window.ExpectFavorites && typeof ExpectFavorites.getMeta === "function"
+        ? ExpectFavorites.getMeta(id)
+        : { place: "", name: "", badge: "", dateLabel: "", postTime: "" };
     var titleEl = document.getElementById("raceTitle");
     var subEl = document.getElementById("raceSub") || document.querySelector(".brand-sub");
     var placeHint =

@@ -18,21 +18,48 @@
     var headers = { accept: "application/json" };
     var token = getToken();
     if (token) headers.Authorization = "Bearer " + token;
-    var fetchOpts = { headers: headers, credentials: "same-origin" };
+    var timeoutMs =
+      typeof opts.timeoutMs === "number" && opts.timeoutMs > 0 ? opts.timeoutMs : 15000;
+    var controller = typeof AbortController !== "undefined" ? new AbortController() : null;
+    var timer = null;
+    if (controller) {
+      timer = setTimeout(function () {
+        try {
+          controller.abort();
+        } catch (e) { /* ignore */ }
+      }, timeoutMs);
+    }
+    var fetchOpts = {
+      headers: headers,
+      credentials: "same-origin",
+      signal: controller ? controller.signal : undefined,
+    };
     if (opts.fresh) fetchOpts.cache = "no-store";
-    return fetch(path, fetchOpts).then(function (res) {
-      return res.json().then(function (body) {
-        if (!res.ok || (body && body.ok === false)) {
-          var err = new Error(
-            (body && body.error && body.error.message) || "board fetch failed"
-          );
-          err.code = body && body.error && body.error.code;
-          err.status = res.status;
-          throw err;
+    return fetch(path, fetchOpts)
+      .then(function (res) {
+        return res.json().then(function (body) {
+          if (!res.ok || (body && body.ok === false)) {
+            var err = new Error(
+              (body && body.error && body.error.message) || "board fetch failed"
+            );
+            err.code = body && body.error && body.error.code;
+            err.status = res.status;
+            throw err;
+          }
+          return (body && body.data) || body;
+        });
+      })
+      .catch(function (err) {
+        if (err && err.name === "AbortError") {
+          var te = new Error("board timeout");
+          te.code = "TIMEOUT";
+          throw te;
         }
-        return (body && body.data) || body;
+        throw err;
+      })
+      .finally(function () {
+        if (timer) clearTimeout(timer);
       });
-    });
   }
 
   function getBoard(raceId, opts) {

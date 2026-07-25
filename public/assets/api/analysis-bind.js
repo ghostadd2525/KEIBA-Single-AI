@@ -1,5 +1,6 @@
 /**
  * Phase2: Analysis / PredictionBundle → UI バインド（評価内訳）
+ * cache-bust: 2026-07-25-race-detail-fix
  * 評価内訳は ◎馬の能力特徴量（ability_scores）を優先。無い場合のみ自信度系へフォールバック。
  */
 (function (global) {
