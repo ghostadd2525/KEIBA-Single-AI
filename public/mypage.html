@@ -155,21 +155,24 @@
         var el = document.getElementById("inviteList");
         if (!el) return;
         if (!items || !items.length) {
-          el.innerHTML = '<p class="muted">最近使用された一時IDはまだありません。</p>';
+          el.innerHTML = '<p class="muted">最近発行された一時IDはまだありません。</p>';
           return;
         }
         el.innerHTML =
-          "<h4 class='invite-list-title'>最近使用された一時ID（最大5件）</h4><ul>" +
+          "<h4 class='invite-list-title'>最近発行（最大5件）</h4><ul>" +
           items
             .slice(0, 5)
             .map(function (inv) {
+              var st = String(inv.status || "");
+              var stLabel =
+                st === "issued" ? "未使用" : st === "activated" ? "利用済" : st;
               return (
                 "<li><code>" +
                 escapeHtml(inv.invite_id) +
                 "</code> · " +
-                escapeHtml(inv.status) +
-                (inv.activated_at
-                  ? " · 使用 " + escapeHtml(String(inv.activated_at).slice(0, 10))
+                escapeHtml(stLabel) +
+                (inv.expires_at
+                  ? " · 期限 " + escapeHtml(String(inv.expires_at).slice(0, 10))
                   : "") +
                 "</li>"
               );
@@ -179,13 +182,71 @@
       }
 
       function loadAdminInvites() {
-        ExpectApi.User.listInvites()
+        return ExpectApi.User.listInvites()
           .then(function (data) {
-            renderInviteList((data && (data.recent_used || data.invitations)) || []);
+            renderInviteList(
+              (data && (data.recent_issued || data.invitations || data.recent_used)) || []
+            );
           })
           .catch(function () {
             renderInviteList([]);
           });
+      }
+
+      function showIssuedInvite(inv, days, hint) {
+        var msg = document.getElementById("inviteFormMsg");
+        var result = document.getElementById("inviteResult");
+        if (!inv || !inv.invite_id) {
+          if (msg) msg.textContent = "発行レスポンスが不正です。もう一度お試しください。";
+          return;
+        }
+        try {
+          sessionStorage.setItem(
+            "expect_last_invite_v1",
+            JSON.stringify({ invite: inv, expires_days: days, at: Date.now() })
+          );
+        } catch (e) { /* ignore */ }
+        if (msg) {
+          msg.textContent =
+            "発行しました（有効 " +
+            (days || 14) +
+            "日 · 期限 " +
+            String(inv.expires_at || "").slice(0, 10) +
+            "）";
+        }
+        if (!result) return;
+        result.hidden = false;
+        result.innerHTML =
+          "<p class='invite-result-label'>発行された一時ID</p>" +
+          "<p class='invite-result-code'><code id='issuedInviteCode'>" +
+          escapeHtml(inv.invite_id) +
+          "</code></p>" +
+          "<p class='muted'>" +
+          escapeHtml(hint || "ログイン画面の「一時ID」欄に入力してください") +
+          "</p>" +
+          "<button type='button' class='profile-save profile-save--ghost' id='copyInviteBtn'>コピー</button>";
+        var copyBtn = document.getElementById("copyInviteBtn");
+        if (copyBtn) {
+          copyBtn.addEventListener("click", function () {
+            var code = inv.invite_id;
+            if (!code) return;
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+              navigator.clipboard.writeText(code).then(function () {
+                if (msg) msg.textContent = "コピーしました。";
+              });
+            } else {
+              var range = document.createRange();
+              var node = document.getElementById("issuedInviteCode");
+              if (node) {
+                range.selectNodeContents(node);
+                var sel = window.getSelection();
+                sel.removeAllRanges();
+                sel.addRange(range);
+              }
+              if (msg) msg.textContent = "一時IDを選択しました。手動でコピーしてください。";
+            }
+          });
+        }
       }
 
       ExpectShell.initMascotTalk([
@@ -206,41 +267,35 @@
         var btn = document.getElementById("inviteIssueBtn");
         var result = document.getElementById("inviteResult");
         var days = Number(document.getElementById("inviteDays").value) || 14;
-        btn.disabled = true;
-        msg.textContent = "発行中…";
+        if (btn) btn.disabled = true;
+        if (msg) msg.textContent = "発行中…";
+        if (result) result.hidden = true;
+
+        var timedOut = false;
+        var timer = window.setTimeout(function () {
+          timedOut = true;
+          if (msg) msg.textContent = "応答が遅いです。再試行してください。";
+          if (btn) btn.disabled = false;
+        }, 20000);
+
         ExpectApi.User.issueInvite({ expires_days: days })
           .then(function (data) {
-            var inv = data && data.invite;
-            msg.textContent =
-              "発行しました（有効 " +
-              (data.expires_days || days) +
-              "日 · 期限 " +
-              String((inv && inv.expires_at) || "").slice(0, 10) +
-              "）";
-            result.hidden = false;
-            result.innerHTML =
-              "<p><strong>一時ID:</strong> <code>" +
-              escapeHtml(inv && inv.invite_id) +
-              "</code></p>" +
-              "<p class='muted'>" +
-              escapeHtml((data && data.login_hint) || "") +
-              "</p>" +
-              "<button type='button' class='profile-save profile-save--ghost' id='copyInviteBtn'>コピー</button>";
-            document.getElementById("copyInviteBtn").addEventListener("click", function () {
-              var code = inv && inv.invite_id;
-              if (!code || !navigator.clipboard) return;
-              navigator.clipboard.writeText(code).then(function () {
-                msg.textContent = "コピーしました。";
-              });
-            });
-            loadAdminInvites();
+            if (timedOut) return;
+            showIssuedInvite(
+              data && data.invite,
+              (data && data.expires_days) || days,
+              data && data.login_hint
+            );
+            return loadAdminInvites();
           })
           .catch(function (err) {
-            msg.textContent = (err && err.message) || "発行に失敗しました。";
-            result.hidden = true;
+            if (timedOut) return;
+            if (msg) msg.textContent = (err && err.message) || "発行に失敗しました。";
+            if (result) result.hidden = true;
           })
           .finally(function () {
-            btn.disabled = false;
+            window.clearTimeout(timer);
+            if (!timedOut && btn) btn.disabled = false;
           });
       });
 
@@ -301,6 +356,12 @@
         if (isAdminRole(me.role)) {
           document.getElementById("adminInvitePanel").hidden = false;
           loadAdminInvites();
+          try {
+            var cached = JSON.parse(sessionStorage.getItem("expect_last_invite_v1") || "null");
+            if (cached && cached.invite && cached.at && Date.now() - cached.at < 86400000) {
+              showIssuedInvite(cached.invite, cached.expires_days, null);
+            }
+          } catch (e) { /* ignore */ }
         }
       });
 
@@ -331,7 +392,17 @@
               total +
               " real_ai)</p>";
           }
-          if (diag && diag.summary) html += "<p><strong>Diagnostics</strong> " + diag.summary + "</p>";
+          if (diag) {
+            var summary =
+              typeof diag.summary === "string"
+                ? diag.summary
+                : diag.summary && typeof diag.summary === "object"
+                  ? JSON.stringify(diag.summary)
+                  : diag.message || diag.status || "";
+            if (summary) {
+              html += "<p><strong>Diagnostics</strong> " + escapeHtml(summary) + "</p>";
+            }
+          }
           el.innerHTML = html || "<p class='muted'>Supply API 未接続</p>";
         });
       })();

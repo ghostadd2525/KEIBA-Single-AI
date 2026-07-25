@@ -40,6 +40,14 @@ async function requireAdmin(context) {
   return { ok: true, user, role: authz.role, session };
 }
 
+/** 最近発行（issued|activated）5件。issued_at 降順 */
+function recentIssued(items, limit = 5) {
+  return (items || [])
+    .filter((x) => x && (x.status === "issued" || x.status === "activated") && x.issued_at)
+    .sort((a, b) => String(b.issued_at).localeCompare(String(a.issued_at)))
+    .slice(0, limit);
+}
+
 /** 最近使用（activated）5件。activated_at 降順 */
 function recentUsed(items, limit = 5) {
   return (items || [])
@@ -52,12 +60,14 @@ export async function onRequestGet(context) {
   const gate = await requireAdmin(context);
   if (!gate.ok) return gate.response;
   const items = await InvitationRepository.list(context);
+  const issued = recentIssued(items, 5);
   const used = recentUsed(items, 5);
   return jsonOk(
     {
-      invitations: used,
+      invitations: issued,
+      recent_issued: issued,
       recent_used: used,
-      count: used.length,
+      count: issued.length,
     },
     { source: "invitation-repository", service: "AdminInvite" },
     { cacheControl: "no-store" }

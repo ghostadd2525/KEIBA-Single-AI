@@ -158,5 +158,3 @@
     bindMypagePersonalChat: bindMypagePersonalChat,
   };
 })(window);
-
- -->
