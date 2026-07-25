@@ -1,0 +1,621 @@
+{
+  "version": "v6.1",
+  "phase": "v6-phase1",
+  "formal": true,
+  "document_count": 30,
+  "categories": {
+    "faq": "FAQ",
+    "service": "サービス説明",
+    "help": "KAOBA利用ガイド",
+    "general_keiba": "競馬一般知識",
+    "glossary": "KAOBA独自用語"
+  },
+  "by_category": {
+    "faq": [
+      {
+        "doc_id": "faq-kaoba",
+        "title": "KAOBAとは？",
+        "tags": [
+          "kaoba",
+          "faq",
+          "assistant",
+          "会話"
+        ]
+      },
+      {
+        "doc_id": "faq-prediction-immutable",
+        "title": "予想は変更できる？",
+        "tags": [
+          "prediction",
+          "faq",
+          "immutable",
+          "予想",
+          "変更不可"
+        ]
+      },
+      {
+        "doc_id": "faq-personal-chat",
+        "title": "マイページの日常会話とは？",
+        "tags": [
+          "faq",
+          "personal_chat",
+          "日常会話",
+          "mypage"
+        ]
+      },
+      {
+        "doc_id": "faq-data-source",
+        "title": "表示される予想はどこから来る？",
+        "tags": [
+          "faq",
+          "prediction",
+          "データ",
+          "読み取り専用"
+        ]
+      },
+      {
+        "doc_id": "faq-odds-ai",
+        "title": "オッズ変動AIとKAOBAの違いは？",
+        "tags": [
+          "faq",
+          "odds",
+          "オッズ",
+          "kaoba"
+        ]
+      },
+      {
+        "doc_id": "faq-favorites",
+        "title": "お気に入りは何件まで？",
+        "tags": [
+          "faq",
+          "favorite",
+          "お気に入り"
+        ]
+      }
+    ],
+    "service": [
+      {
+        "doc_id": "service-overview",
+        "title": "Expect ～ KEIBA AI ～ とは",
+        "tags": [
+          "service",
+          "expect",
+          "overview",
+          "サービス"
+        ]
+      },
+      {
+        "doc_id": "service-layers",
+        "title": "Prediction と Conversation の役割分担",
+        "tags": [
+          "service",
+          "prediction",
+          "conversation",
+          "役割"
+        ]
+      },
+      {
+        "doc_id": "service-modes",
+        "title": "会話モードの種類",
+        "tags": [
+          "service",
+          "explain",
+          "review",
+          "chat",
+          "モード"
+        ]
+      },
+      {
+        "doc_id": "service-read-only",
+        "title": "Read Only の約束",
+        "tags": [
+          "service",
+          "readonly",
+          "adr",
+          "安全"
+        ]
+      },
+      {
+        "doc_id": "service-security",
+        "title": "Security Guard",
+        "tags": [
+          "service",
+          "security",
+          "guard",
+          "安全"
+        ]
+      }
+    ],
+    "help": [
+      {
+        "doc_id": "help-explain-mode",
+        "title": "◎の理由を聞く（Explain）",
+        "tags": [
+          "explain",
+          "help",
+          "honmei",
+          "ガイド",
+          "◎"
+        ]
+      },
+      {
+        "doc_id": "help-review-mode",
+        "title": "予想について相談する（Review）",
+        "tags": [
+          "review",
+          "help",
+          "consult",
+          "ガイド",
+          "相談"
+        ]
+      },
+      {
+        "doc_id": "help-personal-chat",
+        "title": "日常会話の使い方",
+        "tags": [
+          "help",
+          "personal_chat",
+          "ガイド",
+          "使い方"
+        ]
+      },
+      {
+        "doc_id": "help-how-to-race",
+        "title": "レース詳細からKAOBAを開く",
+        "tags": [
+          "help",
+          "race",
+          "ガイド",
+          "race_id"
+        ]
+      },
+      {
+        "doc_id": "help-strategy",
+        "title": "買い目戦略とKAOBA",
+        "tags": [
+          "help",
+          "strategy",
+          "買い目",
+          "ガイド"
+        ]
+      },
+      {
+        "doc_id": "help-tips-questions",
+        "title": "うまく聞くコツ",
+        "tags": [
+          "help",
+          "tips",
+          "質問",
+          "ガイド"
+        ]
+      }
+    ],
+    "glossary": [
+      {
+        "doc_id": "glossary-honmei",
+        "title": "本命（◎）",
+        "tags": [
+          "glossary",
+          "honmei",
+          "mark",
+          "◎",
+          "用語"
+        ]
+      },
+      {
+        "doc_id": "glossary-taikou",
+        "title": "対抗（○）",
+        "tags": [
+          "glossary",
+          "taikou",
+          "mark",
+          "○",
+          "用語"
+        ]
+      },
+      {
+        "doc_id": "glossary-confidence",
+        "title": "自信度",
+        "tags": [
+          "glossary",
+          "confidence",
+          "自信度",
+          "用語"
+        ]
+      },
+      {
+        "doc_id": "glossary-odds",
+        "title": "オッズ",
+        "tags": [
+          "glossary",
+          "odds",
+          "オッズ",
+          "用語"
+        ]
+      },
+      {
+        "doc_id": "glossary-kaoba",
+        "title": "KAOBA（カオバ）",
+        "tags": [
+          "glossary",
+          "kaoba",
+          "用語",
+          "アシスタント"
+        ]
+      },
+      {
+        "doc_id": "glossary-read-only",
+        "title": "Read Only（読み取り専用）",
+        "tags": [
+          "glossary",
+          "readonly",
+          "用語",
+          "adr"
+        ]
+      },
+      {
+        "doc_id": "glossary-fail-open",
+        "title": "Fail Open",
+        "tags": [
+          "glossary",
+          "fail_open",
+          "用語"
+        ]
+      }
+    ],
+    "general_keiba": [
+      {
+        "doc_id": "keiba-pace",
+        "title": "ペース（展開）の基本",
+        "tags": [
+          "keiba",
+          "pace",
+          "general",
+          "展開"
+        ]
+      },
+      {
+        "doc_id": "keiba-course",
+        "title": "コース適性の一般論",
+        "tags": [
+          "keiba",
+          "course",
+          "general",
+          "適性"
+        ]
+      },
+      {
+        "doc_id": "keiba-track-condition",
+        "title": "馬場状態の一般知識",
+        "tags": [
+          "keiba",
+          "track",
+          "馬場",
+          "general"
+        ]
+      },
+      {
+        "doc_id": "keiba-marks",
+        "title": "印の一般的な意味",
+        "tags": [
+          "keiba",
+          "marks",
+          "印",
+          "general"
+        ]
+      },
+      {
+        "doc_id": "keiba-odds-market",
+        "title": "オッズと人気",
+        "tags": [
+          "keiba",
+          "odds",
+          "人気",
+          "general"
+        ]
+      },
+      {
+        "doc_id": "keiba-frame",
+        "title": "枠順・馬番の一般論",
+        "tags": [
+          "keiba",
+          "frame",
+          "枠順",
+          "general"
+        ]
+      }
+    ]
+  },
+  "by_tag": {
+    "adr": [
+      "glossary-read-only",
+      "service-read-only"
+    ],
+    "assistant": [
+      "faq-kaoba"
+    ],
+    "chat": [
+      "service-modes"
+    ],
+    "confidence": [
+      "glossary-confidence"
+    ],
+    "consult": [
+      "help-review-mode"
+    ],
+    "conversation": [
+      "service-layers"
+    ],
+    "course": [
+      "keiba-course"
+    ],
+    "expect": [
+      "service-overview"
+    ],
+    "explain": [
+      "help-explain-mode",
+      "service-modes"
+    ],
+    "fail_open": [
+      "glossary-fail-open"
+    ],
+    "faq": [
+      "faq-data-source",
+      "faq-favorites",
+      "faq-kaoba",
+      "faq-odds-ai",
+      "faq-personal-chat",
+      "faq-prediction-immutable"
+    ],
+    "favorite": [
+      "faq-favorites"
+    ],
+    "frame": [
+      "keiba-frame"
+    ],
+    "general": [
+      "keiba-course",
+      "keiba-frame",
+      "keiba-marks",
+      "keiba-odds-market",
+      "keiba-pace",
+      "keiba-track-condition"
+    ],
+    "glossary": [
+      "glossary-confidence",
+      "glossary-fail-open",
+      "glossary-honmei",
+      "glossary-kaoba",
+      "glossary-odds",
+      "glossary-read-only",
+      "glossary-taikou"
+    ],
+    "guard": [
+      "service-security"
+    ],
+    "help": [
+      "help-explain-mode",
+      "help-how-to-race",
+      "help-personal-chat",
+      "help-review-mode",
+      "help-strategy",
+      "help-tips-questions"
+    ],
+    "honmei": [
+      "glossary-honmei",
+      "help-explain-mode"
+    ],
+    "immutable": [
+      "faq-prediction-immutable"
+    ],
+    "kaoba": [
+      "faq-kaoba",
+      "faq-odds-ai",
+      "glossary-kaoba"
+    ],
+    "keiba": [
+      "keiba-course",
+      "keiba-frame",
+      "keiba-marks",
+      "keiba-odds-market",
+      "keiba-pace",
+      "keiba-track-condition"
+    ],
+    "mark": [
+      "glossary-honmei",
+      "glossary-taikou"
+    ],
+    "marks": [
+      "keiba-marks"
+    ],
+    "mypage": [
+      "faq-personal-chat"
+    ],
+    "odds": [
+      "faq-odds-ai",
+      "glossary-odds",
+      "keiba-odds-market"
+    ],
+    "overview": [
+      "service-overview"
+    ],
+    "pace": [
+      "keiba-pace"
+    ],
+    "personal_chat": [
+      "faq-personal-chat",
+      "help-personal-chat"
+    ],
+    "prediction": [
+      "faq-data-source",
+      "faq-prediction-immutable",
+      "service-layers"
+    ],
+    "race": [
+      "help-how-to-race"
+    ],
+    "race_id": [
+      "help-how-to-race"
+    ],
+    "readonly": [
+      "glossary-read-only",
+      "service-read-only"
+    ],
+    "review": [
+      "help-review-mode",
+      "service-modes"
+    ],
+    "security": [
+      "service-security"
+    ],
+    "service": [
+      "service-layers",
+      "service-modes",
+      "service-overview",
+      "service-read-only",
+      "service-security"
+    ],
+    "strategy": [
+      "help-strategy"
+    ],
+    "taikou": [
+      "glossary-taikou"
+    ],
+    "tips": [
+      "help-tips-questions"
+    ],
+    "track": [
+      "keiba-track-condition"
+    ],
+    "○": [
+      "glossary-taikou"
+    ],
+    "◎": [
+      "glossary-honmei",
+      "help-explain-mode"
+    ],
+    "お気に入り": [
+      "faq-favorites"
+    ],
+    "アシスタント": [
+      "glossary-kaoba"
+    ],
+    "オッズ": [
+      "faq-odds-ai",
+      "glossary-odds"
+    ],
+    "ガイド": [
+      "help-explain-mode",
+      "help-how-to-race",
+      "help-personal-chat",
+      "help-review-mode",
+      "help-strategy",
+      "help-tips-questions"
+    ],
+    "サービス": [
+      "service-overview"
+    ],
+    "データ": [
+      "faq-data-source"
+    ],
+    "モード": [
+      "service-modes"
+    ],
+    "予想": [
+      "faq-prediction-immutable"
+    ],
+    "人気": [
+      "keiba-odds-market"
+    ],
+    "会話": [
+      "faq-kaoba"
+    ],
+    "使い方": [
+      "help-personal-chat"
+    ],
+    "印": [
+      "keiba-marks"
+    ],
+    "変更不可": [
+      "faq-prediction-immutable"
+    ],
+    "安全": [
+      "service-read-only",
+      "service-security"
+    ],
+    "展開": [
+      "keiba-pace"
+    ],
+    "役割": [
+      "service-layers"
+    ],
+    "日常会話": [
+      "faq-personal-chat"
+    ],
+    "枠順": [
+      "keiba-frame"
+    ],
+    "用語": [
+      "glossary-confidence",
+      "glossary-fail-open",
+      "glossary-honmei",
+      "glossary-kaoba",
+      "glossary-odds",
+      "glossary-read-only",
+      "glossary-taikou"
+    ],
+    "相談": [
+      "help-review-mode"
+    ],
+    "自信度": [
+      "glossary-confidence"
+    ],
+    "読み取り専用": [
+      "faq-data-source"
+    ],
+    "買い目": [
+      "help-strategy"
+    ],
+    "質問": [
+      "help-tips-questions"
+    ],
+    "適性": [
+      "keiba-course"
+    ],
+    "馬場": [
+      "keiba-track-condition"
+    ]
+  },
+  "doc_ids": [
+    "faq-kaoba",
+    "faq-prediction-immutable",
+    "faq-personal-chat",
+    "faq-data-source",
+    "faq-odds-ai",
+    "faq-favorites",
+    "service-overview",
+    "service-layers",
+    "service-modes",
+    "service-read-only",
+    "service-security",
+    "help-explain-mode",
+    "help-review-mode",
+    "help-personal-chat",
+    "help-how-to-race",
+    "help-strategy",
+    "help-tips-questions",
+    "glossary-honmei",
+    "glossary-taikou",
+    "glossary-confidence",
+    "glossary-odds",
+    "glossary-kaoba",
+    "glossary-read-only",
+    "glossary-fail-open",
+    "keiba-pace",
+    "keiba-course",
+    "keiba-track-condition",
+    "keiba-marks",
+    "keiba-odds-market",
+    "keiba-frame"
+  ]
+}

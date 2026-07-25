@@ -1,13 +1,18 @@
 # -*- coding: utf-8 -*-
 """
-Knowledge Source（Stub）— 共通知識のみ。
+Knowledge Source — Version 6 Phase 1 正式コンテンツ。
 
-対象: FAQ / ヘルプ / サービス説明 / 用語集 / 競馬の一般知識
+対象: FAQ / サービス説明 / KAOBA利用ガイド / 競馬一般知識 / KAOBA独自用語
 非対象: ユーザー固有情報 · Prediction の根拠 · Vector DB / Embedding
+
+Retriever / Provider / Runtime / Tool / Platform は変更しない。
+本モジュールはドキュメント供給のみ（StubKnowledgeSource クラス名は互換維持）。
 """
 from __future__ import annotations
 
+import json
 from dataclasses import dataclass
+from pathlib import Path
 from typing import Any
 
 
@@ -29,103 +34,75 @@ class KnowledgeDocument:
         }
 
 
-# 共通知識のみ（Prediction 根拠・ユーザー固有は含めない）
-_STUB_DOCUMENTS: tuple[KnowledgeDocument, ...] = (
-    KnowledgeDocument(
-        doc_id="faq-kaoba",
-        category="faq",
-        title="KAOBAとは？",
-        body=(
-            "KAOBA は Expect ～ KEIBA AI ～ の会話アシスタントです。"
-            "予想の作成・変更は行いません。説明と相談のみ担当します。"
-        ),
-        tags=("kaoba", "faq", "assistant"),
-    ),
-    KnowledgeDocument(
-        doc_id="faq-prediction-immutable",
-        category="faq",
-        title="予想は変更できる？",
-        body=(
-            "できません。Prediction AI が唯一の公式結果です。"
-            "Conversation / Knowledge は予測根拠を上書きしません。"
-        ),
-        tags=("prediction", "faq", "immutable"),
-    ),
-    KnowledgeDocument(
-        doc_id="help-explain-mode",
-        category="help",
-        title="◎の理由を聞く",
-        body=(
-            "レース画面の「KAOBAに◎の理由を聞く」（Explain Mode）を使うと、"
-            "公式 Prediction に基づく説明を聞けます。"
-        ),
-        tags=("explain", "help", "honmei"),
-    ),
-    KnowledgeDocument(
-        doc_id="help-review-mode",
-        category="help",
-        title="予想について相談する",
-        body=(
-            "「KAOBAに相談」（Review Mode）では、公式 Prediction を前提に"
-            "強み・リスク・展開の見方をレビューします。印や買い目は変えません。"
-        ),
-        tags=("review", "help", "consult"),
-    ),
-    KnowledgeDocument(
-        doc_id="service-overview",
-        category="service",
-        title="Expect ～ KEIBA AI ～ とは",
-        body=(
-            "競馬の予測（Prediction AI）と会話（Conversation AI）を組み合わせたサービスです。"
-            "予測エンジンと会話レイヤーは役割が分離されています。"
-        ),
-        tags=("service", "expect", "overview"),
-    ),
-    KnowledgeDocument(
-        doc_id="glossary-honmei",
-        category="glossary",
-        title="本命（◎）",
-        body="本命は最も評価が高い軸候補を示す印です。本サービスでは Prediction AI が付与します。",
-        tags=("glossary", "honmei", "mark"),
-    ),
-    KnowledgeDocument(
-        doc_id="glossary-odds",
-        category="glossary",
-        title="オッズ",
-        body="オッズは投票状況に応じた払戻倍率の目安です。予測スコアそのものではありません。",
-        tags=("glossary", "odds"),
-    ),
-    KnowledgeDocument(
-        doc_id="keiba-pace",
-        category="general_keiba",
-        title="ペース（展開）の基本",
-        body=(
-            "レース展開はペース配分と位置取りで大きく変わります。"
-            "これは一般知識であり、特定レースの公式予測根拠ではありません。"
-        ),
-        tags=("keiba", "pace", "general"),
-    ),
-    KnowledgeDocument(
-        doc_id="keiba-course",
-        category="general_keiba",
-        title="コース適性の一般論",
-        body=(
-            "距離・芝ダート・回り方などで適性の見え方が変わります。"
-            "個別馬の評価は Prediction AI の領域です。"
-        ),
-        tags=("keiba", "course", "general"),
-    ),
-)
-
+# カテゴリ ID は既存 Retriever / テスト互換を維持
+# 表示名: FAQ / サービス説明 / KAOBA利用ガイド / 競馬一般知識 / KAOBA独自用語
 ALLOWED_CATEGORIES = frozenset(
     {"faq", "help", "service", "glossary", "general_keiba"}
 )
 
+CATEGORY_LABELS_JA = {
+    "faq": "FAQ",
+    "service": "サービス説明",
+    "help": "KAOBA利用ガイド",
+    "general_keiba": "競馬一般知識",
+    "glossary": "KAOBA独自用語",
+}
+
+_CONTENTS_DIR = Path(__file__).resolve().parent / "contents"
+_CATALOG_PATH = _CONTENTS_DIR / "catalog.json"
+
+
+def _load_catalog_documents() -> tuple[KnowledgeDocument, ...]:
+    if not _CATALOG_PATH.is_file():
+        return ()
+    raw = json.loads(_CATALOG_PATH.read_text(encoding="utf-8"))
+    docs: list[KnowledgeDocument] = []
+    for item in raw.get("documents") or []:
+        if not isinstance(item, dict):
+            continue
+        cat = str(item.get("category") or "")
+        if cat not in ALLOWED_CATEGORIES:
+            continue
+        tags = item.get("tags") or ()
+        if isinstance(tags, list):
+            tag_t = tuple(str(t) for t in tags)
+        else:
+            tag_t = ()
+        docs.append(
+            KnowledgeDocument(
+                doc_id=str(item.get("doc_id") or ""),
+                category=cat,
+                title=str(item.get("title") or ""),
+                body=str(item.get("body") or ""),
+                tags=tag_t,
+            )
+        )
+    return tuple(d for d in docs if d.doc_id and d.title)
+
+
+def _catalog_meta() -> dict[str, Any]:
+    if not _CATALOG_PATH.is_file():
+        return {"formal": False, "version": None, "phase": None}
+    raw = json.loads(_CATALOG_PATH.read_text(encoding="utf-8"))
+    return {
+        "formal": bool(raw.get("formal")),
+        "version": raw.get("version"),
+        "phase": raw.get("phase"),
+        "category_labels": raw.get("categories") or CATEGORY_LABELS_JA,
+    }
+
+
+# 起動時に正式カタログを読む（欠落時は空 → 明示的に壊すより安全に空）
+_FORMAL_DOCUMENTS: tuple[KnowledgeDocument, ...] = _load_catalog_documents()
+
 
 class StubKnowledgeSource:
-    """インメモリ共通知識 Stub。外部接続なし。"""
+    """
+    正式 Knowledge Contents を供給する Source。
+    クラス名は V4/V5 配線互換のため維持。meta.formal=true。
+    """
 
-    stub = True
+    stub = True  # 外部 Vector/Embedding 未接続（互換）
     connected_to_vector_db = False
     connected_to_embedding = False
     connected_to_external_api = False
@@ -133,10 +110,9 @@ class StubKnowledgeSource:
     includes_prediction_rationale = False
 
     def __init__(self, documents: tuple[KnowledgeDocument, ...] | None = None) -> None:
-        docs = documents if documents is not None else _STUB_DOCUMENTS
-        self._documents = tuple(
-            d for d in docs if d.category in ALLOWED_CATEGORIES
-        )
+        docs = documents if documents is not None else _FORMAL_DOCUMENTS
+        self._documents = tuple(d for d in docs if d.category in ALLOWED_CATEGORIES)
+        self._catalog = _catalog_meta()
 
     def list_documents(self) -> list[KnowledgeDocument]:
         return list(self._documents)
@@ -147,11 +123,85 @@ class StubKnowledgeSource:
     def meta(self) -> dict[str, Any]:
         return {
             "stub": True,
+            "formal": bool(self._catalog.get("formal")),
+            "content_version": self._catalog.get("version"),
+            "content_phase": self._catalog.get("phase"),
             "vector_db": False,
             "embedding": False,
             "external_api": False,
             "user_private": False,
             "prediction_rationale": False,
             "categories": sorted(ALLOWED_CATEGORIES),
+            "category_labels": dict(CATEGORY_LABELS_JA),
             "document_count": len(self._documents),
+            "supports": ["category", "tag", "keyword"],
         }
+
+    def search_by_category(self, category: str, *, limit: int = 20) -> list[KnowledgeDocument]:
+        cat = str(category or "").strip()
+        lim = max(1, min(int(limit or 20), 50))
+        return [d for d in self._documents if d.category == cat][:lim]
+
+    def search_by_tag(self, tag: str, *, limit: int = 20) -> list[KnowledgeDocument]:
+        t = str(tag or "").strip().lower()
+        lim = max(1, min(int(limit or 20), 50))
+        if not t:
+            return []
+        hits = [d for d in self._documents if t in {x.lower() for x in d.tags}]
+        return hits[:lim]
+
+    def search_by_keyword(self, query: str, *, limit: int = 20) -> list[KnowledgeDocument]:
+        q = str(query or "").strip().lower()
+        lim = max(1, min(int(limit or 20), 50))
+        if not q:
+            return list(self._documents)[:lim]
+        scored: list[tuple[float, KnowledgeDocument]] = []
+        for doc in self._documents:
+            blob = f"{doc.title} {doc.body} {' '.join(doc.tags)}".lower()
+            score = 0.0
+            for token in q.replace("　", " ").split():
+                if token and token in blob:
+                    score += 1.0
+            if score > 0 or q in blob:
+                if q in blob and score == 0:
+                    score = 0.5
+                scored.append((score, doc))
+        scored.sort(key=lambda x: x[0], reverse=True)
+        return [d for _, d in scored[:lim]]
+
+    def search(
+        self,
+        query: str | None = None,
+        *,
+        category: str | None = None,
+        tag: str | None = None,
+        limit: int = 5,
+    ) -> list[KnowledgeDocument]:
+        """カテゴリ / タグ / キーワードを組み合わせた Source 側検索。"""
+        lim = max(1, min(int(limit or 5), 50))
+        docs = list(self._documents)
+        if category:
+            docs = [d for d in docs if d.category == str(category)]
+        if tag:
+            t = str(tag).strip().lower()
+            docs = [d for d in docs if t in {x.lower() for x in d.tags}]
+        if query and str(query).strip():
+            q = str(query).strip().lower()
+            scored: list[tuple[float, KnowledgeDocument]] = []
+            for doc in docs:
+                blob = f"{doc.title} {doc.body} {' '.join(doc.tags)}".lower()
+                score = 0.0
+                for token in q.replace("　", " ").split():
+                    if token and token in blob:
+                        score += 1.0
+                if score > 0 or q in blob:
+                    if q in blob and score == 0:
+                        score = 0.5
+                    scored.append((score, doc))
+            scored.sort(key=lambda x: x[0], reverse=True)
+            return [d for _, d in scored[:lim]]
+        return docs[:lim]
+
+
+# 互換エイリアス
+FormalKnowledgeSource = StubKnowledgeSource

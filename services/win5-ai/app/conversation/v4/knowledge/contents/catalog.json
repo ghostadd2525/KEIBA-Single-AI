@@ -1,0 +1,225 @@
+{
+  "version": "v6.1",
+  "phase": "v6-phase1",
+  "formal": true,
+  "description": "Expect Conversation Knowledge Contents — shared knowledge only (no user-private / no prediction rationale)",
+  "categories": {
+    "faq": "FAQ",
+    "service": "サービス説明",
+    "help": "KAOBA利用ガイド",
+    "general_keiba": "競馬一般知識",
+    "glossary": "KAOBA独自用語"
+  },
+  "documents": [
+    {
+      "doc_id": "faq-kaoba",
+      "category": "faq",
+      "title": "KAOBAとは？",
+      "body": "KAOBA は Expect ～ KEIBA AI ～ の会話アシスタントです。予想の作成・変更は行いません。説明と相談のみ担当します。",
+      "tags": ["kaoba", "faq", "assistant", "会話"]
+    },
+    {
+      "doc_id": "faq-prediction-immutable",
+      "category": "faq",
+      "title": "予想は変更できる？",
+      "body": "できません。Prediction AI が唯一の公式結果です。Conversation / Knowledge は予測根拠を上書きしません。",
+      "tags": ["prediction", "faq", "immutable", "予想", "変更不可"]
+    },
+    {
+      "doc_id": "faq-personal-chat",
+      "category": "faq",
+      "title": "マイページの日常会話とは？",
+      "body": "Personal Chat（日常会話）は雑談・使い方の質問向けです。レースの印や予想は変更しません。予想の相談はレース詳細の Review / Explain を使ってください。",
+      "tags": ["faq", "personal_chat", "日常会話", "mypage"]
+    },
+    {
+      "doc_id": "faq-data-source",
+      "category": "faq",
+      "title": "表示される予想はどこから来る？",
+      "body": "レース予想・自信度・本命は Prediction AI が生成します。KAOBA はそれを読み取り専用で説明します。",
+      "tags": ["faq", "prediction", "データ", "読み取り専用"]
+    },
+    {
+      "doc_id": "faq-odds-ai",
+      "category": "faq",
+      "title": "オッズ変動AIとKAOBAの違いは？",
+      "body": "オッズ変動AIは単勝オッズの推移を可視化する機能です。KAOBA は会話で説明・相談を行います。どちらも公式予想そのものは変更しません。",
+      "tags": ["faq", "odds", "オッズ", "kaoba"]
+    },
+    {
+      "doc_id": "faq-favorites",
+      "category": "faq",
+      "title": "お気に入りは何件まで？",
+      "body": "お気に入りレースは最大3件です。ホームに表示され、古い登録から順に入れ替わります。",
+      "tags": ["faq", "favorite", "お気に入り"]
+    },
+    {
+      "doc_id": "service-overview",
+      "category": "service",
+      "title": "Expect ～ KEIBA AI ～ とは",
+      "body": "競馬の予測（Prediction AI）と会話（Conversation AI）を組み合わせたサービスです。予測エンジンと会話レイヤーは役割が分離されています。",
+      "tags": ["service", "expect", "overview", "サービス"]
+    },
+    {
+      "doc_id": "service-layers",
+      "category": "service",
+      "title": "Prediction と Conversation の役割分担",
+      "body": "Prediction AI は印・自信度・ランキングを生成します。Conversation AI（KAOBA）は説明・レビュー・日常会話を担当し、予測結果を改変しません。",
+      "tags": ["service", "prediction", "conversation", "役割"]
+    },
+    {
+      "doc_id": "service-modes",
+      "category": "service",
+      "title": "会話モードの種類",
+      "body": "Explain（◎の理由）、Review（相談）、Personal Chat（日常会話）の3モードがあります。それぞれ用途が分かれています。",
+      "tags": ["service", "explain", "review", "chat", "モード"]
+    },
+    {
+      "doc_id": "service-read-only",
+      "category": "service",
+      "title": "Read Only の約束",
+      "body": "会話レイヤーから Prediction を書き換えることはできません。公式結果の唯一の正本は Prediction API です。",
+      "tags": ["service", "readonly", "adr", "安全"]
+    },
+    {
+      "doc_id": "service-security",
+      "category": "service",
+      "title": "Security Guard",
+      "body": "不適切な依頼や予想改変の要求は Security Guard が遮断します。ガードは無効化できません。",
+      "tags": ["service", "security", "guard", "安全"]
+    },
+    {
+      "doc_id": "help-explain-mode",
+      "category": "help",
+      "title": "◎の理由を聞く（Explain）",
+      "body": "レース画面の「KAOBAに◎の理由を聞く」（Explain Mode）を使うと、公式 Prediction に基づく説明を聞けます。",
+      "tags": ["explain", "help", "honmei", "ガイド", "◎"]
+    },
+    {
+      "doc_id": "help-review-mode",
+      "category": "help",
+      "title": "予想について相談する（Review）",
+      "body": "「KAOBAに相談」（Review Mode）では、公式 Prediction を前提に強み・リスク・展開の見方をレビューします。印や買い目は変えません。",
+      "tags": ["review", "help", "consult", "ガイド", "相談"]
+    },
+    {
+      "doc_id": "help-personal-chat",
+      "category": "help",
+      "title": "日常会話の使い方",
+      "body": "マイページのチャットルーム（mode=chat）では気軽に話しかけられます。あいさつ・雑談・使い方の質問に向いています。",
+      "tags": ["help", "personal_chat", "ガイド", "使い方"]
+    },
+    {
+      "doc_id": "help-how-to-race",
+      "category": "help",
+      "title": "レース詳細からKAOBAを開く",
+      "body": "レース一覧→詳細を開き、Explain / Review のボタンから会話を開始します。race_id が付いた状態で文脈が渡ります。",
+      "tags": ["help", "race", "ガイド", "race_id"]
+    },
+    {
+      "doc_id": "help-strategy",
+      "category": "help",
+      "title": "買い目戦略とKAOBA",
+      "body": "買い目戦略画面からの相談も Review 系の会話になります。金額や点数の最終判断はユーザー側です。",
+      "tags": ["help", "strategy", "買い目", "ガイド"]
+    },
+    {
+      "doc_id": "help-tips-questions",
+      "category": "help",
+      "title": "うまく聞くコツ",
+      "body": "「なぜ本命なのか」「リスクは？」「展開の見方は？」のように具体的に聞くと、公式予想に沿った説明が得やすくなります。",
+      "tags": ["help", "tips", "質問", "ガイド"]
+    },
+    {
+      "doc_id": "glossary-honmei",
+      "category": "glossary",
+      "title": "本命（◎）",
+      "body": "本命は最も評価が高い軸候補を示す印です。本サービスでは Prediction AI が付与します。",
+      "tags": ["glossary", "honmei", "mark", "◎", "用語"]
+    },
+    {
+      "doc_id": "glossary-taikou",
+      "category": "glossary",
+      "title": "対抗（○）",
+      "body": "対抗は本命に次ぐ有力候補の印です。公式 Prediction のランキングに基づきます。",
+      "tags": ["glossary", "taikou", "mark", "○", "用語"]
+    },
+    {
+      "doc_id": "glossary-confidence",
+      "category": "glossary",
+      "title": "自信度",
+      "body": "自信度は Prediction AI がそのレースの予想にどの程度自信があるかを表す指標です。会話では説明の補助に使います。",
+      "tags": ["glossary", "confidence", "自信度", "用語"]
+    },
+    {
+      "doc_id": "glossary-odds",
+      "category": "glossary",
+      "title": "オッズ",
+      "body": "オッズは投票状況に応じた払戻倍率の目安です。予測スコアそのものではありません。",
+      "tags": ["glossary", "odds", "オッズ", "用語"]
+    },
+    {
+      "doc_id": "glossary-kaoba",
+      "category": "glossary",
+      "title": "KAOBA（カオバ）",
+      "body": "Expect の会話パートナー名です。Explain / Review / Personal Chat で応答します。",
+      "tags": ["glossary", "kaoba", "用語", "アシスタント"]
+    },
+    {
+      "doc_id": "glossary-read-only",
+      "category": "glossary",
+      "title": "Read Only（読み取り専用）",
+      "body": "Conversation が Prediction を参照のみ行い、印やスコアを書き換えない設計原則です。",
+      "tags": ["glossary", "readonly", "用語", "adr"]
+    },
+    {
+      "doc_id": "glossary-fail-open",
+      "category": "glossary",
+      "title": "Fail Open",
+      "body": "予測データが一時取得できないときも、会話を完全停止せず安全な案内を返す方針です。予測そのものを捏造はしません。",
+      "tags": ["glossary", "fail_open", "用語"]
+    },
+    {
+      "doc_id": "keiba-pace",
+      "category": "general_keiba",
+      "title": "ペース（展開）の基本",
+      "body": "レース展開はペース配分と位置取りで大きく変わります。これは一般知識であり、特定レースの公式予測根拠ではありません。",
+      "tags": ["keiba", "pace", "general", "展開"]
+    },
+    {
+      "doc_id": "keiba-course",
+      "category": "general_keiba",
+      "title": "コース適性の一般論",
+      "body": "距離・芝ダート・回り方などで適性の見え方が変わります。個別馬の評価は Prediction AI の領域です。",
+      "tags": ["keiba", "course", "general", "適性"]
+    },
+    {
+      "doc_id": "keiba-track-condition",
+      "category": "general_keiba",
+      "title": "馬場状態の一般知識",
+      "body": "良・稍重・重・不良などで脚質の有利不利が変わることがあります。一般論であり、当日の公式評価は Prediction を確認してください。",
+      "tags": ["keiba", "track", "馬場", "general"]
+    },
+    {
+      "doc_id": "keiba-marks",
+      "category": "general_keiba",
+      "title": "印の一般的な意味",
+      "body": "◎○▲△などの印は評価の序列を表す慣例です。本サービスでの付与主体は Prediction AI です。",
+      "tags": ["keiba", "marks", "印", "general"]
+    },
+    {
+      "doc_id": "keiba-odds-market",
+      "category": "general_keiba",
+      "title": "オッズと人気",
+      "body": "人気とオッズは市場の支持を反映します。支持と実力評価は一致しないこともあります。",
+      "tags": ["keiba", "odds", "人気", "general"]
+    },
+    {
+      "doc_id": "keiba-frame",
+      "category": "general_keiba",
+      "title": "枠順・馬番の一般論",
+      "body": "コース形状によって内外の有利不利が語られることがあります。最終判断はレース条件と公式予想を合わせて確認してください。",
+      "tags": ["keiba", "frame", "枠順", "general"]
+    }
+  ]
+}
