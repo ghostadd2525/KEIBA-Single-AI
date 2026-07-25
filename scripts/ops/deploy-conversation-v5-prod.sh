@@ -160,7 +160,7 @@ chown root:ubuntu "$ENV_DST" 2>/dev/null || true
 
 if [[ -f "$SERVICE_UNIT" ]] && ! grep -q 'conversation.env' "$SERVICE_UNIT"; then
   log "wire EnvironmentFile into expect-ai.service"
-  python3 - <<'PY' "$SERVICE_UNIT"
+  python3 - "$SERVICE_UNIT" <<'PY'
 from pathlib import Path
 import sys
 path = Path(sys.argv[1])
