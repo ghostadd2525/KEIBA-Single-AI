@@ -76,9 +76,9 @@ verify_smoke() {
     -d '{"message":"今日の気分は？","mode":"chat","context":{"type":"personal_chat","mode":"chat"}}")"
   printf '%s\n' "$body" | head -c 900
   echo
-  python3 - <<'PY' "$body"
-import json, sys
-raw = sys.argv[1]
+  CHAT_BODY="$body" python3 - <<'PY'
+import json, os, sys
+raw = os.environ.get("CHAT_BODY") or ""
 d = json.loads(raw)
 data = d.get("data") or d
 meta = d.get("meta") or {}
@@ -93,7 +93,7 @@ print("platform=", platform)
 print("service=", meta.get("service"))
 print("ollama_called=", llm.get("ollama_called"))
 print("llm.used=", llm.get("used"))
-ok = agent == "chat" and (orch or platform == "v4" or str(meta.get("service","")).endswith("Orchestrator"))
+ok = agent == "chat" and (orch or platform == "v4" or str(meta.get("service", "")).endswith("Orchestrator"))
 if not ok:
     raise SystemExit("FAIL: Conversation V5/V4 orchestrator path not active")
 if llm.get("ollama_called") is not True:
@@ -160,27 +160,37 @@ chown root:ubuntu "$ENV_DST" 2>/dev/null || true
 
 if [[ -f "$SERVICE_UNIT" ]] && ! grep -q 'conversation.env' "$SERVICE_UNIT"; then
   log "wire EnvironmentFile into expect-ai.service"
-  # Insert after the last existing EnvironmentFile line
-  if grep -q '^EnvironmentFile=' "$SERVICE_UNIT"; then
-    awk '
-      BEGIN{done=0}
-      /^EnvironmentFile=/ { last=NR; lines[NR]=$0; next }
-      { lines[NR]=$0 }
-      END{
-        for (i=1;i<=NR;i++) {
-          print lines[i]
-          if (i==last && !done) {
-            print "EnvironmentFile=-/etc/expect-ai/conversation.env"
-            done=1
-          }
-        }
-        if (!done) print "EnvironmentFile=-/etc/expect-ai/conversation.env"
-      }
-    ' "$SERVICE_UNIT" >"${SERVICE_UNIT}.tmp"
-    mv "${SERVICE_UNIT}.tmp" "$SERVICE_UNIT"
-  else
-    sed -i '/^\[Service\]/a EnvironmentFile=-/etc/expect-ai/conversation.env' "$SERVICE_UNIT"
-  fi
+  python3 - <<'PY' "$SERVICE_UNIT"
+from pathlib import Path
+import sys
+path = Path(sys.argv[1])
+text = path.read_text(encoding="utf-8")
+needle = "EnvironmentFile=-/etc/expect-ai/conversation.env"
+if needle in text:
+    raise SystemExit(0)
+lines = text.splitlines()
+out = []
+inserted = False
+last_env = -1
+for i, line in enumerate(lines):
+    if line.startswith("EnvironmentFile="):
+        last_env = i
+for i, line in enumerate(lines):
+    out.append(line)
+    if i == last_env and not inserted:
+        out.append(needle)
+        inserted = True
+if not inserted:
+    for i, line in enumerate(list(out)):
+        if line.strip() == "[Service]":
+            out.insert(i + 1, needle)
+            inserted = True
+            break
+if not inserted:
+    out.append(needle)
+path.write_text("\n".join(out) + "\n", encoding="utf-8")
+print("wired", path)
+PY
   systemctl daemon-reload
 fi
 
