@@ -677,7 +677,9 @@
             "</span></button>" +
             '<div class="odds-venue-acc-panel"' +
             (open ? "" : " hidden") +
-            ">" +
+            ' aria-hidden="' +
+            (open ? "false" : "true") +
+            '">' +
             races
               .map(function (r) {
                 var on = r.race_id === state.raceId;

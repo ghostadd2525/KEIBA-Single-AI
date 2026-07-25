@@ -1128,6 +1128,16 @@ body.v2-race-list-ui .race-conf {
   padding: 0 2px 12px 22px;
 }
 
+/* hidden / 非 is-open を display:grid より優先（アコーディオン閉） */
+.odds-venue-acc-panel[hidden],
+.odds-venue-acc-item:not(.is-open) .odds-venue-acc-panel {
+  display: none !important;
+}
+
+.odds-venue-acc-item.is-open > .odds-venue-acc-panel:not([hidden]) {
+  display: grid;
+}
+
 .odds-venue-race {
   display: block;
   width: 100%;
@@ -1910,7 +1920,7 @@ body.v2-race-list-ui .race-conf {
   display: block;
 }
 
-/* —— オッズ変動AI（フィルタ固定・レース選択のみスクロール） —— */
+/* —— オッズ変動AI（Race List → Chart を縦スクロール） —— */
 .page-odds .screen {
   display: flex;
   flex-direction: column;
@@ -1919,15 +1929,28 @@ body.v2-race-list-ui .race-conf {
   min-height: 0;
   height: 100%;
   padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px));
-  overflow: hidden !important;
-  scrollbar-width: none !important;
-  -ms-overflow-style: none !important;
+  overflow-x: hidden;
+  overflow-y: auto !important;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: contain;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(193, 162, 109, 0.55) rgba(255, 255, 255, 0.06);
+  -ms-overflow-style: auto;
 }
 
 .page-odds.page-tab .screen::-webkit-scrollbar {
-  display: none !important;
-  width: 0 !important;
-  height: 0 !important;
+  display: block;
+  width: 7px;
+}
+
+.page-odds.page-tab .screen::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 999px;
+}
+
+.page-odds.page-tab .screen::-webkit-scrollbar-thumb {
+  background: rgba(193, 162, 109, 0.45);
+  border-radius: 999px;
 }
 
 .page-odds .odds-filters {
@@ -1978,6 +2001,8 @@ body.v2-race-list-ui .race-conf {
   min-height: 0;
   max-height: none;
   overflow: visible;
+  /* chart と高さを食い合わない（自然高さのみ） */
+  flex-shrink: 0;
 }
 
 .page-odds .odds-race-panel h3 {
@@ -2038,12 +2063,10 @@ body.v2-race-list-ui .race-conf {
 }
 
 .page-odds .odds-chart-card {
-  flex: 1 1 auto;
-  min-height: 0;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: thin;
-  scrollbar-color: rgba(193, 162, 109, 0.55) rgba(255, 255, 255, 0.06);
+  flex: 0 0 auto;
+  flex-shrink: 0;
+  min-height: 280px;
+  overflow: visible;
 }
 
 .odds-race-item {
