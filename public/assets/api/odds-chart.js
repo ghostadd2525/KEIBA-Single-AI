@@ -626,12 +626,7 @@
         raceListEl.disabled = false;
         raceListEl.innerHTML = items
           .map(function (r) {
-            var label =
-              raceRowLabel(r) +
-              "（" +
-              dateLabel(itemDate(r)) +
-              (itemVenue(r) ? " · " + itemVenue(r) : "") +
-              "）";
+            var label = raceRowLabel(r);
             return (
               '<option value="' +
               escapeHtml(r.race_id) +
