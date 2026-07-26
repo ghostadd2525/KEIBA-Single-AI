@@ -1,6 +1,5 @@
 import { jsonError } from "./errors.js";
 import { getEnv } from "./env.js";
-import { normalizeRole } from "./roles.js";
 
 const PUBLIC_PATHS = new Set([
   "/api/login",
@@ -11,6 +10,7 @@ const PUBLIC_PATHS = new Set([
   "/api/health",
   "/api/ops/monitor",
   "/api/ops/public-status",
+  "/api/system/status",
 ]);
 
 export function getBearer(request) {
@@ -20,17 +20,30 @@ export function getBearer(request) {
 }
 
 /**
- * stub token: stub.<base64url({sub,exp,purpose,role?})>.<exp>
- * purpose: "access" | "setup"（未指定トークンは access 扱い）
- * role: optional（OPS-1A）。正本は users.json / allowlist。
+ * Version8.5.1: stub は開発／緊急ブレークグラスのみ。
+ * EXPECT_ENV=production|prod では ALLOW_STUB_AUTH=1 が無い限り拒否。
+ */
+export function isProductionExpectEnv(env) {
+  const e = String((env && env.EXPECT_ENV) || "")
+    .trim()
+    .toLowerCase();
+  return e === "production" || e === "prod";
+}
+
+export function stubAuthAllowed(env) {
+  if (!isProductionExpectEnv(env)) return true;
+  return String((env && env.ALLOW_STUB_AUTH) || "") === "1";
+}
+
+/**
+ * stub token: stub.<base64url({sub,exp,purpose})>.<exp>
+ * Version8.5.1: role claim は発行・検証とも扱わない（昇格禁止）。
  */
 export function makeStubToken(userId, expiresIn = 86400, opts = {}) {
   const exp = Math.floor(Date.now() / 1000) + expiresIn;
   const purpose = opts.purpose || "access";
   const payloadObj = { sub: userId, exp, purpose };
-  if (opts.role) {
-    payloadObj.role = normalizeRole(opts.role);
-  }
+  // role は意図的に埋め込まない（opts.role 無視）
   const payload = btoa(unescape(encodeURIComponent(JSON.stringify(payloadObj))))
     .replace(/\+/g, "-")
     .replace(/\//g, "_")
@@ -41,7 +54,7 @@ export function makeStubToken(userId, expiresIn = 86400, opts = {}) {
 /**
  * @param {string} token
  * @param {{ purpose?: "access"|"setup" }} [opts]
- * @returns {{ id: string, purpose: string, role?: string } | null}
+ * @returns {{ id: string, purpose: string } | null}
  */
 export function verifyStubToken(token, opts = {}) {
   if (!token || !token.startsWith("stub.")) return null;
@@ -55,9 +68,8 @@ export function verifyStubToken(token, opts = {}) {
     const purpose = payload.purpose || "access";
     const want = opts.purpose || "access";
     if (purpose !== want) return null;
-    const out = { id: String(payload.sub), purpose };
-    if (payload.role) out.role = normalizeRole(payload.role);
-    return out;
+    // role claim があっても破棄（昇格経路を閉じる）
+    return { id: String(payload.sub), purpose };
   } catch {
     return null;
   }
@@ -74,7 +86,27 @@ export async function requireAuth(context) {
   // me / favorites は各ハンドラで access トークンを必須化する。
   if (!token) return null;
 
-  if (env.AUTH_MODE === "stub" || !env.AUTH_MODE) {
+  const isStubToken = token.startsWith("stub.");
+  const mode = String(env.AUTH_MODE || "stub").toLowerCase();
+
+  if (isProductionExpectEnv(env) && !stubAuthAllowed(env)) {
+    if (isStubToken || mode === "stub" || !env.AUTH_MODE) {
+      return jsonError(
+        "STUB_AUTH_FORBIDDEN",
+        "stub authentication is not allowed in production (Version8.5.1)",
+        401
+      );
+    }
+  }
+
+  if (mode === "stub" || !env.AUTH_MODE) {
+    if (!stubAuthAllowed(env) && isProductionExpectEnv(env)) {
+      return jsonError(
+        "STUB_AUTH_FORBIDDEN",
+        "stub authentication is not allowed in production (Version8.5.1)",
+        401
+      );
+    }
     const user = verifyStubToken(token, { purpose: "access" });
     if (!user) return jsonError("UNAUTHORIZED", "invalid token", 401);
     context.data = context.data || {};
@@ -82,9 +114,53 @@ export async function requireAuth(context) {
     return null;
   }
 
-  const user = verifyStubToken(token, { purpose: "access" });
-  if (!user) return jsonError("UNAUTHORIZED", "invalid token", 401);
-  context.data = context.data || {};
-  context.data.user = user;
-  return null;
+  // 非 stub モード: stub トークンは拒否（本番・開発とも）
+  if (isStubToken) {
+    return jsonError("STUB_AUTH_FORBIDDEN", "stub token rejected for AUTH_MODE=" + mode, 401);
+  }
+
+  // 現行に署名 JWT 検証パスが無い場合は未対応
+  return jsonError("AUTH_MODE_UNSUPPORTED", "AUTH_MODE requires non-stub verifier (not configured)", 401);
+}
+
+/**
+ * ハンドラ用: access セッション必須 + Version8.5.1 stub 本番ポリシー。
+ * @returns {{ id: string, purpose: string } | Response}
+ */
+export function requireAccessSession(context) {
+  const env = getEnv(context);
+  const token = getBearer(context.request);
+  if (!token) {
+    return jsonError("UNAUTHORIZED", "login required", 401);
+  }
+
+  const isStubToken = token.startsWith("stub.");
+  if (isProductionExpectEnv(env) && !stubAuthAllowed(env) && isStubToken) {
+    return jsonError(
+      "STUB_AUTH_FORBIDDEN",
+      "stub authentication is not allowed in production (Version8.5.1)",
+      401
+    );
+  }
+
+  if (isStubToken) {
+    if (isProductionExpectEnv(env) && !stubAuthAllowed(env)) {
+      return jsonError(
+        "STUB_AUTH_FORBIDDEN",
+        "stub authentication is not allowed in production (Version8.5.1)",
+        401
+      );
+    }
+    const user = verifyStubToken(token, { purpose: "access" });
+    if (!user) return jsonError("UNAUTHORIZED", "invalid token", 401);
+    context.data = context.data || {};
+    context.data.user = user;
+    return user;
+  }
+
+  const mode = String(env.AUTH_MODE || "stub").toLowerCase();
+  if (mode === "stub" || !env.AUTH_MODE) {
+    return jsonError("UNAUTHORIZED", "invalid token", 401);
+  }
+  return jsonError("AUTH_MODE_UNSUPPORTED", "AUTH_MODE requires non-stub verifier (not configured)", 401);
 }

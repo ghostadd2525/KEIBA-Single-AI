@@ -5,13 +5,14 @@
  *
  * expires_days → expires_at を保存。assertIssuable 時に期限切れ判定される。
  */
-import { getBearer, verifyStubToken } from "../../_lib/auth.js";
+import { requireAccessSession } from "../../_lib/auth.js";
+import { isAdminUser } from "../../_lib/adminAuth.js";
 import { jsonError, jsonOk } from "../../_lib/errors.js";
 import { InvitationRepository } from "../../_lib/invitationRepository.js";
 import { UserRepository } from "../../_lib/userRepository.js";
 import { resolveAuthorization } from "../../_lib/authorization.js";
 import { getBetaConfig } from "../../_lib/betaConfig.js";
-import { isPrivilegedOpsRole, normalizeRole } from "../../_lib/roles.js";
+import { isPrivilegedOpsRole } from "../../_lib/roles.js";
 import { writeAudit } from "../../_lib/auditLog.js";
 
 function unauthorized() {
@@ -23,27 +24,26 @@ function forbidden() {
 }
 
 async function requireAdmin(context) {
-  const token = getBearer(context.request);
-  const session = verifyStubToken(token, { purpose: "access" });
-  if (!session) return { ok: false, response: unauthorized() };
-  context.data = context.data || {};
-  context.data.user = session;
+  const session = requireAccessSession(context);
+  if (session instanceof Response) {
+    return { ok: false, response: session.status === 401 ? unauthorized() : session };
+  }
 
-  // まず token / profile の role を見て、ADMIN なら beta 読み込みを省略（発行レイテンシ短縮）
-  let user = await UserRepository.get(context, session.id);
-  let role = normalizeRole((user && user.role) || session.role || "USER");
-  if (!isPrivilegedOpsRole(role)) {
-    const beta = await getBetaConfig(context);
-    const authz = await resolveAuthorization(context, beta);
-    role = authz.role;
-    if (!isPrivilegedOpsRole(role)) {
-      return { ok: false, response: forbidden() };
-    }
+  const beta = await getBetaConfig(context).catch(function () {
+    return {};
+  });
+  const authz = await resolveAuthorization(context, beta);
+  const user = await UserRepository.get(context, session.id);
+  const role = authz.role;
+  if (!isPrivilegedOpsRole(role) && !isAdminUser(beta, session, user)) {
+    return { ok: false, response: forbidden() };
   }
-  if (!user) {
-    user = { user_id: session.id, role };
-  }
-  return { ok: true, user, role, session };
+  return {
+    ok: true,
+    user: user || { user_id: session.id, role },
+    role,
+    session,
+  };
 }
 
 /** 最近発行（issued|activated）5件。issued_at 降順 */

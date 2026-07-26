@@ -55,6 +55,22 @@ function mapCandidateToRunner(candidate) {
     mark: markPair ? markPair[0] : "none",
   };
   if (markPair) runner.mark_rank = markPair[1];
+
+  const rawAbility =
+    (candidate.AbilityScores && typeof candidate.AbilityScores === "object"
+      ? candidate.AbilityScores
+      : null) ||
+    (candidate.ability_scores && typeof candidate.ability_scores === "object"
+      ? candidate.ability_scores
+      : null);
+  if (rawAbility) {
+    const ability = {};
+    Object.keys(rawAbility).forEach(function (key) {
+      const n = asFloat(rawAbility[key]);
+      if (n != null) ability[key] = n;
+    });
+    if (Object.keys(ability).length) runner.ability_scores = ability;
+  }
   return runner;
 }
 
@@ -167,6 +183,12 @@ export function mapPiPredictionToBundle(piPayload, catalogRace = null, options =
       field_size: asInt(raceRow.field_size) ?? runners.length,
       surface: surface || null,
       distance: distance,
+      post_time:
+        raceRow.post_time != null && String(raceRow.post_time).trim() !== ""
+          ? String(raceRow.post_time).trim()
+          : piPayload.post_time != null && String(piPayload.post_time).trim() !== ""
+            ? String(piPayload.post_time).trim()
+            : null,
     },
     evaluation: {
       status: runners.length ? "ok" : "empty",
