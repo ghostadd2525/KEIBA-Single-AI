@@ -39,10 +39,8 @@ export async function piFetch(context, path, init = {}) {
   }
 
   let res;
-  let text;
   try {
     res = await fetch(url, { ...fetchInit, headers, signal: controller.signal });
-    text = await res.text();
   } catch (e) {
     const aborted = e && (e.name === "AbortError" || controller.signal.aborted);
     return jsonError(
@@ -58,6 +56,7 @@ export async function piFetch(context, path, init = {}) {
     clearTimeout(timer);
   }
 
+  const text = await res.text();
   let payload = null;
   try {
     payload = text ? JSON.parse(text) : null;

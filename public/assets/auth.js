@@ -142,6 +142,14 @@
         ExpectFavorites.syncNow({ reason: "login" }).catch(function () { /* ignore */ });
       }
     } catch (e) { /* favorites must not block login */ }
+    // 今週開催を race_list_cache へプリフェッチ（一覧タブ即表示用）
+    try {
+      if (global.ExpectRaceListCache && ExpectRaceListCache.prefetchWeekend) {
+        ExpectRaceListCache.prefetchWeekend({ reason: "login" }).catch(function () {
+          /* ignore */
+        });
+      }
+    } catch (e2) { /* ignore */ }
     return { ok: true, data: data };
   }
 
@@ -204,14 +212,7 @@
   function logout() {
     var fav = localFavoritesPayload();
     var clearLocal = function () {
-      removeKey(AUTH_KEY);
-      setAccessToken("");
-      if (global.ExpectApi && ExpectApi.Auth && ExpectApi.Auth.setSetupToken) {
-        ExpectApi.Auth.setSetupToken("");
-      }
-      if (global.ExpectApi && typeof ExpectApi.logout === "function") {
-        ExpectApi.logout();
-      }
+      forceClearAuthState({ keepTerms: true });
     };
 
     if (global.ExpectApi && ExpectApi.Auth && typeof ExpectApi.Auth.logout === "function") {
@@ -224,6 +225,64 @@
     }
     clearLocal();
     return Promise.resolve({ ok: true });
+  }
+
+  /**
+   * Maintenance 強制ログアウト用: JWT / localStorage 認証 / sessionStorage /
+   * API 認証キャッシュ / メモリ状態をクリア。
+   * @param {{ keepTerms?: boolean }} [opts]
+   */
+  function forceClearAuthState(opts) {
+    opts = opts || {};
+    try {
+      global.__EXPECT_AUTH_MEMORY = null;
+      global.ExpectPublicStatus = null;
+      if (global.ExpectApi) {
+        if (ExpectApi.Auth && ExpectApi.Auth.setSetupToken) {
+          ExpectApi.Auth.setSetupToken("");
+        }
+        if (typeof ExpectApi.logout === "function") {
+          ExpectApi.logout();
+        }
+        if (ExpectApi._authCache) ExpectApi._authCache = null;
+        if (ExpectApi._accessToken) ExpectApi._accessToken = null;
+      }
+    } catch (e) { /* ignore */ }
+
+    removeKey(AUTH_KEY);
+    setAccessToken("");
+    removeKey(ACCOUNT_READY_KEY);
+    if (!opts.keepTerms) {
+      removeKey(TERMS_KEY);
+      removeKey(ONBOARD_KEY);
+    }
+
+    try {
+      var ss = global.sessionStorage;
+      if (ss) ss.clear();
+    } catch (e2) { /* ignore */ }
+
+    // 認証系 localStorage キーを追加掃除
+    try {
+      var ls = storage();
+      if (ls) {
+        var authKeys = [
+          TOKEN_KEY,
+          AUTH_KEY,
+          ACCOUNT_READY_KEY,
+          "expect_setup_token_v1",
+          "expect_access_token",
+          "expect_auth",
+        ];
+        for (var i = 0; i < authKeys.length; i++) {
+          try {
+            ls.removeItem(authKeys[i]);
+          } catch (e3) { /* ignore */ }
+        }
+      }
+    } catch (e4) { /* ignore */ }
+
+    return { ok: true };
   }
 
   function refreshMe() {
@@ -252,13 +311,23 @@
   function requireAuth(opts) {
     opts = opts || {};
     var here = pageName();
+    var path = "";
+    try {
+      path = String(location.pathname || "");
+    } catch (e) {
+      path = "";
+    }
+    // login / terms / setup / maintenance は認証チェック対象外（リダイレクトループ禁止）
     if (
+      /(^|\/)(login|terms|setup|maintenance)(\.html)?\/?$/i.test(path) ||
       here === "login.html" ||
       here === "terms.html" ||
       here === "setup.html" ||
+      here === "maintenance.html" ||
       here === "login" ||
       here === "terms" ||
-      here === "setup"
+      here === "setup" ||
+      here === "maintenance"
     ) {
       return true;
     }
@@ -267,11 +336,11 @@
     if (!strict) return true;
 
     if (!isLoggedIn()) {
-      location.replace("login.html");
+      location.replace("/login");
       return false;
     }
     if (!hasAcceptedTerms()) {
-      location.replace("terms.html");
+      location.replace("/terms");
       return false;
     }
     return true;
@@ -297,6 +366,7 @@
     acceptTerms: acceptTerms,
     completeOnboarding: completeOnboarding,
     logout: logout,
+    forceClearAuthState: forceClearAuthState,
     requireAuth: requireAuth,
     refreshMe: refreshMe,
     current: readAuth,

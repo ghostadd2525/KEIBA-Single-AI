@@ -1,0 +1,41 @@
+{
+  "schema_version": "expect-v81-pattern/1.0",
+  "week_id": "2026-W31",
+  "window_weeks": 4,
+  "weeks_included": [
+    "2026-W30",
+    "2026-W31"
+  ],
+  "race_total": 0,
+  "distribution_pct": {
+    "candidate_pool": 0,
+    "repick": 0,
+    "delete": 0,
+    "purchase": 0,
+    "confidence": 0,
+    "world": 0,
+    "subworld": 0,
+    "ranking": 0,
+    "features": 0,
+    "ops_data": 0,
+    "unknown": 0
+  },
+  "ranked": [],
+  "week_summaries": [
+    {
+      "week": "2026-W30",
+      "primary_family": null,
+      "scores": null,
+      "frequency_pct": null,
+      "event_count": null
+    },
+    {
+      "week": "2026-W31",
+      "primary_family": null,
+      "scores": null,
+      "frequency_pct": null,
+      "event_count": null
+    }
+  ],
+  "generated_at": "2026-07-26T23:56:20.529Z"
+}

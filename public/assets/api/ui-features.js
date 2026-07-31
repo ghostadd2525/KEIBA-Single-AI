@@ -17,12 +17,23 @@
     v11_system_health: false,
     v11_ops_dashboard: false,
     v11_auto_maintenance: false,
-    /** Version 2 Explainability */
-    v2_explain: false,
-    v2_race_cards: false,
-    v2_race_list_ui: false,
+    /**
+     * Version 2 — production defaults.
+     * If /config/beta.json is missing or unparsable, falling back to false
+     * routes the race list through Prediction.list without date (400) and
+     * leaves the UI stuck on loading / error. Prefer catalog (v2) path.
+     */
+    v2_explain: true,
+    v2_race_cards: true,
+    v2_race_list_ui: true,
     /** Version 2 Operations — PI Health Dashboard 基盤 */
-    v2_ops_dashboard: false,
+    v2_ops_dashboard: true,
+    /**
+     * I3 — Detail page only. Default OFF = Prediction path.
+     * ON = /api/single/detail/:id (Single when core available, else Prediction fallback).
+     * Must NEVER be consulted by races.html / list cache.
+     */
+    single_ai_detail: false,
   };
 
   var cache = null;

@@ -395,15 +395,53 @@ body.is-race-search {
   min-height: 96px;
 }
 
+.race-data-status {
+  margin: 0 0 12px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(193, 162, 109, 0.28);
+  background: rgba(16, 20, 28, 0.92);
+}
+
+.race-data-status[hidden] {
+  display: none !important;
+}
+
+.race-data-status__msg {
+  margin: 0;
+  font-size: 0.92rem;
+  line-height: 1.45;
+  color: #e8e2d6;
+}
+
+.race-data-status.is-loading {
+  border-color: rgba(140, 170, 210, 0.35);
+  background: rgba(24, 32, 44, 0.95);
+}
+
+.race-data-status.is-pending {
+  border-color: rgba(193, 162, 109, 0.4);
+  background: rgba(36, 28, 18, 0.92);
+}
+
+.race-data-status.is-error {
+  border-color: rgba(200, 110, 100, 0.45);
+  background: rgba(40, 20, 20, 0.92);
+}
+
+.race-meta-card[data-data-status-mount="detail"] {
+  position: relative;
+}
+
 .race-item[hidden],
 .race-item.is-filtered-out {
   display: none !important;
 }
 
-.race-item--bg1 { background-image: url("./images/race-bg-1.png"); }
-.race-item--bg2 { background-image: url("./images/race-bg-2.png"); }
-.race-item--bg3 { background-image: url("./images/race-bg-3.png"); }
-.race-item--bg4 { background-image: url("./images/race-bg-4.png"); }
+.race-item--bg1 { background-image: url("./images/race-bg-1.webp"); }
+.race-item--bg2 { background-image: url("./images/race-bg-2.webp"); }
+.race-item--bg3 { background-image: url("./images/race-bg-3.webp"); }
+.race-item--bg4 { background-image: url("./images/race-bg-4.webp"); }
 
 .race-item::before {
   content: "";
@@ -425,11 +463,44 @@ body.is-race-search {
   padding-right: 4px;
 }
 
+/* お気に入り: 右上固定のまま、ガラス風の見た目のみ調整 */
 .race-item .fav-btn {
   position: absolute;
   top: 10px;
   right: 10px;
   z-index: 2;
+  width: 30px;
+  height: 30px;
+  min-width: 30px;
+  min-height: 30px;
+  padding: 0;
+  border-radius: 9px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.race-item .fav-btn .fav-star {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.38);
+}
+
+.race-item .fav-btn.is-active,
+.race-item .fav-btn[aria-pressed="true"] {
+  border-color: rgba(229, 199, 143, 0.55);
+  background: rgba(193, 162, 109, 0.28);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 231, 168, 0.22),
+    0 0 12px rgba(193, 162, 109, 0.18);
+}
+
+.race-item .fav-btn.is-active .fav-star,
+.race-item .fav-btn[aria-pressed="true"] .fav-star {
+  color: #f0d78c;
+  filter: drop-shadow(0 0 4px rgba(240, 215, 140, 0.45));
 }
 
 .race-item-side {
@@ -468,20 +539,32 @@ body.is-race-search {
   text-shadow: none;
 }
 
+/* 詳細を見る: グリッド配置は維持し、見た目のみ上品に */
 .btn-detail {
   justify-self: end;
   align-self: end;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   height: 30px;
   padding: 0 12px;
   border-radius: 999px;
-  border: 1px solid rgba(193, 162, 109, 0.55);
-  color: var(--gold-soft);
+  border: 1px solid rgba(193, 162, 109, 0.4);
+  color: rgba(229, 199, 143, 0.88);
   font-size: 11px;
   font-weight: 700;
-  background: rgba(0, 0, 0, 0.45);
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
+  letter-spacing: 0.04em;
+  background: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
   white-space: nowrap;
+}
+
+.race-item:hover .btn-detail {
+  border-color: rgba(229, 199, 143, 0.62);
+  color: #ffe7a8;
+  background: rgba(193, 162, 109, 0.16);
 }
 
 .race-item-place {
@@ -1061,7 +1144,7 @@ body.v2-race-list-ui .race-conf {
   font-variant-numeric: tabular-nums;
 }
 
-/* オッズ変動AI — 会場アコーディオン */
+/* オッズ変動AI — 会場アコーディオン（コンパクト） */
 .odds-venue-acc {
   display: flex;
   flex-direction: column;
@@ -1079,10 +1162,11 @@ body.v2-race-list-ui .race-conf {
 .odds-venue-acc-trigger {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   width: 100%;
   margin: 0;
-  padding: 14px 4px;
+  padding: 8px 2px;
+  min-height: 34px;
   border: 0;
   background: transparent;
   color: inherit;
@@ -1093,8 +1177,8 @@ body.v2-race-list-ui .race-conf {
 }
 
 .odds-venue-acc-chevron {
-  width: 0.55em;
-  height: 0.55em;
+  width: 0.45em;
+  height: 0.45em;
   border-right: 2px solid var(--muted, #9aa3b2);
   border-bottom: 2px solid var(--muted, #9aa3b2);
   transform: rotate(-45deg);
@@ -1110,22 +1194,24 @@ body.v2-race-list-ui .race-conf {
 .odds-venue-acc-name {
   flex: 1 1 auto;
   font-weight: 700;
-  font-size: 15px;
+  font-size: 13px;
+  line-height: 1.2;
   color: #fff;
 }
 
 .odds-venue-acc-count {
   flex: 0 0 auto;
-  min-width: 1.6em;
+  min-width: 1.4em;
   text-align: center;
-  font-size: 12px;
+  font-size: 11px;
+  line-height: 1;
   color: var(--muted, #9aa3b2);
 }
 
 .odds-venue-acc-panel {
   display: grid;
-  gap: 6px;
-  padding: 0 2px 12px 22px;
+  gap: 4px;
+  padding: 0 2px 8px 18px;
 }
 
 /* hidden / 非 is-open を display:grid より優先（アコーディオン閉） */
@@ -1142,13 +1228,15 @@ body.v2-race-list-ui .race-conf {
   display: block;
   width: 100%;
   margin: 0;
-  padding: 12px 14px;
+  padding: 7px 10px;
+  min-height: 32px;
   border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 10px;
+  border-radius: 8px;
   background: rgba(255, 255, 255, 0.04);
   color: #fff;
-  font-size: 14px;
+  font-size: 12px;
   font-weight: 600;
+  line-height: 1.25;
   text-align: left;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
@@ -1572,6 +1660,64 @@ body.v2-race-list-ui .race-conf {
   color: #e0a06a;
 }
 
+.strategy-alloc-why {
+  margin-top: 12px;
+}
+
+.strategy-alloc-why h4,
+.strategy-risk-block h4 {
+  margin: 0 0 8px;
+  font-size: 12px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.72);
+  letter-spacing: 0.02em;
+}
+
+.strategy-alloc-item {
+  margin: 0 0 8px;
+}
+
+.strategy-alloc-item:last-child {
+  margin-bottom: 0;
+}
+
+.strategy-alloc-item strong {
+  display: block;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--gold-soft);
+}
+
+.strategy-alloc-item p {
+  margin: 2px 0 0;
+  font-size: 12px;
+  line-height: 1.4;
+  color: rgba(255, 255, 255, 0.78);
+}
+
+.strategy-risk-block {
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.strategy-risk-list {
+  margin: 0;
+  padding: 0 0 0 1.1em;
+  list-style: disc;
+}
+
+.strategy-risk-list li {
+  margin: 0 0 6px;
+  font-size: 12px;
+  line-height: 1.4;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.strategy-risk-list li:last-child {
+  margin-bottom: 0;
+}
+
 .strategy-actions {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -1903,6 +2049,16 @@ body.v2-race-list-ui .race-conf {
   color: var(--gold-soft);
 }
 
+.fav-ai-pending {
+  margin: 4px 0 0;
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.fav-ai-card.is-pending {
+  opacity: 0.85;
+}
+
 @media (max-width: 360px) {
   .pie-layout {
     grid-template-columns: 1fr;
@@ -2006,8 +2162,15 @@ body.v2-race-list-ui .race-conf {
 }
 
 .page-odds .odds-race-panel h3 {
-  margin: 0 0 8px;
+  margin: 0 0 4px;
   flex: 0 0 auto;
+  font-size: 14px;
+  line-height: 1.2;
+}
+
+.page-odds #oddsChartMeta {
+  white-space: pre-line;
+  line-height: 1.35;
 }
 
 .page-odds .odds-race-select-label {
@@ -2129,7 +2292,7 @@ body.v2-race-list-ui .race-conf {
 
 .odds-legend li {
   display: grid;
-  grid-template-columns: 10px 1fr auto;
+  grid-template-columns: 10px minmax(0, 1fr) auto;
   gap: 8px;
   align-items: center;
   font-size: 12px;
@@ -2143,8 +2306,17 @@ body.v2-race-list-ui .race-conf {
   display: block;
 }
 
-.odds-legend li b {
+.odds-legend__horse {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.odds-legend li b,
+.odds-legend__odds {
   font-variant-numeric: tabular-nums;
+  font-weight: 700;
   color: var(--gold-soft);
 }
 
@@ -2195,7 +2367,7 @@ body.v2-race-list-ui .race-conf {
 
 .fortune-result-row {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: center;
   gap: 14px;
   margin-top: 14px;
@@ -2211,17 +2383,22 @@ body.v2-race-list-ui .race-conf {
   background: #0a0c10;
   border: 1px solid rgba(193, 162, 109, 0.28);
   box-shadow: 0 8px 22px rgba(0, 0, 0, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  box-sizing: border-box;
 }
 
 .fortune-emotion img {
   display: block;
-  width: 118%;
-  height: 118%;
-  max-width: none;
-  object-fit: cover;
-  /* キャラを左下寄せ（スタンプ内ラベルは切れてもOK） */
-  object-position: 28% 100%;
-  transform: translate(-6%, 10%);
+  width: 100%;
+  height: 100%;
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  object-position: center center;
+  transform: none;
   background: #0a0c10;
 }
 
@@ -2232,6 +2409,7 @@ body.v2-race-list-ui .race-conf {
 .fortune-result-text {
   flex: 1 1 auto;
   min-width: 0;
+  text-align: left;
 }
 
 .fortune-rank-label {
@@ -2259,7 +2437,9 @@ body.v2-race-list-ui .race-conf {
   color: var(--gold-soft);
 }
 
+/* 運勢は大吉〜末吉のみ。感情名は表示しない（戻すときは display を削除） */
 .fortune-emotion-label {
+  display: none !important;
   margin: 8px 0 0;
   font-size: 11px;
   font-weight: 700;
@@ -2425,6 +2605,708 @@ body.v2-race-list-ui .race-conf {
   font-size: 13px;
   font-weight: 700;
   color: var(--gold-soft);
+}
+
+/* —— 月間成績（家計簿） —— */
+.ledger-month-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 0 0 12px;
+}
+
+.ledger-month-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  border: 1px solid rgba(193, 162, 109, 0.28);
+  background: rgba(26, 34, 48, 0.9);
+  color: var(--gold-soft);
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.ledger-month-nav-label {
+  margin: 0;
+  font-family: var(--display);
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.balance-hero-value.is-plus { color: #7ddea8; }
+.balance-hero-value.is-minus { color: #f0a0a0; }
+
+.ledger-races h3,
+.balance-week h3 {
+  margin: 0 0 10px;
+  font-size: 14px;
+}
+
+.ledger-race-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0;
+}
+
+.ledger-race-list li a {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  gap: 10px;
+  align-items: center;
+  padding: 12px 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  text-decoration: none;
+  color: inherit;
+}
+
+.ledger-race-list li:first-child a { border-top: 0; padding-top: 0; }
+
+.ledger-race-list span {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.ledger-race-list b { font-size: 14px; }
+.ledger-race-list b.is-plus,
+.balance-week-list b.is-plus,
+.result-pnl b.is-plus,
+.stat-cell b.is-plus { color: #7ddea8; }
+.ledger-race-list b.is-minus,
+.balance-week-list b.is-minus,
+.result-pnl b.is-minus,
+.stat-cell b.is-minus { color: #f0a0a0; }
+
+.ledger-race-list em {
+  font-style: normal;
+  font-size: 12px;
+  color: var(--gold-soft);
+  font-weight: 700;
+}
+
+.ledger-race-empty {
+  padding: 8px 0;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.ledger-race-empty p {
+  margin: 6px 0 0;
+  font-size: 12px;
+}
+
+/* —— 購入履歴アコーディオン —— */
+.ph-lead {
+  margin: 0 0 14px;
+  font-size: 13px;
+}
+
+.ph-stack {
+  display: grid;
+  gap: 10px;
+}
+
+.ph-month,
+.ph-race {
+  border: 1px solid rgba(193, 162, 109, 0.22);
+  border-radius: 14px;
+  background: rgba(16, 22, 32, 0.92);
+  overflow: hidden;
+}
+
+.ph-race {
+  border-radius: 10px;
+  background: rgba(8, 12, 18, 0.55);
+}
+
+.ph-month > summary,
+.ph-race > summary {
+  list-style: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 14px 14px 14px 36px;
+  position: relative;
+  user-select: none;
+}
+
+.ph-month > summary::-webkit-details-marker,
+.ph-race > summary::-webkit-details-marker {
+  display: none;
+}
+
+.ph-month > summary::before,
+.ph-race > summary::before {
+  content: "▶";
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 11px;
+  color: var(--gold-soft);
+  transition: transform 0.15s ease;
+}
+
+.ph-month[open] > summary::before,
+.ph-race[open] > summary::before {
+  content: "▼";
+}
+
+.ph-month-title {
+  font-family: var(--display);
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+}
+
+.ph-month-meta {
+  font-size: 12px;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.ph-month-meta b.is-plus,
+.ph-race-profit.is-plus,
+.ph-dl dd.is-plus,
+.ph-month-stats dd.is-plus {
+  color: #7ddea8;
+}
+
+.ph-month-meta b.is-minus,
+.ph-race-profit.is-minus,
+.ph-dl dd.is-minus,
+.ph-month-stats dd.is-minus {
+  color: #f0a0a0;
+}
+
+.ph-month-body {
+  padding: 0 14px 14px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.ph-month-stats {
+  margin: 12px 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px 12px;
+}
+
+.ph-month-stats div,
+.ph-dl div {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  align-items: baseline;
+}
+
+.ph-month-stats dt,
+.ph-dl dt {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.ph-month-stats dd,
+.ph-dl dd {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.ph-race-list {
+  display: grid;
+  gap: 8px;
+}
+
+.ph-race-title {
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+.ph-race-profit {
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+.ph-race-detail {
+  padding: 0 12px 12px 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.ph-race-detail h4 {
+  margin: 14px 0 8px;
+  font-size: 12px;
+  color: var(--gold-soft);
+}
+
+.ph-dl {
+  margin: 12px 0 0;
+  display: grid;
+  gap: 8px;
+}
+
+.ph-tickets,
+.ph-marks {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 6px;
+}
+
+.ph-tickets li,
+.ph-marks li {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  align-items: baseline;
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.03);
+  font-size: 12px;
+}
+
+.ph-tickets li.is-hit {
+  background: rgba(125, 222, 168, 0.08);
+}
+
+.ph-tickets li.is-miss b {
+  color: #f0a0a0;
+}
+
+.ph-tickets li.is-hit b {
+  color: #7ddea8;
+}
+
+.ph-tickets li.is-pending b {
+  color: var(--muted);
+}
+
+.ph-result-btn {
+  display: inline-flex;
+  margin-top: 14px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1px solid rgba(193, 162, 109, 0.35);
+  background: rgba(193, 162, 109, 0.12);
+  color: var(--gold-soft);
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.ph-empty,
+.ph-empty-card {
+  margin: 8px 0 0;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.ph-empty-card {
+  padding: 20px 16px;
+  border-radius: 14px;
+  border: 1px solid rgba(193, 162, 109, 0.18);
+  background: rgba(16, 22, 32, 0.85);
+}
+
+.ph-empty-card p:first-child {
+  margin: 0 0 6px;
+  color: #fff;
+  font-weight: 700;
+}
+
+.ph-retry {
+  margin-left: 8px;
+  color: var(--gold-soft);
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.result-finish,
+.result-marks {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+
+.result-finish li,
+.result-marks li {
+  display: flex;
+  gap: 10px;
+  align-items: baseline;
+  font-size: 14px;
+}
+
+.result-finish span,
+.result-marks span {
+  min-width: 2.5em;
+  color: var(--muted);
+  font-weight: 700;
+}
+
+.result-bet {
+  padding: 12px 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.result-bet:first-child { border-top: 0; padding-top: 0; }
+
+.result-bet-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  align-items: baseline;
+}
+
+.result-bet-top h4 {
+  margin: 0;
+  font-size: 14px;
+}
+
+.result-bet-top b { font-size: 13px; color: var(--muted); }
+.result-bet.is-hit .result-bet-top b { color: #7ddea8; }
+.result-bet p { margin: 6px 0 0; font-size: 13px; }
+
+.result-pnl {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.result-pnl div {
+  display: grid;
+  gap: 4px;
+}
+
+.result-pnl span {
+  font-size: 11px;
+  color: var(--muted);
+  font-weight: 700;
+}
+
+.result-pnl b {
+  font-size: 16px;
+}
+
+/* purchase register */
+.purchase-card .muted { margin-top: 0; }
+.purchase-presets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 12px 0;
+}
+.purchase-preset {
+  min-width: 72px;
+  height: 40px;
+  border-radius: 12px;
+  border: 1px solid rgba(193, 162, 109, 0.28);
+  background: rgba(26, 34, 48, 0.85);
+  color: inherit;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+.purchase-preset.is-active {
+  border-color: rgba(193, 162, 109, 0.7);
+  background: linear-gradient(180deg, rgba(229, 199, 143, 0.22), rgba(26, 34, 48, 0.9));
+  color: #ffe7a8;
+}
+.purchase-other {
+  display: grid;
+  gap: 6px;
+  margin: 0 0 12px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--muted);
+}
+.purchase-other input {
+  height: 44px;
+  border-radius: 12px;
+  border: 1px solid rgba(193, 162, 109, 0.28);
+  background: #121820;
+  color: inherit;
+  padding: 0 12px;
+  font: inherit;
+  font-size: 16px;
+}
+.purchase-types {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  margin: 8px 0 12px;
+}
+.purchase-type {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  font-size: 13px;
+  font-weight: 600;
+}
+.purchase-summary {
+  margin: 0 0 8px;
+  font-size: 14px;
+  font-weight: 700;
+}
+.ai-stats-wrap { margin-top: 16px; }
+.result-ai-block h4,
+.result-user-block h4 {
+  margin: 12px 0 8px;
+  font-size: 13px;
+  color: var(--gold-soft);
+}
+.result-card-lead {
+  margin: -4px 0 10px;
+  font-size: 12px;
+  line-height: 1.45;
+}
+.home-win5-slot { margin-top: 12px; }
+.ai-card--win5 {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  padding: 16px;
+  border-radius: var(--radius-lg);
+  border: 1px solid rgba(193, 162, 109, 0.35);
+  background: linear-gradient(160deg, #1c2838, #121820);
+}
+
+/* —— AI Challenge dashboard (V7) —— */
+.challenge-banner {
+  padding: 18px 16px;
+  border-radius: var(--radius-lg);
+  border: 1px solid rgba(193, 162, 109, 0.3);
+  background:
+    radial-gradient(120% 80% at 0% 0%, rgba(125, 222, 168, 0.12), transparent 50%),
+    linear-gradient(160deg, #1a2230 0%, #121820 100%);
+  margin-bottom: 14px;
+}
+.challenge-banner.is-achieved {
+  border-color: rgba(125, 222, 168, 0.45);
+  background:
+    radial-gradient(120% 80% at 100% 0%, rgba(125, 222, 168, 0.22), transparent 55%),
+    linear-gradient(160deg, #1a2a24 0%, #121820 100%);
+}
+.challenge-kicker {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--muted);
+}
+.challenge-banner h2 {
+  margin: 6px 0 12px;
+  font-family: var(--display);
+  font-size: clamp(22px, 6vw, 28px);
+}
+.challenge-scores {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.challenge-scores span {
+  display: block;
+  font-size: 11px;
+  color: var(--muted);
+  font-weight: 700;
+}
+.challenge-scores b {
+  font-size: 18px;
+  font-weight: 700;
+}
+.challenge-msg {
+  margin: 12px 0 0;
+  font-size: 14px;
+  font-weight: 700;
+  color: #ffe7a8;
+}
+.dash-cards {
+  display: grid;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+.dash-score-card {
+  padding: 14px;
+  border-radius: var(--radius-lg);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--card);
+}
+.dash-score-card h3 {
+  margin: 0;
+  font-size: 13px;
+  color: var(--muted);
+}
+.dash-card-profit {
+  margin: 8px 0 12px;
+  font-family: var(--display);
+  font-size: clamp(28px, 8vw, 36px);
+  font-weight: 700;
+  line-height: 1;
+}
+.dash-card-profit.is-plus { color: #7ddea8; }
+.dash-card-profit.is-minus { color: #f0a0a0; }
+.dash-card-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px 12px;
+}
+.dash-card-grid span {
+  display: block;
+  font-size: 11px;
+  color: var(--muted);
+  font-weight: 700;
+}
+.dash-card-grid b { font-size: 14px; }
+.purchase-lab-section[hidden] { display: none !important; }
+.purchase-lab {
+  border-radius: var(--radius-lg);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--card);
+  padding: 12px 14px;
+}
+.purchase-lab > summary {
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--muted);
+  list-style: none;
+}
+.purchase-lab > summary::-webkit-details-marker { display: none; }
+.purchase-lab > summary::before {
+  content: "› ";
+  display: inline-block;
+  transition: transform 0.15s ease;
+}
+.purchase-lab[open] > summary::before { transform: rotate(90deg); }
+.purchase-lab-note {
+  margin: 10px 0 12px;
+  font-size: 12px;
+  color: var(--muted);
+  line-height: 1.5;
+}
+.purchase-lab-table-wrap { overflow-x: auto; }
+.purchase-lab-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+.purchase-lab-table th,
+.purchase-lab-table td {
+  padding: 8px 6px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  text-align: right;
+  white-space: nowrap;
+}
+.purchase-lab-table th:first-child,
+.purchase-lab-table td:first-child,
+.purchase-lab-table tbody th {
+  text-align: left;
+  font-weight: 600;
+}
+.purchase-lab-table thead th {
+  color: var(--muted);
+  font-weight: 700;
+  border-top: 0;
+}
+.purchase-lab-table td.is-plus { color: #7ddea8; }
+.purchase-lab-table td.is-minus { color: #f0a0a0; }
+.cmp-bars, .cmp-weeks { display: grid; gap: 12px; }
+.cmp-week h4 {
+  margin: 0 0 6px;
+  font-size: 12px;
+  color: var(--muted);
+}
+.cmp-bar-row {
+  display: grid;
+  grid-template-columns: 52px 1fr auto;
+  gap: 8px;
+  align-items: center;
+}
+.cmp-bar-label {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--muted);
+}
+.cmp-bar-track {
+  height: 12px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.06);
+  overflow: hidden;
+}
+.cmp-bar {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  min-width: 8px;
+}
+.cmp-bar--ai { background: linear-gradient(90deg, #c1a26d, #e5c78f); }
+.cmp-bar--you { background: linear-gradient(90deg, #4d9b7a, #7ddea8); }
+.cmp-bar.is-neg { opacity: 0.55; }
+.cmp-bar-row b { font-size: 12px; min-width: 4.5em; text-align: right; }
+
+.challenge-progress {
+  margin-top: 4px;
+}
+.challenge-progress .dash-card-grid {
+  margin-top: 4px;
+}
+.page-challenge .screen {
+  padding-bottom: calc(168px + env(safe-area-inset-bottom, 0px));
+}
+
+.home-challenge-slot { margin: 12px 0; }
+.home-challenge {
+  padding: 14px 16px;
+  border-radius: var(--radius-lg);
+  border: 1px solid rgba(193, 162, 109, 0.3);
+  background: linear-gradient(160deg, #1a2230, #121820);
+}
+.home-challenge.is-achieved {
+  border-color: rgba(125, 222, 168, 0.4);
+}
+.home-challenge-kicker {
+  margin: 0;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--muted);
+  letter-spacing: 0.04em;
+}
+.home-challenge h3 {
+  margin: 6px 0 8px;
+  font-size: 18px;
+}
+.home-challenge-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 4px 0;
+  font-size: 13px;
+}
+.home-challenge-row span { color: var(--muted); }
+.home-challenge-msg,
+.home-challenge-kaoba {
+  margin: 8px 0 0;
+  font-size: 13px;
+  font-weight: 700;
+  color: #ffe7a8;
+}
+.home-challenge-link {
+  display: inline-flex;
+  margin-top: 10px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--gold-soft);
+  text-decoration: none;
 }
 
 /* —— 保存レース（互換） —— */
@@ -2651,6 +3533,33 @@ body.v2-race-list-ui .race-conf {
   background: transparent;
   color: var(--gold-soft);
   border: 1px solid rgba(193, 162, 109, 0.45);
+}
+
+.admin-ops-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.admin-ops-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 40px;
+  padding: 8px 14px;
+  border-radius: 10px;
+  border: 1px solid rgba(193, 162, 109, 0.45);
+  background: rgba(193, 162, 109, 0.1);
+  color: var(--gold-soft, #e5c78f);
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.admin-ops-link:hover {
+  border-color: rgba(229, 199, 143, 0.7);
+  background: rgba(193, 162, 109, 0.18);
 }
 
 .invite-result {
@@ -2911,7 +3820,15 @@ body.v2-race-list-ui .race-conf {
 .page-screen .home-chrome,
 .page-screen .main:not(.is-visible) { display: none; }
 
-.page-screen .mascot-ka0ba { z-index: 40; }
+.page-screen .mascot-ka0ba { z-index: 28; }
+
+.page-tab .mascot-ka0ba {
+  z-index: 28;
+}
+
+.page-history .screen {
+  padding-bottom: calc(160px + env(safe-area-inset-bottom, 0px));
+}
 
 /* Version 2 Explainability (v2_explain) */
 .explain-v2 { display: grid; gap: 12px; }
@@ -2947,6 +3864,47 @@ body.v2-race-list-ui .race-conf {
   text-underline-offset: 2px;
 }
 .explain-honmei-decision { margin: 6px 0 0; font-size: 12px; }
+
+/* UI10 — 4ブロック解説 */
+.explain-ux-section-title {
+  margin-bottom: 4px;
+}
+.explain-ux {
+  display: grid;
+  gap: 16px;
+}
+.explain-ux-block {
+  padding-top: 4px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+.explain-ux-block:first-child {
+  border-top: 0;
+  padding-top: 0;
+}
+.explain-ux-block h3 {
+  margin: 0 0 8px;
+  font-size: 15px;
+  font-weight: 700;
+}
+.explain-ux-p {
+  margin: 0 0 8px;
+  line-height: 1.6;
+  font-size: 14px;
+}
+.explain-ux-list {
+  margin: 0;
+  padding-left: 1.2em;
+  display: grid;
+  gap: 4px;
+  font-size: 13px;
+  line-height: 1.45;
+}
+.pace-card-hint {
+  margin: 0 0 10px;
+  font-size: 12px;
+  line-height: 1.5;
+  opacity: 0.75;
+}
 
 /* V5 Phase 3 — Conversation UI CTAs（race AI タブ） */
 .v5-conversation-ctas {

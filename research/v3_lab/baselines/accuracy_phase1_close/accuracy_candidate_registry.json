@@ -1,0 +1,52 @@
+{
+  "registry_id": "v3-accuracy-candidate-registry/1.0",
+  "phase": "Accuracy Phase 1",
+  "closed": true,
+  "close_id": "v3-accuracy-phase1-close/1.0",
+  "close_date": "2026-07-24",
+  "baseline": {
+    "id": "v3-lab-baseline-p5-v1",
+    "path": "research/v3_lab/baselines/lab_baseline_p5.json",
+    "control_hit": 218,
+    "updated": false,
+    "note": "P5 Lab Baseline unchanged at Phase 1 Close"
+  },
+  "decision": {
+    "simultaneous_on": false,
+    "production_wiring": false,
+    "stack_both": false
+  },
+  "primary": {
+    "rank": 1,
+    "candidate_id": "A-01",
+    "experiment_id": "v3-a01-d1-recal",
+    "alias": "v3-rank-d1-recal-285r-ab",
+    "policy_id": "D1-Recalibrator",
+    "evaluation_id": "v3-eval-a01-d1",
+    "flag": "F_V3_RANK_D1_ENABLED",
+    "flag_default": false,
+    "lab_hit": 246,
+    "churn_hit": 0,
+    "status": "lab_primary_candidate",
+    "validation": "PASS",
+    "contract": "v3-lab-evaluation/2.0",
+    "frozen_logic": true
+  },
+  "secondary": {
+    "rank": 2,
+    "candidate_id": "A-02",
+    "experiment_id": "v3-a02-d2-rerank",
+    "alias": "v3-rank-d2-rerank-285r-ab",
+    "policy_id": "D2-Reranker",
+    "evaluation_id": "v3-eval-a02-d2",
+    "flag": "F_V3_RANK_D2_ENABLED",
+    "flag_default": false,
+    "lab_hit": 242,
+    "churn_hit": 0,
+    "status": "lab_secondary_candidate",
+    "validation": "Lab PASS only",
+    "contract": "v3-lab-evaluation/2.1",
+    "frozen_logic": true
+  },
+  "review_ref": "docs/releases/v3-accuracy-candidate-review.md"
+}

@@ -1,0 +1,129 @@
+{
+  "race_id": "2026-07-25-02-08",
+  "race_date": "2026-07-25",
+  "course": "中京",
+  "venue": "中京",
+  "race_number": 8,
+  "race_no": 8,
+  "race_name": "香嵐渓特別",
+  "race_label": "中京8R",
+  "status": "published",
+  "prediction_available": true,
+  "prediction": {
+    "race_id": "2026-07-25-02-08",
+    "candidates": [
+      {
+        "CandidateID": "ブラックシャリマー",
+        "Rank": 1,
+        "Confidence": 0.1239147285180735,
+        "HorseNumber": 10,
+        "WorldMeta": "midupper_world",
+        "SubWorldMeta": "midupper_route"
+      },
+      {
+        "CandidateID": "キシダンチョウ",
+        "Rank": 2,
+        "Confidence": 0.09323174270025296,
+        "HorseNumber": 3,
+        "WorldMeta": "midupper_world",
+        "SubWorldMeta": "midupper_route"
+      },
+      {
+        "CandidateID": "メイショウナルカミ",
+        "Rank": 3,
+        "Confidence": 0.08724371720624419,
+        "HorseNumber": 12,
+        "WorldMeta": "midupper_world",
+        "SubWorldMeta": "midupper_route"
+      },
+      {
+        "CandidateID": "サイモンシャリオ",
+        "Rank": 4,
+        "Confidence": 0.07322657512616484,
+        "HorseNumber": 5,
+        "WorldMeta": "midupper_world",
+        "SubWorldMeta": "midupper_route"
+      },
+      {
+        "CandidateID": "サラコスティ",
+        "Rank": 5,
+        "Confidence": 0.07318350939402474,
+        "HorseNumber": 6,
+        "WorldMeta": "midupper_world",
+        "SubWorldMeta": "midupper_route"
+      },
+      {
+        "CandidateID": "サンダーバード",
+        "Rank": 6,
+        "Confidence": 0.07121730489572092,
+        "HorseNumber": 7,
+        "WorldMeta": "midupper_world",
+        "SubWorldMeta": "midupper_route"
+      },
+      {
+        "CandidateID": "コスモグローリー",
+        "Rank": 7,
+        "Confidence": 0.07085072646708501,
+        "HorseNumber": 4,
+        "WorldMeta": "midupper_world",
+        "SubWorldMeta": "midupper_route"
+      },
+      {
+        "CandidateID": "スノースケープ",
+        "Rank": 8,
+        "Confidence": 0.07049077834577956,
+        "HorseNumber": 8,
+        "WorldMeta": "midupper_world",
+        "SubWorldMeta": "midupper_route"
+      },
+      {
+        "CandidateID": "アンビアンス",
+        "Rank": 9,
+        "Confidence": 0.06853307092148123,
+        "HorseNumber": 2,
+        "WorldMeta": "midupper_world",
+        "SubWorldMeta": "midupper_route"
+      },
+      {
+        "CandidateID": "ロードフィレール",
+        "Rank": 10,
+        "Confidence": 0.06794114538009584,
+        "HorseNumber": 13,
+        "WorldMeta": "midupper_world",
+        "SubWorldMeta": "midupper_route"
+      },
+      {
+        "CandidateID": "アトレッタ",
+        "Rank": 11,
+        "Confidence": 0.06718826265144545,
+        "HorseNumber": 1,
+        "WorldMeta": "midupper_world",
+        "SubWorldMeta": "midupper_route"
+      },
+      {
+        "CandidateID": "パイオニアスクエア",
+        "Rank": 12,
+        "Confidence": 0.0668549741225718,
+        "HorseNumber": 9,
+        "WorldMeta": "midupper_world",
+        "SubWorldMeta": "midupper_route"
+      },
+      {
+        "CandidateID": "メイショウキンタイ",
+        "Rank": 13,
+        "Confidence": 0.06612346427106,
+        "HorseNumber": 11,
+        "WorldMeta": "midupper_world",
+        "SubWorldMeta": "midupper_route"
+      }
+    ],
+    "world": "midupper_world",
+    "sub_world": "midupper_route",
+    "overall_confidence": 0.07600206112716384,
+    "core_version": "ai-core-migrated/1.0-phase1",
+    "meta": {
+      "generated_at": "2026-07-25T15:53:10.682852+09:00",
+      "source": "local_core_pipeline"
+    }
+  }
+}

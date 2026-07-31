@@ -1,0 +1,51 @@
+{
+  "schema_version": "expect-race-day-archive/7.0",
+  "race_date": "2026-07-19",
+  "run_id": 1,
+  "archived_at": "2026-07-26T01:35:28.671886+00:00",
+  "pipeline_version": "ops-result-automation/7.0",
+  "race_ids": [
+    "2026-07-19-04-11"
+  ],
+  "race_count": 1,
+  "kept": {
+    "predictions": 1,
+    "race_results": 1,
+    "user_race_results": 0,
+    "race_evaluations": 1,
+    "miss_evidence": 1,
+    "improvement_evidence_index_miss": 1
+  },
+  "ai_stats": {
+    "hits": 0,
+    "misses": 1,
+    "evaluated": 1
+  },
+  "settlement": {
+    "settled": 0,
+    "points_awarded_total": 0,
+    "users_leveled_up": 0
+  },
+  "client_purge": {
+    "action": "purge_list_and_detail_caches",
+    "local_storage_keys": [
+      "expect_race_list_cache_v4",
+      "expect_race_list_cache_v2",
+      "expect_race_detail_cache_v1",
+      "expect_pb_prefetch_v1",
+      "expect_race_meta_v1"
+    ],
+    "indexeddb": {
+      "db": "expect_keiba_v1",
+      "store": "race_detail"
+    },
+    "race_ids": [
+      "2026-07-19-04-11"
+    ],
+    "delete_server_data": false
+  },
+  "research": {
+    "miss_queued": true,
+    "source": "improvement_evidence_index + Miss JSON"
+  }
+}

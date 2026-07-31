@@ -54,7 +54,7 @@
       name: "函館記念",
       badge: "GIII",
       postTime: "15:45",
-      image: "assets/images/race-bg-1.png",
+      image: "assets/images/race-bg-1.webp",
       bg: 1,
       ai: { overall: 88, pedigree: 90, pace: 86, jockey: 84, form: 91, odds: 79 }
     },
@@ -66,7 +66,7 @@
       name: "メインレース",
       badge: "GIII",
       postTime: "15:40",
-      image: "assets/images/race-bg-2.png",
+      image: "assets/images/race-bg-2.webp",
       bg: 2,
       ai: { overall: 92, pedigree: 94, pace: 90, jockey: 88, form: 93, odds: 82 }
     },
@@ -78,7 +78,7 @@
       name: "ラジオNIKKEI賞",
       badge: "GIII",
       postTime: "15:25",
-      image: "assets/images/race-bg-3.png",
+      image: "assets/images/race-bg-3.webp",
       bg: 3,
       ai: { overall: 76, pedigree: 78, pace: 74, jockey: 80, form: 72, odds: 70 }
     },
@@ -90,7 +90,7 @@
       name: "函館2歳S",
       badge: "GIII",
       postTime: "15:10",
-      image: "assets/images/race-bg-4.png",
+      image: "assets/images/race-bg-4.webp",
       bg: 4,
       ai: { overall: 81, pedigree: 83, pace: 79, jockey: 77, form: 85, odds: 74 }
     },
@@ -102,7 +102,7 @@
       name: "中山ダート戦",
       badge: "L",
       postTime: "15:30",
-      image: "assets/images/race-bg-1.png",
+      image: "assets/images/race-bg-1.webp",
       bg: 1,
       ai: { overall: 79, pedigree: 76, pace: 82, jockey: 75, form: 80, odds: 78 }
     }
@@ -190,7 +190,7 @@
         name: info.race_name || info.class_label || "",
         badge: info.grade || "",
         postTime: info.post_time || "",
-        image: "assets/images/race-bg-1.png",
+        image: "assets/images/race-bg-1.webp",
         bg: ((Number(raceNo) || 1) % 4) + 1,
       },
       summaryBits
@@ -201,7 +201,17 @@
     if (global.ExpectAnalysisBind && typeof ExpectAnalysisBind.toAiParams === "function") {
       return ExpectAnalysisBind.toAiParams(b, null);
     }
-    var overall = scoreFromBundle(b) || 70;
+    var overall = scoreFromBundle(b);
+    if (overall == null) {
+      return {
+        overall: null,
+        history: null,
+        distance: null,
+        style_fit: null,
+        front: null,
+        pace_resilience: null,
+      };
+    }
     return {
       overall: overall,
       history: overall,
@@ -301,12 +311,12 @@
 
   function defaultAi() {
     return {
-      overall: 70,
-      history: 70,
-      distance: 70,
-      style_fit: 70,
-      front: 70,
-      pace_resilience: 70,
+      overall: null,
+      history: null,
+      distance: null,
+      style_fit: null,
+      front: null,
+      pace_resilience: null,
     };
   }
 
@@ -320,8 +330,20 @@
 
   function getAi(id) {
     if (_bundleCache[id]) return aiFromBundle(_bundleCache[id]);
-    var base = allowCatalog() && CATALOG[id] && CATALOG[id].ai;
-    return Object.assign(defaultAi(), base || {});
+    // Analysis ダッシュボードではモック70%を使わない。
+    // カタログは開発モック許可時のみ。
+    if (allowCatalog() && CATALOG[id] && CATALOG[id].ai) {
+      var c = CATALOG[id].ai;
+      return {
+        overall: c.overall != null ? c.overall : null,
+        history: c.form != null ? c.form : c.pedigree != null ? c.pedigree : null,
+        distance: c.pace != null ? c.pace : null,
+        style_fit: c.jockey != null ? c.jockey : null,
+        front: c.form != null ? c.form : null,
+        pace_resilience: c.odds != null ? c.odds : null,
+      };
+    }
+    return defaultAi();
   }
 
   function storage() {
@@ -522,7 +544,7 @@
 
   function normalize(entry) {
     var base = getMeta(entry.id, entry);
-    var image = entry.image || base.image || "assets/images/race-bg-1.png";
+    var image = entry.image || base.image || "assets/images/race-bg-1.webp";
     var bg = entry.bg || base.bg || 1;
     if (String(image).indexOf("race-bg-") < 0 && base.image) {
       image = base.image;
@@ -690,10 +712,7 @@
   var homeEditMode = false;
 
   function cardHtml(item, editing) {
-    var badge = item.badge
-      ? '<span class="fav-badge">' + escapeHtml(item.badge) + "</span>"
-      : "";
-    var bgClass = "fav-card--bg" + (item.bg || 1);
+    var bgClass = "race-item--bg" + (item.bg || 1);
     var time = item.postTime ? String(item.postTime).trim() : "";
     var metaLine = escapeHtml(item.dateLabel || "");
     if (time) {
@@ -709,39 +728,13 @@
         '" aria-label="お気に入りから削除">×</button>'
       : "";
 
-    // Phase 5: summary 投影は v2_race_list_ui ON のときのみ（Flag OFF = v1.1 恒等）
-    var summaryHtml = "";
-    if (v2RaceListUiOn()) {
-      var parts = [];
-      if (item.honmeiNum != null || item.honmei) {
-        parts.push(
-          "◎ " +
-            (item.honmeiNum != null ? String(item.honmeiNum) + " " : "") +
-            escapeHtml(item.honmei || "")
-        );
-      }
-      if (item.confPct != null) {
-        parts.push(String(item.confPct) + "%");
-      }
-      if (parts.length) {
-        summaryHtml =
-          '<p class="fav-summary">' + parts.join('<span class="fav-meta-sep"> · </span>') + "</p>";
-      }
-    }
-
     return (
       '<a class="fav-card ' +
       bgClass +
       (editing ? " is-editing" : "") +
       '" href="race.html?race_id=' +
-      encodeURIComponent(
-        global.ExpectRaceIdMeta && ExpectRaceIdMeta.normalizeRaceIdYear
-          ? ExpectRaceIdMeta.normalizeRaceIdYear(item.id)
-          : item.id
-      ) +
-      '" style="background-image:url(\'' +
-      escapeAttr(item.image) +
-      "')\">" +
+      encodeURIComponent(item.id) +
+      '">' +
       removeBtn +
       '<div class="fav-card-shade" aria-hidden="true"></div>' +
       '<div class="fav-card-text">' +
@@ -754,8 +747,6 @@
       '<p class="fav-name">' +
       escapeHtml(item.name) +
       "</p>" +
-      summaryHtml +
-      badge +
       "</div>" +
       "</a>"
     );

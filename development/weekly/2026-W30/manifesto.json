@@ -1,0 +1,16 @@
+{
+  "schema_version": "expect-v8-week-manifesto/1.0",
+  "week_id": "2026-W30",
+  "status": "scaffold",
+  "note": "Template copy for current ISO week; Research Mon–Fri only.",
+  "paths": {
+    "mon_analyzer": "mon-analyzer/",
+    "tue_proposal": "tue-proposal/",
+    "wed_canary": "wed-canary/",
+    "thu_baseline": "thu-baseline/",
+    "fri_decision": "fri-decision/",
+    "sat_deploy": "sat-deploy/"
+  },
+  "production_untouched": true,
+  "pe_ce_unchanged": true
+}

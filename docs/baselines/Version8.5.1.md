@@ -47,3 +47,7 @@
 | Regression | PASS |
 | Security | PASS |
 | Baseline Integrity | PASS |
+
+## Related
+
+- Approval Workflow（後続）: [`docs/ops/v8.8-approval-workflow.md`](../ops/v8.8-approval-workflow.md) — Queue 投入条件・Timeout・Deploy Note → Human Deploy。Baseline は 8.5.1 のまま。

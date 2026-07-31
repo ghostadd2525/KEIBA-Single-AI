@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Expect ～ KEIBA AI ～ · WIN5予想</title>
+  <link rel="stylesheet" href="assets/styles.css?v=22" />
+  <link rel="stylesheet" href="assets/screens.css?v=37" />
+  <script src="assets/auth.js?v=6"></script>
+  <script>ExpectAuth.requireAuth();</script>
+</head>
+<body class="page-screen page-tab" data-nav="home">
+  <div class="app">
+    <header class="topbar"><div class="topbar-inner"><div class="topbar-left">
+      <a class="back-btn" href="index.html" aria-label="戻る">‹</a>
+      <div class="brand-block topbar-text topbar-title-only"><p class="brand-name">WIN5予想</p></div>
+    </div></div></header>
+    <div class="screen">
+      <section class="chart-card">
+        <h3>WIN5予想・買い目</h3>
+        <p>Lv100 解放機能です。Prediction Engine とは独立したユーザー向け導線として準備中です。</p>
+        <p class="muted">対象レースの選定・買い目 UI は今後接続します。</p>
+      </section>
+    </div>
+    <div data-expect-nav></div>
+  </div>
+  <script src="assets/api/user.js"></script>
+  <script src="assets/api/user-progress.js?v=1"></script>
+  <script src="assets/partials-nav.js"></script>
+  <script>
+    ExpectUserProgress.guardPage("win5_predict", "index.html");
+  </script>
+</body>
+</html>

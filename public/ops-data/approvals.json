@@ -1,0 +1,9 @@
+{
+  "schema_version": "expect-v88-approval-index/1.0",
+  "baseline_lock": "Version8.5",
+  "updated_at": null,
+  "pending_count": 0,
+  "items": [],
+  "production_auto_apply": false,
+  "boundary": "Accept → RC → Deploy Note → Human Deploy"
+}

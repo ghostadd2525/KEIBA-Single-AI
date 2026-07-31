@@ -1,0 +1,49 @@
+{
+  "n": 2,
+  "improved_count": 0,
+  "worsened_count": 0,
+  "worsened_winner_rank1_count": 0,
+  "unchanged_hit_count": 1,
+  "unchanged_miss_count": 1,
+  "pick_changed_count": 0,
+  "shadow_error_count": 0,
+  "improved_races": [],
+  "worsened_races": [],
+  "worsened_winner_rank1_races": [],
+  "all_diffs": [
+    {
+      "race_id": "sh-1",
+      "status": "unchanged_hit",
+      "control_pick": "sh-1-H1",
+      "shadow_pick": "sh-1-H1",
+      "pick_changed": false,
+      "control_hit": true,
+      "shadow_hit": true,
+      "winner_id": "sh-1-H1",
+      "winner_rank": 1,
+      "a05_promote": false,
+      "favsafe_blocked": true,
+      "favsafe_reason": "fs3_short_odds",
+      "shadow_ok": true,
+      "shadow_error": null,
+      "worsened_winner_rank1": false
+    },
+    {
+      "race_id": "sh-2",
+      "status": "unchanged_miss",
+      "control_pick": "sh-2-H1",
+      "shadow_pick": "sh-2-H1",
+      "pick_changed": false,
+      "control_hit": false,
+      "shadow_hit": false,
+      "winner_id": "sh-2-H8",
+      "winner_rank": 8,
+      "a05_promote": false,
+      "favsafe_blocked": true,
+      "favsafe_reason": "fs3_short_odds",
+      "shadow_ok": true,
+      "shadow_error": null,
+      "worsened_winner_rank1": false
+    }
+  ]
+}

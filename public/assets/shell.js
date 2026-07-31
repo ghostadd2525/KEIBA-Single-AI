@@ -113,7 +113,7 @@
     { id: "home", href: "index.html", label: "ホーム" },
     { id: "race", href: "races.html", label: "レース" },
     { id: "analysis", href: "analysis.html", label: "分析" },
-    { id: "balance", href: "saved.html", label: "今月の成績" },
+    { id: "challenge", href: "saved.html", label: "チャレンジ" },
     { id: "mypage", href: "mypage.html", label: "マイページ" }
   ];
 

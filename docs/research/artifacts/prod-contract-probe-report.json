@@ -1,0 +1,425 @@
+{
+  "http_status": {
+    "single_detail": 200,
+    "predictions": 200,
+    "ui_prediction_bundle": 200
+  },
+  "reports": [
+    {
+      "label": "POST /api/single/detail/2026-07-26-01-11",
+      "ok": true,
+      "errors": [],
+      "summary": {
+        "schema_version": "single-prediction-bundle/2.0",
+        "race_id": "2026-07-26-01-11",
+        "race_info": {
+          "venue": {
+            "value": "新潟",
+            "type": "str"
+          },
+          "date": {
+            "value": "2026-07-26",
+            "type": "str"
+          },
+          "race_no": {
+            "value": 11,
+            "type": "int"
+          },
+          "race_id": {
+            "value": "2026-07-26-01-11",
+            "type": "str"
+          }
+        },
+        "has_evaluation_runners": true,
+        "runners_len": 15,
+        "ai_confidence_score": 0.4970150712235787,
+        "explain_narrative_present": true,
+        "bets_items_present": true,
+        "top_keys": [
+          "ai_confidence",
+          "betting_recommendations",
+          "core_version",
+          "evaluation",
+          "explain",
+          "generated_at",
+          "model_version",
+          "product_version",
+          "race_id",
+          "race_info",
+          "schema_version",
+          "status",
+          "warnings"
+        ],
+        "meta_like_keys_in_data": [
+          "schema_version"
+        ]
+      },
+      "http_envelope": {
+        "ok": true,
+        "error": null,
+        "meta": {
+          "service": "SingleDetailAdapter",
+          "adapter": "SingleDetailAdapter",
+          "source": "pi-keibanet-api",
+          "fallback_reason": "CORE_PAYLOAD_REQUIRED",
+          "detail_source": null,
+          "schema_version": "single-prediction-bundle/2.0",
+          "contract": "PredictionBundle",
+          "contract_ok": true,
+          "contract_validated": true,
+          "engine": "real",
+          "engine_source": "pi"
+        }
+      },
+      "data_is_dict": true,
+      "normalize_hint": {
+        "has_schema_version_2": true,
+        "race_no_is_number": true,
+        "narrative_is_string": true,
+        "meta_contract_ok": true,
+        "meta_contract_validated": true,
+        "meta_service": "SingleDetailAdapter",
+        "meta_adapter": "SingleDetailAdapter",
+        "meta_source": "pi-keibanet-api",
+        "meta_fallback_reason": "CORE_PAYLOAD_REQUIRED"
+      }
+    },
+    {
+      "label": "GET /api/predictions/2026-07-26-01-11",
+      "ok": true,
+      "errors": [],
+      "summary": {
+        "schema_version": "single-prediction-bundle/2.0",
+        "race_id": "2026-07-26-01-11",
+        "race_info": {
+          "venue": {
+            "value": "新潟",
+            "type": "str"
+          },
+          "date": {
+            "value": "2026-07-26",
+            "type": "str"
+          },
+          "race_no": {
+            "value": 11,
+            "type": "int"
+          },
+          "race_id": {
+            "value": "2026-07-26-01-11",
+            "type": "str"
+          }
+        },
+        "has_evaluation_runners": true,
+        "runners_len": 15,
+        "ai_confidence_score": 0.4970150712235787,
+        "explain_narrative_present": true,
+        "bets_items_present": true,
+        "top_keys": [
+          "ai_confidence",
+          "betting_recommendations",
+          "core_version",
+          "evaluation",
+          "explain",
+          "generated_at",
+          "model_version",
+          "product_version",
+          "race_id",
+          "race_info",
+          "schema_version",
+          "status",
+          "warnings"
+        ],
+        "meta_like_keys_in_data": [
+          "schema_version"
+        ]
+      },
+      "http_envelope": {
+        "ok": true,
+        "error": null,
+        "meta": {
+          "service": "PredictionService",
+          "adapter": "PredictionAdapter",
+          "source": "pi-keibanet-api",
+          "fallback_reason": null,
+          "detail_source": null,
+          "schema_version": "single-prediction-bundle/2.0",
+          "contract": "PredictionBundle",
+          "contract_ok": true,
+          "contract_validated": true,
+          "engine": "real",
+          "engine_source": "pi"
+        }
+      },
+      "data_is_dict": true,
+      "normalize_hint": {
+        "has_schema_version_2": true,
+        "race_no_is_number": true,
+        "narrative_is_string": true,
+        "meta_contract_ok": true,
+        "meta_contract_validated": true,
+        "meta_service": "PredictionService",
+        "meta_adapter": "PredictionAdapter",
+        "meta_source": "pi-keibanet-api",
+        "meta_fallback_reason": null
+      }
+    },
+    {
+      "label": "POST /api/ui/prediction-bundle",
+      "ok": true,
+      "errors": [],
+      "summary": {
+        "schema_version": "single-prediction-bundle/2.0",
+        "race_id": "2026-07-26-01-11",
+        "race_info": {
+          "venue": {
+            "value": "新潟",
+            "type": "str"
+          },
+          "date": {
+            "value": "2026-07-26",
+            "type": "str"
+          },
+          "race_no": {
+            "value": 11,
+            "type": "int"
+          },
+          "race_id": {
+            "value": "2026-07-26-01-11",
+            "type": "str"
+          }
+        },
+        "has_evaluation_runners": true,
+        "runners_len": 3,
+        "ai_confidence_score": 0.4970150712235787,
+        "explain_narrative_present": true,
+        "bets_items_present": true,
+        "top_keys": [
+          "ai_confidence",
+          "betting_recommendations",
+          "evaluation",
+          "explain",
+          "generated_at",
+          "model_version",
+          "race_id",
+          "race_info",
+          "schema_version",
+          "warnings"
+        ],
+        "meta_like_keys_in_data": [
+          "schema_version"
+        ]
+      },
+      "http_envelope": {
+        "ok": true,
+        "error": null,
+        "meta": {
+          "service": "UiAdaptation",
+          "adapter": "singleToBundleMapper",
+          "source": "bff-local",
+          "fallback_reason": null,
+          "detail_source": null,
+          "schema_version": null,
+          "contract": null,
+          "contract_ok": null,
+          "contract_validated": null,
+          "engine": null,
+          "engine_source": null
+        }
+      },
+      "data_is_dict": true,
+      "normalize_hint": {
+        "has_schema_version_2": true,
+        "race_no_is_number": true,
+        "narrative_is_string": true,
+        "meta_contract_ok": null,
+        "meta_contract_validated": null,
+        "meta_service": "UiAdaptation",
+        "meta_adapter": "singleToBundleMapper",
+        "meta_source": "bff-local",
+        "meta_fallback_reason": null
+      }
+    }
+  ],
+  "artifacts": {
+    "single_detail": {
+      "envelope_ok": true,
+      "schema_version": "single-prediction-bundle/2.0",
+      "race_id": "2026-07-26-01-11",
+      "race_info": {
+        "race_id": "2026-07-26-01-11",
+        "date": "2026-07-26",
+        "venue": "新潟",
+        "meeting_id": "20260726_新潟",
+        "race_no": 11,
+        "class_label": "3歳以上1勝クラス",
+        "race_label": "新潟11R",
+        "race_name": "3歳以上1勝クラス",
+        "race_status": "published",
+        "field_size": 15,
+        "surface": null,
+        "distance": null,
+        "post_time": "18:00"
+      },
+      "evaluation_status": "ok",
+      "runners_len": 15,
+      "ai_confidence": {
+        "schema_version": "single-ai-confidence/1.0",
+        "status": "ok",
+        "score": 0.4970150712235787,
+        "band": "medium"
+      },
+      "explain": {
+        "has_narrative": true,
+        "narrative_len": 72,
+        "reasons_len": 1
+      },
+      "betting_recommendations": {
+        "schema_version": "single-betting-recommendations/1.0",
+        "items_len": 0,
+        "keys": [
+          "by_bet_type",
+          "items",
+          "race_id",
+          "schema_version",
+          "status"
+        ]
+      },
+      "meta": {
+        "generated_at": "2026-07-29T02:19:15.450Z",
+        "source": "pi-keibanet-api",
+        "cache": "miss",
+        "service": "SingleDetailAdapter",
+        "provider": "pi",
+        "adapter": "SingleDetailAdapter",
+        "engine": "real",
+        "engine_source": "pi",
+        "model_version": "ai-core-migrated/1.0-phase1",
+        "inference_generated_at": "2026-07-29T02:19:15.450Z",
+        "race_id": "2026-07-26-01-11",
+        "numeric_race_id": "202604020211",
+        "fallback_reason": "CORE_PAYLOAD_REQUIRED",
+        "contract": "PredictionBundle",
+        "schema_version": "single-prediction-bundle/2.0",
+        "contract_validated": true,
+        "contract_ok": true
+      }
+    },
+    "predictions": {
+      "envelope_ok": true,
+      "schema_version": "single-prediction-bundle/2.0",
+      "race_id": "2026-07-26-01-11",
+      "race_info": {
+        "race_id": "2026-07-26-01-11",
+        "date": "2026-07-26",
+        "venue": "新潟",
+        "meeting_id": "20260726_新潟",
+        "race_no": 11,
+        "class_label": "3歳以上1勝クラス",
+        "race_label": "新潟11R",
+        "race_name": "3歳以上1勝クラス",
+        "race_status": "published",
+        "field_size": 15,
+        "surface": null,
+        "distance": null,
+        "post_time": "18:00"
+      },
+      "evaluation_status": "ok",
+      "runners_len": 15,
+      "ai_confidence": {
+        "schema_version": "single-ai-confidence/1.0",
+        "status": "ok",
+        "score": 0.4970150712235787,
+        "band": "medium"
+      },
+      "explain": {
+        "has_narrative": true,
+        "narrative_len": 72,
+        "reasons_len": 1
+      },
+      "betting_recommendations": {
+        "schema_version": "single-betting-recommendations/1.0",
+        "items_len": 0,
+        "keys": [
+          "by_bet_type",
+          "items",
+          "race_id",
+          "schema_version",
+          "status"
+        ]
+      },
+      "meta": {
+        "generated_at": "2026-07-29T02:19:15.635Z",
+        "source": "pi-keibanet-api",
+        "cache": "miss",
+        "service": "PredictionService",
+        "provider": "pi",
+        "adapter": "PredictionAdapter",
+        "engine": "real",
+        "engine_source": "pi",
+        "model_version": "ai-core-migrated/1.0-phase1",
+        "inference_generated_at": "2026-07-29T02:19:15.635Z",
+        "race_id": "2026-07-26-01-11",
+        "numeric_race_id": "202604020211",
+        "contract": "PredictionBundle",
+        "schema_version": "single-prediction-bundle/2.0",
+        "contract_validated": true,
+        "contract_ok": true
+      }
+    },
+    "ui_prediction_bundle": {
+      "envelope_ok": true,
+      "schema_version": "single-prediction-bundle/2.0",
+      "race_id": "2026-07-26-01-11",
+      "race_info": {
+        "race_id": "2026-07-26-01-11",
+        "date": "2026-07-26",
+        "venue": "新潟",
+        "race_no": 11,
+        "post_time": "18:00",
+        "distance": null,
+        "surface": null,
+        "course": null,
+        "class_label": "3歳以上1勝クラス",
+        "grade": null,
+        "field_size": 15,
+        "race_status": "published",
+        "race_name": "3歳以上1勝クラス",
+        "meeting_id": "20260726_新潟",
+        "race_label": "新潟11R"
+      },
+      "evaluation_status": "ok",
+      "runners_len": 3,
+      "ai_confidence": {
+        "schema_version": "single-ai-confidence/1.0",
+        "status": "ok",
+        "score": 0.4970150712235787,
+        "band": "medium"
+      },
+      "explain": {
+        "has_narrative": true,
+        "narrative_len": 72,
+        "reasons_len": 1
+      },
+      "betting_recommendations": {
+        "schema_version": "single-betting-recommendations/1.0",
+        "items_len": 0,
+        "keys": [
+          "by_bet_type",
+          "items",
+          "race_id",
+          "schema_version",
+          "status"
+        ]
+      },
+      "meta": {
+        "generated_at": "2026-07-29T02:19:16.116Z",
+        "source": "bff-local",
+        "cache": "miss",
+        "service": "UiAdaptation",
+        "adapter": "singleToBundleMapper",
+        "layout_changed": false,
+        "internal_terms_exposed": false
+      }
+    }
+  }
+}

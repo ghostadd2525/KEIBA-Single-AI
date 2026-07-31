@@ -1,0 +1,18 @@
+{
+  "schema_version": "expect-v10-evidence-collector/1.0",
+  "published_at": null,
+  "collector_status": "pending_deploy",
+  "success_rate": null,
+  "missing_rate": null,
+  "retry_count": 0,
+  "source_latency_ms_avg": null,
+  "source_availability": null,
+  "evidence_coverage": {
+    "predictions_total": 0,
+    "snapshots_total": 0,
+    "snapshots_complete": 0,
+    "snapshots_partial": 0,
+    "snapshot_rate": 0
+  },
+  "note": "Live metrics via GET /api/ops/evidence-collector"
+}

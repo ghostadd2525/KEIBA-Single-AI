@@ -1,0 +1,289 @@
+{
+  "schema": "v102-core-semantic-completeness-audit/1.0",
+  "generated_at": "2026-07-28T13:10:35+00:00",
+  "adr": [
+    "ADR-009",
+    "ADR-010"
+  ],
+  "purpose": "Audit whether currently held Core semantics alone fully explain races",
+  "locks": [
+    "Prediction",
+    "Ranking",
+    "Score",
+    "Confidence(EC)",
+    "Trigger",
+    "World",
+    "Near Miss",
+    "Affinity",
+    "Transition",
+    "Expected Strategy",
+    "Decision",
+    "Single AI",
+    "Win5 AI"
+  ],
+  "n_races": 285,
+  "n_unsatisfied": 176,
+  "semantic_coverage": {
+    "mean_coverage": 1.0,
+    "closed_rate": 1.0,
+    "slot_rates": {
+      "affinity_in_race_payload": 0.0,
+      "affinity_vector": 1.0,
+      "exclusion_reasons": 1.0,
+      "exclusion_reasons_in_trace_payload": 0.0,
+      "exclusion_trace": 1.0,
+      "expected_strategy": 1.0,
+      "expected_strategy_in_race_payload": 0.0,
+      "explanation_confidence_ec": 1.0,
+      "explanation_confidence_emitted": 0.0,
+      "match_trace": 1.0,
+      "must_gaps": 1.0,
+      "must_trace": 1.0,
+      "near_miss_class": 1.0,
+      "near_world_or_pure": 1.0,
+      "prediction_bundle": 1.0,
+      "transition": 1.0,
+      "world_label": 1.0
+    },
+    "missing_required_counts": {}
+  },
+  "dependency_graph": {
+    "design_edges": [
+      {
+        "from": "prediction_bundle",
+        "to": "world_label"
+      },
+      {
+        "from": "world_label",
+        "to": "must_trace"
+      },
+      {
+        "from": "must_trace",
+        "to": "must_gaps"
+      },
+      {
+        "from": "must_trace",
+        "to": "exclusion_trace"
+      },
+      {
+        "from": "must_trace",
+        "to": "match_trace"
+      },
+      {
+        "from": "world_label",
+        "to": "transition"
+      },
+      {
+        "from": "world_label",
+        "to": "expected_strategy"
+      },
+      {
+        "from": "world_label",
+        "to": "near_miss_class"
+      },
+      {
+        "from": "near_miss_class",
+        "to": "near_world_or_pure"
+      },
+      {
+        "from": "near_world_or_pure",
+        "to": "affinity_vector"
+      },
+      {
+        "from": "near_world_or_pure",
+        "to": "exclusion_reasons"
+      },
+      {
+        "from": "must_trace",
+        "to": "explanation_confidence_ec"
+      },
+      {
+        "from": "exclusion_trace",
+        "to": "explanation_confidence_ec"
+      },
+      {
+        "from": "near_miss_class",
+        "to": "explanation_confidence_ec"
+      },
+      {
+        "from": "expected_strategy",
+        "to": "explanation_confidence_ec"
+      }
+    ],
+    "empirical": [
+      {
+        "from": "prediction_bundle",
+        "to": "world_label",
+        "support_parent": 285,
+        "p_child_given_parent": 1.0
+      },
+      {
+        "from": "world_label",
+        "to": "must_trace",
+        "support_parent": 285,
+        "p_child_given_parent": 1.0
+      },
+      {
+        "from": "must_trace",
+        "to": "must_gaps",
+        "support_parent": 285,
+        "p_child_given_parent": 1.0
+      },
+      {
+        "from": "must_trace",
+        "to": "exclusion_trace",
+        "support_parent": 285,
+        "p_child_given_parent": 1.0
+      },
+      {
+        "from": "must_trace",
+        "to": "match_trace",
+        "support_parent": 285,
+        "p_child_given_parent": 1.0
+      },
+      {
+        "from": "world_label",
+        "to": "transition",
+        "support_parent": 285,
+        "p_child_given_parent": 1.0
+      },
+      {
+        "from": "world_label",
+        "to": "expected_strategy",
+        "support_parent": 285,
+        "p_child_given_parent": 1.0
+      },
+      {
+        "from": "world_label",
+        "to": "near_miss_class",
+        "support_parent": 176,
+        "p_child_given_parent": 1.0
+      },
+      {
+        "from": "near_miss_class",
+        "to": "near_world_or_pure",
+        "support_parent": 176,
+        "p_child_given_parent": 1.0
+      },
+      {
+        "from": "near_world_or_pure",
+        "to": "affinity_vector",
+        "support_parent": 176,
+        "p_child_given_parent": 1.0
+      },
+      {
+        "from": "near_world_or_pure",
+        "to": "exclusion_reasons",
+        "support_parent": 176,
+        "p_child_given_parent": 1.0
+      },
+      {
+        "from": "must_trace",
+        "to": "explanation_confidence_ec",
+        "support_parent": 285,
+        "p_child_given_parent": 1.0
+      },
+      {
+        "from": "exclusion_trace",
+        "to": "explanation_confidence_ec",
+        "support_parent": 285,
+        "p_child_given_parent": 1.0
+      },
+      {
+        "from": "near_miss_class",
+        "to": "explanation_confidence_ec",
+        "support_parent": 176,
+        "p_child_given_parent": 1.0
+      },
+      {
+        "from": "expected_strategy",
+        "to": "explanation_confidence_ec",
+        "support_parent": 285,
+        "p_child_given_parent": 1.0
+      }
+    ]
+  },
+  "missing_semantic_inventory": {
+    "items": [
+      {
+        "id": "MS-1",
+        "missing": "Expected Strategy as race payload",
+        "held_instead": "V75 static map keyed by world_label",
+        "impact": "ES adds no race-specific semantic beyond World",
+        "new_feature": false,
+        "n_races_affected": 285
+      },
+      {
+        "id": "MS-2",
+        "missing": "Affinity vector in dual-eval / Core emit",
+        "held_instead": "Derivable from decision_trace must_gaps (research)",
+        "impact": "Affinity not first-class; explanation needs derivation step",
+        "new_feature": false,
+        "n_races_affected": 176
+      },
+      {
+        "id": "MS-3",
+        "missing": "Exclusion reasons list in decision_trace",
+        "held_instead": "exclude:bool only; reasons via research mirror of V44 predicates",
+        "impact": "Why excluded needs off-payload reconstruction",
+        "new_feature": false,
+        "n_races_affected": 176
+      },
+      {
+        "id": "MS-4",
+        "missing": "ExplanationConfidenceBundle emit (ADR-010)",
+        "held_instead": "Derivable from Completeness/trace slots",
+        "impact": "EC defined but not returned as Core object",
+        "new_feature": false,
+        "n_races_affected": 285
+      },
+      {
+        "id": "MS-5",
+        "missing": "Near Miss class / near_world as Core emit",
+        "held_instead": "Derivable from must∧exclude in decision_trace",
+        "impact": "Taxonomy exists in research; not serialized on race",
+        "new_feature": false,
+        "n_races_affected": 176
+      },
+      {
+        "id": "MS-6",
+        "missing": "Natural-language why sentence",
+        "held_instead": "Structured traces only",
+        "impact": "Machine-closed ≠ human prose; not a Feature gap",
+        "new_feature": false,
+        "n_races_affected": 285
+      }
+    ],
+    "note": "No new Features proposed — inventory of non-first-class semantics only"
+  },
+  "redundancy": {
+    "overlap_counts": {
+      "transition_dst≡world_label": 285,
+      "expected_strategy_key≡world_label": 285,
+      "near_world≡affinity_top": 104,
+      "near_world≡transition_src": 36
+    },
+    "near_world_eq_affinity_top_rate": 0.5909090909090909,
+    "interpretation": "expected_strategy_key≡world_label is structural redundancy (map keyed by World). near_world≡affinity_top indicates overlapping Near Miss signals."
+  },
+  "explainability_flow": {
+    "flow": [
+      "prediction_bundle",
+      "world_label",
+      "near_miss_class",
+      "affinity_vector",
+      "expected_strategy",
+      "explanation_confidence_ec"
+    ],
+    "closed_rate": 1.0,
+    "edge_fail_counts": {}
+  },
+  "verdict": {
+    "derivable_explanation_closed_rate": 1.0,
+    "explainability_flow_closed_rate": 1.0,
+    "first_class_payload_complete": false,
+    "audit_verdict": "DERIVABLE_COMPLETE_BUT_NOT_FIRST_CLASS",
+    "reason": "Structured traces allow deriving a closed explanation for essentially all races, but Expected Strategy / Affinity / Exclusion reasons / Near Miss class / EC Bundle are not first-class Core emits — explanation depends on maps + derivation (no new Features)."
+  },
+  "samples_incomplete": []
+}

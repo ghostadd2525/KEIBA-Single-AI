@@ -1,15 +1,34 @@
 /**
- * GET /api/v1/stats/heatmap?venues=新潟,東京
- * 過去◎的中率ヒートマップ（リアルタイム更新は AI stats DB → 静的 JSON フォールバック）
+ * GET /api/v1/stats/heatmap?venues=新潟,東京（任意・通常は全会場）
+ * AI総合実績ヒートマップ — race_evaluations 全期間累積（リセットなし）
+ * 静的285Rフォールバックは使わない（総合実績を偽らないため）
  */
 import { aiFetch } from "../../../_lib/aiProxy.js";
 import { getEnv, useAiProxy } from "../../../_lib/env.js";
-import { jsonError, jsonOk } from "../../../_lib/errors.js";
+import { jsonOk } from "../../../_lib/errors.js";
 import {
   HEATMAP_SCHEMA,
   buildHeatmapPayload,
 } from "../../../_lib/heatmapStats.js";
-import { SEGMENT_HIT_RATES } from "../../../_lib/segmentHitRates.js";
+
+function emptyAllTimePayload() {
+  return buildHeatmapPayload({
+    schema_version: "expect-segment-hit-rates/1.0",
+    corpus: "stats_db_all_time",
+    overall_hit_rate: 0,
+    overall_hits: 0,
+    races_evaluated: 0,
+    min_samples: 1,
+    segments: {},
+    segments_going: {},
+    source: "stats_db",
+    scope: "all_time_cumulative",
+    resets: false,
+    formula: "hit_at_1_count / ai_evaluated_race_count",
+    label: "AI総合実績",
+    generated_at: new Date().toISOString(),
+  });
+}
 
 function normalizeHeatmapPayload(raw, venueFilter) {
   if (!raw) return null;
@@ -43,25 +62,19 @@ export async function onRequestGet(context) {
     if (proxied && proxied instanceof Response) return proxied;
     if (proxied && proxied.ok && proxied.payload?.data) {
       const data = normalizeHeatmapPayload(proxied.payload.data, venueFilter);
-      const hasRows =
-        (data?.distance?.venues && data.distance.venues.length > 0) ||
-        Number(data?.races_evaluated || 0) > 0;
-      // stats_db が空のときは静的コーパスへフォールバック（ホーム空表示を防ぐ）
-      if (hasRows) {
-        return jsonOk(data, {
-          ...(proxied.payload.meta || {}),
-          source: proxied.payload.data?.source || "stats_db",
-          cache: "public, max-age=30",
-        }, { cacheControl: "public, max-age=30" });
-      }
+      return jsonOk(data, {
+        ...(proxied.payload.meta || {}),
+        source: proxied.payload.data?.source || "stats_db",
+        scope: "all_time_cumulative",
+        cache: "public, max-age=30",
+      }, { cacheControl: "public, max-age=30" });
     }
   }
 
-  const data = normalizeHeatmapPayload(
-    { ...SEGMENT_HIT_RATES, source: "static-segments" },
-    venueFilter
-  );
-  return jsonOk(data, { source: "static-segments", cache: "public, max-age=60" }, {
-    cacheControl: "public, max-age=60",
-  });
+  // AI未接続時も空の総合実績を返す（デモ285Rは出さない）
+  return jsonOk(emptyAllTimePayload(), {
+    source: "empty-all-time",
+    scope: "all_time_cumulative",
+    cache: "public, max-age=30",
+  }, { cacheControl: "public, max-age=30" });
 }

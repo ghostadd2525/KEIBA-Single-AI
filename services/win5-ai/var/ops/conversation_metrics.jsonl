@@ -1,0 +1,1 @@
+{"ts": "2026-07-25T01:43:26.037062+00:00", "event": "conversation.observability", "latency_ms": 10.0, "agent": "chat", "mode": "chat", "intent": "chat", "error": false, "security_block": false, "ollama_called": true, "model": "qwen2.5:1.5b", "tools_used": []}

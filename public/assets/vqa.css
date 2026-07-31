@@ -28,8 +28,28 @@
 }
 
 .page-analysis .screen {
-  padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px));
+  padding-bottom: calc(168px + env(safe-area-inset-bottom, 0px));
   gap: 14px;
+}
+
+/* 分析: マスコットをカードより下・ナビより下に置き重なりを防ぐ */
+.page-analysis .mascot-ka0ba {
+  z-index: 28;
+  bottom: calc(4.6rem + env(safe-area-inset-bottom, 0px));
+  max-width: min(36vw, 128px);
+  --mascot-h: clamp(88px, 16vh, 120px);
+  pointer-events: none;
+}
+
+.page-analysis .mascot-ka0ba .mascot-figure {
+  pointer-events: auto;
+}
+
+.page-analysis .chart-card,
+.page-analysis .fav-ai-grid,
+.page-analysis .fav-ai-card {
+  position: relative;
+  z-index: 1;
 }
 
 .page-odds .screen {
@@ -64,11 +84,21 @@
   right: 6px;
 }
 
+/* レースカードのお気に入りは見た目用にコンパクト（配置は absolute のまま） */
+.race-item .fav-btn {
+  min-width: 30px;
+  min-height: 30px;
+  width: 30px;
+  height: 30px;
+  top: 10px;
+  right: 10px;
+}
+
 .btn-detail {
-  min-height: 36px;
-  height: 36px;
-  padding: 0 14px;
-  font-size: 12px;
+  min-height: 30px;
+  height: 30px;
+  padding: 0 12px;
+  font-size: 11px;
 }
 
 .chat-send {

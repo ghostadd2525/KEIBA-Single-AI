@@ -3,28 +3,29 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>Expect ～ KEIBA AI ～ · 今月の成績</title>
+  <title>Expect ～ KEIBA AI ～ · チャレンジ</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Noto+Sans+JP:wght@400;500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="assets/styles.css?v=17" />
-  <link rel="stylesheet" href="assets/screens.css" />
+  <link rel="stylesheet" href="assets/styles.css?v=23" />
+  <link rel="stylesheet" href="assets/screens.css?v=52" />
+  <link rel="stylesheet" href="assets/vqa.css?v=52" />
   <script src="assets/api/calendar-weekend.js?v=14"></script>
-  <script src="assets/auto-maintenance.js?v=11.3"></script>
-  <script src="assets/auth.js?v=4"></script>
+  <script src="assets/auto-maintenance.js?v=12.4"></script>
+  <script src="assets/auth.js?v=6"></script>
   <script>
     if (ExpectAuth.requireAuth() && window.ExpectAutoMaintenance) {
       ExpectAutoMaintenance.run();
     }
   </script>
 </head>
-<body class="page-screen page-balance page-tab" data-nav="balance">
+<body class="page-screen page-challenge page-tab" data-nav="challenge">
   <div class="app">
     <header class="topbar">
       <div class="topbar-inner">
         <div class="topbar-left">
           <div class="brand-block topbar-text topbar-title-only">
-            <p class="brand-name">今月の成績</p>
+            <p class="brand-name">チャレンジ</p>
           </div>
         </div>
         <div class="topbar-tools" aria-hidden="true"></div>
@@ -32,38 +33,60 @@
     </header>
 
     <div class="screen">
-      <section class="balance-hero" aria-label="今月の成績サマリー">
-        <p class="balance-hero-label">読み込み中…</p>
-        <p class="balance-hero-value">—</p>
-        <p class="balance-hero-sub">User API / Coverage から取得</p>
+      <div class="ledger-month-nav" aria-label="月切り替え">
+        <button type="button" class="ledger-month-btn" data-ledger-prev aria-label="前月">‹</button>
+        <p class="ledger-month-nav-label">—</p>
+        <button type="button" class="ledger-month-btn" data-ledger-next aria-label="翌月">›</button>
+      </div>
+
+      <section id="challengeBanner" class="challenge-banner" aria-live="polite">
+        <p class="challenge-kicker">読み込み中…</p>
+        <h2>今月のAIチャレンジ</h2>
+        <p class="challenge-msg muted">月間成績を取得しています</p>
       </section>
 
-      <section class="stats-grid">
-        <h3>今月のアクティビティ</h3>
-        <div class="stat-cell"><span>閲覧数</span><b>—</b></div>
-        <div class="stat-cell"><span>AIカバレッジ</span><b>—</b></div>
-        <div class="stat-cell"><span>収支</span><b>—</b></div>
-        <div class="stat-cell"><span>閲覧R</span><b>—</b></div>
+      <section class="dash-cards" aria-label="AIとあなたの成績">
+        <article class="dash-score-card" id="aiScoreCard">
+          <h3>AI成績（今月の目標）</h3>
+          <p class="dash-card-profit">Pending</p>
+        </article>
+        <article class="dash-score-card" id="userScoreCard">
+          <h3>あなた</h3>
+          <p class="dash-card-profit">Pending</p>
+        </article>
       </section>
 
-      <section class="balance-week">
-        <h3>最近の閲覧履歴</h3>
-        <ul class="balance-week-list">
-          <li><span>読み込み中…</span><b>—</b></li>
+      <section id="purchaseLabSection" class="chart-card purchase-lab-section" aria-label="Purchase Lab" hidden></section>
+
+      <section class="chart-card" aria-label="収支比較">
+        <h3>収支比較</h3>
+        <div class="cmp-bars" id="profitCompareBars"></div>
+      </section>
+
+      <section class="chart-card" aria-label="週次比較">
+        <h3>週次の成績</h3>
+        <div class="cmp-weeks" id="weekCompareBars"></div>
+      </section>
+
+      <section class="chart-card" id="challengeProgressCard" aria-label="ランキング・進捗">
+        <h3>ランキング / 進捗</h3>
+        <div id="challengeProgress" class="challenge-progress">
+          <p class="muted">Pending</p>
+        </div>
+      </section>
+
+      <section class="ledger-races chart-card" aria-label="月間購入レース">
+        <h3>月間の購入レース</h3>
+        <ul class="ledger-race-list">
+          <li class="ledger-race-empty"><span>Pending</span></li>
         </ul>
-      </section>
-
-      <section class="balance-notes">
-        <h3>ポイント</h3>
-        <p>的中・収支 API は未提供のため、User API の予測閲覧履歴を表示しています。</p>
-        <a class="balance-link" href="mypage.html">マイページで詳細を見る ›</a>
       </section>
     </div>
 
     <aside class="mascot-ka0ba" id="mascotKa0ba" data-mascot-mode="png">
       <div class="mascot-bubble" id="mascotBubble" role="status" aria-live="polite"></div>
       <button type="button" class="mascot-figure" id="mascotTalkBtn" aria-label="KA0BAに話しかける">
-        <img data-mascot-fallback src="assets/images/mascot-ka0ba.png?v=10" alt="" height="140" draggable="false" />
+        <img data-mascot-fallback src="assets/images/mascot-ka0ba.webp?v=10" alt="" height="140" draggable="false" />
       </button>
     </aside>
 
@@ -71,29 +94,17 @@
   </div>
   <script src="assets/api/mock-gate.js"></script>
   <script src="assets/api/auth.js"></script>
-  <script src="assets/api/user.js"></script>
-  <script src="assets/api/supply.js"></script>
-  <script src="assets/api/real-data-bind.js"></script>
+  <script src="assets/roles.js?v=1"></script>
+  <script src="assets/api/user.js?v=7"></script>
+  <script src="assets/api/challenge-dashboard.js?v=3"></script>
   <script src="assets/favorites.js?v=4"></script>
   <script src="assets/shell.js"></script>
   <script src="assets/reminders.js"></script>
-  <script src="assets/partials-nav.js"></script>
+  <script src="assets/partials-nav.js?v=2"></script>
   <script>
-    (function () {
-      Promise.all([
-        ExpectApi.User.history().catch(function () { return null; }),
-        ExpectApi.Supply.coverage().catch(function () { return null; }),
-      ]).then(function (pair) {
-        if (window.ExpectRealDataBind) {
-          ExpectRealDataBind.bindSavedPage(pair[0], pair[1]);
-        }
-        var n = (pair[0] && pair[0].count) || 0;
-        ExpectShell.initMascotTalk([
-          "今月 <strong>" + n + "件</strong> の<br>レースを見たね！",
-          "AIカバレッジも<br>チェックしてみてね！"
-        ]);
-      });
-    })();
+    if (window.ExpectChallengeDashboard) {
+      ExpectChallengeDashboard.bindDashboard(document);
+    }
   </script>
 </body>
 </html>

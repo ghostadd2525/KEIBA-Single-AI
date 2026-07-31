@@ -1,0 +1,76 @@
+{
+  "status_id": "v3-experiment-status/phase1-close",
+  "experiments": [
+    {
+      "experiment_id": "v3-p1-lab-harness",
+      "phase": "P1",
+      "status": "complete",
+      "frozen": true
+    },
+    {
+      "experiment_id": "v3-p2-representation",
+      "phase": "P2",
+      "status": "complete",
+      "frozen": true
+    },
+    {
+      "experiment_id": "v3-p3-admission",
+      "phase": "P3",
+      "status": "complete",
+      "frozen": true
+    },
+    {
+      "experiment_id": "v3-p4-selection",
+      "phase": "P4",
+      "status": "complete",
+      "frozen": true
+    },
+    {
+      "experiment_id": "v3-p5-freeze",
+      "phase": "P5",
+      "status": "complete",
+      "frozen": true
+    },
+    {
+      "experiment_id": "v3-a01-d1-recal",
+      "phase": "A-01",
+      "status": "lab_primary_candidate",
+      "frozen": true,
+      "lab_hit": 246,
+      "validation": "PASS"
+    },
+    {
+      "experiment_id": "v3-a02-d2-rerank",
+      "phase": "A-02",
+      "status": "lab_secondary_candidate",
+      "frozen": true,
+      "lab_hit": 242,
+      "validation": "Lab PASS only"
+    },
+    {
+      "experiment_id": "v3-accuracy-candidate-review",
+      "phase": "Accuracy Phase 1",
+      "status": "complete",
+      "frozen": true,
+      "decision": "A-01 > A-02"
+    },
+    {
+      "experiment_id": "v3-accuracy-phase1-close",
+      "phase": "Accuracy Phase 1",
+      "status": "complete",
+      "frozen": true
+    },
+    {
+      "experiment_id": "v3-feat-contract-roi",
+      "phase": "Accuracy Phase 2+",
+      "status": "reserved",
+      "frozen": true
+    },
+    {
+      "experiment_id": "v3-ap-coverage-285r-ab",
+      "phase": "P3",
+      "status": "reserved",
+      "frozen": true
+    }
+  ]
+}

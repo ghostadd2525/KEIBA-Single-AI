@@ -3,7 +3,7 @@
   "proposal_id": "IMP-20260719-miss-001",
   "status": "pending",
   "verdict": null,
-  "result_id": "CAN-IMP-20260719-miss-001-2026-07-21T13-18-09Z",
+  "result_id": "CAN-IMP-20260719-miss-001-2026-07-22T07-39-10Z",
   "canary_result_path": "development/canary/results/IMP-20260719-miss-001/latest.json",
   "metrics_delta": {},
   "side_effects": [],

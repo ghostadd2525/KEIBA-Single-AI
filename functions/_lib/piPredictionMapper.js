@@ -4,6 +4,14 @@
 import { normalizePredictionBundle } from "./domain.js";
 import { buildExplainV21, isExplainV2Enabled } from "./explainBuilder.js";
 import { applySegmentConfidenceBlend } from "./segmentConfidence.js";
+import {
+  confidenceBandFromLabelAndScore,
+  resolveInternalLabel,
+} from "./confidenceBands.js";
+import {
+  composeExplainUx,
+  narrativeFromExplainUx,
+} from "./explainUxComposer.js";
 
 const MARK_BY_RANK = {
   1: ["honmei", 1],
@@ -22,14 +30,6 @@ function asFloat(value) {
   if (value == null || value === "") return null;
   const n = Number(value);
   return Number.isFinite(n) ? n : null;
-}
-
-function confidenceBand(score) {
-  if (score == null) return "unknown";
-  const s = score <= 1 ? score : score / 100;
-  if (s >= 0.85) return "high";
-  if (s >= 0.55) return "medium";
-  return "low";
 }
 
 function candidateId(horseNumber, horseName) {
@@ -108,13 +108,21 @@ export function mapPiPredictionToBundle(piPayload, catalogRace = null, options =
   const predMeta = pred.meta && typeof pred.meta === "object" ? pred.meta : {};
   const generatedAt =
     String(predMeta.generated_at || pred.generated_at || new Date().toISOString());
+  const worldRaw = pred.world != null ? String(pred.world) : null;
+  const labelExtras = {
+    near_miss: pred.near_miss ?? piPayload.near_miss,
+    affinity: pred.affinity ?? piPayload.affinity,
+  };
 
   const aiConfidence = {
     schema_version: "single-ai-confidence/1.0",
     status: overall != null ? "ok" : "unknown",
     score: overall,
     score_unit: "normalized",
-    band: confidenceBand(overall),
+    band: confidenceBandFromLabelAndScore(
+      resolveInternalLabel({ world: worldRaw, score: overall, ...labelExtras }),
+      overall
+    ),
     factors: [],
     component_scores: overall != null ? { model_score: overall } : {},
     notes: "pi-keibanet-api",
@@ -125,7 +133,15 @@ export function mapPiPredictionToBundle(piPayload, catalogRace = null, options =
     const blended = applySegmentConfidenceBlend(overall, raceRow);
     if (blended) {
       aiConfidence.score = blended.score;
-      aiConfidence.band = blended.band;
+      // UI8: score のみの band は使わず、内部ラベル天井 ∩ score
+      aiConfidence.band = confidenceBandFromLabelAndScore(
+        resolveInternalLabel({
+          world: worldRaw,
+          score: blended.score,
+          ...labelExtras,
+        }),
+        blended.score
+      );
       aiConfidence.component_scores = {
         model_score: blended.model_score,
         segment_hit_rate: blended.segment_hit_rate,
@@ -160,6 +176,40 @@ export function mapPiPredictionToBundle(piPayload, catalogRace = null, options =
     baseMeta: baseExplainMeta,
     enabled: explainEnabled,
   });
+  explain.meta = { ...baseExplainMeta, ...(explain.meta || {}) };
+
+  // UI10: 構造化データから4ブロック文章を付与（旧固定長文テンプレは使わない）
+  const provisional = {
+    race_id: raceId,
+    race_info: {
+      race_id: raceId,
+      date: raceDate,
+      venue: course,
+      race_no: raceNo,
+      race_name: raceName,
+      field_size: asInt(raceRow.field_size) ?? runners.length,
+      surface: surface || null,
+      distance,
+    },
+    evaluation: {
+      status: runners.length ? "ok" : "empty",
+      world: pred.world != null ? String(pred.world) : null,
+      sub_world: pred.sub_world != null ? String(pred.sub_world) : null,
+      runners,
+    },
+    ai_confidence: aiConfidence,
+    explain,
+  };
+  const ux = composeExplainUx(provisional);
+  explain.ux = {
+    schema_version: ux.schema_version,
+    blocks: ux.blocks,
+    fingerprint: ux.fingerprint,
+  };
+  const uxNarrative = narrativeFromExplainUx(ux);
+  if (uxNarrative) {
+    explain.narrative = uxNarrative;
+  }
 
   const raw = {
     schema_version: "single-prediction-bundle/2.0",

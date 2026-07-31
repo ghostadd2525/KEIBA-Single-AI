@@ -121,6 +121,33 @@ python3 scripts/prod_race_refresh.py --date 2026-07-25 --force
 ログ: `journalctl -u expect-pi-race-refresh.service`  
 JSON: `$PI_DATA_ROOT/var/race_refresh/{date}/logs/refresh_latest.json`
 
+### 全日特徴量の安全拡張（未勝利・新馬含む）
+
+**運用正本:** [`docs/ops/v2-operations-race-refresh-addendum.md`](../../docs/ops/v2-operations-race-refresh-addendum.md)
+
+要約:
+
+1. **現行 shutuba を正**とする（旧 CSV 頭数より名簿を優先）
+2. features 行数は runners と一致
+3. fingerprint 変化レースは再生成
+4. Shadow 比較でガード頭数減少 → **切替禁止**
+5. Production 一括反映は最終確定出馬表タイミング + Shadow 承認後
+
+```bash
+# 1) Shadow に生成（本番 CSV は上書きしない）
+python3 scripts/prod_race_refresh.py --date 2026-07-25 --force \
+  --shadow-dir /tmp/pi-features-shadow
+
+# 2) 比較（頭数減少時は exit != 0 / 切替しない）
+python3 scripts/compare_daily_features.py --date 2026-07-25 \
+  --baseline "$PI_DATA_ROOT/demo_daily_outputs/2026-07-25/demo_runners_pace_market_features.csv" \
+  --candidate "/tmp/pi-features-shadow/demo_daily_outputs/2026-07-25/demo_runners_pace_market_features.csv"
+
+# 3) ゲート PASS + 人間承認後のみ原子的置換（Addendum §5）
+```
+
+環境変数 `PI_FEATURES_SHADOW_DIR` でも shadow 出力先を指定できます。
+
 ## netkeiba 取得
 
 レース一覧は JS 描画のため `race_list_sub.html?kaisai_date=YYYYMMDD` を使用（仕様書 §6 参照）。

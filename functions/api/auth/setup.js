@@ -61,6 +61,7 @@ export async function onRequestPost(context) {
     password,
     display_name: loginId,
     invite_id: inviteId,
+    role: "USER",
     terms_version: termsVersion,
     terms_accepted_at: new Date().toISOString(),
   });
@@ -80,7 +81,7 @@ export async function onRequestPost(context) {
 
   const token = makeStubToken(loginId, ACCESS_TTL, {
     purpose: "access",
-    role: created.user.role || "USER",
+    role: "USER",
   });
 
   writeAudit(context, {

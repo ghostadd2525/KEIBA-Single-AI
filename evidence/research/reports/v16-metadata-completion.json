@@ -1,0 +1,590 @@
+{
+  "run_id": "meta-da4ab1e7ca33",
+  "schema_version": "expect-metadata-completion/1.0",
+  "generated_at": "2026-07-27T08:57:11+00:00",
+  "coverage_before": {
+    "n_races": 337,
+    "fields": {
+      "surface": {
+        "known": 100,
+        "unknown": 237,
+        "coverage": 0.2967
+      },
+      "distance": {
+        "known": 100,
+        "unknown": 237,
+        "coverage": 0.2967
+      },
+      "field_size": {
+        "known": 51,
+        "unknown": 286,
+        "coverage": 0.1513
+      },
+      "age_group": {
+        "known": 44,
+        "unknown": 293,
+        "coverage": 0.1306
+      },
+      "weather": {
+        "known": 0,
+        "unknown": 337,
+        "coverage": 0.0
+      },
+      "going": {
+        "known": 0,
+        "unknown": 337,
+        "coverage": 0.0
+      },
+      "race_class": {
+        "known": 147,
+        "unknown": 190,
+        "coverage": 0.4362
+      },
+      "course_type": {
+        "known": 100,
+        "unknown": 237,
+        "coverage": 0.2967
+      }
+    },
+    "mean_coverage": 0.201
+  },
+  "coverage_after": {
+    "n_races": 337,
+    "fields": {
+      "surface": {
+        "known": 325,
+        "unknown": 12,
+        "coverage": 0.9644
+      },
+      "distance": {
+        "known": 325,
+        "unknown": 12,
+        "coverage": 0.9644
+      },
+      "field_size": {
+        "known": 337,
+        "unknown": 0,
+        "coverage": 1.0
+      },
+      "age_group": {
+        "known": 44,
+        "unknown": 293,
+        "coverage": 0.1306
+      },
+      "weather": {
+        "known": 135,
+        "unknown": 202,
+        "coverage": 0.4006
+      },
+      "going": {
+        "known": 321,
+        "unknown": 16,
+        "coverage": 0.9525
+      },
+      "race_class": {
+        "known": 147,
+        "unknown": 190,
+        "coverage": 0.4362
+      },
+      "course_type": {
+        "known": 325,
+        "unknown": 12,
+        "coverage": 0.9644
+      }
+    },
+    "mean_coverage": 0.7266
+  },
+  "improvement": {
+    "surface": {
+      "before": 0.2967,
+      "after": 0.9644,
+      "delta_pp": 66.77,
+      "known_before": 100,
+      "known_after": 325
+    },
+    "distance": {
+      "before": 0.2967,
+      "after": 0.9644,
+      "delta_pp": 66.77,
+      "known_before": 100,
+      "known_after": 325
+    },
+    "field_size": {
+      "before": 0.1513,
+      "after": 1.0,
+      "delta_pp": 84.87,
+      "known_before": 51,
+      "known_after": 337
+    },
+    "age_group": {
+      "before": 0.1306,
+      "after": 0.1306,
+      "delta_pp": 0.0,
+      "known_before": 44,
+      "known_after": 44
+    },
+    "weather": {
+      "before": 0.0,
+      "after": 0.4006,
+      "delta_pp": 40.06,
+      "known_before": 0,
+      "known_after": 135
+    },
+    "going": {
+      "before": 0.0,
+      "after": 0.9525,
+      "delta_pp": 95.25,
+      "known_before": 0,
+      "known_after": 321
+    },
+    "race_class": {
+      "before": 0.4362,
+      "after": 0.4362,
+      "delta_pp": 0.0,
+      "known_before": 147,
+      "known_after": 147
+    },
+    "course_type": {
+      "before": 0.2967,
+      "after": 0.9644,
+      "delta_pp": 66.77,
+      "known_before": 100,
+      "known_after": 325
+    }
+  },
+  "summary": {
+    "n_races": 337,
+    "baseline_rows": 285,
+    "pi_rows": 9,
+    "source_fills": {
+      "db.research_prediction_corpus": 1212,
+      "db.race_evaluations": 851,
+      "derive.surface": 325,
+      "db.races.extra": 190,
+      "netkeiba.result_html": 150,
+      "db.races": 95,
+      "db.race_results": 51,
+      "db.race_results.json": 51,
+      "db.research_historical_bundles": 1
+    },
+    "netkeiba": {
+      "enabled": true,
+      "attempted": 40,
+      "filled": 40,
+      "errors": 0,
+      "skipped": 0,
+      "jra_status": "unavailable_no_local_provider"
+    },
+    "mean_coverage_before": 0.201,
+    "mean_coverage_after": 0.7266
+  },
+  "prediction_mutation": "FORBIDDEN",
+  "weakness_delta": {
+    "sample_before": {
+      "prediction_corpus": 340,
+      "evaluable": 335,
+      "young_horse": 33,
+      "tie": 15,
+      "with_evidence": 55,
+      "with_shadow": 9,
+      "global_strict_rate": 0.2,
+      "global_soft_rate": 0.21791044776119403,
+      "global_roi": -0.05253731343283582,
+      "exploratory": true
+    },
+    "sample_after": {
+      "prediction_corpus": 340,
+      "evaluable": 335,
+      "young_horse": 33,
+      "tie": 15,
+      "with_evidence": 55,
+      "with_shadow": 9,
+      "global_strict_rate": 0.2,
+      "global_soft_rate": 0.21791044776119403,
+      "global_roi": -0.05253731343283582,
+      "exploratory": true
+    },
+    "axis_unknown_delta": {
+      "age_group": {
+        "unknown_before": 295,
+        "unknown_after": 295,
+        "unknown_delta": 0,
+        "share_before": 0.8676,
+        "share_after": 0.8676,
+        "share_delta_pp": 0.0
+      },
+      "class_family": {
+        "unknown_before": 230,
+        "unknown_after": 230,
+        "unknown_delta": 0,
+        "share_before": 0.6765,
+        "share_after": 0.6765,
+        "share_delta_pp": 0.0
+      },
+      "course_type": {
+        "unknown_before": 0,
+        "unknown_after": 12,
+        "unknown_delta": 12,
+        "share_before": 0.0,
+        "share_after": 0.0353,
+        "share_delta_pp": 3.53
+      },
+      "distance_bucket": {
+        "unknown_before": 237,
+        "unknown_after": 12,
+        "unknown_delta": -225,
+        "share_before": 0.6971,
+        "share_after": 0.0353,
+        "share_delta_pp": -66.18
+      },
+      "field_bucket": {
+        "unknown_before": 0,
+        "unknown_after": 0,
+        "unknown_delta": 0,
+        "share_before": 0.0,
+        "share_after": 0.0,
+        "share_delta_pp": 0.0
+      },
+      "going": {
+        "unknown_before": 340,
+        "unknown_after": 17,
+        "unknown_delta": -323,
+        "share_before": 1.0,
+        "share_after": 0.05,
+        "share_delta_pp": -95.0
+      },
+      "odds_band": {
+        "unknown_before": 10,
+        "unknown_after": 10,
+        "unknown_delta": 0,
+        "share_before": 0.0294,
+        "share_after": 0.0294,
+        "share_delta_pp": 0.0
+      },
+      "pop_band": {
+        "unknown_before": 246,
+        "unknown_after": 246,
+        "unknown_delta": 0,
+        "share_before": 0.7235,
+        "share_after": 0.7235,
+        "share_delta_pp": 0.0
+      },
+      "race_class": {
+        "unknown_before": 0,
+        "unknown_after": 190,
+        "unknown_delta": 190,
+        "share_before": 0.0,
+        "share_after": 0.5588,
+        "share_delta_pp": 55.88
+      },
+      "race_type": {
+        "unknown_before": 230,
+        "unknown_after": 230,
+        "unknown_delta": 0,
+        "share_before": 0.6765,
+        "share_after": 0.6765,
+        "share_delta_pp": 0.0
+      },
+      "surface": {
+        "unknown_before": 237,
+        "unknown_after": 12,
+        "unknown_delta": -225,
+        "share_before": 0.6971,
+        "share_after": 0.0353,
+        "share_delta_pp": -66.18
+      },
+      "venue": {
+        "unknown_before": 0,
+        "unknown_after": 0,
+        "unknown_delta": 0,
+        "share_before": 0.0,
+        "share_after": 0.0,
+        "share_delta_pp": 0.0
+      },
+      "weather": {
+        "unknown_before": 340,
+        "unknown_after": 203,
+        "unknown_delta": -137,
+        "share_before": 1.0,
+        "share_after": 0.5971,
+        "share_delta_pp": -40.29
+      }
+    },
+    "priority_before_top5": [
+      {
+        "axis": "odds_band",
+        "segment": "odds_mid",
+        "n": 130,
+        "n_eval": 130,
+        "strict_hits": 21,
+        "soft_hits": 22,
+        "strict_rate": 0.16153846153846155,
+        "soft_rate": 0.16923076923076924,
+        "roi": -0.13615384615384615,
+        "tie_rate": 0.046153846153846156,
+        "reliability": 51.2,
+        "resolver_win": 0,
+        "resolver_lose": 0,
+        "resolver_draw": 4,
+        "resolver_lose_rate": 0.0,
+        "evidence_coverage": 0.13076923076923078,
+        "weakness_index": 57.0,
+        "stable": true,
+        "priority_score": 277.89,
+        "rank": 1,
+        "strict_gap_vs_global": 0.0385,
+        "improvement_roi_est_yen": 1250.0,
+        "improvement_extra_hits_est": 5.0,
+        "priority_rank": 1
+      },
+      {
+        "axis": "surface",
+        "segment": "turf",
+        "n": 67,
+        "n_eval": 64,
+        "strict_hits": 5,
+        "soft_hits": 5,
+        "strict_rate": 0.078125,
+        "soft_rate": 0.078125,
+        "roi": -0.7515625,
+        "tie_rate": 0.029850746268656716,
+        "reliability": 50.0,
+        "resolver_win": 0,
+        "resolver_lose": 0,
+        "resolver_draw": 0,
+        "resolver_lose_rate": null,
+        "evidence_coverage": 0.08955223880597014,
+        "weakness_index": 66.3,
+        "stable": true,
+        "priority_score": 276.76,
+        "rank": 2,
+        "strict_gap_vs_global": 0.1219,
+        "improvement_roi_est_yen": 1950.0,
+        "improvement_extra_hits_est": 7.8,
+        "priority_rank": 2
+      },
+      {
+        "axis": "field_bucket",
+        "segment": "field_15-16",
+        "n": 155,
+        "n_eval": 150,
+        "strict_hits": 29,
+        "soft_hits": 30,
+        "strict_rate": 0.19333333333333333,
+        "soft_rate": 0.2,
+        "roi": -0.014,
+        "tie_rate": 0.01935483870967742,
+        "reliability": 51.0,
+        "resolver_win": 0,
+        "resolver_lose": 0,
+        "resolver_draw": 0,
+        "resolver_lose_rate": null,
+        "evidence_coverage": 0.12258064516129032,
+        "weakness_index": 54.4,
+        "stable": true,
+        "priority_score": 272.94,
+        "rank": 1,
+        "strict_gap_vs_global": 0.0067,
+        "improvement_roi_est_yen": 250.0,
+        "improvement_extra_hits_est": 1.0,
+        "priority_rank": 3
+      },
+      {
+        "axis": "field_bucket",
+        "segment": "field_11-14",
+        "n": 99,
+        "n_eval": 99,
+        "strict_hits": 21,
+        "soft_hits": 23,
+        "strict_rate": 0.21212121212121213,
+        "soft_rate": 0.23232323232323232,
+        "roi": -0.08888888888888889,
+        "tie_rate": 0.030303030303030304,
+        "reliability": 51.8,
+        "resolver_win": 0,
+        "resolver_lose": 0,
+        "resolver_draw": 2,
+        "resolver_lose_rate": 0.0,
+        "evidence_coverage": 0.15151515151515152,
+        "weakness_index": 54.0,
+        "stable": true,
+        "priority_score": 248.68,
+        "rank": 2,
+        "strict_gap_vs_global": 0.0,
+        "improvement_roi_est_yen": 0.0,
+        "improvement_extra_hits_est": 0.0,
+        "priority_rank": 4
+      },
+      {
+        "axis": "odds_band",
+        "segment": "odds_short",
+        "n": 118,
+        "n_eval": 118,
+        "strict_hits": 37,
+        "soft_hits": 37,
+        "strict_rate": 0.3135593220338983,
+        "soft_rate": 0.3135593220338983,
+        "roi": -0.2135593220338983,
+        "tie_rate": 0.025423728813559324,
+        "reliability": 52.1,
+        "resolver_win": 0,
+        "resolver_lose": 0,
+        "resolver_draw": 1,
+        "resolver_lose_rate": 0.0,
+        "evidence_coverage": 0.16101694915254236,
+        "weakness_index": 51.1,
+        "stable": true,
+        "priority_score": 244.21,
+        "rank": 2,
+        "strict_gap_vs_global": 0.0,
+        "improvement_roi_est_yen": 0.0,
+        "improvement_extra_hits_est": 0.0,
+        "priority_rank": 5
+      }
+    ],
+    "priority_after_top5": [
+      {
+        "axis": "course_type",
+        "segment": "turf",
+        "n": 207,
+        "n_eval": 204,
+        "strict_hits": 31,
+        "soft_hits": 34,
+        "strict_rate": 0.15196078431372548,
+        "soft_rate": 0.16666666666666666,
+        "roi": -0.20980392156862746,
+        "tie_rate": 0.033816425120772944,
+        "reliability": 51.1,
+        "resolver_win": 1,
+        "resolver_lose": 0,
+        "resolver_draw": 2,
+        "resolver_lose_rate": 0.0,
+        "evidence_coverage": 0.12560386473429952,
+        "weakness_index": 57.9,
+        "stable": true,
+        "priority_score": 308.2,
+        "rank": 1,
+        "strict_gap_vs_global": 0.048,
+        "improvement_roi_est_yen": 2450.0,
+        "improvement_extra_hits_est": 9.8,
+        "priority_rank": 1
+      },
+      {
+        "axis": "surface",
+        "segment": "turf",
+        "n": 207,
+        "n_eval": 204,
+        "strict_hits": 31,
+        "soft_hits": 34,
+        "strict_rate": 0.15196078431372548,
+        "soft_rate": 0.16666666666666666,
+        "roi": -0.20980392156862746,
+        "tie_rate": 0.033816425120772944,
+        "reliability": 51.1,
+        "resolver_win": 1,
+        "resolver_lose": 0,
+        "resolver_draw": 2,
+        "resolver_lose_rate": 0.0,
+        "evidence_coverage": 0.12560386473429952,
+        "weakness_index": 57.9,
+        "stable": true,
+        "priority_score": 308.2,
+        "rank": 1,
+        "strict_gap_vs_global": 0.048,
+        "improvement_roi_est_yen": 2450.0,
+        "improvement_extra_hits_est": 9.8,
+        "priority_rank": 2
+      },
+      {
+        "axis": "going",
+        "segment": "良",
+        "n": 258,
+        "n_eval": 255,
+        "strict_hits": 51,
+        "soft_hits": 54,
+        "strict_rate": 0.2,
+        "soft_rate": 0.21176470588235294,
+        "roi": -0.03411764705882353,
+        "tie_rate": 0.03875968992248062,
+        "reliability": 51.5,
+        "resolver_win": 1,
+        "resolver_lose": 0,
+        "resolver_draw": 4,
+        "resolver_lose_rate": 0.0,
+        "evidence_coverage": 0.13953488372093023,
+        "weakness_index": 54.3,
+        "stable": true,
+        "priority_score": 301.1,
+        "rank": 1,
+        "strict_gap_vs_global": 0.0,
+        "improvement_roi_est_yen": 0.0,
+        "improvement_extra_hits_est": 0.0,
+        "priority_rank": 3
+      },
+      {
+        "axis": "distance_bucket",
+        "segment": "sprint",
+        "n": 106,
+        "n_eval": 106,
+        "strict_hits": 14,
+        "soft_hits": 16,
+        "strict_rate": 0.1320754716981132,
+        "soft_rate": 0.1509433962264151,
+        "roi": -0.38207547169811323,
+        "tie_rate": 0.03773584905660377,
+        "reliability": 51.5,
+        "resolver_win": 0,
+        "resolver_lose": 0,
+        "resolver_draw": 3,
+        "resolver_lose_rate": 0.0,
+        "evidence_coverage": 0.14150943396226415,
+        "weakness_index": 60.1,
+        "stable": true,
+        "priority_score": 280.84,
+        "rank": 1,
+        "strict_gap_vs_global": 0.0679,
+        "improvement_roi_est_yen": 1800.0,
+        "improvement_extra_hits_est": 7.2,
+        "priority_rank": 4
+      },
+      {
+        "axis": "odds_band",
+        "segment": "odds_mid",
+        "n": 130,
+        "n_eval": 130,
+        "strict_hits": 21,
+        "soft_hits": 22,
+        "strict_rate": 0.16153846153846155,
+        "soft_rate": 0.16923076923076924,
+        "roi": -0.13615384615384615,
+        "tie_rate": 0.046153846153846156,
+        "reliability": 51.2,
+        "resolver_win": 0,
+        "resolver_lose": 0,
+        "resolver_draw": 4,
+        "resolver_lose_rate": 0.0,
+        "evidence_coverage": 0.13076923076923078,
+        "weakness_index": 57.0,
+        "stable": true,
+        "priority_score": 277.89,
+        "rank": 1,
+        "strict_gap_vs_global": 0.0385,
+        "improvement_roi_est_yen": 1250.0,
+        "improvement_extra_hits_est": 5.0,
+        "priority_rank": 5
+      }
+    ]
+  },
+  "atlas_sample": {
+    "prediction_corpus": 340,
+    "evaluable": 335,
+    "young_horse": 33,
+    "tie": 15,
+    "with_evidence": 55,
+    "with_shadow": 9,
+    "global_strict_rate": 0.2,
+    "global_soft_rate": 0.21791044776119403,
+    "global_roi": -0.05253731343283582,
+    "exploratory": true
+  }
+}

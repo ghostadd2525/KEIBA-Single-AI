@@ -1,0 +1,15 @@
+﻿{
+  "phase": "I5",
+  "source": "rehearsal-harness.html",
+  "verdict": "PASS",
+  "checks": [
+    {"id": "flag_off_prediction", "status": "PASS"},
+    {"id": "flag_off_no_single_http", "status": "PASS"},
+    {"id": "flag_on_single_api_call", "status": "PASS"},
+    {"id": "prediction_fallback_envelope", "status": "PASS"},
+    {"id": "single_api_success", "status": "PASS"},
+    {"id": "timeout_prediction_fallback", "status": "PASS"},
+    {"id": "error_prediction_fallback", "status": "PASS"},
+    {"id": "rollback_flag_off", "status": "PASS"}
+  ]
+}

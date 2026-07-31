@@ -1,0 +1,126 @@
+{
+  "ingested_bundles": 372,
+  "recoverable": 367,
+  "bundle_only": 5,
+  "unrecoverable": 0,
+  "by_source": {
+    "db.predictions": 56,
+    "real_285r_corpus": 285,
+    "public.pi_json": 9,
+    "miss_evidence": 24
+  },
+  "tie_eligible_rows": 23,
+  "tie_races_with_size_ge2": 23,
+  "unique_races_with_bundle": 337,
+  "unique_tie_races": 15,
+  "unique_unrecoverable_races": 0,
+  "inventory_totals": {
+    "bundle_candidates": 381,
+    "unique_race_ids_with_bundle": 337,
+    "metadata_only": 0,
+    "unrecoverable": 0
+  },
+  "run_id": "c4880226-5aaa-45da-8288-b7eba73f9bad",
+  "inventory": {
+    "generated_at": "2026-07-27T08:06:29+00:00",
+    "sources": [
+      {
+        "source": "db.predictions",
+        "path": "var/expect_ai.db::predictions",
+        "rows": 56,
+        "with_bundle": 56,
+        "unique_races": 53,
+        "tie_recoverable": true,
+        "note": "Product table read-only; copied into research_historical_bundles"
+      },
+      {
+        "source": "db.prediction_history",
+        "path": "var/expect_ai.db::prediction_history",
+        "rows": 0,
+        "with_bundle": 0,
+        "unique_races": 0,
+        "tie_recoverable": false,
+        "note": "user view history; no Prediction Bundle payload"
+      },
+      {
+        "source": "db.research_prediction_snapshots",
+        "path": "var/expect_ai.db::research_prediction_snapshots",
+        "rows": 57,
+        "with_bundle": 0,
+        "unique_races": 0,
+        "tie_recoverable": false,
+        "note": "Evidence snapshots; usually features-only"
+      },
+      {
+        "source": "db.race_evaluations",
+        "path": "var/expect_ai.db::race_evaluations",
+        "rows": 300,
+        "with_bundle": 0,
+        "unique_races": 300,
+        "tie_recoverable": false,
+        "note": "hit metrics only; Bundle absent → unrecoverable for Tie"
+      },
+      {
+        "source": "real_285r_corpus",
+        "path": "/home/ubuntu/KEIBA-Single-AI/research/v3_lab/baselines/offline_gate/real_285r_corpus.json",
+        "rows": 285,
+        "with_bundle": 285,
+        "unique_races": 285,
+        "tie_recoverable": true,
+        "note": "Offline gate corpus; horse_number often 0 → normalized by horse_id"
+      },
+      {
+        "source": "public.pi_json",
+        "path": "/home/ubuntu/KEIBA-Single-AI/public/data/predictions",
+        "rows": 18,
+        "with_bundle": 18,
+        "unique_races": 18,
+        "tie_recoverable": true,
+        "note": "Rank/Confidence/HorseNumber → canonical Bundle"
+      },
+      {
+        "source": "miss_evidence",
+        "path": "var/miss-evidence + var/improvement-evidence/miss",
+        "rows": 26,
+        "with_bundle": 22,
+        "unique_races": 11,
+        "tie_recoverable": true,
+        "note": "includes envelopes with payload.prediction_bundle"
+      },
+      {
+        "source": "baseline_285r_evaluations",
+        "path": "/home/ubuntu/KEIBA-Single-AI/services/win5-ai/fixtures/stats/baseline-285r-evaluations.json",
+        "rows": 285,
+        "with_bundle": 0,
+        "unique_races": 285,
+        "tie_recoverable": false,
+        "note": "evaluation-only; metadata / unrecoverable for Tie unless covered by real_285r"
+      },
+      {
+        "source": "tmp_api_captures",
+        "path": "/home/ubuntu/KEIBA-Single-AI/tmp*pred*.json",
+        "rows": 0,
+        "with_bundle": 0,
+        "unique_races": 0,
+        "tie_recoverable": false,
+        "note": "local API capture dumps; may duplicate live predictions"
+      },
+      {
+        "source": "s3_or_remote_backup",
+        "path": "not found in checkout / EC2 var",
+        "rows": 0,
+        "with_bundle": 0,
+        "unique_races": 0,
+        "tie_recoverable": false,
+        "note": "No S3 credentials or backup dumps discovered during inventory"
+      }
+    ],
+    "totals": {
+      "bundle_candidates": 381,
+      "unique_race_ids_with_bundle": 337,
+      "metadata_only": 0,
+      "unrecoverable": 0
+    },
+    "seen_bundle_race_ids_count": 337
+  }
+}

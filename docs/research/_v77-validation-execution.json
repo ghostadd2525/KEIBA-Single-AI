@@ -1,0 +1,837 @@
+{
+  "schema": "v77-validation-execution/1.0",
+  "generated_at": "2026-07-28T08:35:42+00:00",
+  "plan": "V76 E1/E2 execution (split1 + split2 gate eval + contract metrics)",
+  "split_method": "sorted race_id chronological half",
+  "n_full": 285,
+  "n_split1": 142,
+  "n_split2": 143,
+  "contract_tests": {
+    "tests": [
+      {
+        "test_id": "rank7.MUST.2.field_size_attenuate",
+        "world": "rank7_world",
+        "metric": "r(field_size, winner_win_prob_pct)",
+        "value": -0.11307791111977038,
+        "threshold": "<= -0.05",
+        "pass": true,
+        "n": 65,
+        "scope": "full"
+      },
+      {
+        "test_id": "rank7.MUST.1.history_winprob_peer_band",
+        "world": "rank7_world",
+        "metric": "|effect(history_z)-effect(win_prob_z)|",
+        "value": 0.017199460900037544,
+        "threshold": "both in top3 AND |Δ| <= 0.25 (observability)",
+        "pass": true,
+        "n": 65,
+        "scope": "full"
+      },
+      {
+        "test_id": "rank7.MUST.3.not_sashi_oikomi_primary",
+        "world": "rank7_world",
+        "metric": "top_style",
+        "value": "逃げ",
+        "threshold": "not in {差し, 追込}",
+        "pass": true,
+        "n": 65,
+        "scope": "full"
+      },
+      {
+        "test_id": "midhole.MUST.1.history_leads",
+        "world": "midhole_world",
+        "metric": "effect(history_z)-effect(win_prob_z)",
+        "value": 0.4208944842987495,
+        "threshold": "> 0.15",
+        "pass": true,
+        "n": 24,
+        "scope": "full"
+      },
+      {
+        "test_id": "midhole.MUST.2.winprob_not_primary",
+        "world": "midhole_world",
+        "metric": "win_prob_z rank among non-pop",
+        "value": 3,
+        "threshold": "not rank 1 (top3[0] != win_prob_z)",
+        "pass": true,
+        "n": 24,
+        "scope": "full"
+      },
+      {
+        "test_id": "midhole.MUST.3.upper_band_attenuate",
+        "world": "midhole_world",
+        "metric": "r(upper_ability_band, winner_win_prob_pct)",
+        "value": -0.2337378320107459,
+        "threshold": "<= -0.05",
+        "pass": true,
+        "n": 24,
+        "scope": "full"
+      },
+      {
+        "test_id": "rank7.MUST.2.field_size_attenuate",
+        "world": "rank7_world",
+        "metric": "r(field_size, winner_win_prob_pct)",
+        "value": -0.11814249606565776,
+        "threshold": "<= -0.05",
+        "pass": true,
+        "n": 27,
+        "scope": "split1"
+      },
+      {
+        "test_id": "rank7.MUST.1.history_winprob_peer_band",
+        "world": "rank7_world",
+        "metric": "|effect(history_z)-effect(win_prob_z)|",
+        "value": 0.06156199467854784,
+        "threshold": "both in top3 AND |Δ| <= 0.25 (observability)",
+        "pass": true,
+        "n": 27,
+        "scope": "split1"
+      },
+      {
+        "test_id": "rank7.MUST.3.not_sashi_oikomi_primary",
+        "world": "rank7_world",
+        "metric": "top_style",
+        "value": "逃げ",
+        "threshold": "not in {差し, 追込}",
+        "pass": true,
+        "n": 27,
+        "scope": "split1"
+      },
+      {
+        "test_id": "midhole.MUST.1.history_leads",
+        "world": "midhole_world",
+        "metric": "effect(history_z)-effect(win_prob_z)",
+        "value": 0.3859235364462736,
+        "threshold": "> 0.15",
+        "pass": true,
+        "n": 14,
+        "scope": "split1"
+      },
+      {
+        "test_id": "midhole.MUST.2.winprob_not_primary",
+        "world": "midhole_world",
+        "metric": "win_prob_z rank among non-pop",
+        "value": 3,
+        "threshold": "not rank 1 (top3[0] != win_prob_z)",
+        "pass": true,
+        "n": 14,
+        "scope": "split1"
+      },
+      {
+        "test_id": "midhole.MUST.3.upper_band_attenuate",
+        "world": "midhole_world",
+        "metric": "r(upper_ability_band, winner_win_prob_pct)",
+        "value": -0.41984904281536817,
+        "threshold": "<= -0.05",
+        "pass": true,
+        "n": 14,
+        "scope": "split1"
+      },
+      {
+        "test_id": "rank7.MUST.2.field_size_attenuate",
+        "world": "rank7_world",
+        "metric": "r(field_size, winner_win_prob_pct)",
+        "value": -0.11322764875495767,
+        "threshold": "<= -0.05",
+        "pass": true,
+        "n": 38,
+        "scope": "split2"
+      },
+      {
+        "test_id": "rank7.MUST.1.history_winprob_peer_band",
+        "world": "rank7_world",
+        "metric": "|effect(history_z)-effect(win_prob_z)|",
+        "value": 0.07316289257841868,
+        "threshold": "both in top3 AND |Δ| <= 0.25 (observability)",
+        "pass": true,
+        "n": 38,
+        "scope": "split2"
+      },
+      {
+        "test_id": "rank7.MUST.3.not_sashi_oikomi_primary",
+        "world": "rank7_world",
+        "metric": "top_style",
+        "value": "先行",
+        "threshold": "not in {差し, 追込}",
+        "pass": true,
+        "n": 38,
+        "scope": "split2"
+      },
+      {
+        "test_id": "midhole.MUST.1.history_leads",
+        "world": "midhole_world",
+        "metric": "effect(history_z)-effect(win_prob_z)",
+        "value": 0.4697147656073158,
+        "threshold": "> 0.15",
+        "pass": true,
+        "n": 10,
+        "scope": "split2"
+      },
+      {
+        "test_id": "midhole.MUST.2.winprob_not_primary",
+        "world": "midhole_world",
+        "metric": "win_prob_z rank among non-pop",
+        "value": 99,
+        "threshold": "not rank 1 (top3[0] != win_prob_z)",
+        "pass": true,
+        "n": 10,
+        "scope": "split2"
+      },
+      {
+        "test_id": "midhole.MUST.3.upper_band_attenuate",
+        "world": "midhole_world",
+        "metric": "r(upper_ability_band, winner_win_prob_pct)",
+        "value": -0.12595483446479255,
+        "threshold": "<= -0.05",
+        "pass": true,
+        "n": 10,
+        "scope": "split2"
+      },
+      {
+        "test_id": "unsatisfied.MUST.fallback_coverage_popularity",
+        "world": "unsatisfied",
+        "metric": "popularity_valid_race_fraction",
+        "value": 0.17045454545454544,
+        "threshold": "document coverage (no pass threshold in V76 except measured)",
+        "pass": true,
+        "n": 176,
+        "scope": "full"
+      }
+    ],
+    "g_c1_recordable": true
+  },
+  "gates": {
+    "rank7_world": {
+      "world": "rank7_world",
+      "counterpart": "midhole_world",
+      "G-S1": {
+        "pass": true,
+        "n_full": 65,
+        "threshold": 40
+      },
+      "G-S2": {
+        "pass": true,
+        "n_split1": 27,
+        "n_split2": 38,
+        "threshold_each": 15
+      },
+      "G-C1": {
+        "pass": true,
+        "note": "MUST tests recorded"
+      },
+      "G-R1": {
+        "pass": true,
+        "top3_jaccard": 1.0,
+        "threshold": 0.6
+      },
+      "Separation": {
+        "pass": true,
+        "sep1_both_consistent": true,
+        "sep2_both": true,
+        "sep3_both": false,
+        "split1": {
+          "sep1": true,
+          "sep2": true,
+          "sep3": true,
+          "sep_or": true,
+          "spearman": 0.6,
+          "jaccard5": 0.6666666666666666,
+          "flip_field": true,
+          "flip_upper": true,
+          "top_style_w": "逃げ",
+          "top_style_c": "差し",
+          "r_field_w": -0.11814249606565776,
+          "r_field_c": 0.39167072522848306,
+          "r_upper_w": 0.27281119201192217,
+          "r_upper_c": -0.41984904281536817
+        },
+        "split2": {
+          "sep1": true,
+          "sep2": true,
+          "sep3": false,
+          "sep_or": true,
+          "spearman": 0.6,
+          "jaccard5": 0.6666666666666666,
+          "flip_field": false,
+          "flip_upper": true,
+          "top_style_w": "先行",
+          "top_style_c": "先行",
+          "r_field_w": -0.11322764875495767,
+          "r_field_c": -0.1333188224898248,
+          "r_upper_w": 0.26197420741002514,
+          "r_upper_c": -0.12595483446479255
+        },
+        "field_flip_dirs": [
+          "w-/c+",
+          null
+        ],
+        "upper_flip_dirs": [
+          "w+/c-",
+          "w+/c-"
+        ]
+      },
+      "world_specific": {
+        "pass": true,
+        "detail": {
+          "split1_r": -0.11814249606565776,
+          "split2_r": -0.11322764875495767,
+          "rule": "both <= -0.05"
+        }
+      },
+      "Ready_gate_pass": true
+    },
+    "midhole_world": {
+      "world": "midhole_world",
+      "counterpart": "rank7_world",
+      "G-S1": {
+        "pass": false,
+        "n_full": 24,
+        "threshold": 40
+      },
+      "G-S2": {
+        "pass": false,
+        "n_split1": 14,
+        "n_split2": 10,
+        "threshold_each": 15
+      },
+      "G-C1": {
+        "pass": true,
+        "note": "MUST tests recorded"
+      },
+      "G-R1": {
+        "pass": false,
+        "top3_jaccard": 0.5,
+        "threshold": 0.6
+      },
+      "Separation": {
+        "pass": true,
+        "sep1_both_consistent": true,
+        "sep2_both": true,
+        "sep3_both": false,
+        "split1": {
+          "sep1": true,
+          "sep2": true,
+          "sep3": true,
+          "sep_or": true,
+          "spearman": 0.6,
+          "jaccard5": 0.6666666666666666,
+          "flip_field": true,
+          "flip_upper": true,
+          "top_style_w": "差し",
+          "top_style_c": "逃げ",
+          "r_field_w": 0.39167072522848306,
+          "r_field_c": -0.11814249606565776,
+          "r_upper_w": -0.41984904281536817,
+          "r_upper_c": 0.27281119201192217
+        },
+        "split2": {
+          "sep1": true,
+          "sep2": true,
+          "sep3": false,
+          "sep_or": true,
+          "spearman": 0.6,
+          "jaccard5": 0.6666666666666666,
+          "flip_field": false,
+          "flip_upper": true,
+          "top_style_w": "先行",
+          "top_style_c": "先行",
+          "r_field_w": -0.1333188224898248,
+          "r_field_c": -0.11322764875495767,
+          "r_upper_w": -0.12595483446479255,
+          "r_upper_c": 0.26197420741002514
+        },
+        "field_flip_dirs": [
+          "w+/c-",
+          null
+        ],
+        "upper_flip_dirs": [
+          "w-/c+",
+          "w-/c+"
+        ]
+      },
+      "world_specific": {
+        "pass": true,
+        "detail": {
+          "hist_gap_s1": 0.3859235364462736,
+          "hist_gap_s2": 0.4697147656073158,
+          "upper_r_s1": -0.41984904281536817,
+          "upper_r_s2": -0.12595483446479255
+        }
+      },
+      "Ready_gate_pass": false
+    },
+    "unsatisfied": {
+      "world": "unsatisfied",
+      "n": 176,
+      "n_ok": true,
+      "policy_documented_v75": true,
+      "misapplication_rate_legacy_positive_on_cew_unsatisfied": 1.0,
+      "misapplication_rate_v69_positive_on_cew_unsatisfied": 0.0,
+      "misapplication_n": {
+        "legacy": 176,
+        "v69": 0,
+        "denom": 176
+      },
+      "popularity_coverage": 0.17045454545454544,
+      "fallback_needed_rate": 0.8295454545454546,
+      "top3_jaccard_splits": 1.0,
+      "G-C1_measurement_complete": true,
+      "Ready_gate_pass": true,
+      "note": "Residual Ready = policy readiness, not winning-pattern Ready"
+    },
+    "blocked_reeval": {
+      "core_world": {
+        "n": 8,
+        "blocked_to_partial_n_gate": false,
+        "separation_candidate_recorded": true,
+        "partial_gate_pass": false,
+        "extra": {
+          "top_gap": 0.04964415569793044,
+          "top_gap_gt_unsatisfied": true,
+          "top_gap_gt_midhole": true,
+          "win_prob_rank1": true
+        },
+        "readiness": "Blocked"
+      },
+      "midupper_world": {
+        "n": 6,
+        "blocked_to_partial_n_gate": false,
+        "separation_candidate_recorded": true,
+        "partial_gate_pass": false,
+        "extra": {
+          "aptitude_proxy_in_285r_horse_features": false,
+          "aptitude_missing_flag": true
+        },
+        "readiness": "Blocked"
+      },
+      "mixed_world": {
+        "n": 6,
+        "blocked_to_partial_n_gate": false,
+        "separation_candidate_recorded": true,
+        "partial_gate_pass": false,
+        "extra": {
+          "history_effect": -0.002763596156884183
+        },
+        "readiness": "Blocked"
+      },
+      "bug_world": {
+        "n": 0,
+        "blocked_to_partial_n_gate": false,
+        "separation_candidate_recorded": false,
+        "partial_gate_pass": false,
+        "extra": {
+          "exception_true_n": 0
+        },
+        "readiness": "Blocked"
+      }
+    }
+  },
+  "readiness_result": {
+    "rank7_world": "Ready",
+    "midhole_world": "Partial",
+    "unsatisfied": "Ready",
+    "core_world": "Blocked",
+    "midupper_world": "Blocked",
+    "mixed_world": "Blocked",
+    "bug_world": "Blocked"
+  },
+  "readiness_before_v75": {
+    "rank7_world": "Partial",
+    "midhole_world": "Partial",
+    "unsatisfied": "Partial",
+    "core_world": "Blocked",
+    "midupper_world": "Blocked",
+    "mixed_world": "Blocked",
+    "bug_world": "Blocked"
+  },
+  "distributions": {
+    "full": {
+      "unsatisfied": 176,
+      "midupper_world": 6,
+      "mixed_world": 6,
+      "midhole_world": 24,
+      "rank7_world": 65,
+      "core_world": 8
+    },
+    "split1": {
+      "unsatisfied": 85,
+      "midupper_world": 5,
+      "midhole_world": 14,
+      "mixed_world": 3,
+      "rank7_world": 27,
+      "core_world": 8
+    },
+    "split2": {
+      "unsatisfied": 91,
+      "rank7_world": 38,
+      "midhole_world": 10,
+      "mixed_world": 3,
+      "midupper_world": 1
+    }
+  },
+  "per_split_world_n": {
+    "full": {
+      "core_world": 8,
+      "midupper_world": 6,
+      "midhole_world": 24,
+      "rank7_world": 65,
+      "mixed_world": 6,
+      "bug_world": 0,
+      "unsatisfied": 176
+    },
+    "split1": {
+      "core_world": 8,
+      "midupper_world": 5,
+      "midhole_world": 14,
+      "rank7_world": 27,
+      "mixed_world": 3,
+      "bug_world": 0,
+      "unsatisfied": 85
+    },
+    "split2": {
+      "core_world": 0,
+      "midupper_world": 1,
+      "midhole_world": 10,
+      "rank7_world": 38,
+      "mixed_world": 3,
+      "bug_world": 0,
+      "unsatisfied": 91
+    }
+  },
+  "per_split_metrics": {
+    "full": {
+      "core_world": {
+        "n": 8,
+        "top3": [
+          "win_prob_z",
+          "odds_z",
+          "history_z"
+        ],
+        "top_style": "先行",
+        "r_field_winprob": 0.2573016139561948,
+        "r_upper_winprob": -0.3067495706536292,
+        "effects": {
+          "win_prob_z": 1.1094995490180342,
+          "odds_z": 0.7100217220354547,
+          "history_z": 0.49604960633398915,
+          "odds_pct_low": 0.3261666666666667,
+          "win_prob_pct": 0.2274039215686275,
+          "history_pct": 0.16954705882352938
+        }
+      },
+      "midupper_world": {
+        "n": 6,
+        "top3": [
+          "win_prob_z",
+          "odds_z",
+          "history_z"
+        ],
+        "top_style": "差し",
+        "r_field_winprob": null,
+        "r_upper_winprob": null,
+        "effects": {
+          "win_prob_z": 0.8802649857849081,
+          "odds_z": 0.8542079696493624,
+          "history_z": 0.7303354451420881,
+          "odds_pct_low": 0.43636172854922856,
+          "win_prob_pct": 0.36088633588633595,
+          "history_pct": 0.24232989232989233
+        }
+      },
+      "midhole_world": {
+        "n": 24,
+        "top3": [
+          "history_z",
+          "odds_z",
+          "win_prob_z"
+        ],
+        "top_style": "先行",
+        "r_field_winprob": 0.15851967795562796,
+        "r_upper_winprob": -0.2337378320107459,
+        "effects": {
+          "history_z": 0.7074742723450894,
+          "odds_z": 0.5192745896599564,
+          "win_prob_z": 0.28657978804633993,
+          "history_pct": 0.22436174936174924,
+          "odds_pct_low": 0.178846728392007,
+          "win_prob_pct": 0.17658362878951117
+        }
+      },
+      "rank7_world": {
+        "n": 65,
+        "top3": [
+          "history_z",
+          "win_prob_z",
+          "odds_z"
+        ],
+        "top_style": "逃げ",
+        "r_field_winprob": -0.11307791111977038,
+        "r_upper_winprob": 0.2582681481458756,
+        "effects": {
+          "history_z": 0.7073657356098745,
+          "win_prob_z": 0.6901662747098369,
+          "odds_z": 0.680836786245298,
+          "odds_pct_low": 0.33806990303864465,
+          "win_prob_pct": 0.2727132801444852,
+          "history_pct": 0.21469466469748694
+        }
+      },
+      "mixed_world": {
+        "n": 6,
+        "top3": [
+          "win_prob_z",
+          "odds_z",
+          "odds_pct_low"
+        ],
+        "top_style": "追込",
+        "r_field_winprob": null,
+        "r_upper_winprob": null,
+        "effects": {
+          "win_prob_z": 1.6482480112332978,
+          "odds_z": 0.7387691118429477,
+          "odds_pct_low": 0.3128443372345811,
+          "win_prob_pct": 0.23592721641502123,
+          "history_pct": 0.03387236070162902,
+          "history_z": -0.002763596156884183
+        }
+      },
+      "unsatisfied": {
+        "n": 176,
+        "top3": [
+          "win_prob_z",
+          "odds_z",
+          "history_z"
+        ],
+        "top_style": "逃げ",
+        "r_field_winprob": 0.14473817959420587,
+        "r_upper_winprob": -0.08045677175599657,
+        "effects": {
+          "popularity_z": 1.063068961679441,
+          "win_prob_z": 0.8309641564172865,
+          "odds_z": 0.690543498841223,
+          "history_z": 0.5952355988943342,
+          "popularity_pct_low": 0.327801425558352,
+          "odds_pct_low": 0.3166823927997773,
+          "win_prob_pct": 0.24706558523514538,
+          "history_pct": 0.1891369125019317
+        }
+      }
+    },
+    "split1": {
+      "core_world": {
+        "n": 8,
+        "top3": [
+          "win_prob_z",
+          "odds_z",
+          "history_z"
+        ],
+        "top_style": "先行",
+        "r_field_winprob": 0.2573016139561948,
+        "r_upper_winprob": -0.3067495706536292,
+        "effects": {
+          "win_prob_z": 1.1094995490180342,
+          "odds_z": 0.7100217220354547,
+          "history_z": 0.49604960633398915,
+          "odds_pct_low": 0.3261666666666667,
+          "win_prob_pct": 0.2274039215686275,
+          "history_pct": 0.16954705882352938
+        }
+      },
+      "midupper_world": {
+        "n": 5,
+        "top3": [
+          "win_prob_z",
+          "odds_z",
+          "history_z"
+        ],
+        "top_style": "差し",
+        "r_field_winprob": null,
+        "r_upper_winprob": null,
+        "effects": {
+          "win_prob_z": 1.1292033178655936,
+          "odds_z": 0.88063550684543,
+          "history_z": 0.8605596632138479,
+          "odds_pct_low": 0.4470781358281359,
+          "win_prob_pct": 0.38706167706167705,
+          "history_pct": 0.27537768537768526
+        }
+      },
+      "midhole_world": {
+        "n": 14,
+        "top3": [
+          "history_z",
+          "odds_z",
+          "win_prob_z"
+        ],
+        "top_style": "差し",
+        "r_field_winprob": 0.39167072522848306,
+        "r_upper_winprob": -0.41984904281536817,
+        "effects": {
+          "history_z": 0.8500058740733883,
+          "odds_z": 0.4674368216914709,
+          "win_prob_z": 0.46408233762711476,
+          "history_pct": 0.2832272541123473,
+          "win_prob_pct": 0.20974506859600034,
+          "odds_pct_low": 0.19802807828817148
+        }
+      },
+      "rank7_world": {
+        "n": 27,
+        "top3": [
+          "win_prob_z",
+          "history_z",
+          "odds_z"
+        ],
+        "top_style": "逃げ",
+        "r_field_winprob": -0.11814249606565776,
+        "r_upper_winprob": 0.27281119201192217,
+        "effects": {
+          "win_prob_z": 0.8730140096637018,
+          "history_z": 0.811452014985154,
+          "odds_z": 0.6427856100024727,
+          "odds_pct_low": 0.32245436641432174,
+          "win_prob_pct": 0.2998477210559102,
+          "history_pct": 0.2708512342216926
+        }
+      },
+      "mixed_world": {
+        "n": 3,
+        "top3": [
+          "win_prob_z",
+          "odds_z",
+          "odds_pct_low"
+        ],
+        "top_style": "追込",
+        "r_field_winprob": null,
+        "r_upper_winprob": null,
+        "effects": {
+          "win_prob_z": 0.8975105910520467,
+          "odds_z": 0.5682226668648912,
+          "odds_pct_low": 0.11465499270377316,
+          "history_pct": 0.08346883468834698,
+          "history_z": 0.0687528833671691,
+          "win_prob_pct": 0.0119241192411923
+        }
+      },
+      "unsatisfied": {
+        "n": 85,
+        "top3": [
+          "win_prob_z",
+          "odds_z",
+          "history_z"
+        ],
+        "top_style": "逃げ",
+        "r_field_winprob": 0.20357209544861968,
+        "r_upper_winprob": -0.057123457233938905,
+        "effects": {
+          "win_prob_z": 1.1890082826289878,
+          "popularity_z": 1.1094479955705934,
+          "odds_z": 0.7122721412178739,
+          "history_z": 0.6018223633341382,
+          "odds_pct_low": 0.34538214073335965,
+          "popularity_pct_low": 0.34217166980806113,
+          "win_prob_pct": 0.2866695094696397,
+          "history_pct": 0.19774849880518103
+        }
+      }
+    },
+    "split2": {
+      "midupper_world": {
+        "n": 1,
+        "top3": [
+          "odds_z",
+          "odds_pct_low",
+          "win_prob_z"
+        ],
+        "top_style": "差し",
+        "r_field_winprob": null,
+        "r_upper_winprob": null,
+        "effects": {
+          "odds_z": 0.7217238518040117,
+          "odds_pct_low": 0.3826530612244897,
+          "win_prob_z": -0.3687927996669902,
+          "win_prob_pct": 0.2295918367346939,
+          "history_z": 0.07697188467005181,
+          "history_pct": 0.07653061224489793
+        }
+      },
+      "midhole_world": {
+        "n": 10,
+        "top3": [
+          "odds_z",
+          "history_z",
+          "odds_pct_low"
+        ],
+        "top_style": "先行",
+        "r_field_winprob": -0.1333188224898248,
+        "r_upper_winprob": -0.12595483446479255,
+        "effects": {
+          "odds_z": 0.5916290470883945,
+          "history_z": 0.5087818037767158,
+          "odds_pct_low": 0.15211730715327837,
+          "history_pct": 0.14229384524348554,
+          "win_prob_pct": 0.1303571967600745,
+          "win_prob_z": 0.03906703816939998
+        }
+      },
+      "rank7_world": {
+        "n": 38,
+        "top3": [
+          "odds_z",
+          "history_z",
+          "win_prob_z"
+        ],
+        "top_style": "先行",
+        "r_field_winprob": -0.11322764875495767,
+        "r_upper_winprob": 0.26197420741002514,
+        "effects": {
+          "odds_z": 0.7078738004581145,
+          "history_z": 0.6334079204158769,
+          "win_prob_z": 0.5602450278374582,
+          "odds_pct_low": 0.3491654205871151,
+          "win_prob_pct": 0.25343308351285615,
+          "history_pct": 0.17479298621789002
+        }
+      },
+      "mixed_world": {
+        "n": 3,
+        "top3": [
+          "win_prob_z",
+          "odds_z",
+          "odds_pct_low"
+        ],
+        "top_style": "逃げ",
+        "r_field_winprob": null,
+        "r_upper_winprob": null,
+        "effects": {
+          "win_prob_z": 2.398985431414549,
+          "odds_z": 0.9093155568210042,
+          "odds_pct_low": 0.5110336817653891,
+          "win_prob_pct": 0.45993031358885006,
+          "history_z": -0.07428007568093747,
+          "history_pct": -0.01572411328508888
+        }
+      },
+      "unsatisfied": {
+        "n": 91,
+        "top3": [
+          "odds_z",
+          "history_z",
+          "win_prob_z"
+        ],
+        "top_style": "逃げ",
+        "r_field_winprob": 0.08146506383406182,
+        "r_upper_winprob": -0.10116198231919032,
+        "effects": {
+          "odds_z": 0.6702239976690211,
+          "history_z": 0.5890862003803473,
+          "win_prob_z": 0.4958609696890773,
+          "odds_pct_low": 0.28982813349412767,
+          "win_prob_pct": 0.21000330267886497,
+          "history_pct": 0.18108156781753343
+        }
+      }
+    }
+  }
+}

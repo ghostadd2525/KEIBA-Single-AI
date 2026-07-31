@@ -1,0 +1,265 @@
+{
+  "schema": "consumer-api/single/v1",
+  "mode": "SHADOW",
+  "version": {
+    "single_response_schema": "single-response/v1",
+    "consumer_api_schema": "consumer-api/single/v1",
+    "core_schema": "core-semantic-payload/v1",
+    "platform_contract": "PLATFORM-V1-CONTRACT",
+    "composer": "decision-service-composer/v1",
+    "parents": [
+      "ADR-009",
+      "ADR-010",
+      "ADR-011",
+      "C1",
+      "C2",
+      "C3"
+    ]
+  },
+  "core_ref": {
+    "schema": "core-semantic-payload/v1",
+    "race_id": "ux-r1",
+    "payload_fingerprint": "a13072540527aa0b215c44cebd273adc"
+  },
+  "registry": {
+    "policy_id": "policy_near_miss_rank7_conservative",
+    "strategy_id": "unsatisfied",
+    "registry_versions": [
+      "v88-decision-policy",
+      "v95-residual-policy",
+      "v75-expected-strategy",
+      "decision-registry/v1"
+    ],
+    "world_id": "unsatisfied",
+    "residual_class": "NEAR_MISS",
+    "near_world": "rank7_world"
+  },
+  "selectors": {
+    "world_id": "unsatisfied",
+    "residual_class": "NEAR_MISS",
+    "near_world": "rank7_world"
+  },
+  "presentation": {
+    "schema": "presentation-bundle/v1",
+    "locale": "ja",
+    "display_order": [
+      "world",
+      "near_miss",
+      "affinity",
+      "explanation_confidence",
+      "exclusion",
+      "transition"
+    ],
+    "world": {
+      "world_id": "unsatisfied",
+      "label": "未充足（残余）",
+      "label_key": "world.unsatisfied"
+    },
+    "near_miss": {
+      "present": true,
+      "residual_class": "NEAR_MISS",
+      "residual_label": "ニアミス",
+      "near_world": "rank7_world",
+      "near_world_label": "混戦（rank7）",
+      "near_worlds": [
+        "rank7_world",
+        "midhole_world"
+      ]
+    },
+    "affinity": {
+      "present": true,
+      "values": [
+        [
+          "rank7_world",
+          0.81
+        ],
+        [
+          "midhole_world",
+          0.4
+        ],
+        [
+          "core_world",
+          0.2
+        ],
+        [
+          "midupper_world",
+          0.1
+        ]
+      ],
+      "definition": "v96/must_affinity",
+      "note_key": "affinity_display_only"
+    },
+    "explanation_confidence": {
+      "present": true,
+      "semantic_confidence": 1.0,
+      "world_confidence": 0.9,
+      "near_miss_confidence": 0.85,
+      "trace_confidence": 1.0,
+      "explanation_confidence": 0.91,
+      "definition_version": "v101/1.0",
+      "not_win_probability": true,
+      "display_kind": "explanation_confidence"
+    },
+    "exclusion": {
+      "present": true,
+      "by_world": [
+        [
+          "core_world",
+          [
+            "n_insufficient"
+          ]
+        ],
+        [
+          "rank7_world",
+          [
+            "must_field_chaos"
+          ]
+        ]
+      ]
+    },
+    "transition": {
+      "present": true,
+      "transition": "legacy->unsatisfied",
+      "trigger_path": "path/ux"
+    },
+    "natural_explanation": null,
+    "sections": [
+      {
+        "key": "world",
+        "label": "ワールド",
+        "value": {
+          "world_id": "unsatisfied",
+          "label": "未充足（残余）"
+        },
+        "kind": "map"
+      },
+      {
+        "key": "near_miss",
+        "label": "ニアミス",
+        "value": {
+          "residual_class": "NEAR_MISS",
+          "residual_label": "ニアミス",
+          "near_world": "rank7_world",
+          "near_world_label": "混戦（rank7）",
+          "near_worlds": [
+            "rank7_world",
+            "midhole_world"
+          ]
+        },
+        "kind": "map"
+      },
+      {
+        "key": "affinity",
+        "label": "親和度",
+        "value": {
+          "values": [
+            {
+              "world_id": "rank7_world",
+              "score": 0.81
+            },
+            {
+              "world_id": "midhole_world",
+              "score": 0.4
+            },
+            {
+              "world_id": "core_world",
+              "score": 0.2
+            },
+            {
+              "world_id": "midupper_world",
+              "score": 0.1
+            }
+          ],
+          "definition": "v96/must_affinity",
+          "note": "表示専用（券種・見送り判定に使わない）"
+        },
+        "kind": "map"
+      },
+      {
+        "key": "explanation_confidence",
+        "label": "説明確信度",
+        "value": {
+          "semantic_confidence": 1.0,
+          "world_confidence": 0.9,
+          "near_miss_confidence": 0.85,
+          "trace_confidence": 1.0,
+          "explanation_confidence": 0.91,
+          "definition_version": "v101/1.0",
+          "display_kind": "explanation_confidence",
+          "not_win_probability": true,
+          "disclaimer": "勝率ではない（説明の確定度）",
+          "axis_labels": {
+            "semantic": "意味",
+            "world": "ワールド",
+            "near_miss": "ニアミス",
+            "trace": "トレース",
+            "bundle": "総合"
+          }
+        },
+        "kind": "map"
+      },
+      {
+        "key": "exclusion",
+        "label": "除外理由",
+        "value": {
+          "by_world": [
+            {
+              "world_id": "core_world",
+              "reasons": [
+                "n_insufficient"
+              ]
+            },
+            {
+              "world_id": "rank7_world",
+              "reasons": [
+                "must_field_chaos"
+              ]
+            }
+          ]
+        },
+        "kind": "map"
+      },
+      {
+        "key": "transition",
+        "label": "遷移",
+        "value": {
+          "transition": "legacy->unsatisfied",
+          "trigger_path": "path/ux"
+        },
+        "kind": "map"
+      }
+    ],
+    "warnings": [
+      "prediction_excluded_from_presentation"
+    ]
+  },
+  "ticket": {
+    "schema": "ticket-plan/v1",
+    "policy_id": "policy_near_miss_rank7_conservative",
+    "template_id": "tpl_near_miss_conservative_top1",
+    "action": "BUY",
+    "legs": [
+      {
+        "type": "win",
+        "horse_id": "A",
+        "stake": 50.0,
+        "odds": null
+      }
+    ],
+    "pool": [
+      "A"
+    ],
+    "budget": 50.0,
+    "market_budget": null,
+    "reason": null,
+    "warnings": []
+  },
+  "natural_explanation": null,
+  "decision_reason": null,
+  "warnings": [
+    "near_miss_conservative",
+    "prediction_excluded_from_presentation"
+  ],
+  "core_payload_world_id": "unsatisfied",
+  "core_payload_prediction_top1": "A"
+}

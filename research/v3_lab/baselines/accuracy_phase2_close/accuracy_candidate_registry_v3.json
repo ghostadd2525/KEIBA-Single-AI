@@ -1,0 +1,79 @@
+{
+  "registry_id": "v3-accuracy-candidate-registry/3.0",
+  "phase": "Accuracy Phase 2 Close",
+  "close_id": "v3-accuracy-phase2-close/1.0",
+  "close_date": "2026-07-24",
+  "closed": true,
+  "baseline_v3": {
+    "id": "v3-lab-baseline-v3-a01-a03-a04",
+    "path": "research/v3_lab/baselines/lab_baseline_v3_a01_a03_a04.json",
+    "stack_hit": 279,
+    "control_hit": 218
+  },
+  "baseline_v2": {
+    "id": "v3-lab-baseline-v2-a01-a03",
+    "path": "research/v3_lab/baselines/lab_baseline_v2_a01_a03.json",
+    "stack_hit": 255,
+    "note": "Superseded as official Accuracy stack by Baseline v3; retained as history"
+  },
+  "baseline_p5": {
+    "id": "v3-lab-baseline-p5-v1",
+    "path": "research/v3_lab/baselines/lab_baseline_p5.json",
+    "note": "Foundation freeze retained"
+  },
+  "decision": {
+    "adopted_stack": [
+      "A-03 Admission",
+      "A-04 Selection",
+      "A-01 Evaluation"
+    ],
+    "a02_role": "secondary_candidate_held",
+    "simultaneous_d1_d2": false,
+    "delete_in_research_scope": false,
+    "production_wiring": false,
+    "phase2_closed": true
+  },
+  "stack_primary": {
+    "name": "A-01 + A-03 + A-04",
+    "evaluation": "A-01",
+    "admission": "A-03",
+    "selection": "A-04",
+    "lab_hit": 279,
+    "churn_hit": 0,
+    "validation": "PASS",
+    "status": "lab_adopted_configuration"
+  },
+  "evaluation_primary": {
+    "candidate_id": "A-01",
+    "flag": "F_V3_RANK_D1_ENABLED",
+    "lab_hit_alone": 246,
+    "status": "lab_primary_evaluation",
+    "in_adopted_stack": true,
+    "frozen_logic": true
+  },
+  "admission_primary": {
+    "candidate_id": "A-03",
+    "flag": "F_V3_A03_POOL_ADMIT_ENABLED",
+    "lab_hit_incremental_vs_a01": 255,
+    "status": "lab_primary_admission",
+    "in_adopted_stack": true,
+    "frozen_logic": true
+  },
+  "selection_primary": {
+    "candidate_id": "A-04",
+    "flag": "F_V3_A04_SEL_HISTORY_ENABLED",
+    "lab_hit_incremental_vs_v2": 279,
+    "status": "lab_primary_selection",
+    "in_adopted_stack": true,
+    "frozen_logic": true
+  },
+  "evaluation_secondary": {
+    "candidate_id": "A-02",
+    "flag": "F_V3_RANK_D2_ENABLED",
+    "lab_hit_alone": 242,
+    "status": "lab_secondary_candidate",
+    "in_adopted_stack": false,
+    "note": "Held as Secondary; D1+D2 simultaneous ON forbidden",
+    "frozen_logic": true
+  }
+}

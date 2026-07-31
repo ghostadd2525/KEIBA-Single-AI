@@ -1,0 +1,18 @@
+[Unit]
+Description=Expect Research Evidence Collector (V10)
+After=network-online.target expect-ai.service expect-pi-keibanet-api.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=ubuntu
+WorkingDirectory=/home/ubuntu/KEIBA-Single-AI/services/win5-ai
+EnvironmentFile=-/opt/expect-ai/shared/.env
+EnvironmentFile=-/etc/expect-ai/research-evidence.env
+Environment=PYTHONPATH=/home/ubuntu/KEIBA-Single-AI/services/win5-ai
+ExecStart=/usr/bin/python3 -m app.research.collector_runner --loop
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target

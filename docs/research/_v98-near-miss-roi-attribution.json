@@ -1,0 +1,3287 @@
+{
+  "schema": "v98-near-miss-roi-attribution/1.0",
+  "generated_at": "2026-07-28T12:34:07+00:00",
+  "purpose": "ROI-pattern attribution of Near Miss (not Affinity)",
+  "locks": [
+    "Prediction",
+    "World",
+    "Trigger",
+    "CEW",
+    "product Decision"
+  ],
+  "policy": "baseline unsatisfied BUY Top1 UNIT (V97 Affinity rejected)",
+  "n_near_miss": 104,
+  "overall": {
+    "id": "near_miss_all",
+    "n": 104,
+    "share": 1.0,
+    "ticket_roi_pooled": 0.39807692307692305,
+    "mean_race_roi": 0.39807692307692305,
+    "median_race_roi": -1.0,
+    "purchase_hit_rate": 0.25961538461538464,
+    "mean_odds_top1": 7.658653846153846,
+    "median_odds_top1": 4.6,
+    "mean_field_size": 13.201923076923077,
+    "mean_top_gap": 0.05041062655657995,
+    "median_top_gap": 0.04454404879693352,
+    "near_world_dist": {
+      "core_world": 81,
+      "midhole_world": 13,
+      "midupper_world": 9,
+      "rank7_world": 1
+    },
+    "roi_band_dist": {
+      "WIN_HIGH": 14,
+      "WIN_MID": 8,
+      "WIN_LOW": 5,
+      "LOSS": 77
+    },
+    "exclusion_top": {
+      "excl:short_field_pressure↑": 77,
+      "excl:mid_eval_band_open↑": 64,
+      "excl:chaos↑": 24,
+      "excl:top_gap↑": 14,
+      "excl:late∧sustained": 13,
+      "excl:chaos↑∧difficulty↑": 6
+    },
+    "total_pnl": 4140.0,
+    "total_stake": 10400.0
+  },
+  "by_roi_band": {
+    "LOSS": {
+      "id": "LOSS",
+      "n": 77,
+      "share": 0.7403846153846154,
+      "ticket_roi_pooled": -1.0,
+      "mean_race_roi": -1.0,
+      "median_race_roi": -1.0,
+      "purchase_hit_rate": 0.0,
+      "mean_odds_top1": 8.455844155844156,
+      "median_odds_top1": 5.1,
+      "mean_field_size": 13.077922077922079,
+      "mean_top_gap": 0.04518182428732733,
+      "median_top_gap": 0.04177264680792482,
+      "near_world_dist": {
+        "midhole_world": 12,
+        "core_world": 56,
+        "midupper_world": 8,
+        "rank7_world": 1
+      },
+      "roi_band_dist": {
+        "LOSS": 77
+      },
+      "exclusion_top": {
+        "excl:short_field_pressure↑": 52,
+        "excl:mid_eval_band_open↑": 46,
+        "excl:chaos↑": 15,
+        "excl:top_gap↑": 13,
+        "excl:late∧sustained": 10,
+        "excl:chaos↑∧difficulty↑": 5
+      },
+      "total_pnl": -7700.0,
+      "total_stake": 7700.0
+    },
+    "WIN_LOW": {
+      "id": "WIN_LOW",
+      "n": 5,
+      "share": 0.04807692307692308,
+      "ticket_roi_pooled": 0.64,
+      "mean_race_roi": 0.6399999999999999,
+      "median_race_roi": 0.7,
+      "purchase_hit_rate": 1.0,
+      "mean_odds_top1": 1.64,
+      "median_odds_top1": 1.7,
+      "mean_field_size": 12.2,
+      "mean_top_gap": 0.06932748184913226,
+      "median_top_gap": 0.06093970680361882,
+      "near_world_dist": {
+        "core_world": 5
+      },
+      "roi_band_dist": {
+        "WIN_LOW": 5
+      },
+      "exclusion_top": {
+        "excl:short_field_pressure↑": 5,
+        "excl:mid_eval_band_open↑": 4,
+        "excl:chaos↑": 1,
+        "excl:late∧sustained": 1
+      },
+      "total_pnl": 320.0,
+      "total_stake": 500.0
+    },
+    "WIN_MID": {
+      "id": "WIN_MID",
+      "n": 8,
+      "share": 0.07692307692307693,
+      "ticket_roi_pooled": 2.0625,
+      "mean_race_roi": 2.0625,
+      "median_race_roi": 2.1,
+      "purchase_hit_rate": 1.0,
+      "mean_odds_top1": 3.0625,
+      "median_odds_top1": 3.1,
+      "mean_field_size": 11.875,
+      "mean_top_gap": 0.06858456722868793,
+      "median_top_gap": 0.08411108854061632,
+      "near_world_dist": {
+        "core_world": 8
+      },
+      "roi_band_dist": {
+        "WIN_MID": 8
+      },
+      "exclusion_top": {
+        "excl:short_field_pressure↑": 8,
+        "excl:mid_eval_band_open↑": 6,
+        "excl:chaos↑": 1
+      },
+      "total_pnl": 1650.0,
+      "total_stake": 800.0
+    },
+    "WIN_HIGH": {
+      "id": "WIN_HIGH",
+      "n": 14,
+      "share": 0.1346153846153846,
+      "ticket_roi_pooled": 7.05,
+      "mean_race_roi": 7.05,
+      "median_race_roi": 6.7,
+      "purchase_hit_rate": 1.0,
+      "mean_odds_top1": 8.05,
+      "median_odds_top1": 7.7,
+      "mean_field_size": 15.0,
+      "mean_top_gap": 0.06202791033463893,
+      "median_top_gap": 0.07094797072857018,
+      "near_world_dist": {
+        "core_world": 12,
+        "midhole_world": 1,
+        "midupper_world": 1
+      },
+      "roi_band_dist": {
+        "WIN_HIGH": 14
+      },
+      "exclusion_top": {
+        "excl:short_field_pressure↑": 12,
+        "excl:mid_eval_band_open↑": 8,
+        "excl:chaos↑": 7,
+        "excl:late∧sustained": 2,
+        "excl:top_gap↑": 1,
+        "excl:chaos↑∧difficulty↑": 1
+      },
+      "total_pnl": 9870.0,
+      "total_stake": 1400.0
+    }
+  },
+  "by_near_world": {
+    "core_world": {
+      "id": "core_world",
+      "n": 81,
+      "share": 0.7788461538461539,
+      "ticket_roi_pooled": 0.5617283950617284,
+      "mean_race_roi": 0.5617283950617284,
+      "median_race_roi": -1.0,
+      "purchase_hit_rate": 0.30864197530864196,
+      "mean_odds_top1": 7.7481481481481485,
+      "median_odds_top1": 4.2,
+      "mean_field_size": 13.074074074074074,
+      "mean_top_gap": 0.05669736770193037,
+      "median_top_gap": 0.05229734259303841,
+      "near_world_dist": {
+        "core_world": 81
+      },
+      "roi_band_dist": {
+        "WIN_HIGH": 12,
+        "WIN_MID": 8,
+        "WIN_LOW": 5,
+        "LOSS": 56
+      },
+      "exclusion_top": {
+        "excl:short_field_pressure↑": 77,
+        "excl:mid_eval_band_open↑": 55,
+        "excl:chaos↑": 24,
+        "excl:late∧sustained": 13
+      },
+      "total_pnl": 4550.0,
+      "total_stake": 8100.0
+    },
+    "midhole_world": {
+      "id": "midhole_world",
+      "n": 13,
+      "share": 0.125,
+      "ticket_roi_pooled": -0.4076923076923077,
+      "mean_race_roi": -0.4076923076923077,
+      "median_race_roi": -1.0,
+      "purchase_hit_rate": 0.07692307692307693,
+      "mean_odds_top1": 8.330769230769231,
+      "median_odds_top1": 7.7,
+      "mean_field_size": 14.538461538461538,
+      "mean_top_gap": 0.03346499215984382,
+      "median_top_gap": 0.030208479357584514,
+      "near_world_dist": {
+        "midhole_world": 13
+      },
+      "roi_band_dist": {
+        "LOSS": 12,
+        "WIN_HIGH": 1
+      },
+      "exclusion_top": {
+        "excl:top_gap↑": 13,
+        "excl:chaos↑∧difficulty↑": 6
+      },
+      "total_pnl": -530.0,
+      "total_stake": 1300.0
+    },
+    "midupper_world": {
+      "id": "midupper_world",
+      "n": 9,
+      "share": 0.08653846153846154,
+      "ticket_roi_pooled": 0.24444444444444444,
+      "mean_race_roi": 0.24444444444444435,
+      "median_race_roi": -1.0,
+      "purchase_hit_rate": 0.1111111111111111,
+      "mean_odds_top1": 5.477777777777778,
+      "median_odds_top1": 4.2,
+      "mean_field_size": 12.11111111111111,
+      "mean_top_gap": 0.02113777518875574,
+      "median_top_gap": 0.014587296578517206,
+      "near_world_dist": {
+        "midupper_world": 9
+      },
+      "roi_band_dist": {
+        "LOSS": 8,
+        "WIN_HIGH": 1
+      },
+      "exclusion_top": {
+        "excl:mid_eval_band_open↑": 9
+      },
+      "total_pnl": 220.0,
+      "total_stake": 900.0
+    },
+    "rank7_world": {
+      "id": "rank7_world",
+      "n": 1,
+      "share": 0.009615384615384616,
+      "ticket_roi_pooled": -1.0,
+      "mean_race_roi": -1.0,
+      "median_race_roi": -1.0,
+      "purchase_hit_rate": 0.0,
+      "mean_odds_top1": 11.3,
+      "median_odds_top1": 11.3,
+      "mean_field_size": 16.0,
+      "mean_top_gap": 0.024933503251183126,
+      "median_top_gap": 0.024933503251183126,
+      "near_world_dist": {
+        "rank7_world": 1
+      },
+      "roi_band_dist": {
+        "LOSS": 1
+      },
+      "exclusion_top": {
+        "excl:top_gap↑": 1
+      },
+      "total_pnl": -100.0,
+      "total_stake": 100.0
+    }
+  },
+  "hit_vs_miss": {
+    "hit": {
+      "id": "HIT_PROFIT",
+      "n": 27,
+      "share": 0.25961538461538464,
+      "ticket_roi_pooled": 4.385185185185185,
+      "mean_race_roi": 4.385185185185185,
+      "median_race_roi": 3.0999999999999996,
+      "purchase_hit_rate": 1.0,
+      "mean_odds_top1": 5.385185185185185,
+      "median_odds_top1": 4.1,
+      "mean_field_size": 13.555555555555555,
+      "mean_top_gap": 0.06532239599111518,
+      "median_top_gap": 0.07094797072857018,
+      "near_world_dist": {
+        "core_world": 25,
+        "midhole_world": 1,
+        "midupper_world": 1
+      },
+      "roi_band_dist": {
+        "WIN_HIGH": 14,
+        "WIN_MID": 8,
+        "WIN_LOW": 5
+      },
+      "exclusion_top": {
+        "excl:short_field_pressure↑": 25,
+        "excl:mid_eval_band_open↑": 18,
+        "excl:chaos↑": 9,
+        "excl:late∧sustained": 3,
+        "excl:top_gap↑": 1,
+        "excl:chaos↑∧difficulty↑": 1
+      },
+      "total_pnl": 11840.0,
+      "total_stake": 2700.0
+    },
+    "miss": {
+      "id": "MISS_LOSS",
+      "n": 77,
+      "share": 0.7403846153846154,
+      "ticket_roi_pooled": -1.0,
+      "mean_race_roi": -1.0,
+      "median_race_roi": -1.0,
+      "purchase_hit_rate": 0.0,
+      "mean_odds_top1": 8.455844155844156,
+      "median_odds_top1": 5.1,
+      "mean_field_size": 13.077922077922079,
+      "mean_top_gap": 0.04518182428732733,
+      "median_top_gap": 0.04177264680792482,
+      "near_world_dist": {
+        "midhole_world": 12,
+        "core_world": 56,
+        "midupper_world": 8,
+        "rank7_world": 1
+      },
+      "roi_band_dist": {
+        "LOSS": 77
+      },
+      "exclusion_top": {
+        "excl:short_field_pressure↑": 52,
+        "excl:mid_eval_band_open↑": 46,
+        "excl:chaos↑": 15,
+        "excl:top_gap↑": 13,
+        "excl:late∧sustained": 10,
+        "excl:chaos↑∧difficulty↑": 5
+      },
+      "total_pnl": -7700.0,
+      "total_stake": 7700.0
+    },
+    "contrast": {
+      "hit_n": 27,
+      "miss_n": 77,
+      "delta_mean_odds": -3.070658970658971,
+      "delta_mean_field_size": 0.47763347763347674,
+      "delta_mean_top_gap": 0.02014057170378785,
+      "profit_exclusion_top": {
+        "excl:short_field_pressure↑": 25,
+        "excl:mid_eval_band_open↑": 18,
+        "excl:chaos↑": 9,
+        "excl:late∧sustained": 3,
+        "excl:top_gap↑": 1,
+        "excl:chaos↑∧difficulty↑": 1
+      },
+      "loss_exclusion_top": {
+        "excl:short_field_pressure↑": 52,
+        "excl:mid_eval_band_open↑": 46,
+        "excl:chaos↑": 15,
+        "excl:top_gap↑": 13,
+        "excl:late∧sustained": 10,
+        "excl:chaos↑∧difficulty↑": 5
+      },
+      "profit_near_world": {
+        "core_world": 25,
+        "midhole_world": 1,
+        "midupper_world": 1
+      },
+      "loss_near_world": {
+        "midhole_world": 12,
+        "core_world": 56,
+        "midupper_world": 8,
+        "rank7_world": 1
+      }
+    }
+  },
+  "conditions": {
+    "thresholds": {
+      "odds_q33_50_66": [
+        3.1,
+        4.55,
+        7.194000000000002
+      ],
+      "top_gap_q33_50_66": [
+        0.03580996341111749,
+        0.044312650409686904,
+        0.056790490550213575
+      ],
+      "field_size_q33_50_66": [
+        12.0,
+        13.0,
+        15.0
+      ]
+    },
+    "profit_conditions": [
+      {
+        "rule": "has_exclusion:excl:chaos↑",
+        "n": 24,
+        "share": 0.23076923076923078,
+        "purchase_hit_rate": 0.375,
+        "ticket_roi_pooled": 1.8958333333333333,
+        "hit_lift": 1.4444444444444444,
+        "roi_delta": 1.4977564102564103,
+        "mean_odds": 7.004166666666666,
+        "mean_field_size": 15.875,
+        "mean_top_gap": 0.050556492817375336,
+        "exclusion_top": {
+          "excl:chaos↑": 24,
+          "excl:short_field_pressure↑": 24,
+          "excl:late∧sustained": 10,
+          "excl:mid_eval_band_open↑": 4
+        },
+        "near_world_dist": {
+          "core_world": 24
+        }
+      },
+      {
+        "rule": "top_gap >= 0.0568",
+        "n": 36,
+        "share": 0.34615384615384615,
+        "purchase_hit_rate": 0.4444444444444444,
+        "ticket_roi_pooled": 1.3194444444444444,
+        "hit_lift": 1.7119341563786006,
+        "roi_delta": 0.9213675213675214,
+        "mean_odds": 9.769444444444444,
+        "mean_field_size": 12.61111111111111,
+        "mean_top_gap": 0.07825739038720708,
+        "exclusion_top": {
+          "excl:short_field_pressure↑": 35,
+          "excl:mid_eval_band_open↑": 28,
+          "excl:chaos↑": 8,
+          "excl:late∧sustained": 3
+        },
+        "near_world_dist": {
+          "core_world": 36
+        }
+      },
+      {
+        "rule": "field_size >= 15",
+        "n": 37,
+        "share": 0.3557692307692308,
+        "purchase_hit_rate": 0.2972972972972973,
+        "ticket_roi_pooled": 1.2972972972972974,
+        "hit_lift": 1.145145145145145,
+        "roi_delta": 0.8992203742203744,
+        "mean_odds": 7.343243243243243,
+        "mean_field_size": 15.837837837837839,
+        "mean_top_gap": 0.047513885533892214,
+        "exclusion_top": {
+          "excl:short_field_pressure↑": 28,
+          "excl:chaos↑": 22,
+          "excl:late∧sustained": 9,
+          "excl:top_gap↑": 9,
+          "excl:chaos↑∧difficulty↑": 5,
+          "excl:mid_eval_band_open↑": 4
+        },
+        "near_world_dist": {
+          "core_world": 28,
+          "rank7_world": 1,
+          "midhole_world": 8
+        }
+      },
+      {
+        "rule": "odds>7.194 AND top_gap<=0.0358",
+        "n": 14,
+        "share": 0.1346153846153846,
+        "purchase_hit_rate": 0.21428571428571427,
+        "ticket_roi_pooled": 1.2357142857142858,
+        "hit_lift": 0.8253968253968252,
+        "roi_delta": 0.8376373626373628,
+        "mean_odds": 10.692857142857141,
+        "mean_field_size": 13.071428571428571,
+        "mean_top_gap": 0.027497412159877492,
+        "exclusion_top": {
+          "excl:mid_eval_band_open↑": 7,
+          "excl:top_gap↑": 6,
+          "excl:short_field_pressure↑": 5,
+          "excl:chaos↑∧difficulty↑": 3,
+          "excl:chaos↑": 2,
+          "excl:late∧sustained": 1
+        },
+        "near_world_dist": {
+          "midhole_world": 5,
+          "core_world": 6,
+          "midupper_world": 2,
+          "rank7_world": 1
+        }
+      },
+      {
+        "rule": "odds_top1 > 7.194",
+        "n": 36,
+        "share": 0.34615384615384615,
+        "purchase_hit_rate": 0.19444444444444445,
+        "ticket_roi_pooled": 1.175,
+        "hit_lift": 0.7489711934156378,
+        "roi_delta": 0.776923076923077,
+        "mean_odds": 15.575000000000001,
+        "mean_field_size": 13.805555555555555,
+        "mean_top_gap": 0.045481111087219785,
+        "exclusion_top": {
+          "excl:short_field_pressure↑": 24,
+          "excl:mid_eval_band_open↑": 19,
+          "excl:chaos↑": 11,
+          "excl:top_gap↑": 9,
+          "excl:late∧sustained": 6,
+          "excl:chaos↑∧difficulty↑": 6
+        },
+        "near_world_dist": {
+          "core_world": 25,
+          "midhole_world": 8,
+          "midupper_world": 2,
+          "rank7_world": 1
+        }
+      },
+      {
+        "rule": "has_exclusion:excl:late∧sustained",
+        "n": 13,
+        "share": 0.125,
+        "purchase_hit_rate": 0.23076923076923078,
+        "ticket_roi_pooled": 0.8769230769230769,
+        "hit_lift": 0.8888888888888888,
+        "roi_delta": 0.47884615384615387,
+        "mean_odds": 6.684615384615385,
+        "mean_field_size": 14.615384615384615,
+        "mean_top_gap": 0.045661069323875474,
+        "exclusion_top": {
+          "excl:short_field_pressure↑": 13,
+          "excl:late∧sustained": 13,
+          "excl:chaos↑": 10,
+          "excl:mid_eval_band_open↑": 5
+        },
+        "near_world_dist": {
+          "core_world": 13
+        }
+      },
+      {
+        "rule": "has_exclusion:excl:short_field_pressure↑",
+        "n": 77,
+        "share": 0.7403846153846154,
+        "purchase_hit_rate": 0.3246753246753247,
+        "ticket_roi_pooled": 0.6428571428571429,
+        "hit_lift": 1.2506012506012505,
+        "roi_delta": 0.24478021978021985,
+        "mean_odds": 7.872727272727273,
+        "mean_field_size": 13.155844155844155,
+        "mean_top_gap": 0.05722242309293447,
+        "exclusion_top": {
+          "excl:short_field_pressure↑": 77,
+          "excl:mid_eval_band_open↑": 51,
+          "excl:chaos↑": 24,
+          "excl:late∧sustained": 13
+        },
+        "near_world_dist": {
+          "core_world": 77
+        }
+      },
+      {
+        "rule": "near_world == core_world",
+        "n": 81,
+        "share": 0.7788461538461539,
+        "purchase_hit_rate": 0.30864197530864196,
+        "ticket_roi_pooled": 0.5617283950617284,
+        "hit_lift": 1.188843164151806,
+        "roi_delta": 0.1636514719848054,
+        "mean_odds": 7.7481481481481485,
+        "mean_field_size": 13.074074074074074,
+        "mean_top_gap": 0.05669736770193037,
+        "exclusion_top": {
+          "excl:short_field_pressure↑": 77,
+          "excl:mid_eval_band_open↑": 55,
+          "excl:chaos↑": 24,
+          "excl:late∧sustained": 13
+        },
+        "near_world_dist": {
+          "core_world": 81
+        }
+      },
+      {
+        "rule": "has_exclusion:excl:mid_eval_band_open↑",
+        "n": 64,
+        "share": 0.6153846153846154,
+        "purchase_hit_rate": 0.28125,
+        "ticket_roi_pooled": 0.43125,
+        "hit_lift": 1.0833333333333333,
+        "roi_delta": 0.03317307692307697,
+        "mean_odds": 8.1890625,
+        "mean_field_size": 11.765625,
+        "mean_top_gap": 0.05502933123029541,
+        "exclusion_top": {
+          "excl:mid_eval_band_open↑": 64,
+          "excl:short_field_pressure↑": 51,
+          "excl:late∧sustained": 5,
+          "excl:chaos↑": 4
+        },
+        "near_world_dist": {
+          "core_world": 55,
+          "midupper_world": 9
+        }
+      },
+      {
+        "rule": "odds<=4.550 AND top_gap>=0.0443",
+        "n": 29,
+        "share": 0.27884615384615385,
+        "purchase_hit_rate": 0.4482758620689655,
+        "ticket_roi_pooled": 0.25172413793103443,
+        "hit_lift": 1.7266922094508301,
+        "roi_delta": -0.14635278514588862,
+        "mean_odds": 2.63448275862069,
+        "mean_field_size": 11.89655172413793,
+        "mean_top_gap": 0.07507292576338948,
+        "exclusion_top": {
+          "excl:short_field_pressure↑": 27,
+          "excl:mid_eval_band_open↑": 23,
+          "excl:chaos↑": 4,
+          "excl:late∧sustained": 2
+        },
+        "near_world_dist": {
+          "core_world": 28,
+          "midupper_world": 1
+        }
+      }
+    ],
+    "loss_conditions": [
+      {
+        "rule": "has_exclusion:excl:top_gap↑",
+        "n": 14,
+        "share": 0.1346153846153846,
+        "purchase_hit_rate": 0.07142857142857142,
+        "ticket_roi_pooled": -0.45,
+        "hit_lift": 0.2751322751322751,
+        "roi_delta": -0.8480769230769231,
+        "mean_odds": 8.542857142857143,
+        "mean_field_size": 14.642857142857142,
+        "mean_top_gap": 0.032855600094939486,
+        "exclusion_top": {
+          "excl:top_gap↑": 14,
+          "excl:chaos↑∧difficulty↑": 6
+        },
+        "near_world_dist": {
+          "midhole_world": 13,
+          "rank7_world": 1
+        }
+      },
+      {
+        "rule": "near_world == midhole_world",
+        "n": 13,
+        "share": 0.125,
+        "purchase_hit_rate": 0.07692307692307693,
+        "ticket_roi_pooled": -0.4076923076923077,
+        "hit_lift": 0.2962962962962963,
+        "roi_delta": -0.8057692307692308,
+        "mean_odds": 8.330769230769231,
+        "mean_field_size": 14.538461538461538,
+        "mean_top_gap": 0.03346499215984382,
+        "exclusion_top": {
+          "excl:top_gap↑": 13,
+          "excl:chaos↑∧difficulty↑": 6
+        },
+        "near_world_dist": {
+          "midhole_world": 13
+        }
+      },
+      {
+        "rule": "odds_top1 <= 3.100",
+        "n": 36,
+        "share": 0.34615384615384615,
+        "purchase_hit_rate": 0.2777777777777778,
+        "ticket_roi_pooled": -0.3972222222222222,
+        "hit_lift": 1.0699588477366255,
+        "roi_delta": -0.7952991452991452,
+        "mean_odds": 2.2555555555555555,
+        "mean_field_size": 12.666666666666666,
+        "mean_top_gap": 0.05701682561241144,
+        "exclusion_top": {
+          "excl:short_field_pressure↑": 29,
+          "excl:mid_eval_band_open↑": 23,
+          "excl:chaos↑": 8,
+          "excl:late∧sustained": 4,
+          "excl:top_gap↑": 3
+        },
+        "near_world_dist": {
+          "core_world": 30,
+          "midupper_world": 3,
+          "midhole_world": 3
+        }
+      },
+      {
+        "rule": "field_size <= 12",
+        "n": 40,
+        "share": 0.38461538461538464,
+        "purchase_hit_rate": 0.175,
+        "ticket_roi_pooled": -0.355,
+        "hit_lift": 0.6740740740740739,
+        "roi_delta": -0.753076923076923,
+        "mean_odds": 5.2775,
+        "mean_field_size": 10.675,
+        "mean_top_gap": 0.050216062552447885,
+        "exclusion_top": {
+          "excl:mid_eval_band_open↑": 39,
+          "excl:short_field_pressure↑": 28,
+          "excl:late∧sustained": 2,
+          "excl:top_gap↑": 1
+        },
+        "near_world_dist": {
+          "core_world": 31,
+          "midhole_world": 1,
+          "midupper_world": 8
+        }
+      },
+      {
+        "rule": "odds_top1 <= 4.550",
+        "n": 52,
+        "share": 0.5,
+        "purchase_hit_rate": 0.3269230769230769,
+        "ticket_roi_pooled": -0.046153846153846184,
+        "hit_lift": 1.259259259259259,
+        "roi_delta": -0.4442307692307692,
+        "mean_odds": 2.7653846153846158,
+        "mean_field_size": 12.653846153846153,
+        "mean_top_gap": 0.05562572030214023,
+        "exclusion_top": {
+          "excl:short_field_pressure↑": 42,
+          "excl:mid_eval_band_open↑": 36,
+          "excl:chaos↑": 10,
+          "excl:late∧sustained": 4,
+          "excl:top_gap↑": 3
+        },
+        "near_world_dist": {
+          "core_world": 44,
+          "midupper_world": 5,
+          "midhole_world": 3
+        }
+      }
+    ],
+    "hit_decision_tree": "|--- top_gap <= 0.070\n|   |--- odds_top1 <= 2.000\n|   |   |--- class: 0\n|   |--- odds_top1 >  2.000\n|   |   |--- field_size <= 12.500\n|   |   |   |--- class: 0\n|   |   |--- field_size >  12.500\n|   |   |   |--- class: 0\n|--- top_gap >  0.070\n|   |--- odds_top1 <= 3.050\n|   |   |--- class: 0\n|   |--- odds_top1 >  3.050\n|   |   |--- class: 1\n",
+    "hit_feature_importance": {
+      "odds_top1": 0.16656951698439793,
+      "field_size": 0.07506272846975487,
+      "top_gap": 0.7583677545458473
+    }
+  },
+  "roi_clusters": {
+    "k": 4,
+    "k_search": [
+      {
+        "k": 2,
+        "inertia": 320.93439175158176,
+        "sizes": {
+          "1": 77,
+          "0": 27
+        },
+        "roi_mean_span": 0.04742664742664743
+      },
+      {
+        "k": 3,
+        "inertia": 233.73541319600946,
+        "sizes": {
+          "2": 10,
+          "1": 26,
+          "0": 68
+        },
+        "roi_mean_span": 9.297647058823529
+      },
+      {
+        "k": 4,
+        "inertia": 187.3889007602041,
+        "sizes": {
+          "2": 10,
+          "3": 21,
+          "1": 33,
+          "0": 40
+        },
+        "roi_mean_span": 9.58
+      },
+      {
+        "k": 5,
+        "inertia": 153.74248943595813,
+        "sizes": {
+          "1": 10,
+          "2": 18,
+          "0": 29,
+          "3": 24,
+          "4": 23
+        },
+        "roi_mean_span": 9.58
+      }
+    ],
+    "profiles": [
+      {
+        "id": "roi_cluster_2",
+        "n": 10,
+        "share": 0.09615384615384616,
+        "ticket_roi_pooled": 8.58,
+        "mean_race_roi": 8.58,
+        "median_race_roi": 10.2,
+        "purchase_hit_rate": 1.0,
+        "mean_odds_top1": 9.58,
+        "median_odds_top1": 11.2,
+        "mean_field_size": 15.0,
+        "mean_top_gap": 0.057982018695128965,
+        "median_top_gap": 0.07094797072857018,
+        "near_world_dist": {
+          "core_world": 8,
+          "midhole_world": 1,
+          "midupper_world": 1
+        },
+        "roi_band_dist": {
+          "WIN_HIGH": 10
+        },
+        "exclusion_top": {
+          "excl:short_field_pressure↑": 8,
+          "excl:mid_eval_band_open↑": 6,
+          "excl:chaos↑": 5,
+          "excl:late∧sustained": 2,
+          "excl:top_gap↑": 1,
+          "excl:chaos↑∧difficulty↑": 1
+        },
+        "total_pnl": 8580.0,
+        "total_stake": 1000.0,
+        "pattern_tag": "PROFIT_HIGH"
+      },
+      {
+        "id": "roi_cluster_3",
+        "n": 21,
+        "share": 0.20192307692307693,
+        "ticket_roi_pooled": 0.4476190476190476,
+        "mean_race_roi": 0.4476190476190475,
+        "median_race_roi": 0.3,
+        "purchase_hit_rate": 0.5238095238095238,
+        "mean_odds_top1": 2.861904761904762,
+        "median_odds_top1": 2.4,
+        "mean_field_size": 10.571428571428571,
+        "mean_top_gap": 0.08151765940056711,
+        "median_top_gap": 0.08555280853480635,
+        "near_world_dist": {
+          "core_world": 21
+        },
+        "roi_band_dist": {
+          "WIN_MID": 5,
+          "WIN_HIGH": 2,
+          "WIN_LOW": 4,
+          "LOSS": 10
+        },
+        "exclusion_top": {
+          "excl:mid_eval_band_open↑": 21,
+          "excl:short_field_pressure↑": 20
+        },
+        "total_pnl": 939.9999999999999,
+        "total_stake": 2100.0,
+        "pattern_tag": "PROFIT_LOW"
+      },
+      {
+        "id": "roi_cluster_0",
+        "n": 40,
+        "share": 0.38461538461538464,
+        "ticket_roi_pooled": -0.52,
+        "mean_race_roi": -0.52,
+        "median_race_roi": -1.0,
+        "purchase_hit_rate": 0.15,
+        "mean_odds_top1": 3.3375,
+        "median_odds_top1": 3.1,
+        "mean_field_size": 13.775,
+        "mean_top_gap": 0.038701978506689896,
+        "median_top_gap": 0.04047478247083802,
+        "near_world_dist": {
+          "core_world": 28,
+          "midupper_world": 7,
+          "midhole_world": 5
+        },
+        "roi_band_dist": {
+          "LOSS": 34,
+          "WIN_MID": 3,
+          "WIN_LOW": 1,
+          "WIN_HIGH": 2
+        },
+        "exclusion_top": {
+          "excl:short_field_pressure↑": 26,
+          "excl:mid_eval_band_open↑": 21,
+          "excl:chaos↑": 10,
+          "excl:late∧sustained": 6,
+          "excl:top_gap↑": 5
+        },
+        "total_pnl": -2080.0,
+        "total_stake": 4000.0,
+        "pattern_tag": "LOSS_MIXED"
+      },
+      {
+        "id": "roi_cluster_1",
+        "n": 33,
+        "share": 0.3173076923076923,
+        "ticket_roi_pooled": -1.0,
+        "mean_race_roi": -1.0,
+        "median_race_roi": -1.0,
+        "purchase_hit_rate": 0.0,
+        "mean_odds_top1": 15.366666666666667,
+        "median_odds_top1": 11.1,
+        "mean_field_size": 13.636363636363637,
+        "mean_top_gap": 0.04251318143192483,
+        "median_top_gap": 0.037358648935131133,
+        "near_world_dist": {
+          "midhole_world": 7,
+          "core_world": 24,
+          "midupper_world": 1,
+          "rank7_world": 1
+        },
+        "roi_band_dist": {
+          "LOSS": 33
+        },
+        "exclusion_top": {
+          "excl:short_field_pressure↑": 23,
+          "excl:mid_eval_band_open↑": 16,
+          "excl:chaos↑": 9,
+          "excl:top_gap↑": 8,
+          "excl:late∧sustained": 5,
+          "excl:chaos↑∧difficulty↑": 5
+        },
+        "total_pnl": -3300.0,
+        "total_stake": 3300.0,
+        "pattern_tag": "LOSS_MASS"
+      }
+    ]
+  },
+  "synthesis": {
+    "overall_roi": 0.39807692307692305,
+    "overall_hit": 0.25961538461538464,
+    "best_profit_rule": {
+      "rule": "has_exclusion:excl:chaos↑",
+      "n": 24,
+      "share": 0.23076923076923078,
+      "purchase_hit_rate": 0.375,
+      "ticket_roi_pooled": 1.8958333333333333,
+      "hit_lift": 1.4444444444444444,
+      "roi_delta": 1.4977564102564103,
+      "mean_odds": 7.004166666666666,
+      "mean_field_size": 15.875,
+      "mean_top_gap": 0.050556492817375336,
+      "exclusion_top": {
+        "excl:chaos↑": 24,
+        "excl:short_field_pressure↑": 24,
+        "excl:late∧sustained": 10,
+        "excl:mid_eval_band_open↑": 4
+      },
+      "near_world_dist": {
+        "core_world": 24
+      }
+    },
+    "worst_loss_rule": {
+      "rule": "has_exclusion:excl:top_gap↑",
+      "n": 14,
+      "share": 0.1346153846153846,
+      "purchase_hit_rate": 0.07142857142857142,
+      "ticket_roi_pooled": -0.45,
+      "hit_lift": 0.2751322751322751,
+      "roi_delta": -0.8480769230769231,
+      "mean_odds": 8.542857142857143,
+      "mean_field_size": 14.642857142857142,
+      "mean_top_gap": 0.032855600094939486,
+      "exclusion_top": {
+        "excl:top_gap↑": 14,
+        "excl:chaos↑∧difficulty↑": 6
+      },
+      "near_world_dist": {
+        "midhole_world": 13,
+        "rank7_world": 1
+      }
+    },
+    "cluster_tags": [
+      "PROFIT_HIGH",
+      "PROFIT_LOW",
+      "LOSS_MIXED",
+      "LOSS_MASS"
+    ],
+    "finding": "Near Miss の利益は Affinity ではなく、Top1 単勝の的中×オッズ構造（ROI band）で分解できる。 利益条件 / 損失条件は rule lift と ROI cluster を参照。"
+  },
+  "rows": [
+    {
+      "race_id": "2024-01-06-京都-10",
+      "near_world": "core_world",
+      "near_worlds": [
+        "core_world",
+        "midupper_world"
+      ],
+      "race_roi": 5.2,
+      "pnl": 520.0,
+      "stake": 100.0,
+      "purchase_hit": true,
+      "coverage": true,
+      "odds_top1": 6.2,
+      "field_size": 13.0,
+      "top_gap": 0.03943602618871403,
+      "exclusion_reasons": [
+        "excl:short_field_pressure↑",
+        "excl:mid_eval_band_open↑"
+      ],
+      "exclusion_primary": "excl:short_field_pressure↑",
+      "roi_band": "WIN_HIGH",
+      "winner_model_rank": 1.0
+    },
+    {
+      "race_id": "2024-01-06-中山-11",
+      "near_world": "core_world",
+      "near_worlds": [
+        "core_world"
+      ],
+      "race_roi": 6.8,
+      "pnl": 680.0,
+      "stake": 100.0,
+      "purchase_hit": true,
+      "coverage": true,
+      "odds_top1": 7.8,
+      "field_size": 17.0,
+      "top_gap": 0.05386935023591874,
+      "exclusion_reasons": [
+        "excl:short_field_pressure↑"
+      ],
+      "exclusion_primary": "excl:short_field_pressure↑",
+      "roi_band": "WIN_HIGH",
+      "winner_model_rank": 1.0
+    },
+    {
+      "race_id": "2024-01-06-京都-11",
+      "near_world": "core_world",
+      "near_worlds": [
+        "core_world"
+      ],
+      "race_roi": 15.5,
+      "pnl": 1550.0,
+      "stake": 100.0,
+      "purchase_hit": true,
+      "coverage": true,
+      "odds_top1": 16.5,
+      "field_size": 18.0,
+      "top_gap": 0.07094797072857018,
+      "exclusion_reasons": [
+        "excl:chaos↑",
+        "excl:short_field_pressure↑"
+      ],
+      "exclusion_primary": "excl:chaos↑",
+      "roi_band": "WIN_HIGH",
+      "winner_model_rank": 1.0
+    },
+    {
+      "race_id": "2024-01-06-中山-10",
+      "near_world": "core_world",
+      "near_worlds": [
+        "core_world"
+      ],
+      "race_roi": 2.8,
+      "pnl": 280.0,
+      "stake": 100.0,
+      "purchase_hit": true,
+      "coverage": true,
+      "odds_top1": 3.8,
+      "field_size": 10.0,
+      "top_gap": 0.09928504984299404,
+      "exclusion_reasons": [
+        "excl:short_field_pressure↑",
+        "excl:mid_eval_band_open↑"
+      ],
+      "exclusion_primary": "excl:short_field_pressure↑",
+      "roi_band": "WIN_MID",
+      "winner_model_rank": 1.0
+    },
+    {
+      "race_id": "2024-01-07-京都-11",
+      "near_world": "core_world",
+      "near_worlds": [
+        "core_world"
+      ],
+      "race_roi": 10.2,
+      "pnl": 1020.0,
+      "stake": 100.0,
+      "purchase_hit": true,
+      "coverage": true,
+      "odds_top1": 11.2,
+      "field_size": 15.0,
+      "top_gap": 0.07813066762662543,
+      "exclusion_reasons": [
+        "excl:chaos↑",
+        "excl:short_field_pressure↑",
+        "excl:late∧sustained",
+        "excl:mid_eval_band_open↑"
+      ],
+      "exclusion_primary": "excl:chaos↑",
+      "roi_band": "WIN_HIGH",
+      "winner_model_rank": 1.0
+    },
+    {
+      "race_id": "2024-01-07-京都-10",
+      "near_world": "core_world",
+      "near_worlds": [
+        "core_world"
+      ],
+      "race_roi": 3.5,
+      "pnl": 350.0,
+      "stake": 100.0,
+      "purchase_hit": true,
+      "coverage": true,
+      "odds_top1": 4.5,
+      "field_size": 13.0,
+      "top_gap": 0.09663479439966409,
+      "exclusion_reasons": [
+        "excl:short_field_pressure↑",
+        "excl:mid_eval_band_open↑"
+      ],
+      "exclusion_primary": "excl:short_field_pressure↑",
+      "roi_band": "WIN_HIGH",
+      "winner_model_rank": 1.0
+    },
+    {
+      "race_id": "2024-01-14-中山-11",
+      "near_world": "core_world",
+      "near_worlds": [
+        "core_world"
+      ],
+      "race_roi": 10.5,
+      "pnl": 1050.0,
+      "stake": 100.0,
+      "purchase_hit": true,
+      "coverage": true,
+      "odds_top1": 11.5,
+      "field_size": 15.0,
+      "top_gap": 0.09170639576693108,
+      "exclusion_reasons": [
+        "excl:chaos↑",
+        "excl:short_field_pressure↑",
+        "excl:late∧sustained",
+        "excl:mid_eval_band_open↑"
+      ],
+      "exclusion_primary": "excl:chaos↑",
+      "roi_band": "WIN_HIGH",
+      "winner_model_rank": 1.0
+    },
+    {
+      "race_id": "2024-01-14-中山-10",
+      "near_world": "core_world",
+      "near_worlds": [
+        "core_world"
+      ],
+      "race_roi": 5.4,
+      "pnl": 540.0,
+      "stake": 100.0,
+      "purchase_hit": true,
+      "coverage": true,
+      "odds_top1": 6.4,
+      "field_size": 14.0,
+      "top_gap": 0.09812681599378777,
+      "exclusion_reasons": [
+        "excl:short_field_pressure↑",
+        "excl:mid_eval_band_open↑"
+      ],
+      "exclusion_primary": "excl:short_field_pressure↑",
+      "roi_band": "WIN_HIGH",
+      "winner_model_rank": 1.0
+    },
+    {
+      "race_id": "2024-01-14-小倉-11",
+      "near_world": "core_world",
+      "near_worlds": [
+        "core_world"
+      ],
+      "race_roi": 3.9000000000000004,
+      "pnl": 390.00000000000006,
+      "stake": 100.0,
+      "purchase_hit": true,
+      "coverage": true,
+      "odds_top1": 4.9,
+      "field_size": 16.0,
+      "top_gap": 0.07360893593042117,
+      "exclusion_reasons": [
+        "excl:chaos↑",
+        "excl:short_field_pressure↑"
+      ],
+      "exclusion_primary": "excl:chaos↑",
+      "roi_band": "WIN_HIGH",
+      "winner_model_rank": 1.0
+    },
+    {
+      "race_id": "2024-01-14-京都-10",
+      "near_world": "core_world",
+      "near_worlds": [
+        "core_world",
+        "midupper_world"
+      ],
+      "race_roi": 0.3,
+      "pnl": 30.0,
+      "stake": 100.0,
+      "purchase_hit": true,
+      "coverage": true,
+      "odds_top1": 1.3,
+      "field_size": 13.0,
+      "top_gap": 0.09729523921712069,
+      "exclusion_reasons": [
+        "excl:short_field_pressure↑",
+        "excl:mid_eval_band_open↑"
+      ],
+      "exclusion_primary": "excl:short_field_pressure↑",
+      "roi_band": "WIN_LOW",
+      "winner_model_rank": 1.0
+    },
+    {
+      "race_id": "2024-01-14-京都-11",
+      "near_world": "core_world",
+      "near_worlds": [
+        "core_world",
+        "midupper_world"
+      ],
+      "race_roi": 3.0999999999999996,
+      "pnl": 309.99999999999994,
+      "stake": 100.0,
+      "purchase_hit": true,
+      "coverage": true,
+      "odds_top1": 4.1,
+      "field_size": 14.0,
+      "top_gap": 0.08857376034705437,
+      "exclusion_reasons": [
+        "excl:short_field_pressure↑",
+        "excl:mid_eval_band_open↑"
+      ],
+      "exclusion_primary": "excl:short_field_pressure↑",
+      "roi_band": "WIN_HIGH",
+      "winner_model_rank": 1.0
+    },
+    {
+      "race_id": "2024-01-21-中山-11",
+      "near_world": "midhole_world",
+      "near_worlds": [
+        "midhole_world"
+      ],
+      "race_roi": -1.0,
+      "pnl": -100.0,
+      "stake": 100.0,
+      "purchase_hit": false,
+      "coverage": false,
+      "odds_top1": 7.6,
+      "field_size": 12.0,
+      "top_gap": 0.02616436129553991,
+      "exclusion_reasons": [
+        "excl:top_gap↑"
+      ],
+      "exclusion_primary": "excl:top_gap↑",
+      "roi_band": "LOSS",
+      "winner_model_rank": 4.0
+    },
+    {
+      "race_id": "2024-01-21-京都-10",
+      "near_world": "core_world",
+      "near_worlds": [
+        "core_world"
+      ],
+      "race_roi": -1.0,
+      "pnl": -100.0,
+      "stake": 100.0,
+      "purchase_hit": false,
+      "coverage": false,
+      "odds_top1": 1.8,
+      "field_size": 16.0,
+      "top_gap": 0.024945185934105912,
+      "exclusion_reasons": [
+        "excl:chaos↑",
+        "excl:short_field_pressure↑",
+        "excl:late∧sustained"
+      ],
+      "exclusion_primary": "excl:chaos↑",
+      "roi_band": "LOSS",
+      "winner_model_rank": 5.0
+    },
+    {
+      "race_id": "2024-01-21-小倉-11",
+      "near_world": "core_world",
+      "near_worlds": [
+        "core_world",
+        "midupper_world"
+      ],
+      "race_roi": -1.0,
+      "pnl": -100.0,
+      "stake": 100.0,
+      "purchase_hit": false,
+      "coverage": false,
+      "odds_top1": 12.5,
+      "field_size": 16.0,
+      "top_gap": 0.033078959771013244,
+      "exclusion_reasons": [
+        "excl:chaos↑",
+        "excl:short_field_pressure↑",
+        "excl:late∧sustained"
+      ],
+      "exclusion_primary": "excl:chaos↑",
+      "roi_band": "LOSS",
+      "winner_model_rank": 4.0
+    },
+    {
+      "race_id": "2024-01-28-京都-10",
+      "near_world": "midupper_world",
+      "near_worlds": [
+        "midupper_world"
+      ],
+      "race_roi": -1.0,
+      "pnl": -100.0,
+      "stake": 100.0,
+      "purchase_hit": false,
+      "coverage": false,
+      "odds_top1": 14.4,
+      "field_size": 12.0,
+      "top_gap": 0.0182485488318756,
+      "exclusion_reasons": [
+        "excl:mid_eval_band_open↑"
+      ],
+      "exclusion_primary": "excl:mid_eval_band_open↑",
+      "roi_band": "LOSS",
+      "winner_model_rank": 6.0
+    },
+    {
+      "race_id": "2024-01-28-小倉-11",
+      "near_world": "core_world",
+      "near_worlds": [
+        "core_world"
+      ],
+      "race_roi": -1.0,
+      "pnl": -100.0,
+      "stake": 100.0,
+      "purchase_hit": false,
+      "coverage": false,
+      "odds_top1": 12.9,
+      "field_size": 18.0,
+      "top_gap": 0.04751811759062513,
+      "exclusion_reasons": [
+        "excl:chaos↑",
+        "excl:short_field_pressure↑"
+      ],
+      "exclusion_primary": "excl:chaos↑",
+      "roi_band": "LOSS",
+      "winner_model_rank": 10.0
+    },
+    {
+      "race_id": "2024-02-04-小倉-11",
+      "near_world": "core_world",
+      "near_worlds": [
+        "core_world"
+      ],
+      "race_roi": -1.0,
+      "pnl": -100.0,
+      "stake": 100.0,
+      "purchase_hit": false,
+      "coverage": false,
+      "odds_top1": 8.4,
+      "field_size": 9.0,
+      "top_gap": 0.07978879852040674,
+      "exclusion_reasons": [
+        "excl:short_field_pressure↑",
+        "excl:mid_eval_band_open↑"
+      ],
+      "exclusion_primary": "excl:short_field_pressure↑",
+      "roi_band": "LOSS",
+      "winner_model_rank": 5.0
+    },
+    {
+      "race_id": "2024-02-11-京都-11",
+      "near_world": "midupper_world",
+      "near_worlds": [
+        "midupper_world"
+      ],
+      "race_roi": -1.0,
+      "pnl": -100.0,
+      "stake": 100.0,
+      "purchase_hit": false,
+      "coverage": false,
+      "odds_top1": 2.2,
+      "field_size": 12.0,
+      "top_gap": 0.050500731223336315,
+      "exclusion_reasons": [
+        "excl:mid_eval_band_open↑"
+      ],
+      "exclusion_primary": "excl:mid_eval_band_open↑",
+      "roi_band": "LOSS",
+      "winner_model_rank": 3.0
+    },
+    {
+      "race_id": "2024-02-18-京都-10",
+      "near_world": "midupper_world",
+      "near_worlds": [
+        "midupper_world"
+      ],
+      "race_roi": -1.0,
+      "pnl": -100.0,
+      "stake": 100.0,
+      "purchase_hit": false,
+      "coverage": false,
+      "odds_top1": 3.3,
+      "field_size": 12.0,
+      "top_gap": 0.0019214366605961875,
+      "exclusion_reasons": [
+        "excl:mid_eval_band_open↑"
+      ],
+      "exclusion_primary": "excl:mid_eval_band_open↑",
+      "roi_band": "LOSS",
+      "winner_model_rank": 3.0
+    },
+    {
+      "race_id": "2024-02-18-京都-11",
+      "near_world": "midhole_world",
+      "near_worlds": [
+        "midhole_world"
+      ],
+      "race_roi": -1.0,
+      "pnl": -100.0,
+      "stake": 100.0,
+      "purchase_hit": false,
+      "coverage": false,
+      "odds_top1": 7.8,
+      "field_size": 13.0,
+      "top_gap": 0.028430549887205225,
+      "exclusion_reasons": [
+        "excl:top_gap↑"
+      ],
+      "exclusion_primary": "excl:top_gap↑",
+      "roi_band": "LOSS",
+      "winner_model_rank": 10.0
+    },
+    {
+      "race_id": "2024-02-18-東京-10",
+      "near_world": "core_world",
+      "near_worlds": [
+        "core_world"
+      ],
+      "race_roi": -1.0,
+      "pnl": -100.0,
+      "stake": 100.0,
+      "purchase_hit": false,
+      "coverage": false,
+      "odds_top1": 2.6,
+      "field_size": 9.0,
+      "top_gap": 0.09011982470815273,
+      "exclusion_reasons": [
+        "excl:short_field_pressure↑",
+        "excl:mid_eval_band_open↑"
+      ],
+      "exclusion_primary": "excl:short_field_pressure↑",
+      "roi_band": "LOSS",
+      "winner_model_rank": 3.0
+    },
+    {
+      "race_id": "2024-02-25-中山-11",
+      "near_world": "rank7_world",
+      "near_worlds": [
+        "rank7_world"
+      ],
+      "race_roi": -1.0,
+      "pnl": -100.0,
+      "stake": 100.0,
+      "purchase_hit": false,
+      "coverage": false,
+      "odds_top1": 11.3,
+      "field_size": 16.0,
+      "top_gap": 0.024933503251183126,
+      "exclusion_reasons": [
+        "excl:top_gap↑"
+      ],
+      "exclusion_primary": "excl:top_gap↑",
+      "roi_band": "LOSS",
+      "winner_model_rank": 3.0
+    },
+    {
+      "race_id": "2024-02-25-阪神-10",
+      "near_world": "core_world",
+      "near_worlds": [
+        "core_world"
+      ],
+      "race_roi": -1.0,
+      "pnl": -100.0,
+      "stake": 100.0,
+      "purchase_hit": false,
+      "coverage": false,
+      "odds_top1": 5.2,
+      "field_size": 11.0,
+      "top_gap": 0.02876215812117855,
+      "exclusion_reasons": [
+        "excl:short_field_pressure↑",
+        "excl:late∧sustained",
+        "excl:mid_eval_band_open↑"
+      ],
+      "exclusion_primary": "excl:short_field_pressure↑",
+      "roi_band": "LOSS",
+      "winner_model_rank": 6.0
+    },
+    {
+      "race_id": "2024-03-03-中山-10",
+      "near_world": "core_world",
+      "near_worlds": [
+        "core_world",
+        "midupper_world"
+      ],
+      "race_roi": 11.4,
+      "pnl": 1140.0,
+      "stake": 100.0,
+      "purchase_hit": true,
+      "coverage": true,
+      "odds_top1": 12.4,
+      "field_size": 15.0,
+      "top_gap": 0.033455813549981714,
+      "exclusion_reasons": [
+        "excl:chaos↑",
+        "excl:short_field_pressure↑",
+        "excl:mid_eval_band_open↑"
+      ],
+      "exclusion_primary": "excl:chaos↑",
+      "roi_band": "WIN_HIGH",
+      "winner_model_rank": 1.0
+    },
+    {
+      "race_id": "2024-03-03-阪神-10",
+      "near_world": "core_world",
+      "near_worlds": [
+        "core_world"
+      ],
+      "race_roi": 2.9,
+      "pnl": 290.0,
+      "stake": 100.0,
+      "purchase_hit": true,
+      "coverage": true,
+      "odds_top1": 3.9,
+      "field_size": 14.0,
+      "top_gap": 0.03140678682025701,
+      "exclusion_reasons": [
+        "excl:short_field_pressure↑"
+      ],
+      "exclusion_primary": "excl:short_field_pressure↑",
+      "roi_band": "WIN_MID",
+      "winner_model_rank": 1.0
+    },
+    {
+      "race_id": "2024-03-03-阪神-11",
+      "near_world": "midhole_world",
+      "near_worlds": [
+        "midhole_world"
+      ],
+      "race_roi": 6.7,
+      "pnl": 670.0,
+      "stake": 100.0,
+      "purchase_hit": true,
+      "coverage": true,
+      "odds_top1": 7.7,
+      "field_size": 15.0,
+      "top_gap": 0.030061255796719033,
+      "exclusion_reasons": [
+        "excl:top_gap↑",
+        "excl:chaos↑∧difficulty↑"
+      ],
+      "exclusion_primary": "excl:top_gap↑",
+      "roi_band": "WIN_HIGH",
+      "winner_model_rank": 1.0
+    },
+    {
+      "race_id": "2024-03-10-中京-11",
+      "near_world": "core_world",
+      "near_worlds": [
+        "core_world",
+        "midupper_world"
+      ],
+      "race_roi": -1.0,
+      "pnl": -100.0,
+      "stake": 100.0,
+      "purchase_hit": false,
+      "coverage": false,
+      "odds_top1": 1.9,
+      "field_size": 13.0,
+      "top_gap": 0.043834994863138535,
+      "exclusion_reasons": [
+        "excl:short_field_pressure↑",
+        "excl:mid_eval_band_open↑"
+      ],
+      "exclusion_primary": "excl:short_field_pressure↑",
+      "roi_band": "LOSS",
+      "winner_model_rank": 5.0
+    },
+    {
+      "race_id": "2024-03-10-中山-11",
+      "near_world": "midupper_world",
+      "near_worlds": [
+        "midupper_world"
+      ],
+      "race_roi": -1.0,
+      "pnl": -100.0,
+      "stake": 100.0,
+      "purchase_hit": false,
+      "coverage": false,
+      "odds_top1": 4.8,
+      "field_size": 12.0,
+      "top_gap": 0.0423055057367966,
+      "exclusion_reasons": [
+        "excl:mid_eval_band_open↑"
+      ],
+      "exclusion_primary": "excl:mid_eval_band_open↑",
+      "roi_band": "LOSS",
+      "winner_model_rank": 6.0
+    },
+    {
+      "race_id": "2024-03-10-阪神-11",
+      "near_world": "midhole_world",
+      "near_worlds": [
+        "midhole_world"
+      ],
+      "race_roi": -1.0,
+      "pnl": -100.0,
+      "stake": 100.0,
+      "purchase_hit": false,
+      "coverage": false,
+      "odds_top1": 15.4,
+      "field_size": 15.0,
+      "top_gap": 0.037358648935131133,
+      "exclusion_reasons": [
+        "excl:top_gap↑",
+        "excl:chaos↑∧difficulty↑"
+      ],
+      "exclusion_primary": "excl:top_gap↑",
+      "roi_band": "LOSS",
+      "winner_model_rank": 6.0
+    },
+    {
+      "race_id": "2024-03-17-中京-11",
+      "near_world": "core_world",
+      "near_worlds": [
+        "core_world",
+        "midupper_world"
+      ],
+      "race_roi": -1.0,
+      "pnl": -100.0,
+      "stake": 100.0,
+      "purchase_hit": false,
+      "coverage": false,
+      "odds_top1": 12.7,
+      "field_size": 13.0,
+      "top_gap": 0.057358177139199426,
+      "exclusion_reasons": [
+        "excl:short_field_pressure↑",
+        "excl:mid_eval_band_open↑"
+      ],
+      "exclusion_primary": "excl:short_field_pressure↑",
+      "roi_band": "LOSS",
+      "winner_model_rank": 7.0
+    },
+    {
+      "race_id": "2024-03-17-中山-11",
+      "near_world": "core_world",
+      "near_worlds": [
+        "core_world"
+      ],
+      "race_roi": -1.0,
+      "pnl": -100.0,
+      "stake": 100.0,
+      "purchase_hit": false,
+      "coverage": false,
+      "odds_top1": 7.8,
+      "field_size": 10.0,
+      "top_gap": 0.03431673021985904,
+      "exclusion_reasons": [
+        "excl:short_field_pressure↑",
+        "excl:mid_eval_band_open↑"
+      ],
+      "exclusion_primary": "excl:short_field_pressure↑",
+      "roi_band": "LOSS",
+      "winner_model_rank": 6.0
+    },
+    {
+      "race_id": "2024-03-24-中山-10",
+      "near_world": "core_world",
+      "near_worlds": [
+        "core_world",
+        "midupper_world"
+      ],
+      "race_roi": -1.0,
+      "pnl": -100.0,
+      "stake": 100.0,
+      "purchase_hit": false,
+      "coverage": false,
+      "odds_top1": 2.1,
+      "field_size": 13.0,
+      "top_gap": 0.04337959906291823,
+      "exclusion_reasons": [
+        "excl:short_field_pressure↑",
+        "excl:mid_eval_band_open↑"
+      ],
+      "exclusion_primary": "excl:short_field_pressure↑",
+      "roi_band": "LOSS",
+      "winner_model_rank": 2.0
+    },
+    {
+      "race_id": "2024-03-31-阪神-10",
+      "near_world": "core_world",
+      "near_worlds": [
+        "core_world"
+      ],
+      "race_roi": -1.0,
+      "pnl": -100.0,
+      "stake": 100.0,
+      "purchase_hit": false,
+      "coverage": false,
+      "odds_top1": 3.1,
+      "field_size": 17.0,
+      "top_gap": 0.033589698365334736,
+      "exclusion_reasons": [
+        "excl:chaos↑",
+        "excl:short_field_pressure↑"
+      ],
+      "exclusion_primary": "excl:chaos↑",
+      "roi_band": "LOSS",
+      "winner_model_rank": 2.0
+    },
+    {
+      "race_id": "2024-03-31-阪神-09",
+      "near_world": "core_world",
+      "near_worlds": [
+        "core_world"
+      ],
+      "race_roi": -1.0,
+      "pnl": -100.0,
+      "stake": 100.0,
+      "purchase_hit": false,
+      "coverage": false,
+      "odds_top1": 6.5,
+      "field_size": 11.0,
+      "top_gap": 0.02718578813159514,
+      "exclusion_reasons": [
+        "excl:short_field_pressure↑",
+        "excl:late∧sustained",
+        "excl:mid_eval_band_open↑"
+      ],
+      "exclusion_primary": "excl:short_field_pressure↑",
+      "roi_band": "LOSS",
+      "winner_model_rank": 3.0
+    },
+    {
+      "race_id": "2024-04-14-阪神-10",
+      "near_world": "core_world",
+      "near_worlds": [
+        "core_world"
+      ],
+      "race_roi": 0.9,
+      "pnl": 90.0,
+      "stake": 100.0,
+      "purchase_hit": true,
+      "coverage": true,
+      "odds_top1": 1.9,
+      "field_size": 11.0,
+      "top_gap": 0.09211981021380433,
+      "exclusion_reasons": [
+        "excl:short_field_pressure↑",
+        "excl:mid_eval_band_open↑"
+      ],
+      "exclusion_primary": "excl:short_field_pressure↑",
+      "roi_band": "WIN_LOW",
+      "winner_model_rank": 1.0
+    },
+    {
+      "race_id": "2024-05-19-京都-10",
+      "near_world": "core_world",
+      "near_worlds": [
+        "core_world"
+      ],
+      "race_roi": -1.0,
+      "pnl": -100.0,
+      "stake": 100.0,
+      "purchase_hit": false,
+      "coverage": false,
+      "odds_top1": 4.2,
+      "field_size": 12.0,
+      "top_gap": 0.03326277354517321,
+      "exclusion_reasons": [
+        "excl:mid_eval_band_open↑"
+      ],
+      "exclusion_primary": "excl:mid_eval_band_open↑",
+      "roi_band": "LOSS",
+      "winner_model_rank": 4.0
+    },
+    {
+      "race_id": "2024-05-26-京都-09",
+      "near_world": "core_world",
+      "near_worlds": [
+        "core_world"
+      ],
+      "race_roi": -1.0,
+      "pnl": -100.0,
+      "stake": 100.0,
+      "purchase_hit": false,
+      "coverage": false,
+      "odds_top1": 3.0,
+      "field_size": 11.0,
+      "top_gap": 0.08555280853480635,
+      "exclusion_reasons": [
+        "excl:mid_eval_band_open↑"
+      ],
+      "exclusion_primary": "excl:mid_eval_band_open↑",
+      "roi_band": "LOSS",
+      "winner_model_rank": 4.0
+    },
+    {
+      "race_id": "2024-05-26-東京-09",
+      "near_world": "core_world",
+      "near_worlds": [
+        "core_world"
+      ],
+      "race_roi": -1.0,
+      "pnl": -100.0,
+      "stake": 100.0,
+      "purchase_hit": false,
+      "coverage": false,
+      "odds_top1": 8.6,
+      "field_size": 10.0,
+      "top_gap": 0.032704500673126996,
+      "exclusion_reasons": [
+        "excl:mid_eval_band_open↑"
+      ],
+      "exclusion_primary": "excl:mid_eval_band_open↑",
+      "roi_band": "LOSS",
+      "winner_model_rank": 2.0
+    },
+    {
+      "race_id": "2024-06-02-京都-10",
+      "near_world": "core_world",
+      "near_worlds": [
+        "core_world"
+      ],
+      "race_roi": -1.0,
+      "pnl": -100.0,
+      "stake": 100.0,
+      "purchase_hit": false,
+      "coverage": false,
+      "odds_top1": 5.6,
+      "field_size": 13.0,
+      "top_gap": 0.03484012294729982,
+      "exclusion_reasons": [
+        "excl:mid_eval_band_open↑"
+      ],
+      "exclusion_primary": "excl:mid_eval_band_open↑",
+      "roi_band": "LOSS",
+      "winner_model_rank": 10.0
+    },
+    {
+      "race_id": "2024-06-02-東京-10",
+      "near_world": "midhole_world",
+      "near_worlds": [
+        "midhole_world"
+      ],
+      "race_roi": -1.0,
+      "pnl": -100.0,
+      "stake": 100.0,
+      "purchase_hit": false,
+      "coverage": false,
+      "odds_top1": 6.1,
+      "field_size": 16.0,
+      "top_gap": 0.025551889659434224,
+      "exclusion_reasons": [
+        "excl:top_gap↑"
+      ],
+      "exclusion_primary": "excl:top_gap↑",
+      "roi_band": "LOSS",
+      "winner_model_rank": 4.0
+    },
+    {
+      "race_id": "2024-06-16-東京-10",
+      "near_world": "core_world",
+      "near_worlds": [
+        "core_world"
+      ],
+      "race_roi": -1.0,
+      "pnl": -100.0,
+      "stake": 100.0,
+      "purchase_hit": false,
+      "coverage": false,
+      "odds_top1": 1.9,
+      "field_size": 12.0,
+      "top_gap": 0.062333007088265835,
+      "exclusion_reasons": [
+        "excl:short_field_pressure↑",
+        "excl:mid_eval_band_open↑"
+      ],
+      "exclusion_primary": "excl:short_field_pressure↑",
+      "roi_band": "LOSS",
+      "winner_model_rank": 2.0
+    },
+    {
+      "race_id": "2024-06-23-京都-10",
+      "near_world": "core_world",
+      "near_worlds": [
+        "core_world"
+      ],
+      "race_roi": -1.0,
+      "pnl": -100.0,
+      "stake": 100.0,
+      "purchase_hit": false,
+      "coverage": false,
+      "odds_top1": 6.5,
+      "field_size": 15.0,
+      "top_gap": 0.06411366152968895,
+      "exclusion_reasons": [
+        "excl:short_field_pressure↑"
+      ],
+      "exclusion_primary": "excl:short_field_pressure↑",
+      "roi_band": "LOSS",
+      "winner_model_rank": 5.0
+    },
+    {
+      "race_id": "2024-06-23-京都-11",
+      "near_world": "core_world",
+      "near_worlds": [
+        "core_world",
+        "midupper_world"
+      ],
+      "race_roi": -1.0,
+      "pnl": -100.0,
+      "stake": 100.0,
+      "purchase_hit": false,
+      "coverage": false,
+      "odds_top1": 16.9,
+      "field_size": 13.0,
+      "top_gap": 0.06185922171011472,
+      "exclusion_reasons": [
+        "excl:short_field_pressure↑",
+        "excl:mid_eval_band_open↑"
+      ],
+      "exclusion_primary": "excl:short_field_pressure↑",
+      "roi_band": "LOSS",
+      "winner_model_rank": 5.0
+    },
+    {
+      "race_id": "2024-06-30-福島-10",
+      "near_world": "core_world",
+      "near_worlds": [
+        "core_world",
+        "midupper_world"
+      ],
+      "race_roi": -1.0,
+      "pnl": -100.0,
+      "stake": 100.0,
+      "purchase_hit": false,
+      "coverage": false,
+      "odds_top1": 2.9,
+      "field_size": 13.0,
+      "top_gap": 0.04047478247083802,
+      "exclusion_reasons": [
+        "excl:short_field_pressure↑",
+        "excl:mid_eval_band_open↑"
+      ],
+      "exclusion_primary": "excl:short_field_pressure↑",
+      "roi_band": "LOSS",
+      "winner_model_rank": 4.0
+    },
+    {
+      "race_id": "2024-06-30-福島-11",
+      "near_world": "midupper_world",
+      "near_worlds": [
+        "midupper_world"
+      ],
+      "race_roi": 10.2,
+      "pnl": 1020.0,
+      "stake": 100.0,
+      "purchase_hit": true,
+      "coverage": true,
+      "odds_top1": 11.2,
+      "field_size": 12.0,
+      "top_gap": 0.010476955133620514,
+      "exclusion_reasons": [
+        "excl:mid_eval_band_open↑"
+      ],
+      "exclusion_primary": "excl:mid_eval_band_open↑",
+      "roi_band": "WIN_HIGH",
+      "winner_model_rank": 1.0
+    },
+    {
+      "race_id": "2024-07-07-函館-11",
+      "near_world": "core_world",
+      "near_worlds": [
+        "core_world",
+        "midupper_world"
+      ],
+      "race_roi": -1.0,
+      "pnl": -100.0,
+      "stake": 100.0,
+      "purchase_hit": false,
+      "coverage": false,
+      "odds_top1": 11.1,
+      "field_size": 14.0,
+      "top_gap": 0.03581320149491883,
+      "exclusion_reasons": [
+        "excl:chaos↑",
+        "excl:short_field_pressure↑",
+        "excl:late∧sustained"
+      ],
+      "exclusion_primary": "excl:chaos↑",
+      "roi_band": "LOSS",
+      "winner_model_rank": 6.0
+    },
+    {
+      "race_id": "2024-07-07-小倉-11",
+      "near_world": "core_world",
+      "near_worlds": [
+        "core_world"
+      ],
+      "race_roi": 0.7,
+      "pnl": 70.0,
+      "stake": 100.0,
+      "purchase_hit": true,
+      "coverage": true,
+      "odds_top1": 1.7,
+      "field_size": 16.0,
+      "top_gap": 0.05173860421418394,
+      "exclusion_reasons": [
+        "excl:chaos↑",
+        "excl:short_field_pressure↑",
+        "excl:late∧sustained"
+      ],
+      "exclusion_primary": "excl:chaos↑",
+      "roi_band": "WIN_LOW",
+      "winner_model_rank": 1.0
+    },
+    {
+      "race_id": "2024-07-07-福島-11",
+      "near_world": "midhole_world",
+      "near_worlds": [
+        "midhole_world"
+      ],
+      "race_roi": -1.0,
+      "pnl": -100.0,
+      "stake": 100.0,
+      "purchase_hit": false,
+      "coverage": false,
+      "odds_top1": 11.7,
+      "field_size": 15.0,
+      "top_gap": 0.04589208201193226,
+      "exclusion_reasons": [
+        "excl:top_gap↑",
+        "excl:chaos↑∧difficulty↑"
+      ],
+      "exclusion_primary": "excl:top_gap↑",
+      "roi_band": "LOSS",
+      "winner_model_rank": 6.0
+    },
+    {
+      "race_id": "2024-07-07-福島-10",
+      "near_world": "core_world",
+      "near_worlds": [
+        "core_world"
+      ],
+      "race_roi": 0.6,
+      "pnl": 60.0,
+      "stake": 100.0,
+      "purchase_hit": true,
+      "coverage": true,
+      "odds_top1": 1.6,
+      "field_size": 10.0,
+      "top_gap": 0.04454404879693352,
+      "exclusion_reasons": [
+        "excl:short_field_pressure↑",
+        "excl:mid_eval_band_open↑"
+      ],
+      "exclusion_primary": "excl:short_field_pressure↑",
+      "roi_band": "WIN_LOW",
+      "winner_model_rank": 1.0
+    },
+    {
+      "race_id": "2024-07-14-福島-11",
+      "near_world": "midhole_world",
+      "near_worlds": [
+        "midhole_world"
+      ],
+      "race_roi": -1.0,
+      "pnl": -100.0,
+      "stake": 100.0,
+      "purchase_hit": false,
+      "coverage": false,
+      "odds_top1": 1.6,
+      "field_size": 16.0,
+      "top_gap": 0.031683698648049624,
+      "exclusion_reasons": [
+        "excl:top_gap↑"
+      ],
+      "exclusion_primary": "excl:top_gap↑",
+      "roi_band": "LOSS",
+      "winner_model_rank": 12.0
+    },
+    {
+      "race_id": "2024-07-21-小倉-11",
+      "near_world": "midhole_world",
+      "near_worlds": [
+        "midhole_world"
+      ],
+      "race_roi": -1.0,
+      "pnl": -100.0,
+      "stake": 100.0,
+      "purchase_hit": false,
+      "coverage": false,
+      "odds_top1": 11.5,
+      "field_size": 14.0,
+      "top_gap": 0.053035828442073746,
+      "exclusion_reasons": [
+        "excl:top_gap↑",
+        "excl:chaos↑∧difficulty↑"
+      ],
+      "exclusion_primary": "excl:top_gap↑",
+      "roi_band": "LOSS",
+      "winner_model_rank": 5.0
+    },
+    {
+      "race_id": "2025-12-06-中京-11",
+      "near_world": "core_world",
+      "near_worlds": [
+        "core_world"
+      ],
+      "race_roi": -1.0,
+      "pnl": -100.0,
+      "stake": 100.0,
+      "purchase_hit": false,
+      "coverage": false,
+      "odds_top1": 4.1,
+      "field_size": 12.0,
+      "top_gap": 0.04335605042352213,
+      "exclusion_reasons": [
+        "excl:short_field_pressure↑",
+        "excl:mid_eval_band_open↑"
+      ],
+      "exclusion_primary": "excl:short_field_pressure↑",
+      "roi_band": "LOSS",
+      "winner_model_rank": 4.0
+    },
+    {
+      "race_id": "2025-12-06-中山-10",
+      "near_world": "midupper_world",
+      "near_worlds": [
+        "midupper_world"
+      ],
+      "race_roi": -1.0,
+      "pnl": -100.0,
+      "stake": 100.0,
+      "purchase_hit": false,
+      "coverage": false,
+      "odds_top1": 4.2,
+      "field_size": 12.0,
+      "top_gap": 0.007140831368456196,
+      "exclusion_reasons": [
+        "excl:mid_eval_band_open↑"
+      ],
+      "exclusion_primary": "excl:mid_eval_band_open↑",
+      "roi_band": "LOSS",
+      "winner_model_rank": 5.0
+    },
+    {
+      "race_id": "2025-12-07-中京-11",
+      "near_world": "core_world",
+      "near_worlds": [
+        "core_world"
+      ],
+      "race_roi": -1.0,
+      "pnl": -100.0,
+      "stake": 100.0,
+      "purchase_hit": false,
+      "coverage": false,
+      "odds_top1": 2.2,
+      "field_size": 16.0,
+      "top_gap": 0.05679381121448074,
+      "exclusion_reasons": [
+        "excl:chaos↑",
+        "excl:short_field_pressure↑",
+        "excl:late∧sustained"
+      ],
+      "exclusion_primary": "excl:chaos↑",
+      "roi_band": "LOSS",
+      "winner_model_rank": 3.0
+    },
+    {
+      "race_id": "2025-12-07-中京-10",
+      "near_world": "core_world",
+      "near_worlds": [
+        "core_world",
+        "midupper_world"
+      ],
+      "race_roi": -1.0,
+      "pnl": -100.0,
+      "stake": 100.0,
+      "purchase_hit": false,
+      "coverage": false,
+      "odds_top1": 3.8,
+      "field_size": 13.0,
+      "top_gap": 0.06636857711116044,
+      "exclusion_reasons": [
+        "excl:short_field_pressure↑",
+        "excl:mid_eval_band_open↑"
+      ],
+      "exclusion_primary": "excl:short_field_pressure↑",
+      "roi_band": "LOSS",
+      "winner_model_rank": 6.0
+    },
+    {
+      "race_id": "2025-12-13-中山-10",
+      "near_world": "core_world",
+      "near_worlds": [
+        "core_world"
+      ],
+      "race_roi": -1.0,
+      "pnl": -100.0,
+      "stake": 100.0,
+      "purchase_hit": false,
+      "coverage": false,
+      "odds_top1": 2.3,
+      "field_size": 15.0,
+      "top_gap": 0.04177264680792482,
+      "exclusion_reasons": [
+        "excl:chaos↑",
+        "excl:short_field_pressure↑"
+      ],
+      "exclusion_primary": "excl:chaos↑",
+      "roi_band": "LOSS",
+      "winner_model_rank": 9.0
+    },
+    {
+      "race_id": "2025-12-13-阪神-11",
+      "near_world": "midhole_world",
+      "near_worlds": [
+        "midhole_world"
+      ],
+      "race_roi": -1.0,
+      "pnl": -100.0,
+      "stake": 100.0,
+      "purchase_hit": false,
+      "coverage": false,
+      "odds_top1": 2.9,
+      "field_size": 13.0,
+      "top_gap": 0.03530911062818043,
+      "exclusion_reasons": [
+        "excl:top_gap↑"
+      ],
+      "exclusion_primary": "excl:top_gap↑",
+      "roi_band": "LOSS",
+      "winner_model_rank": 3.0
+    },
+    {
+      "race_id": "2025-12-14-阪神-10",
+      "near_world": "core_world",
+      "near_worlds": [
+        "core_world"
+      ],
+      "race_roi": -1.0,
+      "pnl": -100.0,
+      "stake": 100.0,
+      "purchase_hit": false,
+      "coverage": false,
+      "odds_top1": 2.1,
+      "field_size": 16.0,
+      "top_gap": 0.08180227665232347,
+      "exclusion_reasons": [
+        "excl:short_field_pressure↑"
+      ],
+      "exclusion_primary": "excl:short_field_pressure↑",
+      "roi_band": "LOSS",
+      "winner_model_rank": 2.0
+    },
+    {
+      "race_id": "2025-12-14-中山-11",
+      "near_world": "midhole_world",
+      "near_worlds": [
+        "midhole_world"
+      ],
+      "race_roi": -1.0,
+      "pnl": -100.0,
+      "stake": 100.0,
+      "purchase_hit": false,
+      "coverage": false,
+      "odds_top1": 15.0,
+      "field_size": 16.0,
+      "top_gap": 0.026187536728028413,
+      "exclusion_reasons": [
+        "excl:top_gap↑",
+        "excl:chaos↑∧difficulty↑"
+      ],
+      "exclusion_primary": "excl:top_gap↑",
+      "roi_band": "LOSS",
+      "winner_model_rank": 4.0
+    },
+    {
+      "race_id": "2025-12-14-中京-10",
+      "near_world": "core_world",
+      "near_worlds": [
+        "core_world"
+      ],
+      "race_roi": -1.0,
+      "pnl": -100.0,
+      "stake": 100.0,
+      "purchase_hit": false,
+      "coverage": false,
+      "odds_top1": 1.7,
+      "field_size": 10.0,
+      "top_gap": 0.047497969504257526,
+      "exclusion_reasons": [
+        "excl:short_field_pressure↑",
+        "excl:mid_eval_band_open↑"
+      ],
+      "exclusion_primary": "excl:short_field_pressure↑",
+      "roi_band": "LOSS",
+      "winner_model_rank": 4.0
+    },
+    {
+      "race_id": "2025-12-14-中京-11",
+      "near_world": "core_world",
+      "near_worlds": [
+        "core_world"
+      ],
+      "race_roi": -1.0,
+      "pnl": -100.0,
+      "stake": 100.0,
+      "purchase_hit": false,
+      "coverage": false,
+      "odds_top1": 1.9,
+      "field_size": 10.0,
+      "top_gap": 0.057764645006666754,
+      "exclusion_reasons": [
+        "excl:short_field_pressure↑",
+        "excl:mid_eval_band_open↑"
+      ],
+      "exclusion_primary": "excl:short_field_pressure↑",
+      "roi_band": "LOSS",
+      "winner_model_rank": 8.0
+    },
+    {
+      "race_id": "2025-12-20-阪神-11",
+      "near_world": "core_world",
+      "near_worlds": [
+        "core_world"
+      ],
+      "race_roi": -1.0,
+      "pnl": -100.0,
+      "stake": 100.0,
+      "purchase_hit": false,
+      "coverage": false,
+      "odds_top1": 6.7,
+      "field_size": 16.0,
+      "top_gap": 0.03697390225024805,
+      "exclusion_reasons": [
+        "excl:chaos↑",
+        "excl:short_field_pressure↑"
+      ],
+      "exclusion_primary": "excl:chaos↑",
+      "roi_band": "LOSS",
+      "winner_model_rank": 3.0
+    },
+    {
+      "race_id": "2025-12-20-阪神-10",
+      "near_world": "core_world",
+      "near_worlds": [
+        "core_world"
+      ],
+      "race_roi": 2.3,
+      "pnl": 230.0,
+      "stake": 100.0,
+      "purchase_hit": true,
+      "coverage": true,
+      "odds_top1": 3.3,
+      "field_size": 8.0,
+      "top_gap": 0.07758002782246023,
+      "exclusion_reasons": [
+        "excl:short_field_pressure↑",
+        "excl:mid_eval_band_open↑"
+      ],
+      "exclusion_primary": "excl:short_field_pressure↑",
+      "roi_band": "WIN_MID",
+      "winner_model_rank": 1.0
+    },
+    {
+      "race_id": "2025-12-27-中山-09",
+      "near_world": "core_world",
+      "near_worlds": [
+        "core_world"
+      ],
+      "race_roi": -1.0,
+      "pnl": -100.0,
+      "stake": 100.0,
+      "purchase_hit": false,
+      "coverage": false,
+      "odds_top1": 3.1,
+      "field_size": 16.0,
+      "top_gap": 0.06832891302566146,
+      "exclusion_reasons": [
+        "excl:chaos↑",
+        "excl:short_field_pressure↑"
+      ],
+      "exclusion_primary": "excl:chaos↑",
+      "roi_band": "LOSS",
+      "winner_model_rank": 13.0
+    },
+    {
+      "race_id": "2025-12-28-中山-09",
+      "near_world": "midhole_world",
+      "near_worlds": [
+        "midhole_world"
+      ],
+      "race_roi": -1.0,
+      "pnl": -100.0,
+      "stake": 100.0,
+      "purchase_hit": false,
+      "coverage": false,
+      "odds_top1": 2.3,
+      "field_size": 14.0,
+      "top_gap": 0.030208479357584514,
+      "exclusion_reasons": [
+        "excl:top_gap↑"
+      ],
+      "exclusion_primary": "excl:top_gap↑",
+      "roi_band": "LOSS",
+      "winner_model_rank": 5.0
+    },
+    {
+      "race_id": "2025-12-28-阪神-11",
+      "near_world": "core_world",
+      "near_worlds": [
+        "core_world"
+      ],
+      "race_roi": -1.0,
+      "pnl": -100.0,
+      "stake": 100.0,
+      "purchase_hit": false,
+      "coverage": false,
+      "odds_top1": 6.9,
+      "field_size": 16.0,
+      "top_gap": 0.05471934637923727,
+      "exclusion_reasons": [
+        "excl:chaos↑",
+        "excl:short_field_pressure↑"
+      ],
+      "exclusion_primary": "excl:chaos↑",
+      "roi_band": "LOSS",
+      "winner_model_rank": 5.0
+    },
+    {
+      "race_id": "2025-12-28-阪神-10",
+      "near_world": "core_world",
+      "near_worlds": [
+        "core_world"
+      ],
+      "race_roi": -1.0,
+      "pnl": -100.0,
+      "stake": 100.0,
+      "purchase_hit": false,
+      "coverage": false,
+      "odds_top1": 3.8,
+      "field_size": 11.0,
+      "top_gap": 0.0566277780011227,
+      "exclusion_reasons": [
+        "excl:short_field_pressure↑",
+        "excl:mid_eval_band_open↑"
+      ],
+      "exclusion_primary": "excl:short_field_pressure↑",
+      "roi_band": "LOSS",
+      "winner_model_rank": 2.0
+    },
+    {
+      "race_id": "2026-01-04-中山-11",
+      "near_world": "core_world",
+      "near_worlds": [
+        "core_world"
+      ],
+      "race_roi": -1.0,
+      "pnl": -100.0,
+      "stake": 100.0,
+      "purchase_hit": false,
+      "coverage": false,
+      "odds_top1": 7.8,
+      "field_size": 14.0,
+      "top_gap": 0.05581015817220163,
+      "exclusion_reasons": [
+        "excl:chaos↑",
+        "excl:short_field_pressure↑",
+        "excl:late∧sustained",
+        "excl:mid_eval_band_open↑"
+      ],
+      "exclusion_primary": "excl:chaos↑",
+      "roi_band": "LOSS",
+      "winner_model_rank": 6.0
+    },
+    {
+      "race_id": "2026-01-04-中山-10",
+      "near_world": "core_world",
+      "near_worlds": [
+        "core_world"
+      ],
+      "race_roi": 1.2999999999999998,
+      "pnl": 129.99999999999997,
+      "stake": 100.0,
+      "purchase_hit": true,
+      "coverage": true,
+      "odds_top1": 2.3,
+      "field_size": 8.0,
+      "top_gap": 0.08411108854061632,
+      "exclusion_reasons": [
+        "excl:short_field_pressure↑",
+        "excl:mid_eval_band_open↑"
+      ],
+      "exclusion_primary": "excl:short_field_pressure↑",
+      "roi_band": "WIN_MID",
+      "winner_model_rank": 1.0
+    },
+    {
+      "race_id": "2026-01-11-中山-09",
+      "near_world": "core_world",
+      "near_worlds": [
+        "core_world",
+        "midupper_world"
+      ],
+      "race_roi": 2.1,
+      "pnl": 210.0,
+      "stake": 100.0,
+      "purchase_hit": true,
+      "coverage": true,
+      "odds_top1": 3.1,
+      "field_size": 13.0,
+      "top_gap": 0.08946418615085612,
+      "exclusion_reasons": [
+        "excl:short_field_pressure↑",
+        "excl:mid_eval_band_open↑"
+      ],
+      "exclusion_primary": "excl:short_field_pressure↑",
+      "roi_band": "WIN_MID",
+      "winner_model_rank": 1.0
+    },
+    {
+      "race_id": "2026-01-18-京都-11",
+      "near_world": "core_world",
+      "near_worlds": [
+        "core_world",
+        "midupper_world"
+      ],
+      "race_roi": -1.0,
+      "pnl": -100.0,
+      "stake": 100.0,
+      "purchase_hit": false,
+      "coverage": false,
+      "odds_top1": 7.2,
+      "field_size": 13.0,
+      "top_gap": 0.0283455814622164,
+      "exclusion_reasons": [
+        "excl:short_field_pressure↑",
+        "excl:mid_eval_band_open↑"
+      ],
+      "exclusion_primary": "excl:short_field_pressure↑",
+      "roi_band": "LOSS",
+      "winner_model_rank": 5.0
+    },
+    {
+      "race_id": "2026-01-25-小倉-11",
+      "near_world": "core_world",
+      "near_worlds": [
+        "core_world",
+        "midupper_world"
+      ],
+      "race_roi": -1.0,
+      "pnl": -100.0,
+      "stake": 100.0,
+      "purchase_hit": false,
+      "coverage": false,
+      "odds_top1": 3.6,
+      "field_size": 12.0,
+      "top_gap": 0.035489393114784135,
+      "exclusion_reasons": [
+        "excl:short_field_pressure↑",
+        "excl:mid_eval_band_open↑"
+      ],
+      "exclusion_primary": "excl:short_field_pressure↑",
+      "roi_band": "LOSS",
+      "winner_model_rank": 6.0
+    },
+    {
+      "race_id": "2026-02-01-京都-10",
+      "near_world": "core_world",
+      "near_worlds": [
+        "core_world"
+      ],
+      "race_roi": -1.0,
+      "pnl": -100.0,
+      "stake": 100.0,
+      "purchase_hit": false,
+      "coverage": false,
+      "odds_top1": 12.4,
+      "field_size": 8.0,
+      "top_gap": 0.031180457498496045,
+      "exclusion_reasons": [
+        "excl:short_field_pressure↑",
+        "excl:mid_eval_band_open↑"
+      ],
+      "exclusion_primary": "excl:short_field_pressure↑",
+      "roi_band": "LOSS",
+      "winner_model_rank": 6.0
+    },
+    {
+      "race_id": "2026-02-01-東京-10",
+      "near_world": "core_world",
+      "near_worlds": [
+        "core_world"
+      ],
+      "race_roi": -1.0,
+      "pnl": -100.0,
+      "stake": 100.0,
+      "purchase_hit": false,
+      "coverage": false,
+      "odds_top1": 5.1,
+      "field_size": 15.0,
+      "top_gap": 0.02668481059686212,
+      "exclusion_reasons": [
+        "excl:short_field_pressure↑",
+        "excl:late∧sustained"
+      ],
+      "exclusion_primary": "excl:short_field_pressure↑",
+      "roi_band": "LOSS",
+      "winner_model_rank": 8.0
+    },
+    {
+      "race_id": "2026-02-22-阪神-11",
+      "near_world": "core_world",
+      "near_worlds": [
+        "core_world"
+      ],
+      "race_roi": -1.0,
+      "pnl": -100.0,
+      "stake": 100.0,
+      "purchase_hit": false,
+      "coverage": false,
+      "odds_top1": 7.6,
+      "field_size": 12.0,
+      "top_gap": 0.05899715947632794,
+      "exclusion_reasons": [
+        "excl:short_field_pressure↑",
+        "excl:mid_eval_band_open↑"
+      ],
+      "exclusion_primary": "excl:short_field_pressure↑",
+      "roi_band": "LOSS",
+      "winner_model_rank": 4.0
+    },
+    {
+      "race_id": "2026-02-22-阪神-10",
+      "near_world": "core_world",
+      "near_worlds": [
+        "core_world"
+      ],
+      "race_roi": -1.0,
+      "pnl": -100.0,
+      "stake": 100.0,
+      "purchase_hit": false,
+      "coverage": false,
+      "odds_top1": 2.4,
+      "field_size": 8.0,
+      "top_gap": 0.06841513545168112,
+      "exclusion_reasons": [
+        "excl:short_field_pressure↑",
+        "excl:mid_eval_band_open↑"
+      ],
+      "exclusion_primary": "excl:short_field_pressure↑",
+      "roi_band": "LOSS",
+      "winner_model_rank": 4.0
+    },
+    {
+      "race_id": "2026-03-01-阪神-10",
+      "near_world": "core_world",
+      "near_worlds": [
+        "core_world",
+        "midupper_world"
+      ],
+      "race_roi": -1.0,
+      "pnl": -100.0,
+      "stake": 100.0,
+      "purchase_hit": false,
+      "coverage": false,
+      "odds_top1": 8.5,
+      "field_size": 14.0,
+      "top_gap": 0.03615848395357023,
+      "exclusion_reasons": [
+        "excl:short_field_pressure↑",
+        "excl:mid_eval_band_open↑"
+      ],
+      "exclusion_primary": "excl:short_field_pressure↑",
+      "roi_band": "LOSS",
+      "winner_model_rank": 6.0
+    },
+    {
+      "race_id": "2026-03-01-阪神-11",
+      "near_world": "midhole_world",
+      "near_worlds": [
+        "midhole_world"
+      ],
+      "race_roi": -1.0,
+      "pnl": -100.0,
+      "stake": 100.0,
+      "purchase_hit": false,
+      "coverage": false,
+      "odds_top1": 13.8,
+      "field_size": 15.0,
+      "top_gap": 0.02737901613941962,
+      "exclusion_reasons": [
+        "excl:top_gap↑",
+        "excl:chaos↑∧difficulty↑"
+      ],
+      "exclusion_primary": "excl:top_gap↑",
+      "roi_band": "LOSS",
+      "winner_model_rank": 3.0
+    },
+    {
+      "race_id": "2026-03-08-中山-09",
+      "near_world": "core_world",
+      "near_worlds": [
+        "core_world",
+        "midupper_world"
+      ],
+      "race_roi": -1.0,
+      "pnl": -100.0,
+      "stake": 100.0,
+      "purchase_hit": false,
+      "coverage": false,
+      "odds_top1": 8.3,
+      "field_size": 16.0,
+      "top_gap": 0.038630353769600945,
+      "exclusion_reasons": [
+        "excl:chaos↑",
+        "excl:short_field_pressure↑"
+      ],
+      "exclusion_primary": "excl:chaos↑",
+      "roi_band": "LOSS",
+      "winner_model_rank": 3.0
+    },
+    {
+      "race_id": "2026-03-08-中山-10",
+      "near_world": "midhole_world",
+      "near_worlds": [
+        "midhole_world"
+      ],
+      "race_roi": -1.0,
+      "pnl": -100.0,
+      "stake": 100.0,
+      "purchase_hit": false,
+      "coverage": false,
+      "odds_top1": 4.9,
+      "field_size": 15.0,
+      "top_gap": 0.037782440548671525,
+      "exclusion_reasons": [
+        "excl:top_gap↑"
+      ],
+      "exclusion_primary": "excl:top_gap↑",
+      "roi_band": "LOSS",
+      "winner_model_rank": 6.0
+    },
+    {
+      "race_id": "2026-03-08-阪神-11",
+      "near_world": "midupper_world",
+      "near_worlds": [
+        "midupper_world"
+      ],
+      "race_roi": -1.0,
+      "pnl": -100.0,
+      "stake": 100.0,
+      "purchase_hit": false,
+      "coverage": false,
+      "odds_top1": 4.6,
+      "field_size": 13.0,
+      "top_gap": 0.04505867116560304,
+      "exclusion_reasons": [
+        "excl:mid_eval_band_open↑"
+      ],
+      "exclusion_primary": "excl:mid_eval_band_open↑",
+      "roi_band": "LOSS",
+      "winner_model_rank": 5.0
+    },
+    {
+      "race_id": "2026-03-08-阪神-10",
+      "near_world": "core_world",
+      "near_worlds": [
+        "core_world",
+        "midupper_world"
+      ],
+      "race_roi": -1.0,
+      "pnl": -100.0,
+      "stake": 100.0,
+      "purchase_hit": false,
+      "coverage": false,
+      "odds_top1": 4.5,
+      "field_size": 14.0,
+      "top_gap": 0.04060215425807684,
+      "exclusion_reasons": [
+        "excl:short_field_pressure↑",
+        "excl:mid_eval_band_open↑"
+      ],
+      "exclusion_primary": "excl:short_field_pressure↑",
+      "roi_band": "LOSS",
+      "winner_model_rank": 14.0
+    },
+    {
+      "race_id": "2026-03-08-中山-11",
+      "near_world": "core_world",
+      "near_worlds": [
+        "core_world"
+      ],
+      "race_roi": -1.0,
+      "pnl": -100.0,
+      "stake": 100.0,
+      "purchase_hit": false,
+      "coverage": false,
+      "odds_top1": 2.2,
+      "field_size": 10.0,
+      "top_gap": 0.11899770327169255,
+      "exclusion_reasons": [
+        "excl:short_field_pressure↑",
+        "excl:mid_eval_band_open↑"
+      ],
+      "exclusion_primary": "excl:short_field_pressure↑",
+      "roi_band": "LOSS",
+      "winner_model_rank": 5.0
+    },
+    {
+      "race_id": "2026-03-15-中山-10",
+      "near_world": "core_world",
+      "near_worlds": [
+        "core_world"
+      ],
+      "race_roi": -1.0,
+      "pnl": -100.0,
+      "stake": 100.0,
+      "purchase_hit": false,
+      "coverage": false,
+      "odds_top1": 2.2,
+      "field_size": 16.0,
+      "top_gap": 0.04871988347993714,
+      "exclusion_reasons": [
+        "excl:short_field_pressure↑"
+      ],
+      "exclusion_primary": "excl:short_field_pressure↑",
+      "roi_band": "LOSS",
+      "winner_model_rank": 5.0
+    },
+    {
+      "race_id": "2026-03-22-中山-10",
+      "near_world": "core_world",
+      "near_worlds": [
+        "core_world"
+      ],
+      "race_roi": -1.0,
+      "pnl": -100.0,
+      "stake": 100.0,
+      "purchase_hit": false,
+      "coverage": false,
+      "odds_top1": 2.2,
+      "field_size": 9.0,
+      "top_gap": 0.025533537252463212,
+      "exclusion_reasons": [
+        "excl:short_field_pressure↑",
+        "excl:mid_eval_band_open↑"
+      ],
+      "exclusion_primary": "excl:short_field_pressure↑",
+      "roi_band": "LOSS",
+      "winner_model_rank": 3.0
+    },
+    {
+      "race_id": "2026-03-22-阪神-11",
+      "near_world": "core_world",
+      "near_worlds": [
+        "core_world"
+      ],
+      "race_roi": -1.0,
+      "pnl": -100.0,
+      "stake": 100.0,
+      "purchase_hit": false,
+      "coverage": false,
+      "odds_top1": 12.6,
+      "field_size": 10.0,
+      "top_gap": 0.04408125202244029,
+      "exclusion_reasons": [
+        "excl:short_field_pressure↑",
+        "excl:mid_eval_band_open↑"
+      ],
+      "exclusion_primary": "excl:short_field_pressure↑",
+      "roi_band": "LOSS",
+      "winner_model_rank": 6.0
+    },
+    {
+      "race_id": "2026-03-29-中山-11",
+      "near_world": "core_world",
+      "near_worlds": [
+        "core_world"
+      ],
+      "race_roi": -1.0,
+      "pnl": -100.0,
+      "stake": 100.0,
+      "purchase_hit": false,
+      "coverage": false,
+      "odds_top1": 9.6,
+      "field_size": 16.0,
+      "top_gap": 0.05746740009436223,
+      "exclusion_reasons": [
+        "excl:chaos↑",
+        "excl:short_field_pressure↑"
+      ],
+      "exclusion_primary": "excl:chaos↑",
+      "roi_band": "LOSS",
+      "winner_model_rank": 7.0
+    },
+    {
+      "race_id": "2026-03-29-阪神-11",
+      "near_world": "core_world",
+      "near_worlds": [
+        "core_world",
+        "midupper_world"
+      ],
+      "race_roi": 1.8,
+      "pnl": 180.0,
+      "stake": 100.0,
+      "purchase_hit": true,
+      "coverage": true,
+      "odds_top1": 2.8,
+      "field_size": 13.0,
+      "top_gap": 0.08579112391583599,
+      "exclusion_reasons": [
+        "excl:short_field_pressure↑",
+        "excl:mid_eval_band_open↑"
+      ],
+      "exclusion_primary": "excl:short_field_pressure↑",
+      "roi_band": "WIN_MID",
+      "winner_model_rank": 1.0
+    },
+    {
+      "race_id": "2026-04-05-中山-10",
+      "near_world": "core_world",
+      "near_worlds": [
+        "core_world",
+        "midupper_world"
+      ],
+      "race_roi": 2.0,
+      "pnl": 200.0,
+      "stake": 100.0,
+      "purchase_hit": true,
+      "coverage": true,
+      "odds_top1": 3.0,
+      "field_size": 16.0,
+      "top_gap": 0.042019581777358025,
+      "exclusion_reasons": [
+        "excl:chaos↑",
+        "excl:short_field_pressure↑"
+      ],
+      "exclusion_primary": "excl:chaos↑",
+      "roi_band": "WIN_MID",
+      "winner_model_rank": 1.0
+    },
+    {
+      "race_id": "2026-04-05-阪神-10",
+      "near_world": "core_world",
+      "near_worlds": [
+        "core_world"
+      ],
+      "race_roi": 3.0999999999999996,
+      "pnl": 309.99999999999994,
+      "stake": 100.0,
+      "purchase_hit": true,
+      "coverage": true,
+      "odds_top1": 4.1,
+      "field_size": 18.0,
+      "top_gap": 0.04090231862345063,
+      "exclusion_reasons": [
+        "excl:chaos↑",
+        "excl:short_field_pressure↑"
+      ],
+      "exclusion_primary": "excl:chaos↑",
+      "roi_band": "WIN_HIGH",
+      "winner_model_rank": 1.0
+    },
+    {
+      "race_id": "2026-04-12-中山-10",
+      "near_world": "midupper_world",
+      "near_worlds": [
+        "midupper_world"
+      ],
+      "race_roi": -1.0,
+      "pnl": -100.0,
+      "stake": 100.0,
+      "purchase_hit": false,
+      "coverage": false,
+      "odds_top1": 2.4,
+      "field_size": 12.0,
+      "top_gap": 0.0,
+      "exclusion_reasons": [
+        "excl:mid_eval_band_open↑"
+      ],
+      "exclusion_primary": "excl:mid_eval_band_open↑",
+      "roi_band": "LOSS",
+      "winner_model_rank": 4.0
+    },
+    {
+      "race_id": "2026-04-12-阪神-10",
+      "near_world": "core_world",
+      "near_worlds": [
+        "core_world",
+        "midupper_world"
+      ],
+      "race_roi": -1.0,
+      "pnl": -100.0,
+      "stake": 100.0,
+      "purchase_hit": false,
+      "coverage": false,
+      "odds_top1": 2.5,
+      "field_size": 15.0,
+      "top_gap": 0.0349835590531425,
+      "exclusion_reasons": [
+        "excl:chaos↑",
+        "excl:short_field_pressure↑",
+        "excl:late∧sustained"
+      ],
+      "exclusion_primary": "excl:chaos↑",
+      "roi_band": "LOSS",
+      "winner_model_rank": 7.0
+    },
+    {
+      "race_id": "2026-04-19-中山-10",
+      "near_world": "core_world",
+      "near_worlds": [
+        "core_world"
+      ],
+      "race_roi": -1.0,
+      "pnl": -100.0,
+      "stake": 100.0,
+      "purchase_hit": false,
+      "coverage": false,
+      "odds_top1": 11.3,
+      "field_size": 15.0,
+      "top_gap": 0.07426124259082506,
+      "exclusion_reasons": [
+        "excl:short_field_pressure↑",
+        "excl:mid_eval_band_open↑"
+      ],
+      "exclusion_primary": "excl:short_field_pressure↑",
+      "roi_band": "LOSS",
+      "winner_model_rank": 8.0
+    },
+    {
+      "race_id": "2026-04-19-阪神-10",
+      "near_world": "core_world",
+      "near_worlds": [
+        "core_world"
+      ],
+      "race_roi": 1.2999999999999998,
+      "pnl": 129.99999999999997,
+      "stake": 100.0,
+      "purchase_hit": true,
+      "coverage": true,
+      "odds_top1": 2.3,
+      "field_size": 13.0,
+      "top_gap": 0.0390186929591257,
+      "exclusion_reasons": [
+        "excl:short_field_pressure↑",
+        "excl:mid_eval_band_open↑"
+      ],
+      "exclusion_primary": "excl:short_field_pressure↑",
+      "roi_band": "WIN_MID",
+      "winner_model_rank": 1.0
+    },
+    {
+      "race_id": "2026-04-25-京都-10",
+      "near_world": "core_world",
+      "near_worlds": [
+        "core_world"
+      ],
+      "race_roi": -1.0,
+      "pnl": -100.0,
+      "stake": 100.0,
+      "purchase_hit": false,
+      "coverage": false,
+      "odds_top1": 5.1,
+      "field_size": 11.0,
+      "top_gap": 0.04663813467196033,
+      "exclusion_reasons": [
+        "excl:short_field_pressure↑",
+        "excl:mid_eval_band_open↑"
+      ],
+      "exclusion_primary": "excl:short_field_pressure↑",
+      "roi_band": "LOSS",
+      "winner_model_rank": 7.0
+    },
+    {
+      "race_id": "2026-04-25-福島-11",
+      "near_world": "core_world",
+      "near_worlds": [
+        "core_world"
+      ],
+      "race_roi": -1.0,
+      "pnl": -100.0,
+      "stake": 100.0,
+      "purchase_hit": false,
+      "coverage": false,
+      "odds_top1": 24.9,
+      "field_size": 12.0,
+      "top_gap": 0.05229734259303841,
+      "exclusion_reasons": [
+        "excl:short_field_pressure↑",
+        "excl:mid_eval_band_open↑"
+      ],
+      "exclusion_primary": "excl:short_field_pressure↑",
+      "roi_band": "LOSS",
+      "winner_model_rank": 4.0
+    },
+    {
+      "race_id": "2026-04-26-東京-11",
+      "near_world": "core_world",
+      "near_worlds": [
+        "core_world",
+        "midupper_world"
+      ],
+      "race_roi": -1.0,
+      "pnl": -100.0,
+      "stake": 100.0,
+      "purchase_hit": false,
+      "coverage": false,
+      "odds_top1": 165.0,
+      "field_size": 13.0,
+      "top_gap": 0.07341377491367122,
+      "exclusion_reasons": [
+        "excl:short_field_pressure↑",
+        "excl:mid_eval_band_open↑"
+      ],
+      "exclusion_primary": "excl:short_field_pressure↑",
+      "roi_band": "LOSS",
+      "winner_model_rank": 4.0
+    },
+    {
+      "race_id": "2026-05-02-京都-11",
+      "near_world": "midupper_world",
+      "near_worlds": [
+        "midupper_world"
+      ],
+      "race_roi": -1.0,
+      "pnl": -100.0,
+      "stake": 100.0,
+      "purchase_hit": false,
+      "coverage": false,
+      "odds_top1": 2.2,
+      "field_size": 12.0,
+      "top_gap": 0.014587296578517206,
+      "exclusion_reasons": [
+        "excl:mid_eval_band_open↑"
+      ],
+      "exclusion_primary": "excl:mid_eval_band_open↑",
+      "roi_band": "LOSS",
+      "winner_model_rank": 2.0
+    },
+    {
+      "race_id": "2026-05-02-新潟-11",
+      "near_world": "core_world",
+      "near_worlds": [
+        "core_world",
+        "midupper_world"
+      ],
+      "race_roi": 3.2,
+      "pnl": 320.0,
+      "stake": 100.0,
+      "purchase_hit": true,
+      "coverage": true,
+      "odds_top1": 4.2,
+      "field_size": 15.0,
+      "top_gap": 0.062459684363486326,
+      "exclusion_reasons": [
+        "excl:chaos↑",
+        "excl:short_field_pressure↑"
+      ],
+      "exclusion_primary": "excl:chaos↑",
+      "roi_band": "WIN_HIGH",
+      "winner_model_rank": 1.0
+    },
+    {
+      "race_id": "2026-05-02-京都-10",
+      "near_world": "core_world",
+      "near_worlds": [
+        "core_world"
+      ],
+      "race_roi": -1.0,
+      "pnl": -100.0,
+      "stake": 100.0,
+      "purchase_hit": false,
+      "coverage": false,
+      "odds_top1": 3.2,
+      "field_size": 12.0,
+      "top_gap": 0.05832031696222212,
+      "exclusion_reasons": [
+        "excl:short_field_pressure↑",
+        "excl:mid_eval_band_open↑"
+      ],
+      "exclusion_primary": "excl:short_field_pressure↑",
+      "roi_band": "LOSS",
+      "winner_model_rank": 8.0
+    },
+    {
+      "race_id": "2026-05-02-東京-10",
+      "near_world": "core_world",
+      "near_worlds": [
+        "core_world"
+      ],
+      "race_roi": -1.0,
+      "pnl": -100.0,
+      "stake": 100.0,
+      "purchase_hit": false,
+      "coverage": false,
+      "odds_top1": 6.5,
+      "field_size": 11.0,
+      "top_gap": 0.031059497181611218,
+      "exclusion_reasons": [
+        "excl:short_field_pressure↑",
+        "excl:mid_eval_band_open↑"
+      ],
+      "exclusion_primary": "excl:short_field_pressure↑",
+      "roi_band": "LOSS",
+      "winner_model_rank": 5.0
+    },
+    {
+      "race_id": "2026-06-28-福島-11",
+      "near_world": "core_world",
+      "near_worlds": [
+        "core_world"
+      ],
+      "race_roi": -1.0,
+      "pnl": -100.0,
+      "stake": 100.0,
+      "purchase_hit": false,
+      "coverage": false,
+      "odds_top1": 7.8,
+      "field_size": 16.0,
+      "top_gap": 0.04796060111314203,
+      "exclusion_reasons": [
+        "excl:chaos↑",
+        "excl:short_field_pressure↑",
+        "excl:late∧sustained"
+      ],
+      "exclusion_primary": "excl:chaos↑",
+      "roi_band": "LOSS",
+      "winner_model_rank": 4.0
+    },
+    {
+      "race_id": "2026-06-28-小倉-11",
+      "near_world": "core_world",
+      "near_worlds": [
+        "core_world"
+      ],
+      "race_roi": -1.0,
+      "pnl": -100.0,
+      "stake": 100.0,
+      "purchase_hit": false,
+      "coverage": false,
+      "odds_top1": 1.8,
+      "field_size": 8.0,
+      "top_gap": 0.12843434127389852,
+      "exclusion_reasons": [
+        "excl:short_field_pressure↑",
+        "excl:mid_eval_band_open↑"
+      ],
+      "exclusion_primary": "excl:short_field_pressure↑",
+      "roi_band": "LOSS",
+      "winner_model_rank": 7.0
+    },
+    {
+      "race_id": "2026-06-28-福島-10",
+      "near_world": "core_world",
+      "near_worlds": [
+        "core_world"
+      ],
+      "race_roi": 0.7,
+      "pnl": 70.0,
+      "stake": 100.0,
+      "purchase_hit": true,
+      "coverage": true,
+      "odds_top1": 1.7,
+      "field_size": 11.0,
+      "top_gap": 0.06093970680361882,
+      "exclusion_reasons": [
+        "excl:short_field_pressure↑",
+        "excl:mid_eval_band_open↑"
+      ],
+      "exclusion_primary": "excl:short_field_pressure↑",
+      "roi_band": "WIN_LOW",
+      "winner_model_rank": 1.0
+    }
+  ]
+}

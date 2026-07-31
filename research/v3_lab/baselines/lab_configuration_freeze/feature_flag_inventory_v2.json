@@ -1,0 +1,59 @@
+{
+  "inventory_id": "v3-feature-flag-inventory/config-freeze",
+  "flags": [
+    {
+      "flag": "F_V3_REPRESENTATION",
+      "default": false,
+      "stack": "OFF",
+      "role": "baseline_stage"
+    },
+    {
+      "flag": "F_V3_ADMISSION",
+      "default": false,
+      "stack": "OFF",
+      "role": "p3_policy_not_in_stack"
+    },
+    {
+      "flag": "F_V3_SELECTION",
+      "default": false,
+      "stack": "OFF",
+      "role": "baseline_stage"
+    },
+    {
+      "flag": "F_V3_A03_POOL_ADMIT_ENABLED",
+      "default": false,
+      "stack": "ON",
+      "role": "adopted_admission_a03"
+    },
+    {
+      "flag": "F_V3_RANK_D1_ENABLED",
+      "default": false,
+      "stack": "ON",
+      "role": "adopted_evaluation_a01"
+    },
+    {
+      "flag": "F_V3_RANK_D2_ENABLED",
+      "default": false,
+      "stack": "OFF",
+      "role": "secondary_candidate_a02"
+    },
+    {
+      "flag": "F_V3_PURCHASE_ENABLED",
+      "default": false,
+      "stack": "OFF",
+      "role": "baseline_stage"
+    },
+    {
+      "flag": "F_V3_EVALUATION_ENABLED",
+      "default": false,
+      "stack": "OFF",
+      "role": "legacy_alias"
+    },
+    {
+      "flag": "F_V3_LAB_ENABLED",
+      "default": false,
+      "stack": "OFF",
+      "role": "legacy_reserved"
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "hard_checks": {
+    "H1_worsened_winner_rank1_0": true,
+    "H2_delta_hit_gt_0": true,
+    "H3_churn_hit_0": true,
+    "H4_window_sufficient": true,
+    "H5_input_match": true,
+    "H6_no_a03_co": true,
+    "H7_production_a05_default_off": true,
+    "H8_control_path_healthy": true,
+    "H9_shadow_error_rate": true,
+    "purchase_not_executed": true
+  },
+  "soft_checks": {
+    "S1_improved_ge_1": true,
+    "S2_promote_rate_band": true,
+    "S3_roi_shadow_ge_control": true
+  },
+  "hard_pass": true,
+  "decision": "PASS",
+  "note": "S0 Dry-run on real labeled_test 285R via Shadow Runtime; H4 satisfied by labeled_n>=285 (calendar multi-day window not required)"
+}

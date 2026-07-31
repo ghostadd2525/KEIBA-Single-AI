@@ -1,0 +1,378 @@
+{
+  "schema_version": "expect-challenge-compare/1.1",
+  "design_policy": "v891_ai_shared_user_personal_since_join",
+  "feature_flags": {
+    "v9_benchmark_layer": false
+  },
+  "month": "2026-07",
+  "ai": {
+    "schema_version": "expect-challenge-compare/1.1",
+    "month": "2026-07",
+    "scope": "ai_shared_benchmark_monthly",
+    "shared": true,
+    "resets_monthly": true,
+    "summary": {
+      "purchase_amount": 74900,
+      "payout_amount": 20520,
+      "profit": -54380,
+      "recovery_rate": 27,
+      "hit_rate": 12,
+      "race_count": 51,
+      "hit_count": 6,
+      "weeks": [
+        {
+          "week": 1,
+          "profit": 0,
+          "races": 0,
+          "hits": 0,
+          "purchase": 0,
+          "payout": 0
+        },
+        {
+          "week": 2,
+          "profit": 0,
+          "races": 0,
+          "hits": 0,
+          "purchase": 0,
+          "payout": 0
+        },
+        {
+          "week": 3,
+          "profit": 0,
+          "races": 0,
+          "hits": 0,
+          "purchase": 0,
+          "payout": 0
+        },
+        {
+          "week": 4,
+          "profit": -54380,
+          "races": 51,
+          "hits": 6,
+          "purchase": 74900,
+          "payout": 20520
+        },
+        {
+          "week": 5,
+          "profit": 0,
+          "races": 0,
+          "hits": 0,
+          "purchase": 0,
+          "payout": 0
+        }
+      ]
+    },
+    "weeks": [
+      {
+        "week": 1,
+        "profit": 0,
+        "races": 0,
+        "hits": 0,
+        "purchase": 0,
+        "payout": 0
+      },
+      {
+        "week": 2,
+        "profit": 0,
+        "races": 0,
+        "hits": 0,
+        "purchase": 0,
+        "payout": 0
+      },
+      {
+        "week": 3,
+        "profit": 0,
+        "races": 0,
+        "hits": 0,
+        "purchase": 0,
+        "payout": 0
+      },
+      {
+        "week": 4,
+        "profit": -54380,
+        "races": 51,
+        "hits": 6,
+        "purchase": 74900,
+        "payout": 20520
+      },
+      {
+        "week": 5,
+        "profit": 0,
+        "races": 0,
+        "hits": 0,
+        "purchase": 0,
+        "payout": 0
+      }
+    ],
+    "races": "[omitted 51]",
+    "book": {
+      "bet_types": "[array len=4]",
+      "unit_stake": 100,
+      "label": null
+    }
+  },
+  "user": {
+    "schema_version": "expect-challenge-compare/1.1",
+    "month": "2026-07",
+    "user_id": "runtime-audit",
+    "joined_at": null,
+    "eligible_from": null,
+    "scope": "user_personal_ledger_since_join",
+    "shared": false,
+    "resets_monthly": false,
+    "summary": {
+      "purchase_amount": 0,
+      "payout_amount": 0,
+      "profit": 0,
+      "recovery_rate": null,
+      "hit_rate": null,
+      "race_count": 0,
+      "hit_count": 0,
+      "weeks": [
+        {
+          "week": 1,
+          "profit": 0,
+          "races": 0,
+          "hits": 0,
+          "purchase": 0,
+          "payout": 0
+        },
+        {
+          "week": 2,
+          "profit": 0,
+          "races": 0,
+          "hits": 0,
+          "purchase": 0,
+          "payout": 0
+        },
+        {
+          "week": 3,
+          "profit": 0,
+          "races": 0,
+          "hits": 0,
+          "purchase": 0,
+          "payout": 0
+        },
+        {
+          "week": 4,
+          "profit": 0,
+          "races": 0,
+          "hits": 0,
+          "purchase": 0,
+          "payout": 0
+        },
+        {
+          "week": 5,
+          "profit": 0,
+          "races": 0,
+          "hits": 0,
+          "purchase": 0,
+          "payout": 0
+        }
+      ]
+    },
+    "weeks": [
+      {
+        "week": 1,
+        "profit": 0,
+        "races": 0,
+        "hits": 0,
+        "purchase": 0,
+        "payout": 0
+      },
+      {
+        "week": 2,
+        "profit": 0,
+        "races": 0,
+        "hits": 0,
+        "purchase": 0,
+        "payout": 0
+      },
+      {
+        "week": 3,
+        "profit": 0,
+        "races": 0,
+        "hits": 0,
+        "purchase": 0,
+        "payout": 0
+      },
+      {
+        "week": 4,
+        "profit": 0,
+        "races": 0,
+        "hits": 0,
+        "purchase": 0,
+        "payout": 0
+      },
+      {
+        "week": 5,
+        "profit": 0,
+        "races": 0,
+        "hits": 0,
+        "purchase": 0,
+        "payout": 0
+      }
+    ],
+    "races": "[omitted 0]"
+  },
+  "ai_summary": {
+    "purchase_amount": 74900,
+    "payout_amount": 20520,
+    "profit": -54380,
+    "recovery_rate": 27,
+    "hit_rate": 12,
+    "race_count": 51,
+    "hit_count": 6,
+    "weeks": [
+      {
+        "week": 1,
+        "profit": 0,
+        "races": 0,
+        "hits": 0,
+        "purchase": 0,
+        "payout": 0
+      },
+      {
+        "week": 2,
+        "profit": 0,
+        "races": 0,
+        "hits": 0,
+        "purchase": 0,
+        "payout": 0
+      },
+      {
+        "week": 3,
+        "profit": 0,
+        "races": 0,
+        "hits": 0,
+        "purchase": 0,
+        "payout": 0
+      },
+      {
+        "week": 4,
+        "profit": -54380,
+        "races": 51,
+        "hits": 6,
+        "purchase": 74900,
+        "payout": 20520
+      },
+      {
+        "week": 5,
+        "profit": 0,
+        "races": 0,
+        "hits": 0,
+        "purchase": 0,
+        "payout": 0
+      }
+    ]
+  },
+  "user_summary": {
+    "purchase_amount": 0,
+    "payout_amount": 0,
+    "profit": 0,
+    "recovery_rate": null,
+    "hit_rate": null,
+    "race_count": 0,
+    "hit_count": 0,
+    "weeks": [
+      {
+        "week": 1,
+        "profit": 0,
+        "races": 0,
+        "hits": 0,
+        "purchase": 0,
+        "payout": 0
+      },
+      {
+        "week": 2,
+        "profit": 0,
+        "races": 0,
+        "hits": 0,
+        "purchase": 0,
+        "payout": 0
+      },
+      {
+        "week": 3,
+        "profit": 0,
+        "races": 0,
+        "hits": 0,
+        "purchase": 0,
+        "payout": 0
+      },
+      {
+        "week": 4,
+        "profit": 0,
+        "races": 0,
+        "hits": 0,
+        "purchase": 0,
+        "payout": 0
+      },
+      {
+        "week": 5,
+        "profit": 0,
+        "races": 0,
+        "hits": 0,
+        "purchase": 0,
+        "payout": 0
+      }
+    ]
+  },
+  "ai_weeks": "[array len=5]",
+  "user_weeks": "[array len=5]",
+  "weeks_compare": "[array len=5]",
+  "ai_races": "[omitted 51]",
+  "user_races": "[omitted 0]",
+  "comparison": {
+    "ai_profit": -54380,
+    "benchmark_profit": -54380,
+    "user_profit": 0,
+    "profit_diff": 54380,
+    "status": "achieved",
+    "challenge_message": "今月のAIチャレンジ達成！",
+    "kaoba_message": "すごい！\n今月は私より成績がいいね！",
+    "home_kaoba_message": "今月は私を超えたね！",
+    "ai_scope": "ai_shared_benchmark_monthly",
+    "user_scope": "user_personal_ledger_since_join",
+    "user_eligible_from": null,
+    "source": "ai_legacy_book"
+  },
+  "progress": {
+    "cumulative_points": 0,
+    "cumulative_profit": 0,
+    "level": 1,
+    "points_to_next_level": 100,
+    "unlocks": {
+      "race_predict": true,
+      "strategy": true,
+      "user_results": true,
+      "ai_stats_detail": false,
+      "win5_intro": false,
+      "win5_history": false,
+      "win5_predict": false
+    },
+    "unlock_thresholds": {
+      "race_predict": 1,
+      "strategy": 1,
+      "user_results": 1,
+      "ai_stats_detail": 10,
+      "win5_intro": 20,
+      "win5_history": 50,
+      "win5_predict": 100
+    }
+  },
+  "ai_book": {
+    "bet_types": "[array len=4]",
+    "unit_stake": 100,
+    "label": null
+  },
+  "benchmark_strategy": {
+    "current_strategy": "◎単勝1点",
+    "version": "9.0",
+    "since": "2026-07",
+    "last_updated": "2026-07-27",
+    "bet_types": "[array len=1]",
+    "unit_stake": 100,
+    "feature_flag": "V9_BENCHMARK_LAYER",
+    "enabled": false
+  }
+}

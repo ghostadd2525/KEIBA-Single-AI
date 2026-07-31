@@ -1,0 +1,187 @@
+{
+  "improved_races": [
+    {
+      "race_id": "a03-285-247",
+      "miss_layer": "Boundary",
+      "winner_rank": 3,
+      "control_pick": "H246-1",
+      "treatment_pick": "H246-3"
+    },
+    {
+      "race_id": "a03-285-248",
+      "miss_layer": "Boundary",
+      "winner_rank": 3,
+      "control_pick": "H247-1",
+      "treatment_pick": "H247-3"
+    },
+    {
+      "race_id": "a03-285-249",
+      "miss_layer": "Boundary",
+      "winner_rank": 3,
+      "control_pick": "H248-1",
+      "treatment_pick": "H248-3"
+    },
+    {
+      "race_id": "a03-285-250",
+      "miss_layer": "Boundary",
+      "winner_rank": 3,
+      "control_pick": "H249-1",
+      "treatment_pick": "H249-3"
+    },
+    {
+      "race_id": "a03-285-251",
+      "miss_layer": "Boundary",
+      "winner_rank": 3,
+      "control_pick": "H250-1",
+      "treatment_pick": "H250-3"
+    },
+    {
+      "race_id": "a03-285-252",
+      "miss_layer": "Boundary",
+      "winner_rank": 3,
+      "control_pick": "H251-1",
+      "treatment_pick": "H251-3"
+    },
+    {
+      "race_id": "a03-285-253",
+      "miss_layer": "Boundary",
+      "winner_rank": 3,
+      "control_pick": "H252-1",
+      "treatment_pick": "H252-3"
+    },
+    {
+      "race_id": "a03-285-254",
+      "miss_layer": "Boundary",
+      "winner_rank": 3,
+      "control_pick": "H253-1",
+      "treatment_pick": "H253-3"
+    },
+    {
+      "race_id": "a03-285-255",
+      "miss_layer": "Boundary",
+      "winner_rank": 3,
+      "control_pick": "H254-1",
+      "treatment_pick": "H254-3"
+    },
+    {
+      "race_id": "a03-285-256",
+      "miss_layer": "Boundary",
+      "winner_rank": 3,
+      "control_pick": "H255-1",
+      "treatment_pick": "H255-3"
+    },
+    {
+      "race_id": "a03-285-257",
+      "miss_layer": "Boundary",
+      "winner_rank": 3,
+      "control_pick": "H256-1",
+      "treatment_pick": "H256-3"
+    },
+    {
+      "race_id": "a03-285-258",
+      "miss_layer": "Boundary",
+      "winner_rank": 3,
+      "control_pick": "H257-1",
+      "treatment_pick": "H257-3"
+    },
+    {
+      "race_id": "a03-285-259",
+      "miss_layer": "Boundary",
+      "winner_rank": 3,
+      "control_pick": "H258-1",
+      "treatment_pick": "H258-3"
+    },
+    {
+      "race_id": "a03-285-260",
+      "miss_layer": "Boundary",
+      "winner_rank": 3,
+      "control_pick": "H259-1",
+      "treatment_pick": "H259-3"
+    },
+    {
+      "race_id": "a03-285-261",
+      "miss_layer": "Reorder",
+      "winner_rank": 2,
+      "control_pick": "H260-1",
+      "treatment_pick": "H260-2"
+    },
+    {
+      "race_id": "a03-285-262",
+      "miss_layer": "Reorder",
+      "winner_rank": 2,
+      "control_pick": "H261-1",
+      "treatment_pick": "H261-2"
+    },
+    {
+      "race_id": "a03-285-263",
+      "miss_layer": "Reorder",
+      "winner_rank": 2,
+      "control_pick": "H262-1",
+      "treatment_pick": "H262-2"
+    },
+    {
+      "race_id": "a03-285-264",
+      "miss_layer": "Reorder",
+      "winner_rank": 2,
+      "control_pick": "H263-1",
+      "treatment_pick": "H263-2"
+    },
+    {
+      "race_id": "a03-285-265",
+      "miss_layer": "Reorder",
+      "winner_rank": 2,
+      "control_pick": "H264-1",
+      "treatment_pick": "H264-2"
+    },
+    {
+      "race_id": "a03-285-266",
+      "miss_layer": "Reorder",
+      "winner_rank": 2,
+      "control_pick": "H265-1",
+      "treatment_pick": "H265-2"
+    },
+    {
+      "race_id": "a03-285-267",
+      "miss_layer": "Reorder",
+      "winner_rank": 2,
+      "control_pick": "H266-1",
+      "treatment_pick": "H266-2"
+    },
+    {
+      "race_id": "a03-285-268",
+      "miss_layer": "Reorder",
+      "winner_rank": 2,
+      "control_pick": "H267-1",
+      "treatment_pick": "H267-2"
+    },
+    {
+      "race_id": "a03-285-269",
+      "miss_layer": "Reorder",
+      "winner_rank": 2,
+      "control_pick": "H268-1",
+      "treatment_pick": "H268-2"
+    },
+    {
+      "race_id": "a03-285-270",
+      "miss_layer": "Reorder",
+      "winner_rank": 2,
+      "control_pick": "H269-1",
+      "treatment_pick": "H269-2"
+    }
+  ],
+  "worsened_races": [],
+  "improved_layers": {
+    "Boundary": 14,
+    "Reorder": 10
+  },
+  "delta": {
+    "hit": 24,
+    "purchase": 24,
+    "rank710": 0,
+    "rank46": 0,
+    "other": -24,
+    "roi": 0.3326
+  },
+  "churn_hit": 0,
+  "decision": "PASS"
+}

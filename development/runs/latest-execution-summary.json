@@ -1,8 +1,8 @@
 {
   "schema_version": "expect-ai-core-execution/1.0",
   "phase": "AI-Core Operational Cycle",
-  "run_id": "2026-07-21T13-18-09Z",
-  "generated_at": "2026-07-21T13:18:10.004Z",
+  "run_id": "2026-07-22T07-39-10Z",
+  "generated_at": "2026-07-22T07:39:10.111Z",
   "verdict": "Improvement Pipeline — Pending Human Review",
   "evidence_count": 1,
   "evidence_by_type": {
@@ -21,7 +21,7 @@
       "verdict": null,
       "status": "pending_human_review",
       "pass": false,
-      "result_id": "CAN-IMP-20260719-miss-001-2026-07-21T13-18-09Z",
+      "result_id": "CAN-IMP-20260719-miss-001-2026-07-22T07-39-10Z",
       "result_path": "development/canary/results/IMP-20260719-miss-001/latest.json"
     }
   ],

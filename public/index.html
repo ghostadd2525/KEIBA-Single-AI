@@ -7,15 +7,15 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Noto+Sans+JP:wght@400;500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="assets/styles.css?v=22" />
-  <link rel="stylesheet" href="assets/screens.css?v=36" />
+  <link rel="stylesheet" href="assets/styles.css?v=25" />
+  <link rel="stylesheet" href="assets/screens.css?v=53" />
   <link rel="stylesheet" href="assets/ux.css?v=21" />
-  <link rel="stylesheet" href="assets/vqa.css?v=3" />
+  <link rel="stylesheet" href="assets/vqa.css?v=52" />
   <link rel="stylesheet" href="assets/v11.css?v=13" />
   <link rel="stylesheet" href="assets/onboarding.css" />
   <script src="assets/api/calendar-weekend.js?v=14"></script>
-  <script src="assets/auto-maintenance.js?v=11.5"></script>
-  <script src="assets/auth.js?v=4"></script>
+  <script src="assets/auto-maintenance.js?v=12.4"></script>
+  <script src="assets/auth.js?v=6"></script>
   <script>
     if (ExpectAuth.requireAuth() && window.ExpectAutoMaintenance) {
       ExpectAutoMaintenance.run();
@@ -71,10 +71,12 @@
         </div>
       </section>
 
+      <div id="homeChallengeSlot" class="home-challenge-slot" hidden aria-live="polite"></div>
+
       <!-- AIカード3枚（文言・構成はモック準拠） -->
       <section class="ai-cards" id="aiCards">
         <a class="ai-card ai-card--predict" href="races.html">
-          <img class="ai-card-bg" src="assets/images/ai-card-bg-honmei.png?v=2" alt="" />
+          <img class="ai-card-bg" src="assets/images/ai-card-bg-honmei.webp?v=3" alt="" loading="lazy" decoding="async" />
           <div class="ai-card-shade"></div>
           <div class="ai-card-row">
             <span class="ai-ico" aria-hidden="true"><img src="assets/icons/icon-brain.svg" alt="" /></span>
@@ -84,9 +86,9 @@
               <p class="ai-desc">AIが導き出す勝利の答え</p>
             </div>
             <div class="ai-side">
-              <div class="ai-gauge" style="--p:0" aria-label="AI信頼度 読込中">
+              <div class="ai-gauge ai-gauge--stars" style="--p:0" aria-label="AI自信度 読込中">
                 <span class="ai-gauge-num">—</span>
-                <span class="ai-gauge-label">AI信頼度</span>
+                <span class="ai-gauge-label">自信度</span>
               </div>
               <span class="ai-pill">本命を見る ›</span>
             </div>
@@ -94,7 +96,7 @@
         </a>
 
         <a class="ai-card ai-card--odds" href="odds.html">
-          <img class="ai-card-bg" src="assets/images/ai-card-bg-odds.png?v=2" alt="" />
+          <img class="ai-card-bg" src="assets/images/ai-card-bg-odds.webp?v=3" alt="" loading="lazy" decoding="async" />
           <div class="ai-card-shade"></div>
           <div class="ai-card-row">
             <span class="ai-ico" aria-hidden="true"><img src="assets/icons/icon-bars.svg" alt="" /></span>
@@ -109,7 +111,7 @@
         </a>
 
         <a class="ai-card ai-card--fortune" href="fortune.html">
-          <img class="ai-card-bg" src="assets/images/ai-card-bg-pedigree.png?v=2" alt="" />
+          <img class="ai-card-bg" src="assets/images/ai-card-bg-pedigree.webp?v=3" alt="" loading="lazy" decoding="async" />
           <div class="ai-card-shade"></div>
           <div class="ai-card-row">
             <span class="ai-ico" aria-hidden="true"><img src="assets/icons/icon-dna.svg" alt="" /></span>
@@ -196,7 +198,7 @@
       <div class="mascot-bubble" id="mascotBubble" role="status" aria-live="polite"></div>
       <button type="button" class="mascot-figure" id="mascotTalkBtn" aria-label="KA0BAに話しかける">
         <div class="mascot-live2d-slot" id="ka0baLive2dSlot" aria-hidden="true"></div>
-        <img data-mascot-fallback src="assets/images/mascot-ka0ba.png?v=10" alt="" height="140" draggable="false" />
+        <img data-mascot-fallback src="assets/images/mascot-ka0ba.webp?v=10" alt="" height="140" draggable="false" />
       </button>
     </aside>
 
@@ -222,12 +224,12 @@
         </svg>
         分析
       </a>
-      <a href="saved.html" data-nav="balance">
+      <a href="saved.html" data-nav="challenge">
         <svg class="nav-ico" viewBox="0 0 24 24" fill="none" aria-hidden="true">
           <path d="M4 19h16M7 16V9M12 16v-7M17 16V6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
           <path d="M6 6.5h3.5M14.5 4h3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
         </svg>
-        今月成績
+        チャレンジ
       </a>
       <a href="mypage.html" data-nav="mypage">
         <svg class="nav-ico" viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -242,18 +244,20 @@
   <script src="assets/api/mock-gate.js"></script>
   <script src="assets/api/auth.js"></script>
   <script src="assets/api/contract-guard.js"></script>
-  <script src="assets/api/supply.js?v=4"></script>
-  <script src="assets/api/stats.js"></script>
-  <script src="assets/api/prediction.js?v=11"></script>
+  <script src="assets/api/http-cache.js?v=1"></script>
+  <script src="assets/api/supply.js?v=5"></script>
+  <script src="assets/api/stats.js?v=2"></script>
+  <script src="assets/api/prediction.js?v=16"></script>
   <script src="assets/api/race-id-meta.js?v=5"></script>
-  <script src="assets/api/prediction-bind.js?v=33"></script>
-  <script src="assets/api/user.js?v=4"></script>
-  <script src="assets/api/real-data-bind.js?v=16"></script>
-  <script src="assets/ux.js?v=21"></script>
+  <script src="assets/api/prediction-bind.js?v=52"></script>
+  <script src="assets/api/user.js?v=7"></script>
+  <script src="assets/api/challenge-dashboard.js?v=2"></script>
+  <script src="assets/api/real-data-bind.js?v=17"></script>
+  <script src="assets/ux.js?v=22"></script>
   <script src="assets/api/ui-features.js?v=11"></script>
   <script src="assets/v11.js?v=12"></script>
   <script src="assets/app.js"></script>
-  <script src="assets/favorites.js?v=5"></script>
+  <script src="assets/favorites.js?v=8"></script>
   <script src="assets/shell.js"></script>
   <script src="assets/api/user-prefs.js?v=1"></script>
   <script src="assets/reminders.js?v=2"></script>
@@ -285,6 +289,9 @@
   <script>
     document.addEventListener("DOMContentLoaded", function () {
       SingleDemo.initIndex();
+      if (window.ExpectChallengeDashboard) {
+        ExpectChallengeDashboard.bindHomeChallenge(document);
+      }
 
       var chrome = document.getElementById("homeChrome");
       var main = document.getElementById("main");
@@ -438,9 +445,15 @@
             : { ok: bundles || [], rejected: [] };
           if (filtered.ok.length) {
             if (window.ExpectContractGuard) ExpectContractGuard.clearErrorCard(cardsMount);
-            ExpectPredictionBind.applyHomeHonmeiCard(
-              ExpectPredictionBind.pickTopByConfidence(filtered.ok)
-            );
+            var pick =
+              ExpectPredictionBind.pickHomeTodaysHonmei
+                ? ExpectPredictionBind.pickHomeTodaysHonmei(filtered.ok)
+                : ExpectPredictionBind.pickTopByConfidence(filtered.ok);
+            if (pick) {
+              ExpectPredictionBind.applyHomeHonmeiCard(pick);
+            } else if (ExpectPredictionBind.applyHomeHonmeiEmpty) {
+              ExpectPredictionBind.applyHomeHonmeiEmpty();
+            }
             try {
               var snap = ExpectPredictionBind.readHomeHonmeiCache(listDate);
               if (snap) {
@@ -451,10 +464,12 @@
                 });
                 if (venues.length) {
                   snap.venues = venues;
-                  localStorage.setItem("expect_home_honmei_v1", JSON.stringify(snap));
+                  localStorage.setItem("expect_home_honmei_v2", JSON.stringify(snap));
                 }
               }
             } catch (e) { /* ignore */ }
+          } else if (ExpectPredictionBind.applyHomeHonmeiEmpty) {
+            ExpectPredictionBind.applyHomeHonmeiEmpty();
           }
         }
 

@@ -1,0 +1,16 @@
+{
+  "schema_version": "expect-v881-approval-publish/1.0",
+  "published_at": "2026-07-27T00:18:38.126Z",
+  "source": "development/approvals",
+  "pending_count": 0,
+  "approved_count": 0,
+  "rejected_count": 0,
+  "timeout_count": 0,
+  "pending": 0,
+  "approved": 0,
+  "rejected": 0,
+  "timeout": 0,
+  "items": [],
+  "production_auto_apply": false,
+  "boundary": "Accept → RC → Deploy Note → Human Deploy"
+}

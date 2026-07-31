@@ -7,14 +7,14 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Noto+Sans+JP:wght@400;500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="assets/styles.css?v=18" />
-  <link rel="stylesheet" href="assets/screens.css?v=40" />
+  <link rel="stylesheet" href="assets/styles.css?v=23" />
+  <link rel="stylesheet" href="assets/screens.css?v=52" />
   <link rel="stylesheet" href="assets/ux.css?v=20" />
   <link rel="stylesheet" href="assets/vqa.css" />
   <link rel="stylesheet" href="assets/v11.css?v=11" />
   <script src="assets/api/calendar-weekend.js?v=15"></script>
-  <script src="assets/auto-maintenance.js?v=11.3"></script>
-  <script src="assets/auth.js?v=4"></script>
+  <script src="assets/auto-maintenance.js?v=12.4"></script>
+  <script src="assets/auth.js?v=6"></script>
   <script>
     if (ExpectAuth.requireAuth() && window.ExpectAutoMaintenance) {
       ExpectAutoMaintenance.run();
@@ -87,7 +87,7 @@
 
       <section class="pace-card" id="paceCard">
         <h3>最終着順予想（左→右　着順）</h3>
-        <p>レースデータを読み込んでいます…</p>
+        <p class="pace-card-hint muted">左端が1着予想、右へ行くほど着順が下がります。並んだ馬番は、AIが考えるゴールまでの着順です。</p>
         <div class="pace-track" id="paceTrack" aria-label="最終着順予想（左が1着）"></div>
       </section>
 
@@ -107,9 +107,14 @@
         <div id="raceConfidenceDetail"><p class="muted">読み込み中…</p></div>
       </section>
 
-      <section class="chart-card" id="reasonsSection">
-        <h3>◎を選んだ理由</h3>
-        <div id="reasonsSectionBody"><p class="muted">読み込み中…</p></div>
+      <section class="chart-card explain-ux-section" id="explainUxSection">
+        <h3 class="explain-ux-section-title">AI解説</h3>
+        <div id="explainUxBody"><p class="muted">読み込み中…</p></div>
+      </section>
+
+      <section class="chart-card" id="reasonsSection" hidden aria-hidden="true">
+        <h3>◎を選んだ理由（旧）</h3>
+        <div id="reasonsSectionBody"></div>
       </section>
 
       <div class="fab-bet">
@@ -136,7 +141,7 @@
     <aside class="mascot-ka0ba" id="mascotKa0ba" data-mascot-mode="png">
       <div class="mascot-bubble" id="mascotBubble" role="status" aria-live="polite"></div>
       <button type="button" class="mascot-figure" id="mascotTalkBtn" aria-label="KA0BAに話しかける">
-        <img data-mascot-fallback src="assets/images/mascot-ka0ba.png?v=10" alt="" height="140" draggable="false" />
+        <img data-mascot-fallback src="assets/images/mascot-ka0ba.webp?v=10" alt="" height="140" draggable="false" />
       </button>
     </aside>
 
@@ -146,8 +151,11 @@
   <script src="assets/api/race-id-meta.js?v=2"></script>
   <script src="assets/api/auth.js"></script>
   <script src="assets/api/contract-guard.js"></script>
-  <script src="assets/api/prediction.js?v=10"></script>
-  <script src="assets/api/prediction-bind.js?v=36"></script>
+  <script src="assets/api/http-cache.js?v=1"></script>
+  <script src="assets/api/prediction.js?v=16"></script>
+  <script src="assets/api/explain-ux.js?v=3"></script>
+  <script src="assets/api/prediction-bind.js?v=52"></script>
+  <script src="assets/api/single-detail.js?v=2"></script>
   <script src="assets/api/race-prefetch.js?v=1"></script>
   <script src="assets/api/race-board.js?v=10"></script>
   <script src="assets/api/race-detail-tabs.js?v=16"></script>
@@ -156,7 +164,7 @@
   <script src="assets/ux.js?v=20"></script>
   <script src="assets/api/conversation.js?v=6"></script>
   <script src="assets/api/conversation-ui.js?v=7"></script>
-  <script src="assets/api/ui-features.js?v=11"></script>
+  <script src="assets/api/ui-features.js?v=12"></script>
   <script src="assets/v11.js?v=11"></script>
   <script src="assets/favorites.js?v=4"></script>
   <script src="assets/shell.js"></script>
@@ -374,9 +382,15 @@
 
     function applyPredictionResult(result, opts) {
       opts = opts || {};
-      var bundle = result && result.bundle ? result.bundle : result;
-      var envelopeMeta = (result && result.meta) || {};
-      if (!bundle) return false;
+      if (!result) return false;
+      // UI4: 202 PENDING は PredictionBundle ではない（envelope を validate しない）
+      if (result.pending) return false;
+      var hasBundleKey =
+        typeof result === "object" &&
+        Object.prototype.hasOwnProperty.call(result, "bundle");
+      var bundle = hasBundleKey ? result.bundle : result;
+      var envelopeMeta = hasBundleKey ? result.meta || {} : {};
+      if (!bundle || typeof bundle !== "object") return false;
       var pbCheck =
         bundle.__contract ||
         (window.ExpectContractGuard && ExpectContractGuard.validatePredictionBundle(bundle)) ||
@@ -457,11 +471,7 @@
             if (!chartsFromPb) {
               ExpectAnalysisBind.applyRaceDetailAnalysis(analysis);
             } else if (analysis.narrative) {
-              var narrativeEl = document.querySelector(".pace-card p");
-              if (narrativeEl) {
-                var current = (narrativeEl.textContent || "").trim();
-                if (!current) narrativeEl.textContent = analysis.narrative;
-              }
+              // UI10: pace-card には着順ヒントのみ。analysis.narrative は流し込まない
             }
             if (!narrative && analysis.narrative) narrative = analysis.narrative;
           }
@@ -484,6 +494,173 @@
     }
 
     if (window.ExpectApi && ExpectApi.Prediction && window.ExpectPredictionBind) {
+      // UI4 — Pending State（HTTP 202）: Bundle validate せず再取得
+      var PENDING_RETRY_MS = 8000;
+      var PENDING_MAX_ATTEMPTS = 15;
+      var pendingTimer = null;
+      var pendingAttempt = 0;
+
+      function clearPendingRetry() {
+        if (pendingTimer) {
+          clearTimeout(pendingTimer);
+          pendingTimer = null;
+        }
+      }
+
+      function clearPendingStateCard() {
+        if (!detailMount) return;
+        detailMount.querySelectorAll('[data-pending-state="1"]').forEach(function (n) {
+          n.remove();
+        });
+      }
+
+      function showPendingState() {
+        if (window.ExpectContractGuard) ExpectContractGuard.clearErrorCard(detailMount);
+        clearPendingStateCard();
+        showAiSkeleton();
+        if (window.ExpectUx && detailMount) {
+          var card = ExpectUx.stateCard({
+            kind: "warn",
+            title: "AI予想を生成しています",
+            message: "準備ができ次第、自動で更新します。",
+          });
+          card.setAttribute("data-pending-state", "1");
+          detailMount.insertBefore(card, detailMount.firstChild);
+        }
+        ExpectFavorites.bindButtons();
+      }
+
+      function showPendingExhausted() {
+        clearPendingRetry();
+        clearPendingStateCard();
+        if (window.ExpectContractGuard) ExpectContractGuard.clearErrorCard(detailMount);
+        markReady();
+        if (window.ExpectUx && detailMount) {
+          detailMount.insertBefore(
+            ExpectUx.stateCard({
+              kind: "warn",
+              title: "AI予想の準備に時間がかかっています",
+              message: "しばらくしてから再読み込みしてください。",
+              retryLabel: "再読み込み",
+              onRetry: function () {
+                pendingAttempt = 0;
+                fetchDetailOnce();
+              },
+            }),
+            detailMount.firstChild
+          );
+        }
+        ExpectFavorites.bindButtons();
+      }
+
+      function schedulePendingRetry() {
+        if (pendingAttempt >= PENDING_MAX_ATTEMPTS) {
+          showPendingExhausted();
+          return;
+        }
+        pendingAttempt += 1;
+        clearPendingRetry();
+        pendingTimer = setTimeout(function () {
+          fetchDetailOnce();
+        }, PENDING_RETRY_MS);
+      }
+
+      function loadDetailBundle() {
+        // I3: Flag OFF → Prediction / Flag ON → Single detail（一覧・Race List Cache 非接触）
+        if (
+          window.ExpectApi &&
+          ExpectApi.SingleDetail &&
+          typeof ExpectApi.SingleDetail.getWithMeta === "function"
+        ) {
+          return ExpectApi.SingleDetail.getWithMeta(id);
+        }
+        return ExpectApi.Prediction.getWithMeta(id);
+      }
+
+      function onDetailError(err) {
+        if (aiApplied) {
+          ExpectFavorites.bindButtons();
+          return;
+        }
+        clearPendingRetry();
+        clearPendingStateCard();
+        markReady();
+        var status = err && err.status;
+        var code = err && err.code;
+        var msg = String((err && err.message) || "");
+        var isUnauthorized =
+          status === 401 ||
+          code === "UNAUTHORIZED" ||
+          /unauthorized|invalid token/i.test(msg);
+        if (window.ExpectUx && detailMount) {
+          if (isUnauthorized) {
+            detailMount.insertBefore(
+              ExpectUx.stateCard({
+                kind: "error",
+                title: "ログインの有効期限切れ",
+                message:
+                  "ログイン情報の有効期限が切れました。もう一度ログインしてください。",
+                retryLabel: "再ログイン",
+                onRetry: function () {
+                  try {
+                    localStorage.removeItem("expect_access_token_v1");
+                  } catch (e) { /* ignore */ }
+                  location.href = "login.html";
+                },
+              }),
+              detailMount.firstChild
+            );
+          } else {
+            detailMount.insertBefore(
+              ExpectUx.stateCard({
+                kind: "error",
+                title: "レース詳細を更新できません",
+                message:
+                  "PredictionBundle の取得に失敗またはタイムアウトしました。",
+                onRetry: function () {
+                  location.reload();
+                },
+              }),
+              detailMount.firstChild
+            );
+          }
+        } else if (window.ExpectContractGuard) {
+          ExpectContractGuard.showErrorCard(detailMount, {
+            title: isUnauthorized
+              ? "ログインの有効期限切れ"
+              : "レース詳細を更新できません",
+            message: isUnauthorized
+              ? "ログイン情報の有効期限が切れました。もう一度ログインしてください。"
+              : "PredictionBundle の取得に失敗しました。",
+          });
+        }
+        ExpectFavorites.bindButtons();
+      }
+
+      function onDetailResult(result) {
+        // UI4 Pending State
+        if (result && result.pending) {
+          showPendingState();
+          schedulePendingRetry();
+          return;
+        }
+        clearPendingRetry();
+        clearPendingStateCard();
+        pendingAttempt = 0;
+        var applied = applyPredictionResult(result, { fromCache: false });
+        if (!applied) {
+          ExpectFavorites.bindButtons();
+          return;
+        }
+        return loadAnalysis(applied.bundle, applied.chartsFromPb);
+      }
+
+      function fetchDetailOnce() {
+        return withTimeout(loadDetailBundle(), 14000, "prediction timeout")
+          .then(onDetailResult)
+          .catch(onDetailError);
+      }
+
       var startDetail = function () {
         showAiSkeleton();
 
@@ -502,74 +679,13 @@
           }
         }
 
-        // Prediction は裏で再取得（キャッシュがあっても最新化）。Board/History は tabs.warm が並列実行済
-        withTimeout(ExpectApi.Prediction.getWithMeta(id), 14000, "prediction timeout")
-          .then(function (result) {
-            var applied = applyPredictionResult(result, { fromCache: false });
-            if (!applied) {
-              ExpectFavorites.bindButtons();
-              return;
-            }
-            return loadAnalysis(applied.bundle, applied.chartsFromPb);
-          })
-          .catch(function (err) {
-            if (aiApplied) {
-              ExpectFavorites.bindButtons();
-              return;
-            }
-            markReady();
-            var status = err && err.status;
-            var code = err && err.code;
-            var msg = String((err && err.message) || "");
-            var isUnauthorized =
-              status === 401 ||
-              code === "UNAUTHORIZED" ||
-              /unauthorized|invalid token/i.test(msg);
-            if (window.ExpectUx && detailMount) {
-              if (isUnauthorized) {
-                detailMount.insertBefore(
-                  ExpectUx.stateCard({
-                    kind: "error",
-                    title: "ログインの有効期限切れ",
-                    message:
-                      "ログイン情報の有効期限が切れました。もう一度ログインしてください。",
-                    retryLabel: "再ログイン",
-                    onRetry: function () {
-                      try {
-                        localStorage.removeItem("expect_access_token_v1");
-                      } catch (e) { /* ignore */ }
-                      location.href = "login.html";
-                    },
-                  }),
-                  detailMount.firstChild
-                );
-              } else {
-                detailMount.insertBefore(
-                  ExpectUx.stateCard({
-                    kind: "error",
-                    title: "レース詳細を更新できません",
-                    message:
-                      "PredictionBundle の取得に失敗またはタイムアウトしました。",
-                    onRetry: function () {
-                      location.reload();
-                    },
-                  }),
-                  detailMount.firstChild
-                );
-              }
-            } else if (window.ExpectContractGuard) {
-              ExpectContractGuard.showErrorCard(detailMount, {
-                title: isUnauthorized
-                  ? "ログインの有効期限切れ"
-                  : "レース詳細を更新できません",
-                message: isUnauthorized
-                  ? "ログイン情報の有効期限が切れました。もう一度ログインしてください。"
-                  : "PredictionBundle の取得に失敗しました。",
-              });
-            }
-            ExpectFavorites.bindButtons();
-          });
+        fetchDetailOnce();
       };
+
+      try {
+        window.addEventListener("pagehide", clearPendingRetry);
+      } catch (e) { /* ignore */ }
+
       startDetail();
     } else {
       markReady();

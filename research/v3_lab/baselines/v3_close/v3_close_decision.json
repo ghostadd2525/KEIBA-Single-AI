@@ -1,0 +1,16 @@
+{
+  "close_id": "v3-close/1.0",
+  "date": "2026-07-24",
+  "status": "CLOSED",
+  "prr": "HOLD",
+  "go_nogo": "NO-GO",
+  "production_integration": "Design Complete",
+  "official_production_candidate": "A-05",
+  "deprecated": ["A-03"],
+  "reports": {
+    "final": "docs/releases/v3-final-report.md",
+    "close": "docs/releases/v3-close-report.md",
+    "architecture": "docs/releases/v3-architecture-summary.md",
+    "v4_handover": "docs/releases/v4-handover-from-v3.md"
+  }
+}

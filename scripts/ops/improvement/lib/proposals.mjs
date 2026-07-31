@@ -281,8 +281,19 @@ export function createProposals(analyses, index, devRoot, runId, options = {}) {
         analyzer_confidence:
           typeof analysis.confidence === "number" ? analysis.confidence : null,
         analyzer_root_cause: analysis.root_cause ?? null,
+        analyzer_root_cause_family: analysis.root_cause_family ?? null,
+        analyzer_root_cause_families: analysis.root_cause_families ?? null,
+        analyzer_root_cause_scores: analysis.root_cause_scores ?? null,
+        target_root_cause_family: analysis.root_cause_family ?? null,
+        improvement_priority: analysis.improvement_priority ?? null,
+        research_priority:
+          Array.isArray(analysis.improvement_priority) &&
+          analysis.improvement_priority[0]
+            ? analysis.improvement_priority[0].priority
+            : null,
         analyzer_status: analysis.status ?? null,
         review_priority_hint: priorityHint(analysis.confidence),
+        analyzer_version: analysis.analyzer_version || null,
       },
       code_artifacts: [],
       run_id: runId,

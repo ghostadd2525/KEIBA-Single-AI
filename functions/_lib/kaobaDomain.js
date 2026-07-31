@@ -3,9 +3,9 @@
  *
  * Phase6: ルートからの差し替え入口は adapters/kaobaAdapter.js。
  * generateKaobaReply は rule プロバイダ実装として残す。
- * LLM/Python へは KaobaAdapter.chat（または generateViaPython）を使う。
  *
- * Phase 3 Explainability: explain_pick → explain 2.1 注入（v2_explain）
+ * Explain UX: 質問意図ごとに異なる観点で返答（explainConversationComposer）。
+ * 内部用語（ステージ等）はユーザー向け reply に出さない。
  */
 
 import { normalizePredictionBundle, scorePercent, toAnalysisDomain } from "./domain.js";
@@ -16,6 +16,12 @@ import {
   isExplainPickIntent,
   projectExplainForPick,
 } from "./explainPick.js";
+import {
+  classifyExplainChatIntent,
+  composeExplainConversationReply,
+  EXPLAIN_HELP_REPLY,
+  CONSULT_ROOM_CHAT_REDIRECT,
+} from "./explainConversationComposer.js";
 
 export const KAOBA_SCHEMA = "expect-kaoba/1.0";
 
@@ -97,80 +103,85 @@ export function generateKaobaReply(input) {
 
   let reply;
   let emotion = "fun";
-  let suggestions = ["展開を詳しく", "本命を教えて", "買い目を整理"];
+  const isConsult = hasStrategy || mode === "review";
+  let suggestions = isConsult
+    ? ["この買い方どう？", "見送るべき？", "初心者なら？"]
+    : ["なぜ本命？", "不安材料は？", "穴馬は？"];
   let explainPick = null;
+  let explainIntent = null;
 
-  // Phase 3: v2_explain ON + explain_pick + explain.reason → 構造化理由を注入
-  if (canExplainPick(input)) {
-    const projection = projectExplainForPick(bundle.explain);
-    const formatted = formatExplainPickReply(projection, { place });
-    if (formatted) {
-      reply = formatted;
-      emotion = "joy";
-      suggestions = ["信頼度の根拠は？", "買い目を提案して", "展開を詳しく"];
-      explainPick = projection;
+  // Explain / 相談: 意図別にレース固有の解釈文を返す
+  const chatIntent = classifyExplainChatIntent(message, {
+    isExplainMode: isExplain || isConsult,
+  });
+  const wantsExplainChat =
+    isExplain ||
+    isConsult ||
+    (chatIntent !== "general" && chatIntent !== "unknown" && chatIntent !== "casual") ||
+    isExplainPickIntent(message) ||
+    /本命|◎|対抗|穴|買い方|不安|理由|なぜ|少額|雨|オッズ|見送|初心/.test(message);
+
+  if ((isExplain || isConsult) && (chatIntent === "unknown" || chatIntent === "casual")) {
+    const composed = composeExplainConversationReply({
+      message,
+      bundle,
+      isExplainMode: isExplain,
+      isConsultMode: isConsult && !isExplain,
+    });
+    reply = (composed && composed.reply) || (isConsult ? CONSULT_ROOM_CHAT_REDIRECT : EXPLAIN_HELP_REPLY);
+    suggestions = (composed && composed.suggestions) || suggestions;
+    emotion = "fun";
+    explainIntent = chatIntent;
+  } else if ((bundle || isExplain || isConsult) && wantsExplainChat) {
+    const composed = composeExplainConversationReply({
+      message,
+      bundle,
+      isExplainMode: isExplain,
+      isConsultMode: isConsult && !isExplain,
+    });
+    if (composed && composed.reply) {
+      reply = composed.reply;
+      suggestions = composed.suggestions || suggestions;
+      emotion =
+        composed.intent === "risks" ||
+        composed.intent === "unknown" ||
+        composed.intent === "casual"
+          ? "fun"
+          : "joy";
+      explainIntent = composed.intent;
+      if (
+        !isConsult &&
+        composed.intent === "why_honmei" &&
+        bundle &&
+        canExplainPick({ ...input, message: "なぜ本命？" })
+      ) {
+        explainPick = projectExplainForPick(bundle.explain);
+      }
     }
   }
 
-  // 質問意図を先に見る（strategy コンテキストでも同じ定型を連発しない）
-  if (!reply && /リスク|危険|不安|弱点/.test(message)) {
-    reply =
-      "リスクは展開の崩れと相手関係の入れ替わりだよ。" +
-      "ペースが想定と違うと軸の位置取りが苦しくなるから、点数は抑えめが安心だよ。";
-    if (h) {
-      reply += `\n軸の ${h.horse_number}番は維持しつつ、保険を厚くするのがおすすめ。`;
-    }
-    emotion = "fun";
-    suggestions = ["保険の入れ方は？", "点数を抑える案", "展開を詳しく"];
-  } else if (
-    !reply &&
-    (isExplain || isExplainPickIntent(message) || /理由|なぜ|根拠|どうして/.test(message))
-  ) {
-    if (h) {
-      reply = `本命は ${h.horse_number}番${h.horse_name ? " " + h.horse_name : ""}`.trim();
-      if (conf != null) reply += `（AI信頼度 ${conf}%）`;
-      reply +=
-        "。選んだ理由は総合評価の分離とコース／展開適性のバランスだよ。" +
-        "対抗との差は「再現性の安定」側で見ているよ。";
-      if (narrative) reply += `\n${narrative}`;
-    } else if (/対抗|差|比較/.test(message)) {
-      reply =
-        "対抗との差は、本命の方が総合スコアと位置取り想定で一貫している点だよ。" +
-        "対抗は展開が噛み合えば伸びる余地があるから、差し込みリスクは残るよ。";
-    } else {
-      reply =
-        "本命（◎）の理由は、総合評価の分離と適性のバランスだよ。" +
-        "印や順位は変えず、レース画面の説明もあわせて見てね。";
-      if (narrative) reply += `\n${narrative}`;
-    }
+  if (!reply && isConsult) {
+    reply = CONSULT_ROOM_CHAT_REDIRECT;
     emotion = "joy";
-    suggestions = ["対抗との差は？", "信頼度の根拠は？", "展開を詳しく"];
-  } else if (!reply && hasStrategy) {
-    reply =
-      "戦略内容は受け取ったよ。軸は明確でいいね。" +
-      "点数は抑えめにして、主軸→保険→一発の順で入れると破綻しにくいよ。" +
-      "改善するなら相手頭数を減らして、保険側の再現性を確認しよう。";
-    emotion = "joy";
-    suggestions = ["リスクはどこ？", "点数を抑える案", "軸を見直す"];
-    if (h) {
-      reply += `\n軸候補の目安は ${h.horse_number}番 ${h.horse_name || ""}`.trim() + "。";
-    }
-  } else if (!reply && /買い目|戦略/.test(message)) {
-    reply = "買い目は軸1頭流しで点数を抑えるのがおすすめ！相手は最大3頭までにしてみよう。";
-    emotion = "joy";
-    if (h && conf != null) {
-      reply += `\nいまの本命目線は ${h.horse_number}番（AI信頼度 ${conf}%）だよ。`;
-    }
-    suggestions = ["展開予想を教えて", "リスクを教えて", "血統について教えて"];
+    suggestions = ["この買い方どう？", "見送るべき？", "初心者なら？"];
   } else if (!reply && /展開|ペース/.test(message)) {
     if (narrative) {
       reply = narrative;
+    } else if (bundle) {
+      const composed = composeExplainConversationReply({
+        message: "なぜ本命？",
+        bundle,
+        isExplainMode: true,
+      });
+      reply =
+        (composed && composed.reply) ||
+        "展開はレース画面のAI解説もあわせて見てね。ペース想定が外れると位置取りが変わりやすいよ。";
     } else {
-      reply = "データ上は差し馬の評価が伸びてるよ。中盤でペースが上がる想定だね。";
+      reply = "展開はデータが揃ってから具体的に話すね。ペース想定が外れると位置取りが変わりやすいよ。";
     }
     emotion = "fun";
     if (charts) reply += `\n評価の目安: ${charts}`;
-    suggestions = ["本命を教えて", "買い目を提案して", "血統について教えて"];
+    suggestions = ["なぜ本命？", "不安材料は？", "穴馬は？"];
   } else if (!reply && /血統/.test(message)) {
     const ped = ((analysis && analysis.charts) || []).find((c) => c.key === "pedigree");
     if (ped) {
@@ -179,31 +190,36 @@ export function generateKaobaReply(input) {
       reply = "血統面ではコース適性が高い産駒が目立ってるよ。";
     }
     emotion = "fun";
-    suggestions = ["展開予想を教えて", "本命を教えて", "買い目を提案して"];
+    suggestions = ["なぜ本命？", "穴馬は？", "不安材料は？"];
   } else if (!reply && /本命|信頼度|おすすめ/.test(message) && h) {
     reply = `本命は ${h.horse_number}番 ${h.horse_name || ""}`.trim();
-    if (conf != null) reply += `（AI信頼度 ${conf}%）`;
-    reply += "。根拠は上位確率の分離と総合評価だよ。";
+    if (conf != null) reply += "（自信の目安あり）";
+    reply += "。くわしい理由は「なぜ本命？」で聞いてね。";
     if (place) reply = `${place} についてね。` + reply;
     emotion = "joy";
-    suggestions = ["なぜ◎なの？", "展開を詳しく", "買い目を提案して"];
+    suggestions = ["なぜ本命？", "2番との差は？", "不安材料は？"];
   } else if (!reply && (bundle || analysis)) {
-    if (h) {
+    if (isConsult) {
+      reply = CONSULT_ROOM_CHAT_REDIRECT;
+      suggestions = ["この買い方どう？", "見送るべき？", "初心者なら？"];
+    } else if (h) {
       reply = `本命目線は ${h.horse_number}番${h.horse_name ? " " + h.horse_name : ""}`;
-      if (conf != null) reply += `（信頼度 ${conf}%）`;
-      reply += "。理由やリスク、展開のどれを深掘りする？";
-      if (narrative) reply += `\n${narrative}`;
+      reply += "。理由・差・不安・穴のどれを深掘りする？";
+      suggestions = ["なぜ本命？", "不安材料は？", "穴馬は？"];
     } else {
       reply =
-        "内容は受け取ったよ。「理由」「リスク」「展開」のどれかで聞いてくれると答えやすいよ。";
+        "気になるところを教えてね。「なぜ本命？」「不安材料は？」「穴馬は？」だと答えやすいよ。";
+      suggestions = ["なぜ本命？", "不安材料は？", "穴馬は？"];
     }
     emotion = "joy";
-    suggestions = ["本命の理由は？", "リスクはどこ？", "展開を詳しく"];
   } else if (!reply) {
-    reply =
-      "レースを指定してもらえると、予想データに沿ってもっと具体的に答えられるよ。";
+    reply = isConsult
+      ? CONSULT_ROOM_CHAT_REDIRECT
+      : "レースを指定してもらえると、予想データに沿ってもっと具体的に答えられるよ。";
     emotion = "joy";
-    suggestions = ["展開予想を教えて", "血統について教えて", "買い目を提案して"];
+    suggestions = isConsult
+      ? ["この買い方どう？", "見送るべき？", "初心者なら？"]
+      : ["なぜ本命？", "不安材料は？", "穴馬は？"];
   }
 
   const out = {
@@ -218,10 +234,11 @@ export function generateKaobaReply(input) {
       expression: emotion === "joy" ? "smile" : "neutral",
     },
   };
-  // additive（契約 additionalProperties: true）— Flag OFF 経路では付与しない
   if (explainPick) {
     out.explain_pick = explainPick;
     out.intent = "explain_pick";
+  } else if (explainIntent) {
+    out.intent = explainIntent;
   }
   return out;
 }
@@ -259,4 +276,6 @@ export {
   isExplainPickIntent,
   projectExplainForPick,
   formatExplainPickReply,
+  classifyExplainChatIntent,
+  composeExplainConversationReply,
 };

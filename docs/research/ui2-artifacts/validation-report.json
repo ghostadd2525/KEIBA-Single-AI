@@ -1,0 +1,160 @@
+{
+  "schema": "ui2-shadow-validation/1.0",
+  "generated_at": "2026-07-29T00:31:51Z",
+  "phase": "UI2",
+  "ui_changed": false,
+  "verdict": "PASS",
+  "prediction_bundle_compat_pct": 100.0,
+  "checks": [
+    {
+      "id": "bundle_schema",
+      "pass": true,
+      "detail": "single-prediction-bundle/2.0"
+    },
+    {
+      "id": "marks",
+      "pass": true,
+      "detail": "marks=['ana', 'chuuken', 'honmei', 'taikou']"
+    },
+    {
+      "id": "picks_taikou_ana_chuuken",
+      "pass": true,
+      "detail": "keys=['honmei', 'taikou', 'ana', 'chuuken']"
+    },
+    {
+      "id": "ai_confidence",
+      "pass": true,
+      "detail": "band=medium score=0.72"
+    },
+    {
+      "id": "evaluation_breakdown",
+      "pass": true,
+      "detail": "ability_keys=['history_score', 'distance_score', 'style_distance_fit_weight', 'front_rate', 'pace_collapse_risk_v2']"
+    },
+    {
+      "id": "no_internal_terms",
+      "pass": true,
+      "detail": "leaks=[]"
+    },
+    {
+      "id": "race_switching_ids_distinct",
+      "pass": true,
+      "detail": "2026-07-19-hanshin-11 vs 2026-07-19-kyoto-10"
+    },
+    {
+      "id": "loading_pending_shape",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "id": "error_shape",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "id": "back_link_present",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "id": "race_html_exists",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "id": "races_html_exists",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "id": "spa_list_url_state",
+      "pass": true,
+      "detail": "races list uses history.pushState/popstate (existing)"
+    },
+    {
+      "id": "scroll_preserve_contract",
+      "pass": true,
+      "detail": "Detail↔list is multipage; browser scroll restore on back is existing behavior"
+    },
+    {
+      "id": "visual_diff_slots",
+      "pass": true,
+      "detail": "diff_keys=[]"
+    }
+  ],
+  "visual_diff": {
+    "identical_slots": true,
+    "diff_keys": [],
+    "baseline": {
+      "race_id": "2026-07-19-hanshin-11",
+      "marks": [
+        {
+          "mark": "honmei",
+          "horse_number": 5,
+          "model_rank": 1
+        },
+        {
+          "mark": "taikou",
+          "horse_number": 3,
+          "model_rank": 2
+        },
+        {
+          "mark": "ana",
+          "horse_number": 8,
+          "model_rank": 3
+        },
+        {
+          "mark": "chuuken",
+          "horse_number": 2,
+          "model_rank": 4
+        }
+      ],
+      "confidence_band": "medium",
+      "confidence_score": 0.72,
+      "ability_score_keys": [
+        "distance_score",
+        "front_rate",
+        "history_score",
+        "pace_collapse_risk_v2",
+        "style_distance_fit_weight"
+      ],
+      "world_null": true
+    },
+    "candidate": {
+      "race_id": "2026-07-19-hanshin-11",
+      "marks": [
+        {
+          "mark": "honmei",
+          "horse_number": 5,
+          "model_rank": 1
+        },
+        {
+          "mark": "taikou",
+          "horse_number": 3,
+          "model_rank": 2
+        },
+        {
+          "mark": "ana",
+          "horse_number": 8,
+          "model_rank": 3
+        },
+        {
+          "mark": "chuuken",
+          "horse_number": 2,
+          "model_rank": 4
+        }
+      ],
+      "confidence_band": "medium",
+      "confidence_score": 0.72,
+      "ability_score_keys": [
+        "distance_score",
+        "front_rate",
+        "history_score",
+        "pace_collapse_risk_v2",
+        "style_distance_fit_weight"
+      ],
+      "world_null": true
+    }
+  },
+  "artifacts": {}
+}

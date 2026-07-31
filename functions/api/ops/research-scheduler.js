@@ -1,8 +1,9 @@
 /**
- * GET /api/ops/research-scheduler — V8.6 Research Scheduler card (admin)
+ * GET /api/ops/research-scheduler — V8.6 / V8.8.1
  *
- * Reads public/ops-data/research-scheduler.json (written by v8:runner).
- * PE / CE / AI untouched. Version8.5.1: fail-closed admin.
+ * Reads public/ops-data/research-scheduler.json (Publish Layer / v8:runner).
+ * Fixed schedule labels are forbidden — missing values stay null (UI → No Data).
+ * PE / CE / AI untouched.
  */
 import { requireAccessSession } from "../../_lib/auth.js";
 import { isAdminUser } from "../../_lib/adminAuth.js";
@@ -31,6 +32,14 @@ async function loadSnapshot(context) {
   return null;
 }
 
+function present(v) {
+  if (v == null) return null;
+  if (typeof v === "string" && !String(v).trim()) return null;
+  const s = String(v).trim();
+  if (/^(—|-|毎日\s*03:00\s*JST|03:00 JST daily)$/i.test(s)) return null;
+  return v;
+}
+
 export async function onRequestGet(context) {
   const session = requireAccessSession(context);
   if (session instanceof Response) return session;
@@ -53,21 +62,28 @@ export async function onRequestGet(context) {
 
   const snap = await loadSnapshot(context);
   const display = (snap && snap.display) || {};
+  const empty = !snap || Object.keys(snap).length === 0;
+
   const data = {
-    schema_version: "expect-v86-research-scheduler-api/1.0",
-    available: !!snap,
-    current_phase: display.current_phase || (snap && snap.current_phase) || "—",
-    next_run: display.next_run || (snap && snap.next_run_jst) || "毎日 03:00 JST",
-    last_run: display.last_run || (snap && snap.last_run_at) || null,
-    duration_ms: display.duration_ms ?? null,
-    success: display.success ?? (snap && snap.success_count) ?? 0,
-    failure: display.failure ?? (snap && snap.failure_count) ?? 0,
-    skip_reason: display.skip_reason || (snap && snap.last_skip_reason) || null,
-    recovery: display.recovery ?? (snap && snap.recovery_active) ?? false,
-    week_id: (snap && snap.week_id) || null,
-    baseline_lock: (snap && snap.baseline_lock) || "Version8.5",
+    schema_version: "expect-v881-research-scheduler-api/1.0",
+    available: !empty && snap.available !== false,
+    current_phase: present(display.current_phase) || present(snap && snap.current_phase),
+    next_run: present(display.next_run) || present(snap && snap.next_run) || present(snap && snap.next_run_jst),
+    last_run: present(display.last_run) || present(snap && snap.last_run_at),
+    duration_ms: display.duration_ms ?? snap?.duration_ms ?? null,
+    success: display.success ?? snap?.success_count ?? null,
+    failure: display.failure ?? snap?.failure_count ?? null,
+    skip_reason: present(display.skip_reason) || present(snap && snap.last_skip_reason),
+    recovery:
+      typeof display.recovery === "boolean"
+        ? display.recovery
+        : typeof (snap && snap.recovery_active) === "boolean"
+          ? snap.recovery_active
+          : null,
+    week_id: present(snap && snap.week_id),
+    baseline_lock: present(snap && snap.baseline_lock),
     production_auto_apply: false,
-    deploy_policy: (snap && snap.deploy_policy) || "deploy_note_only",
+    deploy_policy: null,
     health: (snap && snap.health) || null,
     phases: (snap && snap.phases) || null,
     last_tick: (snap && snap.last_tick) || null,

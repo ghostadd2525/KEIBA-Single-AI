@@ -29,48 +29,61 @@
       var q = qs.toString();
       if (q) url += "?" + q;
     }
-    var headers = { Accept: "application/json" };
-    var token = getToken();
-    if (token) headers.Authorization = "Bearer " + token;
 
-    var controller = typeof AbortController !== "undefined" ? new AbortController() : null;
-    var timer = null;
-    if (controller) {
-      timer = setTimeout(function () {
-        try {
-          controller.abort();
-        } catch (e) { /* ignore */ }
-      }, timeoutMs);
+    function doFetch() {
+      var headers = { Accept: "application/json" };
+      var token = getToken();
+      if (token) headers.Authorization = "Bearer " + token;
+
+      var controller = typeof AbortController !== "undefined" ? new AbortController() : null;
+      var timer = null;
+      if (controller) {
+        timer = setTimeout(function () {
+          try {
+            controller.abort();
+          } catch (e) { /* ignore */ }
+        }, timeoutMs);
+      }
+
+      return fetch(url, {
+        method: "GET",
+        headers: headers,
+        signal: controller ? controller.signal : undefined,
+      })
+        .then(function (res) {
+          return res.text().then(function (text) {
+            var payload = null;
+            try {
+              payload = text ? JSON.parse(text) : null;
+            } catch (e) {
+              payload = null;
+            }
+            if (!res.ok || (payload && payload.ok === false)) {
+              throw new Error(
+                (payload && payload.error && payload.error.message) ||
+                  "Supply API error " + res.status
+              );
+            }
+            return {
+              data: payload && payload.data != null ? payload.data : payload,
+              meta: (payload && payload.meta) || {},
+            };
+          });
+        })
+        .finally(function () {
+          if (timer) clearTimeout(timer);
+        });
     }
 
-    return fetch(url, {
-      method: "GET",
-      headers: headers,
-      signal: controller ? controller.signal : undefined,
-    })
-      .then(function (res) {
-        return res.text().then(function (text) {
-          var payload = null;
-          try {
-            payload = text ? JSON.parse(text) : null;
-          } catch (e) {
-            payload = null;
-          }
-          if (!res.ok || (payload && payload.ok === false)) {
-            throw new Error(
-              (payload && payload.error && payload.error.message) ||
-                "Supply API error " + res.status
-            );
-          }
-          return {
-            data: payload && payload.data != null ? payload.data : payload,
-            meta: (payload && payload.meta) || {},
-          };
-        });
-      })
-      .finally(function () {
-        if (timer) clearTimeout(timer);
-      });
+    if (global.ExpectHttpCache && opts.cache !== false) {
+      var ttl =
+        typeof opts.cacheTtlMs === "number"
+          ? opts.cacheTtlMs
+          : ExpectHttpCache.TTL.coverage;
+      var key = ExpectHttpCache.buildKey(path, query);
+      return ExpectHttpCache.cachedGet(key, ttl, doFetch);
+    }
+    return doFetch();
   }
 
   function coverage(opts) {

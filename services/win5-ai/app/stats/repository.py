@@ -175,7 +175,68 @@ class StatsRepository:
         finally:
             conn.close()
 
+    @staticmethod
+    def _pct(num: float, den: int) -> float:
+        if den <= 0:
+            return 0.0
+        return round(num / den, 4)
+
+    def _aggregate_rows(self, rows: list[dict[str, Any]], *, dimension: str, key: str) -> dict[str, Any]:
+        n = len(rows)
+        h1 = sum(1 for g in rows if g.get("hit_at_1"))
+        h3 = sum(1 for g in rows if g.get("hit_at_3"))
+        h5 = sum(1 for g in rows if g.get("hit_at_5"))
+        dates = sorted({str(g.get("race_date") or "") for g in rows if g.get("race_date")})
+        updated = None
+        for g in rows:
+            ts = g.get("evaluated_at")
+            if ts and (updated is None or str(ts) > str(updated)):
+                updated = ts
+        return {
+            "dimension": dimension,
+            "dimension_key": key,
+            "period_start": dates[0] if dates else None,
+            "period_end": dates[-1] if dates else None,
+            "races_evaluated": n,
+            "prediction_count": n,
+            "hit_at_1": self._pct(h1, n),
+            "hit_at_3": self._pct(h3, n),
+            "hit_at_5": self._pct(h5, n),
+            "roi": None,
+            "updated_at": updated,
+        }
+
+    def get_overall_aggregate(self, run_id: int) -> dict[str, Any] | None:
+        """V8.9.1: live all-time aggregate from race_evaluations (run_id unused for source)."""
+        _ = run_id
+        rows = self.list_evaluations_with_results()
+        if not rows:
+            return None
+        return self._aggregate_rows(rows, dimension="overall", key="all")
+
+    def get_aggregates(self, run_id: int, dimension: str) -> list[dict[str, Any]]:
+        """V8.9.1: live dimension buckets from race_evaluations."""
+        _ = run_id
+        rows = self.list_evaluations_with_results()
+        if not rows:
+            return []
+        dim = str(dimension or "month")
+        buckets: dict[str, list[dict[str, Any]]] = {}
+        for row in rows:
+            if dim == "month":
+                key = str(row.get("race_date") or "")[:7] or "unknown"
+            elif dim == "venue":
+                key = str(row.get("venue") or "unknown")
+            else:
+                key = str(row.get(dim) or "unknown")
+            buckets.setdefault(key, []).append(row)
+        return [
+            self._aggregate_rows(group, dimension=dim, key=key)
+            for key, group in sorted(buckets.items())
+        ]
+
     def list_evaluations_with_results(self) -> list[dict[str, Any]]:
+        """All-time AI evaluations joined with results. One row per race_id (latest)."""
         conn = app_db.connect()
         try:
             rows = conn.execute(
@@ -184,16 +245,24 @@ class StatsRepository:
                   e.hit_at_1, e.hit_at_3, e.hit_at_5, e.race_id, e.race_date, e.venue,
                   COALESCE(r.surface, json_extract(e.meta_json, '$.surface')) AS surface,
                   COALESCE(r.distance, CAST(json_extract(e.meta_json, '$.distance') AS INTEGER)) AS distance,
-                  COALESCE(r.going, json_extract(e.meta_json, '$.going')) AS going
+                  COALESCE(r.going, json_extract(e.meta_json, '$.going')) AS going,
+                  e.evaluated_at, e.id
                 FROM race_evaluations e
                 LEFT JOIN race_results r ON r.race_id = e.race_id
                 ORDER BY e.evaluated_at DESC, e.id DESC
                 """
             ).fetchall()
             out: list[dict[str, Any]] = []
+            seen: set[str] = set()
             for row in rows:
                 item = dict(row)
+                rid = str(item.get("race_id") or "")
+                if not rid or rid in seen:
+                    continue
+                seen.add(rid)
                 item["hit_at_1"] = bool(item.get("hit_at_1"))
+                item["hit_at_3"] = bool(item.get("hit_at_3"))
+                item["hit_at_5"] = bool(item.get("hit_at_5"))
                 out.append(item)
             return out
         finally:

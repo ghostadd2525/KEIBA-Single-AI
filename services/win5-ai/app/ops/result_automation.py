@@ -25,7 +25,7 @@ from .race_context import apply_context_to_result_row, extract_race_context
 from .result_providers import ResultProvider, RaceResultRow, default_provider
 
 _service: "ResultAutomationService | None" = None
-PIPELINE_VERSION = "ops-result-automation/1.0"
+PIPELINE_VERSION = "ops-result-automation/7.0"
 
 
 def _now() -> str:
@@ -61,6 +61,17 @@ def legacy_miss_root() -> Path:
 def miss_evidence_dir() -> Path:
     """Backward-compatible alias."""
     return legacy_miss_root()
+
+
+def archive_root() -> Path:
+    """Day archive manifests (predictions/results are kept in DB — not deleted)."""
+    raw = os.environ.get("EXPECT_RACE_ARCHIVE_DIR")
+    if raw:
+        return Path(raw)
+    git_path = repo_root().parents[0] / "var" / "race-archives"
+    return git_path if (repo_root().parents[0] / "var").is_dir() else (
+        repo_root() / "var" / "race-archives"
+    )
 
 
 class ResultAutomationService:
@@ -121,9 +132,14 @@ class ResultAutomationService:
                 else:
                     try:
                         sync_rows = self.provider.fetch(race_date)
-                        sync_rows = self._enrich_sync_rows(conn, sync_rows)
-                        self._upsert_results(conn, sync_rows)
-                        conn.commit()
+                        if sync_rows:
+                            sync_rows = self._enrich_sync_rows(conn, sync_rows)
+                            self._upsert_results(conn, sync_rows)
+                            conn.commit()
+                        else:
+                            # Incremental: no newly finalized races — keep existing rows.
+                            sync_rows = self._load_existing_results(conn, race_date)
+                            warnings.append("no_new_finalized_results")
                     except Exception as exc:
                         existing = self._load_existing_results(conn, race_date)
                         if existing:
@@ -208,8 +224,19 @@ class ResultAutomationService:
                     warnings.append("no race_results after sync")
 
                 matched: list[dict[str, Any]] = []
+                already_evaluated = {
+                    str(r["race_id"])
+                    for r in conn.execute(
+                        "SELECT race_id FROM race_evaluations WHERE race_date=?",
+                        (race_date,),
+                    ).fetchall()
+                }
+                skipped_evaluated = 0
                 for row in results:
                     race_id = row["race_id"]
+                    if race_id in already_evaluated:
+                        skipped_evaluated += 1
+                        continue
                     pred = conn.execute(
                         """
                         SELECT id, engine_source, fallback_reason, model_version, bundle_json
@@ -218,6 +245,8 @@ class ResultAutomationService:
                         """,
                         (race_id,),
                     ).fetchone()
+                    if not pred:
+                        pred = self._cache_pi_prediction(conn, race_id)
                     if not pred:
                         queued_events.append(
                             {
@@ -281,6 +310,13 @@ class ResultAutomationService:
                             "pred": pred,
                             "bundle": bundle,
                         }
+                    )
+                if skipped_evaluated:
+                    warnings.append(f"skipped_already_evaluated:{skipped_evaluated}")
+                    self._patch_run_meta(
+                        conn,
+                        run_id,
+                        {"skipped_already_evaluated": skipped_evaluated},
                     )
 
                 # EVALUATING
@@ -405,32 +441,250 @@ class ResultAutomationService:
                 conn.commit()
 
             written = self._export_evidence(conn, run_id, race_date, queued_events)
-            final = sm.COMPLETED
-            if warnings or any(
-                written["counts"].get(k, 0) > 0
-                for k in ("prediction_failed", "feature_missing", "result_sync_failed")
-            ):
-                final = sm.DEGRADED
-            if evaluated == 0 and not evidence_only:
-                final = sm.DEGRADED
-                warnings.append("zero_evaluated")
-
-            self._write_manifests(
+            miss_indexed = int(written["counts"].get("miss", 0))
+            self._record_stage(
+                conn,
                 run_id,
-                race_date,
-                status=final,
-                trigger=trigger_n,
-                parent_run_id=parent_run_id,
+                sm.EVIDENCE_EXPORTING,
+                status="Completed",
+                count=sum(written["counts"].values()),
+                miss_count=miss_indexed,
                 event_counts=written["counts"],
+            )
+            # AI総合実績: race_evaluations が正本（ヒートマップ/信頼度が読み取り）
+            self._record_stage(
+                conn,
+                run_id,
+                sm.EVALUATING,
+                status="Completed",
+                count=evaluated,
                 hits=hits,
                 misses=misses,
-                evaluated=evaluated,
-                warnings=warnings,
             )
-            self._set_status(conn, run_id, sm.EVIDENCE_EXPORTING, final)
-            conn.commit()
+            if not evidence_only:
+                sync_n = len(sync_rows) if sync_rows else len(
+                    self._load_existing_results(conn, race_date)
+                )
+                self._record_stage(
+                    conn,
+                    run_id,
+                    sm.RESULT_SYNCING,
+                    status="Completed",
+                    count=sync_n,
+                )
 
-            return self._result_payload(
+            settlement_meta: dict[str, Any] = {}
+            archive_meta: dict[str, Any] = {}
+
+            if evidence_only:
+                # evidence rebuild only — skip settle/archive (compat)
+                final = sm.COMPLETED
+                if warnings or any(
+                    written["counts"].get(k, 0) > 0
+                    for k in (
+                        "prediction_failed",
+                        "feature_missing",
+                        "result_sync_failed",
+                    )
+                ):
+                    final = sm.DEGRADED
+                self._write_manifests(
+                    run_id,
+                    race_date,
+                    status=final,
+                    trigger=trigger_n,
+                    parent_run_id=parent_run_id,
+                    event_counts=written["counts"],
+                    hits=hits,
+                    misses=misses,
+                    evaluated=evaluated,
+                    warnings=warnings,
+                    settlement=settlement_meta,
+                    archive=archive_meta,
+                )
+                self._set_status(conn, run_id, sm.EVIDENCE_EXPORTING, final)
+                conn.commit()
+            else:
+                # ⑥ USER_SETTLING → ⑦ POINT → ⑧ LEVEL → ⑨ ARCHIVING
+                self._set_status(
+                    conn, run_id, sm.EVIDENCE_EXPORTING, sm.USER_SETTLING
+                )
+                conn.commit()
+                self._record_stage(
+                    conn, run_id, sm.USER_SETTLING, status="Running", count=0
+                )
+
+                try:
+                    from ..user.service import get_service as get_user_service
+
+                    settlement_meta = get_user_service().settle_for_race_date(
+                        race_date,
+                        user_agent="ResultAutomation/7.0",
+                    )
+                except Exception as settle_exc:
+                    warnings.append(f"user_settlement:{settle_exc}")
+                    settlement_meta = {
+                        "error": str(settle_exc),
+                        "settled": 0,
+                        "pending": 0,
+                        "points_awarded_total": 0,
+                        "users_leveled_up": 0,
+                    }
+                    self._record_stage(
+                        conn,
+                        run_id,
+                        sm.USER_SETTLING,
+                        status="Failed",
+                        count=0,
+                        error=str(settle_exc),
+                    )
+                else:
+                    self._record_stage(
+                        conn,
+                        run_id,
+                        sm.USER_SETTLING,
+                        status="Completed",
+                        count=int(settlement_meta.get("settled") or 0),
+                        pending=int(settlement_meta.get("pending") or 0),
+                        candidates=int(settlement_meta.get("candidates") or 0),
+                        purchased_total=int(
+                            settlement_meta.get("purchased_total") or 0
+                        ),
+                    )
+
+                self._set_status(conn, run_id, sm.USER_SETTLING, sm.POINT_UPDATING)
+                conn.commit()
+                points_n = int(settlement_meta.get("points_awarded_total") or 0)
+                self._record_stage(
+                    conn,
+                    run_id,
+                    sm.POINT_UPDATING,
+                    status="Completed"
+                    if "error" not in settlement_meta
+                    else "Failed",
+                    count=points_n,
+                    points_awarded_total=points_n,
+                )
+
+                self._set_status(conn, run_id, sm.POINT_UPDATING, sm.LEVEL_UPDATING)
+                conn.commit()
+                level_n = int(settlement_meta.get("users_leveled_up") or 0)
+                self._record_stage(
+                    conn,
+                    run_id,
+                    sm.LEVEL_UPDATING,
+                    status="Completed"
+                    if "error" not in settlement_meta
+                    else "Failed",
+                    count=level_n,
+                    users_leveled_up=level_n,
+                    users_touched=int(settlement_meta.get("users_touched") or 0),
+                )
+
+                self._set_status(conn, run_id, sm.LEVEL_UPDATING, sm.ARCHIVING)
+                conn.commit()
+                self._record_stage(
+                    conn, run_id, sm.ARCHIVING, status="Running", count=0
+                )
+                try:
+                    archive_meta = self._archive_race_day(
+                        conn,
+                        run_id=run_id,
+                        race_date=race_date,
+                        hits=hits,
+                        misses=misses,
+                        evaluated=evaluated,
+                        miss_evidence_count=miss_indexed,
+                        settlement=settlement_meta,
+                    )
+                    self._record_stage(
+                        conn,
+                        run_id,
+                        sm.ARCHIVING,
+                        status="Completed",
+                        count=int(archive_meta.get("race_count") or 0),
+                        kept=archive_meta.get("kept"),
+                        client_purge_keys=archive_meta.get("client_purge_keys"),
+                    )
+                except Exception as arch_exc:
+                    warnings.append(f"archive:{arch_exc}")
+                    archive_meta = {"error": str(arch_exc)}
+                    self._record_stage(
+                        conn,
+                        run_id,
+                        sm.ARCHIVING,
+                        status="Failed",
+                        count=0,
+                        error=str(arch_exc),
+                    )
+
+                final = sm.COMPLETED
+                if warnings or any(
+                    written["counts"].get(k, 0) > 0
+                    for k in (
+                        "prediction_failed",
+                        "feature_missing",
+                        "result_sync_failed",
+                    )
+                ):
+                    final = sm.DEGRADED
+                if evaluated == 0:
+                    # Incremental poll with nothing new is OK when prior evals exist.
+                    prior = conn.execute(
+                        "SELECT COUNT(*) AS n FROM race_evaluations WHERE race_date=?",
+                        (race_date,),
+                    ).fetchone()
+                    prior_n = int((prior["n"] if prior else 0) or 0)
+                    if prior_n == 0 and not evidence_only:
+                        final = sm.DEGRADED
+                        warnings.append("zero_evaluated")
+                    else:
+                        warnings.append("zero_new_evaluated")
+                if settlement_meta.get("error") or archive_meta.get("error"):
+                    final = sm.DEGRADED
+
+                self._patch_run_meta(
+                    conn,
+                    run_id,
+                    {
+                        "settlement": {
+                            k: settlement_meta.get(k)
+                            for k in (
+                                "candidates",
+                                "settled",
+                                "pending",
+                                "errors",
+                                "points_awarded_total",
+                                "users_touched",
+                                "users_leveled_up",
+                                "purchased_total",
+                                "purchased_settled",
+                                "error",
+                            )
+                            if k in settlement_meta
+                        },
+                        "archive": archive_meta,
+                        "pipeline_version": PIPELINE_VERSION,
+                    },
+                )
+                self._write_manifests(
+                    run_id,
+                    race_date,
+                    status=final,
+                    trigger=trigger_n,
+                    parent_run_id=parent_run_id,
+                    event_counts=written["counts"],
+                    hits=hits,
+                    misses=misses,
+                    evaluated=evaluated,
+                    warnings=warnings,
+                    settlement=settlement_meta,
+                    archive=archive_meta,
+                )
+                self._set_status(conn, run_id, sm.ARCHIVING, final)
+                conn.commit()
+
+            payload = self._result_payload(
                 run_id,
                 race_date,
                 final,
@@ -440,6 +694,25 @@ class ResultAutomationService:
                 event_counts=written["counts"],
                 warnings=warnings,
             )
+            payload["settlement"] = {
+                k: settlement_meta.get(k)
+                for k in (
+                    "candidates",
+                    "settled",
+                    "pending",
+                    "errors",
+                    "points_awarded_total",
+                    "users_touched",
+                    "users_leveled_up",
+                    "purchased_total",
+                    "purchased_settled",
+                    "error",
+                )
+                if settlement_meta and k in settlement_meta
+            }
+            payload["archive"] = archive_meta
+            payload["stages"] = self._load_stages(conn, run_id)
+            return payload
         except Exception as exc:
             if run_id is not None:
                 try:
@@ -601,6 +874,292 @@ class ResultAutomationService:
             (json.dumps(meta, ensure_ascii=False), run_id),
         )
 
+    def _record_stage(
+        self,
+        conn: Any,
+        run_id: int,
+        stage: str,
+        *,
+        status: str,
+        count: int = 0,
+        **extra: Any,
+    ) -> None:
+        row = conn.execute(
+            "SELECT meta_json FROM result_automation_runs WHERE id=?", (run_id,)
+        ).fetchone()
+        meta: dict[str, Any] = {}
+        if row and row["meta_json"]:
+            try:
+                meta = json.loads(row["meta_json"])
+            except json.JSONDecodeError:
+                meta = {}
+        stages = meta.get("stages") if isinstance(meta.get("stages"), dict) else {}
+        entry = {
+            "status": status,
+            "count": count,
+            "updated_at": _now(),
+            "label": sm.STAGE_LABELS.get(stage, stage),
+        }
+        entry.update(extra)
+        stages[stage] = entry
+        meta["stages"] = stages
+        conn.execute(
+            "UPDATE result_automation_runs SET meta_json=? WHERE id=?",
+            (json.dumps(meta, ensure_ascii=False), run_id),
+        )
+        conn.commit()
+
+    def _load_stages(self, conn: Any, run_id: int) -> dict[str, Any]:
+        row = conn.execute(
+            "SELECT meta_json FROM result_automation_runs WHERE id=?", (run_id,)
+        ).fetchone()
+        if not row or not row["meta_json"]:
+            return {}
+        try:
+            meta = json.loads(row["meta_json"])
+        except json.JSONDecodeError:
+            return {}
+        return meta.get("stages") if isinstance(meta.get("stages"), dict) else {}
+
+    def _archive_race_day(
+        self,
+        conn: Any,
+        *,
+        run_id: int,
+        race_date: str,
+        hits: int,
+        misses: int,
+        evaluated: int,
+        miss_evidence_count: int,
+        settlement: dict[str, Any],
+    ) -> dict[str, Any]:
+        """
+        アーカイブ = 削除しない。
+        保持: PredictionBundle / Strategy Snapshot / Board / History /
+              race_results / user_race_results
+        クライアント削除指示のみ発行（一覧カード・IndexedDB・localStorage）。
+        """
+        result_rows = conn.execute(
+            "SELECT race_id FROM race_results WHERE race_date=?",
+            (race_date,),
+        ).fetchall()
+        race_ids = [str(r["race_id"]) for r in result_rows]
+        pred_count = 0
+        for rid in race_ids:
+            prow = conn.execute(
+                "SELECT id FROM predictions WHERE race_id=? LIMIT 1", (rid,)
+            ).fetchone()
+            if prow:
+                pred_count += 1
+        urr = conn.execute(
+            """
+            SELECT COUNT(*) AS n FROM user_race_results
+            WHERE race_date=? AND purchase_registered=1
+            """,
+            (race_date,),
+        ).fetchone()
+        user_purchase_count = int((urr["n"] if urr else 0) or 0)
+        miss_idx = conn.execute(
+            """
+            SELECT COUNT(*) AS n FROM improvement_evidence_index
+            WHERE race_date=? AND event_type='miss' AND run_id=?
+            """,
+            (race_date, run_id),
+        ).fetchone()
+        miss_index_count = int((miss_idx["n"] if miss_idx else 0) or 0)
+
+        client_purge_keys = [
+            "expect_race_list_cache_v4",
+            "expect_race_list_cache_v2",
+            "expect_race_detail_cache_v1",
+            "expect_pb_prefetch_v1",
+            "expect_race_meta_v1",
+        ]
+        doc = {
+            "schema_version": "expect-race-day-archive/7.0",
+            "race_date": race_date,
+            "run_id": run_id,
+            "archived_at": _now(),
+            "pipeline_version": PIPELINE_VERSION,
+            "race_ids": race_ids,
+            "race_count": len(race_ids),
+            "kept": {
+                "predictions": pred_count,
+                "race_results": len(race_ids),
+                "user_race_results": user_purchase_count,
+                "race_evaluations": evaluated,
+                "miss_evidence": miss_evidence_count,
+                "improvement_evidence_index_miss": miss_index_count,
+            },
+            "ai_stats": {"hits": hits, "misses": misses, "evaluated": evaluated},
+            "settlement": {
+                "settled": settlement.get("settled"),
+                "points_awarded_total": settlement.get("points_awarded_total"),
+                "users_leveled_up": settlement.get("users_leveled_up"),
+            },
+            "client_purge": {
+                "action": "purge_list_and_detail_caches",
+                "local_storage_keys": client_purge_keys,
+                "indexeddb": {"db": "expect_keiba_v1", "store": "race_detail"},
+                "race_ids": race_ids,
+                "delete_server_data": False,
+            },
+            "research": {
+                "miss_queued": miss_index_count > 0 or miss_evidence_count > 0,
+                "source": "improvement_evidence_index + Miss JSON",
+            },
+        }
+        dest = archive_root() / f"{race_date}.json"
+        atomic_write_json(dest, doc)
+        return {
+            "path": str(dest),
+            "race_count": len(race_ids),
+            "race_ids": race_ids,
+            "kept": doc["kept"],
+            "client_purge_keys": client_purge_keys,
+            "research_miss_queued": doc["research"]["miss_queued"],
+        }
+
+    def get_pipeline_status(self, race_date: str | None = None) -> dict[str, Any]:
+        """Ops dashboard / client purge 用の最新パイプライン状態."""
+        from .run_recovery import collect_result_automation_health
+
+        health = collect_result_automation_health()
+        app_db.migrate()
+        conn = app_db.connect()
+        try:
+            if race_date:
+                row = conn.execute(
+                    """
+                    SELECT * FROM result_automation_runs
+                    WHERE race_date=?
+                    ORDER BY id DESC LIMIT 1
+                    """,
+                    (race_date,),
+                ).fetchone()
+            else:
+                row = conn.execute(
+                    """
+                    SELECT * FROM result_automation_runs
+                    ORDER BY id DESC LIMIT 1
+                    """
+                ).fetchone()
+            if not row:
+                return {
+                    "schema_version": "expect-result-automation-pipeline/7.0",
+                    "race_date": race_date,
+                    "run": None,
+                    "stages": self._empty_stages("Pending"),
+                    "health": health,
+                }
+            meta: dict[str, Any] = {}
+            if row["meta_json"]:
+                try:
+                    meta = json.loads(row["meta_json"])
+                except json.JSONDecodeError:
+                    meta = {}
+            stages_raw = meta.get("stages") if isinstance(meta.get("stages"), dict) else {}
+            current = str(row["status"])
+            stages = self._dashboard_stages(stages_raw, current)
+            archive_path = archive_root() / f"{row['race_date']}.json"
+            archive_doc = None
+            if archive_path.is_file():
+                try:
+                    archive_doc = json.loads(
+                        archive_path.read_text(encoding="utf-8")
+                    )
+                except (OSError, json.JSONDecodeError):
+                    archive_doc = {"path": str(archive_path)}
+            return {
+                "schema_version": "expect-result-automation-pipeline/7.0",
+                "race_date": row["race_date"],
+                "run": {
+                    "run_id": int(row["id"]),
+                    "status": current,
+                    "trigger": row["trigger"],
+                    "started_at": row["started_at"],
+                    "finished_at": row["finished_at"],
+                    "pipeline_version": meta.get("pipeline")
+                    or meta.get("pipeline_version")
+                    or PIPELINE_VERSION,
+                },
+                "stages": stages,
+                "settlement": meta.get("settlement"),
+                "archive": archive_doc or meta.get("archive"),
+                "stats": meta.get("stats"),
+                "health": health,
+            }
+        finally:
+            conn.close()
+
+    def _empty_stages(self, status: str = "Pending") -> list[dict[str, Any]]:
+        return [
+            {
+                "key": key,
+                "label": sm.STAGE_LABELS.get(key, key),
+                "status": status,
+                "count": 0,
+            }
+            for key in sm.PIPELINE_STAGES
+        ]
+
+    def _dashboard_stages(
+        self, stages_raw: dict[str, Any], current_status: str
+    ) -> list[dict[str, Any]]:
+        out: list[dict[str, Any]] = []
+        seen_current = current_status in sm.TERMINAL
+        for key in sm.PIPELINE_STAGES:
+            raw = stages_raw.get(key) if isinstance(stages_raw.get(key), dict) else {}
+            st = str(raw.get("status") or "")
+            if not st:
+                if key == current_status:
+                    st = "Running"
+                    seen_current = True
+                elif not seen_current and current_status in sm.ACTIVE:
+                    # stages before current that lack records → Completed if past
+                    idx_cur = -1
+                    # map internal statuses onto pipeline stages
+                    order = list(sm.PIPELINE_STAGES)
+                    mapped = self._map_status_to_pipeline_stage(current_status)
+                    if mapped in order and order.index(key) < order.index(mapped):
+                        st = "Completed"
+                    else:
+                        st = "Pending"
+                else:
+                    st = "Pending"
+            out.append(
+                {
+                    "key": key,
+                    "label": sm.STAGE_LABELS.get(key, key),
+                    "status": st,
+                    "count": int(raw.get("count") or 0),
+                    "detail": {
+                        k: v
+                        for k, v in raw.items()
+                        if k not in ("status", "count", "label", "updated_at")
+                    },
+                }
+            )
+        return out
+
+    @staticmethod
+    def _map_status_to_pipeline_stage(status: str) -> str:
+        if status in (
+            sm.RESULT_SYNCING,
+            sm.RESULT_SYNC_FAILED,
+            sm.PREDICTION_MATCHING,
+        ):
+            return sm.RESULT_SYNCING
+        if status in (
+            sm.EVALUATING,
+            sm.STATS_UPDATING,
+            sm.SELF_EVAL_UPDATING,
+        ):
+            return sm.EVALUATING
+        if status in sm.PIPELINE_STAGES:
+            return status
+        return sm.RESULT_SYNCING
+
     # --- results ---
 
     def _enrich_sync_rows(self, conn: Any, rows: list[RaceResultRow]) -> list[RaceResultRow]:
@@ -644,6 +1203,36 @@ class ResultAutomationService:
                 )
             )
         return enriched
+
+    def _cache_pi_prediction(self, conn: Any, race_id: str) -> Any | None:
+        """Pull PI prediction into local predictions table (read-only PE output)."""
+        try:
+            from .netkeiba_results import fetch_pi_prediction_bundle
+        except Exception:
+            return None
+        bundle = fetch_pi_prediction_bundle(race_id)
+        if not bundle:
+            return None
+        engine = "real_ai"
+        model = bundle.get("model_version")
+        payload = json.dumps(bundle, ensure_ascii=False)
+        conn.execute(
+            """
+            INSERT INTO predictions(
+              race_id, engine_source, fallback_reason, model_version, bundle_json, created_at
+            ) VALUES (?,?,?,?,?,?)
+            """,
+            (race_id, engine, None, model, payload, _now()),
+        )
+        conn.commit()
+        return conn.execute(
+            """
+            SELECT id, engine_source, fallback_reason, model_version, bundle_json
+            FROM predictions WHERE race_id=?
+            ORDER BY created_at DESC, id DESC LIMIT 1
+            """,
+            (race_id,),
+        ).fetchone()
 
     def _patch_result_context(self, conn: Any, race_id: str, ctx: dict[str, Any]) -> None:
         if not ctx:
@@ -880,12 +1469,14 @@ class ResultAutomationService:
         misses: int,
         evaluated: int,
         warnings: list[str],
+        settlement: dict[str, Any] | None = None,
+        archive: dict[str, Any] | None = None,
     ) -> None:
         base = improvement_root() / "manifest" / race_date
         base.mkdir(parents=True, exist_ok=True)
         total_events = sum(event_counts.values())
         run_doc = {
-            "schema_version": "expect-result-automation-run/1.0",
+            "schema_version": "expect-result-automation-run/7.0",
             "run_id": run_id,
             "race_date": race_date,
             "status": status,
@@ -894,9 +1485,11 @@ class ResultAutomationService:
             "pipeline_version": PIPELINE_VERSION,
             "finished_at": _now(),
             "warnings": warnings,
+            "settlement": settlement or {},
+            "archive": archive or {},
         }
         summary = {
-            "schema_version": "expect-result-automation-summary/1.0",
+            "schema_version": "expect-result-automation-summary/7.0",
             "run_id": run_id,
             "status": status,
             "race_date": race_date,
@@ -905,9 +1498,12 @@ class ResultAutomationService:
             "hits": hits,
             "misses": misses,
             "races_evaluated": evaluated,
+            "settled_users": (settlement or {}).get("settled"),
+            "points_awarded_total": (settlement or {}).get("points_awarded_total"),
+            "archived_races": (archive or {}).get("race_count"),
         }
         index = {
-            "schema_version": "expect-result-automation-index/1.0",
+            "schema_version": "expect-result-automation-index/7.0",
             "race_date": race_date,
             "run_id": run_id,
             "paths": {
@@ -919,6 +1515,7 @@ class ResultAutomationService:
                 "summary": f"manifest/{race_date}/summary.json",
                 "index": f"manifest/{race_date}/index.json",
             },
+            "archive": f"race-archives/{race_date}.json",
         }
         atomic_write_json(base / "run.json", run_doc)
         atomic_write_json(base / "summary.json", summary)

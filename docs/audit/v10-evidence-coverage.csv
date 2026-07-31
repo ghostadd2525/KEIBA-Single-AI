@@ -1,0 +1,5 @@
+environment,feature_id,feature_name,filled_count,runner_cells,coverage_pct,missing_pct,primary_source,observed_at_sample,prediction_created_at_sample,anti_leak_violations,missing_timeout,missing_not_announced,missing_parse_failed,missing_source_unavailable,missing_other,verdict
+EC2 Production,popularity,人気,0,0,0.0,100.0,JRA (via PI board) / Netkeiba shutuba,,,0,0,0,0,0,0,FAILED
+EC2 Production,win_odds,単勝オッズ,0,0,0.0,100.0,JRA odds API type=1 (via PI),,,0,0,0,0,0,0,FAILED
+EC2 Production,expected_popularity,想定人気,0,0,0.0,100.0,PI derived (win_odds sort),,,0,0,0,0,0,0,FAILED
+EC2 Production,trainer,厩舎,0,0,0.0,100.0,Netkeiba shutuba (via PI entries_full),,,0,0,0,0,0,0,FAILED

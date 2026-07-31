@@ -1,0 +1,88 @@
+{
+  "offline": {
+    "improved_count": 7,
+    "worsened_count": 0,
+    "worsened_winner_rank1": 0,
+    "improved_races": [
+      {
+        "race_id": "2024-02-11-東京-10",
+        "miss_layer": null,
+        "winner_rank": 8,
+        "control_pick": "2020106756",
+        "treatment_pick": "2015104714"
+      },
+      {
+        "race_id": "2024-04-21-東京-10",
+        "miss_layer": null,
+        "winner_rank": 7,
+        "control_pick": "2020100145",
+        "treatment_pick": "2019104116"
+      },
+      {
+        "race_id": "2024-04-28-東京-10",
+        "miss_layer": null,
+        "winner_rank": 7,
+        "control_pick": "2016105206",
+        "treatment_pick": "2018106571"
+      },
+      {
+        "race_id": "2024-06-02-京都-10",
+        "miss_layer": null,
+        "winner_rank": 10,
+        "control_pick": "2019105239",
+        "treatment_pick": "2019103430"
+      },
+      {
+        "race_id": "2024-06-30-小倉-10",
+        "miss_layer": null,
+        "winner_rank": 11,
+        "control_pick": "2020106635",
+        "treatment_pick": "2019104729"
+      },
+      {
+        "race_id": "2026-02-15-京都-11",
+        "miss_layer": null,
+        "winner_rank": 7,
+        "control_pick": "2018105012",
+        "treatment_pick": "2021100913"
+      },
+      {
+        "race_id": "2026-03-22-中京-11",
+        "miss_layer": null,
+        "winner_rank": 11,
+        "control_pick": "2021104434",
+        "treatment_pick": "2022103875"
+      }
+    ],
+    "worsened_races": [],
+    "improved_race_ids": [
+      "2024-02-11-東京-10",
+      "2024-04-21-東京-10",
+      "2024-04-28-東京-10",
+      "2024-06-02-京都-10",
+      "2024-06-30-小倉-10",
+      "2026-02-15-京都-11",
+      "2026-03-22-中京-11"
+    ],
+    "expected_improved_race_ids": [
+      "2024-02-11-東京-10",
+      "2024-04-21-東京-10",
+      "2024-04-28-東京-10",
+      "2024-06-02-京都-10",
+      "2024-06-30-小倉-10",
+      "2026-02-15-京都-11",
+      "2026-03-22-中京-11"
+    ],
+    "improved_ids_match": true
+  },
+  "lab": {
+    "improved_count": 0,
+    "worsened_count": 0,
+    "worsened_winner_rank1": 0,
+    "improved_races": [],
+    "worsened_races": [],
+    "improved_race_ids": [],
+    "expected_improved_race_ids": null,
+    "improved_ids_match": true
+  }
+}

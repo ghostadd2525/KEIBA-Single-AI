@@ -1,0 +1,19 @@
+{
+  "gate_id": "v3-offline-gate/1.0",
+  "decision": "FAIL",
+  "hard_gate": {
+    "require_n_285": true,
+    "require_hit_gt_control": false,
+    "require_churn_0": false,
+    "pass": false,
+    "fail_reasons": [
+      "treatment_hit_not_gt_control",
+      "churn_hit=29"
+    ],
+    "definition": "Lab top-1: Treatment Hit > Control Hit ∧ churn=0 ∧ n=285"
+  },
+  "control_hit": 59,
+  "treatment_hit": 42,
+  "churn_hit": 29,
+  "production_wiring": false
+}

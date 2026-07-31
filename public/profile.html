@@ -7,12 +7,12 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Noto+Sans+JP:wght@400;500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="assets/styles.css?v=19" />
-  <link rel="stylesheet" href="assets/screens.css?v=32" />
+  <link rel="stylesheet" href="assets/styles.css?v=23" />
+  <link rel="stylesheet" href="assets/screens.css?v=37" />
   <link rel="stylesheet" href="assets/ux.css?v=16" />
   <script src="assets/api/calendar-weekend.js?v=14"></script>
-  <script src="assets/auto-maintenance.js?v=11.5"></script>
-  <script src="assets/auth.js?v=4"></script>
+  <script src="assets/auto-maintenance.js?v=12.4"></script>
+  <script src="assets/auth.js?v=6"></script>
   <script>
     if (ExpectAuth.requireAuth() && window.ExpectAutoMaintenance) {
       ExpectAutoMaintenance.run();
@@ -39,7 +39,7 @@
           表示名・画像・言語・通知を変更できます。ユーザーID・role・パスワードは変更できません。
         </p>
         <div class="profile-avatar-preview">
-          <img id="avatarPreview" src="assets/images/mascot-ka0ba.png?v=10" alt="" width="72" height="72" />
+          <img id="avatarPreview" src="assets/images/mascot-ka0ba.webp?v=10" alt="" width="72" height="72" />
         </div>
         <form id="profileForm" class="profile-form" autocomplete="off">
           <label class="profile-field">
@@ -86,7 +86,7 @@
     <aside class="mascot-ka0ba" id="mascotKa0ba" data-mascot-mode="png">
       <div class="mascot-bubble" id="mascotBubble" role="status" aria-live="polite"></div>
       <button type="button" class="mascot-figure" id="mascotTalkBtn" aria-label="KA0BA">
-        <img data-mascot-fallback src="assets/images/mascot-ka0ba.png?v=10" alt="" height="140" draggable="false" />
+        <img data-mascot-fallback src="assets/images/mascot-ka0ba.webp?v=10" alt="" height="140" draggable="false" />
       </button>
     </aside>
     <div data-expect-nav></div>
@@ -100,7 +100,7 @@
   <script src="assets/partials-nav.js"></script>
   <script>
     (function () {
-      var DEFAULT_AVATAR = "assets/images/mascot-ka0ba.png?v=10";
+      var DEFAULT_AVATAR = "assets/images/mascot-ka0ba.webp?v=10";
 
       function fill(me) {
         var p = (me && me.profile) || {};

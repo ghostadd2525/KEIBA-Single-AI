@@ -1,0 +1,15 @@
+{
+  "schema_version": "expect-v881-knowledge-publish/1.0",
+  "published_at": "2026-07-27T00:18:38.114Z",
+  "source": "development/knowledge",
+  "knowledge_score": null,
+  "accepted_patterns": 0,
+  "rejected_patterns": 0,
+  "governance": null,
+  "available": true,
+  "raw_meta": {
+    "accepted_updated_at": null,
+    "rejected_updated_at": null,
+    "proposals_updated_at": null
+  }
+}

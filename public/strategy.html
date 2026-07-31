@@ -7,12 +7,12 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Noto+Sans+JP:wght@400;500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="assets/styles.css?v=19" />
-  <link rel="stylesheet" href="assets/screens.css?v=29" />
+  <link rel="stylesheet" href="assets/styles.css?v=23" />
+  <link rel="stylesheet" href="assets/screens.css?v=52" />
   <link rel="stylesheet" href="assets/ux.css?v=16" />
   <script src="assets/api/calendar-weekend.js?v=14"></script>
-  <script src="assets/auto-maintenance.js?v=11.5"></script>
-  <script src="assets/auth.js?v=4"></script>
+  <script src="assets/auto-maintenance.js?v=12.4"></script>
+  <script src="assets/auth.js?v=6"></script>
   <script>
     if (ExpectAuth.requireAuth() && window.ExpectAutoMaintenance) {
       ExpectAutoMaintenance.run();
@@ -39,7 +39,7 @@
     <aside class="mascot-ka0ba" id="mascotKa0ba" data-mascot-mode="png">
       <div class="mascot-bubble" id="mascotBubble" role="status" aria-live="polite"></div>
       <button type="button" class="mascot-figure" id="mascotTalkBtn" aria-label="KA0BAに話しかける">
-        <img data-mascot-fallback src="assets/images/mascot-ka0ba.png?v=10" alt="" height="140" draggable="false" />
+        <img data-mascot-fallback src="assets/images/mascot-ka0ba.webp?v=10" alt="" height="140" draggable="false" />
       </button>
     </aside>
 
@@ -48,13 +48,15 @@
   <script src="assets/api/mock-gate.js"></script>
   <script src="assets/api/race-id-meta.js"></script>
   <script src="assets/api/auth.js"></script>
-  <script src="assets/api/prediction.js"></script>
+  <script src="assets/api/http-cache.js?v=1"></script>
+  <script src="assets/api/prediction.js?v=16"></script>
   <script src="assets/api/analysis.js"></script>
   <script src="assets/api/analysis-bind.js?v=30"></script>
-  <script src="assets/api/prediction-bind.js?v=30"></script>
+  <script src="assets/api/prediction-bind.js?v=52"></script>
   <script src="assets/api/race-board.js?v=10"></script>
   <script src="assets/api/odds-series.js?v=1"></script>
-  <script src="assets/api/strategy-stakes.js?v=1"></script>
+  <script src="assets/api/strategy-stakes.js?v=2"></script>
+  <script src="assets/api/strategy-composer.js?v=3"></script>
   <script src="assets/ux.js?v=15"></script>
   <script src="assets/favorites.js?v=4"></script>
   <script src="assets/shell.js"></script>
@@ -83,7 +85,7 @@
       var meta = ExpectFavorites.getMeta(id);
       var ai = ExpectFavorites.getAi(id);
 
-      function applyStakes(base, conf, board, series) {
+      function applyStakes(base, conf, board, series, bundle) {
         var stakes = window.ExpectStrategyStakes;
         if (!stakes) return base;
         var axisNum = base.axis && base.axis.num;
@@ -96,17 +98,29 @@
           driftPct: driftInfo.driftPct,
         });
         var display = stakes.toDisplayBankroll(bank);
-        base.axis.odds =
-          axisOdds != null
-            ? axisOdds.toFixed(1) +
-              (Math.abs(driftInfo.driftPct) >= 1
-                ? "（" + (driftInfo.driftPct > 0 ? "↑" : "↓") + Math.abs(driftInfo.driftPct).toFixed(1) + "%）"
-                : "")
-            : "—";
+        base.axis.odds = axisOdds != null ? axisOdds.toFixed(1) + "倍" : "—";
         base.tickets = stakes.buildTickets(bank, { confidence: conf });
-        base.bankroll = display;
-        base.risk = bank.risk + " " + bank.note;
         base.aiOverall = conf;
+
+        var composer = window.ExpectStrategyComposer;
+        if (composer && composer.compose) {
+          var composed = composer.compose({
+            bundle: bundle || null,
+            bank: bank,
+            axis: base.axis,
+            confidence: conf,
+          });
+          base.scenarios = composed.scenarios;
+          base.risk = composed.risk;
+          base.riskPoints = composed.riskPoints || [];
+          base.allocationNote = composed.allocationNote;
+          base.allocationItems = composed.allocationItems || [];
+          display.note = composed.allocationNote;
+        } else {
+          base.risk = bank.risk + (bank.note ? " " + bank.note : "");
+          base.allocationNote = bank.note || "";
+        }
+        base.bankroll = display;
         return base;
       }
 
@@ -125,16 +139,15 @@
             { num: "—", name: "連下候補", role: "連下", reason: "安定感で点数の土台に" },
           ],
           tickets: [],
-          scenarios: [
-            { title: "基本シナリオ", body: "AI総合 " + overall + "%。好位〜中団から差し切る展開を主軸に組み立てる。" },
-            { title: "崩しシナリオ", body: "ペースが想定と異なる場合は対抗を厚めに残し、深追いは避ける。" },
-            { title: "波乱シナリオ", body: "馬場・枠のバイアスが出た場合のみ穴を1頭まで許容する。" },
-          ],
+          scenarios: [],
           risk: "",
+          riskPoints: [],
+          allocationNote: "",
+          allocationItems: [],
           bankroll: { total: "—", main: "—", cover: "—", lottery: "—" },
           aiOverall: overall,
         };
-        return applyStakes(base, overall, board, series);
+        return applyStakes(base, overall, board, series, null);
       }
 
       function strategyFromBundle(bundle, board, series) {
@@ -189,6 +202,14 @@
             reason: reasonFor(chuuken.horse_number),
           });
         }
+        // rivals 欠落時は固定ラベルのみ（fallbackStrategy 全体は呼ばない＝副作用回避）
+        if (!rivals.length) {
+          rivals = [
+            { num: "—", name: "対抗候補", role: "対抗", reason: "展開・枠順の噛み合いを評価" },
+            { num: "—", name: "穴候補", role: "単穴", reason: "上がり期待と人気薄妙味" },
+            { num: "—", name: "連下候補", role: "連下", reason: "安定感で点数の土台に" },
+          ];
+        }
         var base = {
           axis: {
             num: honmei ? String(honmei.horse_number) : "—",
@@ -196,19 +217,17 @@
             role: "本命軸",
             odds: "—",
           },
-          rivals: rivals.length ? rivals : fallbackStrategy(board, series).rivals,
+          rivals: rivals,
           tickets: [],
-          scenarios: [
-            {
-              title: "基本シナリオ",
-              body: (bundle.explain && bundle.explain.narrative) || "AI評価に基づく基本シナリオです。",
-            },
-          ],
+          scenarios: [],
           risk: "",
+          riskPoints: [],
+          allocationNote: "",
+          allocationItems: [],
           bankroll: { total: "—", main: "—", cover: "—", lottery: "—" },
           aiOverall: conf,
         };
-        return applyStakes(base, conf, board, series);
+        return applyStakes(base, conf, board, series, bundle);
       }
 
       function escapeHtml(s) {
@@ -326,6 +345,44 @@
           })
           .join("");
 
+        var allocationHtml = (data.allocationItems || [])
+          .map(function (it) {
+            return (
+              '<div class="strategy-alloc-item">' +
+              "<strong>" +
+              escapeHtml(it.label) +
+              "（" +
+              escapeHtml(String(it.pct)) +
+              "%）</strong>" +
+              "<p>" +
+              escapeHtml(it.reason) +
+              "</p></div>"
+            );
+          })
+          .join("");
+        if (!allocationHtml && (data.allocationNote || data.bankroll.note)) {
+          allocationHtml =
+            '<p class="strategy-hero-note">' +
+            escapeHtml(data.allocationNote || data.bankroll.note) +
+            "</p>";
+        }
+
+        var riskPoints = data.riskPoints || [];
+        var riskHtml;
+        if (riskPoints.length) {
+          riskHtml =
+            '<ul class="strategy-risk-list">' +
+            riskPoints
+              .map(function (p) {
+                return "<li>" + escapeHtml(p) + "</li>";
+              })
+              .join("") +
+            "</ul>";
+        } else {
+          riskHtml =
+            '<p class="strategy-risk">' + escapeHtml(data.risk || "") + "</p>";
+        }
+
         document.getElementById("strategyScreen").innerHTML =
           '<section class="strategy-hero">' +
           '<p class="strategy-kicker">買い目の組み立て</p>' +
@@ -348,9 +405,6 @@
           escapeHtml(data.bankroll.main) +
           "</b></div>" +
           "</div>" +
-          (data.bankroll.note
-            ? '<p class="strategy-hero-note">' + escapeHtml(data.bankroll.note) + "</p>"
-            : "") +
           "</section>" +
           '<section class="chart-card">' +
           "<h3>軸馬と相手評価</h3>" +
@@ -392,9 +446,12 @@
           escapeHtml(data.bankroll.lottery) +
           "</b></div>" +
           "</div>" +
-          '<p class="strategy-risk"><strong>リスク管理:</strong> ' +
-          escapeHtml(data.risk) +
-          "</p></section>" +
+          (allocationHtml
+            ? '<div class="strategy-alloc-why"><h4>配分の理由</h4>' + allocationHtml + "</div>"
+            : "") +
+          '<div class="strategy-risk-block"><h4>リスク管理</h4>' +
+          riskHtml +
+          "</div></section>" +
           '<section class="chart-card">' +
           "<h3>AIパラメータ根拠</h3>" +
           '<div class="score-list">' +
@@ -404,7 +461,7 @@
           '<a class="strategy-btn strategy-btn--ghost" href="race.html?race_id=' +
           encodeURIComponent(id) +
           '">レース詳細へ戻る</a>' +
-          '<button type="button" class="strategy-btn" id="consultKaobaBtn">KAOBAに相談する</button>' +
+          '<button type="button" class="strategy-btn" id="consultKaobaBtn">相談AIに聞く</button>' +
           "</div>";
 
         document.getElementById("consultKaobaBtn").addEventListener("click", function () {
@@ -422,23 +479,12 @@
             scenarios: data.scenarios,
             bankroll: data.bankroll,
             risk: data.risk,
+            riskPoints: data.riskPoints || [],
+            allocationNote: data.allocationNote || "",
+            allocationItems: data.allocationItems || [],
             summaryText:
-              "買い目戦略の相談です。" +
-              (meta.place || id) +
-              (meta.name ? " " + meta.name : "") +
-              " について、軸 " +
-              data.axis.num +
-              "番（" +
-              (data.axis.name || "本命") +
-              "）・AI総合 " +
-              (ai.overall || "—") +
-              "% の内容を評価して。改善点と最終おすすめを短く教えて。印や順位は変えないでね。",
-            displaySummary:
-              "この買い目戦略を相談したい（軸 " +
-              data.axis.num +
-              "番・AI総合 " +
-              (ai.overall || "—") +
-              "%）",
+              "買い目戦略を確認したよ。このレースについて気になることがあれば一緒に見ていこう。",
+            displaySummary: "レースについて相談したい",
           };
 
           try {

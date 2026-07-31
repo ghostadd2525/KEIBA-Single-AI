@@ -410,29 +410,34 @@ def _add_risk_features(df: pd.DataFrame) -> pd.DataFrame:
     return work
 
 
-def _attach_win5_leg_from_races(df: pd.DataFrame) -> pd.DataFrame:
-    """Assign win5_leg using the same rule as demo_pace_model_v2.py."""
-    out = df.copy()
-    if "win5_leg" in out.columns and out["win5_leg"].notna().any():
-        return out
-    if "win5_leg" not in out.columns:
-        out["win5_leg"] = pd.NA
-    if "race_id" not in out.columns or "date" not in out.columns:
-        return out
+def stable_win5_leg_from_race_id(race_id: Any) -> int | float:
+    """Stable leg from race_id YYYY-MM-DD-VV-RR → (VV-1)*12+RR.
 
-    races = out.drop_duplicates(subset=["race_id"], keep="first").copy()
-    races["_leg_date"] = pd.to_datetime(races["date"], errors="coerce")
-    if "race_number" in races.columns:
-        races["_leg_rno"] = pd.to_numeric(races["race_number"], errors="coerce")
-        races = races.sort_values(["_leg_date", "_leg_rno", "race_id"], kind="stable")
-    else:
-        races = races.sort_values(["_leg_date", "race_id"], kind="stable")
-    races["win5_leg"] = races.groupby("_leg_date", dropna=False).cumcount() + 1
-    leg_map = races[["race_id", "win5_leg"]]
-    out = out.merge(leg_map, on="race_id", how="left", suffixes=("", "_assigned"))
-    if "win5_leg_assigned" in out.columns:
-        out["win5_leg"] = out["win5_leg_assigned"]
-        out.drop(columns=["win5_leg_assigned"], inplace=True)
+    Does not depend on which other races exist in the day CSV, so adding
+    未勝利/新馬 rows cannot renumber existing specials.
+    """
+    text = str(race_id or "").strip()
+    parts = text.split("-")
+    if len(parts) < 5:
+        return float("nan")
+    try:
+        venue_label = int(parts[3])
+        race_no = int(parts[4])
+    except ValueError:
+        return float("nan")
+    if venue_label < 1 or race_no < 1:
+        return float("nan")
+    return (venue_label - 1) * 12 + race_no
+
+
+def _attach_win5_leg_from_races(df: pd.DataFrame) -> pd.DataFrame:
+    """Assign win5_leg from race_id (stable; not cumcount of present races)."""
+    out = df.copy()
+    if "race_id" not in out.columns:
+        if "win5_leg" not in out.columns:
+            out["win5_leg"] = pd.NA
+        return out
+    out["win5_leg"] = out["race_id"].map(stable_win5_leg_from_race_id)
     return out
 
 

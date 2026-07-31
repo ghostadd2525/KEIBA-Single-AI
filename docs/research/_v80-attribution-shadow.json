@@ -1,0 +1,592 @@
+{
+  "schema": "v80-attribution-shadow/1.0",
+  "generated_at": "2026-07-28T08:53:51+00:00",
+  "n": 285,
+  "note": {
+    "production_unchanged": true,
+    "legacy_pe": "fixture predicted_top1 / hit_at_1 / model_rank",
+    "pilot_pe": "research-only Shadow scorer from V75 Ready contracts",
+    "v79_cells": "LL LP CL CP"
+  },
+  "cells_full": {
+    "LL": {
+      "n": 285,
+      "hit": 218,
+      "purchase": 218,
+      "rank710": 14,
+      "other_1_3": 1,
+      "other_10_13": 13,
+      "rank46": 35,
+      "other": 4,
+      "buckets": {
+        "hit": 218,
+        "rank710": 14,
+        "rank46": 35,
+        "other_10_13": 13,
+        "other_1_3": 1,
+        "other": 4
+      },
+      "prediction_fingerprint": "3e28516afffa8092dc9399ba09156bdfcb27d819d9f793824779191c0fa742f6",
+      "pe_path_counts": {
+        "legacy_pe": 285
+      },
+      "pilot_fired_n": 0
+    },
+    "LP": {
+      "n": 285,
+      "hit": 218,
+      "purchase": 218,
+      "rank710": 14,
+      "other_1_3": 1,
+      "other_10_13": 13,
+      "rank46": 35,
+      "other": 4,
+      "buckets": {
+        "hit": 218,
+        "rank710": 14,
+        "rank46": 35,
+        "other_10_13": 13,
+        "other_1_3": 1,
+        "other": 4
+      },
+      "prediction_fingerprint": "3e28516afffa8092dc9399ba09156bdfcb27d819d9f793824779191c0fa742f6",
+      "pe_path_counts": {
+        "legacy_pe": 285
+      },
+      "pilot_fired_n": 0
+    },
+    "CL": {
+      "n": 285,
+      "hit": 218,
+      "purchase": 218,
+      "rank710": 14,
+      "other_1_3": 1,
+      "other_10_13": 13,
+      "rank46": 35,
+      "other": 4,
+      "buckets": {
+        "hit": 218,
+        "rank710": 14,
+        "rank46": 35,
+        "other_10_13": 13,
+        "other_1_3": 1,
+        "other": 4
+      },
+      "prediction_fingerprint": "3e28516afffa8092dc9399ba09156bdfcb27d819d9f793824779191c0fa742f6",
+      "pe_path_counts": {
+        "legacy_pe": 285
+      },
+      "pilot_fired_n": 0
+    },
+    "CP": {
+      "n": 285,
+      "hit": 85,
+      "purchase": 85,
+      "rank710": 32,
+      "other_1_3": 80,
+      "other_10_13": 14,
+      "rank46": 71,
+      "other": 3,
+      "buckets": {
+        "other_1_3": 80,
+        "hit": 85,
+        "rank46": 71,
+        "rank710": 32,
+        "other_10_13": 14,
+        "other": 3
+      },
+      "prediction_fingerprint": "abdec149427fe335a990cf25d9635e4b766a2874b27555fe8744cd0eee4dceb8",
+      "pe_path_counts": {
+        "pilot_unsat": 176,
+        "legacy_pe": 44,
+        "pilot_rank7": 65
+      },
+      "pilot_fired_n": 241
+    }
+  },
+  "cells_rank7": {
+    "LL": {
+      "n": 65,
+      "hit": 52,
+      "purchase": 52,
+      "rank710": 1,
+      "other_1_3": 0,
+      "other_10_13": 3,
+      "rank46": 9,
+      "other": 0,
+      "buckets": {
+        "hit": 52,
+        "other_10_13": 3,
+        "rank46": 9,
+        "rank710": 1
+      },
+      "prediction_fingerprint": "7d6505f4181cc1a031c851e0819346c5eb47c8f35fbf90d7739f82dacea94c02",
+      "pe_path_counts": {
+        "legacy_pe": 65
+      },
+      "pilot_fired_n": 0
+    },
+    "LP": {
+      "n": 65,
+      "hit": 52,
+      "purchase": 52,
+      "rank710": 1,
+      "other_1_3": 0,
+      "other_10_13": 3,
+      "rank46": 9,
+      "other": 0,
+      "buckets": {
+        "hit": 52,
+        "other_10_13": 3,
+        "rank46": 9,
+        "rank710": 1
+      },
+      "prediction_fingerprint": "7d6505f4181cc1a031c851e0819346c5eb47c8f35fbf90d7739f82dacea94c02",
+      "pe_path_counts": {
+        "legacy_pe": 65
+      },
+      "pilot_fired_n": 0
+    },
+    "CL": {
+      "n": 65,
+      "hit": 52,
+      "purchase": 52,
+      "rank710": 1,
+      "other_1_3": 0,
+      "other_10_13": 3,
+      "rank46": 9,
+      "other": 0,
+      "buckets": {
+        "hit": 52,
+        "other_10_13": 3,
+        "rank46": 9,
+        "rank710": 1
+      },
+      "prediction_fingerprint": "7d6505f4181cc1a031c851e0819346c5eb47c8f35fbf90d7739f82dacea94c02",
+      "pe_path_counts": {
+        "legacy_pe": 65
+      },
+      "pilot_fired_n": 0
+    },
+    "CP": {
+      "n": 65,
+      "hit": 11,
+      "purchase": 11,
+      "rank710": 12,
+      "other_1_3": 21,
+      "other_10_13": 4,
+      "rank46": 17,
+      "other": 0,
+      "buckets": {
+        "other_1_3": 21,
+        "hit": 11,
+        "other_10_13": 4,
+        "rank710": 12,
+        "rank46": 17
+      },
+      "prediction_fingerprint": "4f1183ccfea7f939b63bf94993b32d8557c804f31e5c6a5ed14bf15e09318bd5",
+      "pe_path_counts": {
+        "pilot_rank7": 65
+      },
+      "pilot_fired_n": 65
+    }
+  },
+  "cells_unsatisfied_residual": {
+    "LL": {
+      "n": 176,
+      "hit": 128,
+      "purchase": 128,
+      "rank710": 13,
+      "other_1_3": 1,
+      "other_10_13": 8,
+      "rank46": 24,
+      "other": 2,
+      "buckets": {
+        "hit": 128,
+        "rank710": 13,
+        "rank46": 24,
+        "other_1_3": 1,
+        "other_10_13": 8,
+        "other": 2
+      },
+      "prediction_fingerprint": "7df69f292b84a3df43b33391fbcebbcbd9efa684d32d8a5f1d5ecfc96a6f9650",
+      "pe_path_counts": {
+        "legacy_pe": 176
+      },
+      "pilot_fired_n": 0
+    },
+    "LP": {
+      "n": 176,
+      "hit": 128,
+      "purchase": 128,
+      "rank710": 13,
+      "other_1_3": 1,
+      "other_10_13": 8,
+      "rank46": 24,
+      "other": 2,
+      "buckets": {
+        "hit": 128,
+        "rank710": 13,
+        "rank46": 24,
+        "other_1_3": 1,
+        "other_10_13": 8,
+        "other": 2
+      },
+      "prediction_fingerprint": "7df69f292b84a3df43b33391fbcebbcbd9efa684d32d8a5f1d5ecfc96a6f9650",
+      "pe_path_counts": {
+        "legacy_pe": 176
+      },
+      "pilot_fired_n": 0
+    },
+    "CL": {
+      "n": 176,
+      "hit": 128,
+      "purchase": 128,
+      "rank710": 13,
+      "other_1_3": 1,
+      "other_10_13": 8,
+      "rank46": 24,
+      "other": 2,
+      "buckets": {
+        "hit": 128,
+        "rank710": 13,
+        "rank46": 24,
+        "other_1_3": 1,
+        "other_10_13": 8,
+        "other": 2
+      },
+      "prediction_fingerprint": "7df69f292b84a3df43b33391fbcebbcbd9efa684d32d8a5f1d5ecfc96a6f9650",
+      "pe_path_counts": {
+        "legacy_pe": 176
+      },
+      "pilot_fired_n": 0
+    },
+    "CP": {
+      "n": 176,
+      "hit": 36,
+      "purchase": 36,
+      "rank710": 20,
+      "other_1_3": 59,
+      "other_10_13": 8,
+      "rank46": 52,
+      "other": 1,
+      "buckets": {
+        "other_1_3": 59,
+        "hit": 36,
+        "rank46": 52,
+        "rank710": 20,
+        "other_10_13": 8,
+        "other": 1
+      },
+      "prediction_fingerprint": "d5d27f81546dc8858b61bc6a306f8579dc02b3867ca73db4cede31eb724e41d2",
+      "pe_path_counts": {
+        "pilot_unsat": 176
+      },
+      "pilot_fired_n": 176
+    }
+  },
+  "cells_nonready": {
+    "LL": {
+      "n": 44,
+      "hit": 38,
+      "purchase": 38,
+      "rank710": 0,
+      "other_1_3": 0,
+      "other_10_13": 2,
+      "rank46": 2,
+      "other": 2,
+      "buckets": {
+        "hit": 38,
+        "other": 2,
+        "rank46": 2,
+        "other_10_13": 2
+      },
+      "prediction_fingerprint": "125f654878d535f9d4c68f3f84ec281fd96f98d50bfd0baf610f0796eef34adc",
+      "pe_path_counts": {
+        "legacy_pe": 44
+      },
+      "pilot_fired_n": 0
+    },
+    "LP": {
+      "n": 44,
+      "hit": 38,
+      "purchase": 38,
+      "rank710": 0,
+      "other_1_3": 0,
+      "other_10_13": 2,
+      "rank46": 2,
+      "other": 2,
+      "buckets": {
+        "hit": 38,
+        "other": 2,
+        "rank46": 2,
+        "other_10_13": 2
+      },
+      "prediction_fingerprint": "125f654878d535f9d4c68f3f84ec281fd96f98d50bfd0baf610f0796eef34adc",
+      "pe_path_counts": {
+        "legacy_pe": 44
+      },
+      "pilot_fired_n": 0
+    },
+    "CL": {
+      "n": 44,
+      "hit": 38,
+      "purchase": 38,
+      "rank710": 0,
+      "other_1_3": 0,
+      "other_10_13": 2,
+      "rank46": 2,
+      "other": 2,
+      "buckets": {
+        "hit": 38,
+        "other": 2,
+        "rank46": 2,
+        "other_10_13": 2
+      },
+      "prediction_fingerprint": "125f654878d535f9d4c68f3f84ec281fd96f98d50bfd0baf610f0796eef34adc",
+      "pe_path_counts": {
+        "legacy_pe": 44
+      },
+      "pilot_fired_n": 0
+    },
+    "CP": {
+      "n": 44,
+      "hit": 38,
+      "purchase": 38,
+      "rank710": 0,
+      "other_1_3": 0,
+      "other_10_13": 2,
+      "rank46": 2,
+      "other": 2,
+      "buckets": {
+        "hit": 38,
+        "other": 2,
+        "rank46": 2,
+        "other_10_13": 2
+      },
+      "prediction_fingerprint": "125f654878d535f9d4c68f3f84ec281fd96f98d50bfd0baf610f0796eef34adc",
+      "pe_path_counts": {
+        "legacy_pe": 44
+      },
+      "pilot_fired_n": 0
+    }
+  },
+  "deltas_full": {
+    "Delta_Trigger_CL_minus_LL": {
+      "hit": 0,
+      "purchase": 0,
+      "rank710": 0,
+      "other_1_3": 0,
+      "other_10_13": 0,
+      "rank46": 0,
+      "other": 0,
+      "fingerprint_changed": false
+    },
+    "Delta_Strategy_CP_minus_CL": {
+      "hit": -133,
+      "purchase": -133,
+      "rank710": 18,
+      "other_1_3": 79,
+      "other_10_13": 1,
+      "rank46": 36,
+      "other": -1,
+      "fingerprint_changed": true
+    },
+    "Delta_Both_CP_minus_LL": {
+      "hit": -133,
+      "purchase": -133,
+      "rank710": 18,
+      "other_1_3": 79,
+      "other_10_13": 1,
+      "rank46": 36,
+      "other": -1,
+      "fingerprint_changed": true
+    },
+    "Delta_Interaction": {
+      "hit": 0,
+      "purchase": 0,
+      "rank710": 0,
+      "other_1_3": 0,
+      "other_10_13": 0,
+      "rank46": 0,
+      "other": 0
+    },
+    "Audit_LP_minus_LL": {
+      "hit": 0,
+      "purchase": 0,
+      "rank710": 0,
+      "other_1_3": 0,
+      "other_10_13": 0,
+      "rank46": 0,
+      "other": 0,
+      "fingerprint_changed": false
+    },
+    "LP_equals_LL_fingerprint": true,
+    "CL_equals_LL_fingerprint": true
+  },
+  "deltas_rank7": {
+    "Delta_Trigger_CL_minus_LL": {
+      "hit": 0,
+      "purchase": 0,
+      "rank710": 0,
+      "other_1_3": 0,
+      "other_10_13": 0,
+      "rank46": 0,
+      "other": 0,
+      "fingerprint_changed": false
+    },
+    "Delta_Strategy_CP_minus_CL": {
+      "hit": -41,
+      "purchase": -41,
+      "rank710": 11,
+      "other_1_3": 21,
+      "other_10_13": 1,
+      "rank46": 8,
+      "other": 0,
+      "fingerprint_changed": true
+    },
+    "Delta_Both_CP_minus_LL": {
+      "hit": -41,
+      "purchase": -41,
+      "rank710": 11,
+      "other_1_3": 21,
+      "other_10_13": 1,
+      "rank46": 8,
+      "other": 0,
+      "fingerprint_changed": true
+    },
+    "Delta_Interaction": {
+      "hit": 0,
+      "purchase": 0,
+      "rank710": 0,
+      "other_1_3": 0,
+      "other_10_13": 0,
+      "rank46": 0,
+      "other": 0
+    },
+    "Audit_LP_minus_LL": {
+      "hit": 0,
+      "purchase": 0,
+      "rank710": 0,
+      "other_1_3": 0,
+      "other_10_13": 0,
+      "rank46": 0,
+      "other": 0,
+      "fingerprint_changed": false
+    },
+    "LP_equals_LL_fingerprint": true,
+    "CL_equals_LL_fingerprint": true
+  },
+  "deltas_unsatisfied_residual": {
+    "Delta_Trigger_CL_minus_LL": {
+      "hit": 0,
+      "purchase": 0,
+      "rank710": 0,
+      "other_1_3": 0,
+      "other_10_13": 0,
+      "rank46": 0,
+      "other": 0,
+      "fingerprint_changed": false
+    },
+    "Delta_Strategy_CP_minus_CL": {
+      "hit": -92,
+      "purchase": -92,
+      "rank710": 7,
+      "other_1_3": 58,
+      "other_10_13": 0,
+      "rank46": 28,
+      "other": -1,
+      "fingerprint_changed": true
+    },
+    "Delta_Both_CP_minus_LL": {
+      "hit": -92,
+      "purchase": -92,
+      "rank710": 7,
+      "other_1_3": 58,
+      "other_10_13": 0,
+      "rank46": 28,
+      "other": -1,
+      "fingerprint_changed": true
+    },
+    "Delta_Interaction": {
+      "hit": 0,
+      "purchase": 0,
+      "rank710": 0,
+      "other_1_3": 0,
+      "other_10_13": 0,
+      "rank46": 0,
+      "other": 0
+    },
+    "Audit_LP_minus_LL": {
+      "hit": 0,
+      "purchase": 0,
+      "rank710": 0,
+      "other_1_3": 0,
+      "other_10_13": 0,
+      "rank46": 0,
+      "other": 0,
+      "fingerprint_changed": false
+    },
+    "LP_equals_LL_fingerprint": true,
+    "CL_equals_LL_fingerprint": true
+  },
+  "deltas_nonready": {
+    "Delta_Trigger_CL_minus_LL": {
+      "hit": 0,
+      "purchase": 0,
+      "rank710": 0,
+      "other_1_3": 0,
+      "other_10_13": 0,
+      "rank46": 0,
+      "other": 0,
+      "fingerprint_changed": false
+    },
+    "Delta_Strategy_CP_minus_CL": {
+      "hit": 0,
+      "purchase": 0,
+      "rank710": 0,
+      "other_1_3": 0,
+      "other_10_13": 0,
+      "rank46": 0,
+      "other": 0,
+      "fingerprint_changed": false
+    },
+    "Delta_Both_CP_minus_LL": {
+      "hit": 0,
+      "purchase": 0,
+      "rank710": 0,
+      "other_1_3": 0,
+      "other_10_13": 0,
+      "rank46": 0,
+      "other": 0,
+      "fingerprint_changed": false
+    },
+    "Delta_Interaction": {
+      "hit": 0,
+      "purchase": 0,
+      "rank710": 0,
+      "other_1_3": 0,
+      "other_10_13": 0,
+      "rank46": 0,
+      "other": 0
+    },
+    "Audit_LP_minus_LL": {
+      "hit": 0,
+      "purchase": 0,
+      "rank710": 0,
+      "other_1_3": 0,
+      "other_10_13": 0,
+      "rank46": 0,
+      "other": 0,
+      "fingerprint_changed": false
+    },
+    "LP_equals_LL_fingerprint": true,
+    "CL_equals_LL_fingerprint": true
+  },
+  "boundary_audit": {
+    "LP_pilot_fired_n": 0,
+    "LP_fired_must_be_0": true,
+    "CP_nonready_pilot_fired_n": 0,
+    "CP_nonready_fired_must_be_0": true
+  }
+}

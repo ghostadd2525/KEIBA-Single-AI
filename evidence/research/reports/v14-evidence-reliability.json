@@ -1,0 +1,964 @@
+{
+  "schema_version": "expect-evidence-reliability/1.0",
+  "generated_at": "2026-07-27T08:36:40+00:00",
+  "shadow_only": true,
+  "prediction_mutation": "FORBIDDEN",
+  "resolver_mutation": "FORBIDDEN",
+  "sample": {
+    "feature_rows": 6190,
+    "snapshots": 50,
+    "races": 50,
+    "features": [
+      "popularity",
+      "win_odds",
+      "trainer",
+      "sire",
+      "damsire",
+      "breeder",
+      "oikiri_time",
+      "oikiri_rating",
+      "owner",
+      "sale_price"
+    ],
+    "exploratory": true,
+    "note": "Reliability is about Evidence trustworthiness, not win-rate effect."
+  },
+  "features": [
+    {
+      "feature_id": "popularity",
+      "label": "Popularity",
+      "n_cells": 619,
+      "n_filled": 619,
+      "n_missing": 0,
+      "coverage": 1.0,
+      "availability": 1.0,
+      "missing": 0.0,
+      "missing_reasons": {},
+      "selection_bias": 0.0,
+      "selection_bias_detail": {
+        "mode": "always_present",
+        "fav_share_p1_3": 0.242
+      },
+      "temporal_bias": 0.9,
+      "leak_risk": 0.7,
+      "asof_clamped_rate": 1.0,
+      "observed_after_prediction_rate": 0.0,
+      "variance_penalty": 0.1968,
+      "stability": 0.9998,
+      "weekly_drift": 0.0,
+      "weeks_observed": 2,
+      "weekly_coverage": [
+        {
+          "date": "2026-07-25",
+          "coverage": 1.0
+        },
+        {
+          "date": "2026-07-26",
+          "coverage": 1.0
+        }
+      ],
+      "snapshot_anti_leak_violation_sum": 0,
+      "reliability_score": 75.4,
+      "rank": 1
+    },
+    {
+      "feature_id": "breeder",
+      "label": "Breeder",
+      "n_cells": 619,
+      "n_filled": 619,
+      "n_missing": 0,
+      "coverage": 1.0,
+      "availability": 1.0,
+      "missing": 0.0,
+      "missing_reasons": {},
+      "selection_bias": 0.0,
+      "selection_bias_detail": {
+        "mode": "always_present_or_insufficient"
+      },
+      "temporal_bias": 0.9,
+      "leak_risk": 0.7,
+      "asof_clamped_rate": 1.0,
+      "observed_after_prediction_rate": 0.0,
+      "variance_penalty": 0.2102,
+      "stability": 1.0,
+      "weekly_drift": 0.0,
+      "weeks_observed": 2,
+      "weekly_coverage": [
+        {
+          "date": "2026-07-25",
+          "coverage": 1.0
+        },
+        {
+          "date": "2026-07-26",
+          "coverage": 1.0
+        }
+      ],
+      "snapshot_anti_leak_violation_sum": 0,
+      "reliability_score": 75.3,
+      "rank": 2
+    },
+    {
+      "feature_id": "damsire",
+      "label": "Damsire",
+      "n_cells": 619,
+      "n_filled": 619,
+      "n_missing": 0,
+      "coverage": 1.0,
+      "availability": 1.0,
+      "missing": 0.0,
+      "missing_reasons": {},
+      "selection_bias": 0.0,
+      "selection_bias_detail": {
+        "mode": "always_present_or_insufficient"
+      },
+      "temporal_bias": 0.9,
+      "leak_risk": 0.7,
+      "asof_clamped_rate": 1.0,
+      "observed_after_prediction_rate": 0.0,
+      "variance_penalty": 0.2631,
+      "stability": 1.0,
+      "weekly_drift": 0.0,
+      "weeks_observed": 2,
+      "weekly_coverage": [
+        {
+          "date": "2026-07-25",
+          "coverage": 1.0
+        },
+        {
+          "date": "2026-07-26",
+          "coverage": 1.0
+        }
+      ],
+      "snapshot_anti_leak_violation_sum": 0,
+      "reliability_score": 74.9,
+      "rank": 3
+    },
+    {
+      "feature_id": "sire",
+      "label": "Sire",
+      "n_cells": 619,
+      "n_filled": 619,
+      "n_missing": 0,
+      "coverage": 1.0,
+      "availability": 1.0,
+      "missing": 0.0,
+      "missing_reasons": {},
+      "selection_bias": 0.0,
+      "selection_bias_detail": {
+        "mode": "always_present_or_insufficient"
+      },
+      "temporal_bias": 0.9,
+      "leak_risk": 0.7,
+      "asof_clamped_rate": 1.0,
+      "observed_after_prediction_rate": 0.0,
+      "variance_penalty": 0.3142,
+      "stability": 1.0,
+      "weekly_drift": 0.0,
+      "weeks_observed": 2,
+      "weekly_coverage": [
+        {
+          "date": "2026-07-25",
+          "coverage": 1.0
+        },
+        {
+          "date": "2026-07-26",
+          "coverage": 1.0
+        }
+      ],
+      "snapshot_anti_leak_violation_sum": 0,
+      "reliability_score": 74.5,
+      "rank": 4
+    },
+    {
+      "feature_id": "owner",
+      "label": "Owner",
+      "n_cells": 619,
+      "n_filled": 619,
+      "n_missing": 0,
+      "coverage": 1.0,
+      "availability": 1.0,
+      "missing": 0.0,
+      "missing_reasons": {},
+      "selection_bias": 0.0,
+      "selection_bias_detail": {
+        "mode": "always_present_or_insufficient"
+      },
+      "temporal_bias": 0.9,
+      "leak_risk": 0.7,
+      "asof_clamped_rate": 1.0,
+      "observed_after_prediction_rate": 0.0,
+      "variance_penalty": 0.3485,
+      "stability": 1.0,
+      "weekly_drift": 0.0,
+      "weeks_observed": 2,
+      "weekly_coverage": [
+        {
+          "date": "2026-07-25",
+          "coverage": 1.0
+        },
+        {
+          "date": "2026-07-26",
+          "coverage": 1.0
+        }
+      ],
+      "snapshot_anti_leak_violation_sum": 0,
+      "reliability_score": 74.2,
+      "rank": 5
+    },
+    {
+      "feature_id": "trainer",
+      "label": "Trainer",
+      "n_cells": 619,
+      "n_filled": 619,
+      "n_missing": 0,
+      "coverage": 1.0,
+      "availability": 1.0,
+      "missing": 0.0,
+      "missing_reasons": {},
+      "selection_bias": 0.0,
+      "selection_bias_detail": {
+        "mode": "always_present_or_insufficient"
+      },
+      "temporal_bias": 0.9,
+      "leak_risk": 0.7,
+      "asof_clamped_rate": 1.0,
+      "observed_after_prediction_rate": 0.0,
+      "variance_penalty": 0.3924,
+      "stability": 1.0,
+      "weekly_drift": 0.0,
+      "weeks_observed": 2,
+      "weekly_coverage": [
+        {
+          "date": "2026-07-25",
+          "coverage": 1.0
+        },
+        {
+          "date": "2026-07-26",
+          "coverage": 1.0
+        }
+      ],
+      "snapshot_anti_leak_violation_sum": 0,
+      "reliability_score": 73.9,
+      "rank": 6
+    },
+    {
+      "feature_id": "win_odds",
+      "label": "Odds",
+      "n_cells": 619,
+      "n_filled": 619,
+      "n_missing": 0,
+      "coverage": 1.0,
+      "availability": 1.0,
+      "missing": 0.0,
+      "missing_reasons": {},
+      "selection_bias": 0.4639,
+      "selection_bias_detail": {
+        "mode": "value_vs_popularity_strata",
+        "mean_val_fav": 4.129,
+        "mean_val_long": 111.529
+      },
+      "temporal_bias": 0.9,
+      "leak_risk": 0.7,
+      "asof_clamped_rate": 1.0,
+      "observed_after_prediction_rate": 0.0,
+      "variance_penalty": 0.4826,
+      "stability": 0.9505,
+      "weekly_drift": 0.0,
+      "weeks_observed": 2,
+      "weekly_coverage": [
+        {
+          "date": "2026-07-25",
+          "coverage": 1.0
+        },
+        {
+          "date": "2026-07-26",
+          "coverage": 1.0
+        }
+      ],
+      "snapshot_anti_leak_violation_sum": 0,
+      "reliability_score": 65.8,
+      "rank": 7
+    },
+    {
+      "feature_id": "sale_price",
+      "label": "SalePrice",
+      "n_cells": 619,
+      "n_filled": 198,
+      "n_missing": 421,
+      "coverage": 0.3199,
+      "availability": 1.0,
+      "missing": 0.6801,
+      "missing_reasons": {
+        "not_listed": 421
+      },
+      "selection_bias": 0.1345,
+      "selection_bias_detail": {
+        "mean_pop_filled": 7.838,
+        "mean_pop_missing": 6.762,
+        "mode": "missingness_vs_popularity"
+      },
+      "temporal_bias": 0.9217,
+      "leak_risk": 0.7,
+      "asof_clamped_rate": 1.0,
+      "observed_after_prediction_rate": 0.0,
+      "variance_penalty": 0.3108,
+      "stability": 0.9885,
+      "weekly_drift": 0.0723,
+      "weeks_observed": 2,
+      "weekly_coverage": [
+        {
+          "date": "2026-07-25",
+          "coverage": 0.2998
+        },
+        {
+          "date": "2026-07-26",
+          "coverage": 0.3721
+        }
+      ],
+      "snapshot_anti_leak_violation_sum": 0,
+      "reliability_score": 56.9,
+      "rank": 8
+    },
+    {
+      "feature_id": "oikiri_time",
+      "label": "WorkoutTime",
+      "n_cells": 619,
+      "n_filled": 106,
+      "n_missing": 513,
+      "coverage": 0.1712,
+      "availability": 0.72,
+      "missing": 0.8288,
+      "missing_reasons": {
+        "not_published": 513
+      },
+      "selection_bias": 0.11,
+      "selection_bias_detail": {
+        "mean_pop_filled": 6.377,
+        "mean_pop_missing": 7.257,
+        "mode": "missingness_vs_popularity"
+      },
+      "temporal_bias": 0.9013,
+      "leak_risk": 0.7,
+      "asof_clamped_rate": 1.0,
+      "observed_after_prediction_rate": 0.0,
+      "variance_penalty": 0.0736,
+      "stability": 0.9789,
+      "weekly_drift": 0.0044,
+      "weeks_observed": 2,
+      "weekly_coverage": [
+        {
+          "date": "2026-07-25",
+          "coverage": 0.17
+        },
+        {
+          "date": "2026-07-26",
+          "coverage": 0.1744
+        }
+      ],
+      "snapshot_anti_leak_violation_sum": 0,
+      "reliability_score": 52.7,
+      "rank": 9
+    },
+    {
+      "feature_id": "oikiri_rating",
+      "label": "WorkoutRating",
+      "n_cells": 619,
+      "n_filled": 106,
+      "n_missing": 513,
+      "coverage": 0.1712,
+      "availability": 0.72,
+      "missing": 0.8288,
+      "missing_reasons": {
+        "not_published": 513
+      },
+      "selection_bias": 0.11,
+      "selection_bias_detail": {
+        "mean_pop_filled": 6.377,
+        "mean_pop_missing": 7.257,
+        "mode": "missingness_vs_popularity"
+      },
+      "temporal_bias": 0.9013,
+      "leak_risk": 0.7,
+      "asof_clamped_rate": 1.0,
+      "observed_after_prediction_rate": 0.0,
+      "variance_penalty": 0.1883,
+      "stability": 0.9956,
+      "weekly_drift": 0.0044,
+      "weeks_observed": 2,
+      "weekly_coverage": [
+        {
+          "date": "2026-07-25",
+          "coverage": 0.17
+        },
+        {
+          "date": "2026-07-26",
+          "coverage": 0.1744
+        }
+      ],
+      "snapshot_anti_leak_violation_sum": 0,
+      "reliability_score": 51.9,
+      "rank": 10
+    }
+  ],
+  "archetype_reweight": {
+    "count": 39,
+    "top": [
+      {
+        "id": "mined_k2_oikiri_rating-WK_B_sire-SIRE_MID",
+        "label": "oikiri_rating=WK_B + sire=SIRE_MID",
+        "source": "mined_2way",
+        "n_horses": 6,
+        "n_races": 5,
+        "win_rate": 0.5,
+        "place_rate": 0.6666666666666666,
+        "roi": 2.16,
+        "strict_rate": 0.6,
+        "soft_rate": 0.6,
+        "features_used": [
+          "oikiri_rating",
+          "sire"
+        ],
+        "mean_feature_reliability": 63.2,
+        "reliability_weight": 0.632,
+        "base_research_score": 0.513667,
+        "reliability_weighted_score": 0.324638,
+        "overfit_risk": false,
+        "rank": 1
+      },
+      {
+        "id": "mined_k2_oikiri_rating-WK_B_owner-OWNER_WEAK",
+        "label": "oikiri_rating=WK_B + owner=OWNER_WEAK",
+        "source": "mined_2way",
+        "n_horses": 8,
+        "n_races": 6,
+        "win_rate": 0.5,
+        "place_rate": 0.5,
+        "roi": 2.05,
+        "strict_rate": 0.6666666666666666,
+        "soft_rate": 0.6666666666666666,
+        "features_used": [
+          "oikiri_rating",
+          "owner"
+        ],
+        "mean_feature_reliability": 63.0,
+        "reliability_weight": 0.6305,
+        "base_research_score": 0.4955,
+        "reliability_weighted_score": 0.312413,
+        "overfit_risk": false,
+        "rank": 2
+      },
+      {
+        "id": "mined_k2_popularity-P1_sire-SIRE_WEAK",
+        "label": "popularity=P1 + sire=SIRE_WEAK",
+        "source": "mined_2way",
+        "n_horses": 16,
+        "n_races": 16,
+        "win_rate": 0.4375,
+        "place_rate": 0.5,
+        "roi": 0.075,
+        "strict_rate": 0.4375,
+        "soft_rate": 0.4375,
+        "features_used": [
+          "popularity",
+          "sire"
+        ],
+        "mean_feature_reliability": 75.0,
+        "reliability_weight": 0.7495,
+        "base_research_score": 0.35575,
+        "reliability_weighted_score": 0.266635,
+        "overfit_risk": false,
+        "rank": 3
+      },
+      {
+        "id": "market_favorite",
+        "label": "Market Favorite (P1)",
+        "source": "hypothesis",
+        "n_horses": 31,
+        "n_races": 31,
+        "win_rate": 0.3225806451612903,
+        "place_rate": 0.45161290322580644,
+        "roi": -0.21935483870967742,
+        "strict_rate": 0.3225806451612903,
+        "soft_rate": 0.3225806451612903,
+        "features_used": [
+          "popularity"
+        ],
+        "mean_feature_reliability": 75.4,
+        "reliability_weight": 0.754,
+        "base_research_score": 0.313737,
+        "reliability_weighted_score": 0.236558,
+        "overfit_risk": false,
+        "rank": 4
+      },
+      {
+        "id": "mined_k2_owner-OWNER_STRONG_popularity-P1",
+        "label": "owner=OWNER_STRONG + popularity=P1",
+        "source": "mined_2way",
+        "n_horses": 6,
+        "n_races": 6,
+        "win_rate": 0.5,
+        "place_rate": 0.6666666666666666,
+        "roi": 0.0,
+        "strict_rate": 0.5,
+        "soft_rate": 0.5,
+        "features_used": [
+          "owner",
+          "popularity"
+        ],
+        "mean_feature_reliability": 74.8,
+        "reliability_weight": 0.748,
+        "base_research_score": 0.313667,
+        "reliability_weighted_score": 0.234623,
+        "overfit_risk": false,
+        "rank": 5
+      },
+      {
+        "id": "trainer_strong_market",
+        "label": "Strong Trainer + Market Top3",
+        "source": "hypothesis",
+        "n_horses": 19,
+        "n_races": 16,
+        "win_rate": 0.2631578947368421,
+        "place_rate": 0.42105263157894735,
+        "roi": 0.13125,
+        "strict_rate": 0.3125,
+        "soft_rate": 0.375,
+        "features_used": [
+          "trainer",
+          "popularity"
+        ],
+        "mean_feature_reliability": 74.7,
+        "reliability_weight": 0.7465,
+        "base_research_score": 0.307388,
+        "reliability_weighted_score": 0.229465,
+        "overfit_risk": false,
+        "rank": 6
+      },
+      {
+        "id": "mined_k2_trainer-TRAINER_STRONG_win_odds-O_SHORT",
+        "label": "trainer=TRAINER_STRONG + win_odds=O_SHORT",
+        "source": "mined_2way",
+        "n_horses": 9,
+        "n_races": 9,
+        "win_rate": 0.4444444444444444,
+        "place_rate": 0.5555555555555556,
+        "roi": 0.18888888888888888,
+        "strict_rate": 0.4444444444444444,
+        "soft_rate": 0.4444444444444444,
+        "features_used": [
+          "trainer",
+          "win_odds"
+        ],
+        "mean_feature_reliability": 69.8,
+        "reliability_weight": 0.6985,
+        "base_research_score": 0.325601,
+        "reliability_weighted_score": 0.227432,
+        "overfit_risk": false,
+        "rank": 7
+      },
+      {
+        "id": "mined_k2_popularity-P1_trainer-TRAINER_STRONG",
+        "label": "popularity=P1 + trainer=TRAINER_STRONG",
+        "source": "mined_2way",
+        "n_horses": 7,
+        "n_races": 7,
+        "win_rate": 0.42857142857142855,
+        "place_rate": 0.5714285714285714,
+        "roi": 0.17142857142857143,
+        "strict_rate": 0.42857142857142855,
+        "soft_rate": 0.42857142857142855,
+        "features_used": [
+          "popularity",
+          "trainer"
+        ],
+        "mean_feature_reliability": 74.7,
+        "reliability_weight": 0.7465,
+        "base_research_score": 0.3042,
+        "reliability_weighted_score": 0.227085,
+        "overfit_risk": false,
+        "rank": 8
+      },
+      {
+        "id": "fav_short",
+        "label": "Favorite + Short Odds",
+        "source": "hypothesis",
+        "n_horses": 31,
+        "n_races": 31,
+        "win_rate": 0.3225806451612903,
+        "place_rate": 0.45161290322580644,
+        "roi": -0.21935483870967742,
+        "strict_rate": 0.3225806451612903,
+        "soft_rate": 0.3225806451612903,
+        "features_used": [
+          "popularity",
+          "win_odds"
+        ],
+        "mean_feature_reliability": 70.6,
+        "reliability_weight": 0.706,
+        "base_research_score": 0.313737,
+        "reliability_weighted_score": 0.221498,
+        "overfit_risk": false,
+        "rank": 9
+      },
+      {
+        "id": "short_odds",
+        "label": "Short Odds",
+        "source": "hypothesis",
+        "n_horses": 52,
+        "n_races": 31,
+        "win_rate": 0.3269230769230769,
+        "place_rate": 0.5,
+        "roi": -0.21935483870967742,
+        "strict_rate": 0.3225806451612903,
+        "soft_rate": 0.3225806451612903,
+        "features_used": [
+          "win_odds"
+        ],
+        "mean_feature_reliability": 65.8,
+        "reliability_weight": 0.658,
+        "base_research_score": 0.335365,
+        "reliability_weighted_score": 0.22067,
+        "overfit_risk": false,
+        "rank": 10
+      },
+      {
+        "id": "mined_k2_breeder-BREEDER_MID_popularity-P1",
+        "label": "breeder=BREEDER_MID + popularity=P1",
+        "source": "mined_2way",
+        "n_horses": 6,
+        "n_races": 6,
+        "win_rate": 0.5,
+        "place_rate": 0.5,
+        "roi": 0.06666666666666667,
+        "strict_rate": 0.5,
+        "soft_rate": 0.5,
+        "features_used": [
+          "breeder",
+          "popularity"
+        ],
+        "mean_feature_reliability": 75.3,
+        "reliability_weight": 0.7535,
+        "base_research_score": 0.278667,
+        "reliability_weighted_score": 0.209976,
+        "overfit_risk": false,
+        "rank": 11
+      },
+      {
+        "id": "mined_k2_oikiri_rating-WK_B_win_odds-O_SHORT",
+        "label": "oikiri_rating=WK_B + win_odds=O_SHORT",
+        "source": "mined_2way",
+        "n_horses": 6,
+        "n_races": 4,
+        "win_rate": 0.5,
+        "place_rate": 0.8333333333333334,
+        "roi": -0.175,
+        "strict_rate": 0.25,
+        "soft_rate": 0.25,
+        "features_used": [
+          "oikiri_rating",
+          "win_odds"
+        ],
+        "mean_feature_reliability": 58.8,
+        "reliability_weight": 0.5885,
+        "base_research_score": 0.337833,
+        "reliability_weighted_score": 0.198815,
+        "overfit_risk": false,
+        "rank": 12
+      },
+      {
+        "id": "market_contender",
+        "label": "Market Contender (P2-3)",
+        "source": "hypothesis",
+        "n_horses": 62,
+        "n_races": 31,
+        "win_rate": 0.1935483870967742,
+        "place_rate": 0.43548387096774194,
+        "roi": -0.267741935483871,
+        "strict_rate": 0.22580645161290322,
+        "soft_rate": 0.3548387096774194,
+        "features_used": [
+          "popularity"
+        ],
+        "mean_feature_reliability": 75.4,
+        "reliability_weight": 0.754,
+        "base_research_score": 0.263354,
+        "reliability_weighted_score": 0.198569,
+        "overfit_risk": false,
+        "rank": 13
+      },
+      {
+        "id": "mined_k2_owner-OWNER_STRONG_win_odds-O_SHORT",
+        "label": "owner=OWNER_STRONG + win_odds=O_SHORT",
+        "source": "mined_2way",
+        "n_horses": 7,
+        "n_races": 7,
+        "win_rate": 0.42857142857142855,
+        "place_rate": 0.5714285714285714,
+        "roi": -0.14285714285714285,
+        "strict_rate": 0.42857142857142855,
+        "soft_rate": 0.42857142857142855,
+        "features_used": [
+          "owner",
+          "win_odds"
+        ],
+        "mean_feature_reliability": 70.0,
+        "reliability_weight": 0.7,
+        "base_research_score": 0.272771,
+        "reliability_weighted_score": 0.19094,
+        "overfit_risk": false,
+        "rank": 14
+      },
+      {
+        "id": "fav_workout",
+        "label": "Favorite/Contender + Workout A/B",
+        "source": "hypothesis",
+        "n_horses": 9,
+        "n_races": 7,
+        "win_rate": 0.3333333333333333,
+        "place_rate": 0.7777777777777778,
+        "roi": -0.5285714285714286,
+        "strict_rate": 0.14285714285714285,
+        "soft_rate": 0.14285714285714285,
+        "features_used": [
+          "popularity",
+          "oikiri_rating"
+        ],
+        "mean_feature_reliability": 63.7,
+        "reliability_weight": 0.6365,
+        "base_research_score": 0.28294,
+        "reliability_weighted_score": 0.180091,
+        "overfit_risk": false,
+        "rank": 15
+      },
+      {
+        "id": "sire_strong_market",
+        "label": "Strong Sire + Market Top3",
+        "source": "hypothesis",
+        "n_horses": 6,
+        "n_races": 6,
+        "win_rate": 0.0,
+        "place_rate": 0.16666666666666666,
+        "roi": -1.0,
+        "strict_rate": 0.0,
+        "soft_rate": 0.0,
+        "features_used": [
+          "sire",
+          "popularity"
+        ],
+        "mean_feature_reliability": 75.0,
+        "reliability_weight": 0.7495,
+        "base_research_score": -0.007762,
+        "reliability_weighted_score": -0.005818,
+        "overfit_risk": false,
+        "rank": 16
+      },
+      {
+        "id": "mined_k3_damsire-DAMSIRE_STRONG_popularity-P2-3_win_odds-O_SHORT",
+        "label": "damsire=DAMSIRE_STRONG + popularity=P2-3 + win_odds=O_SHORT",
+        "source": "mined_3way",
+        "n_horses": 2,
+        "n_races": 2,
+        "win_rate": 1.0,
+        "place_rate": 1.0,
+        "roi": 2.45,
+        "strict_rate": 1.0,
+        "soft_rate": 1.0,
+        "features_used": [
+          "damsire",
+          "popularity",
+          "win_odds"
+        ],
+        "mean_feature_reliability": 72.0,
+        "reliability_weight": 0.7203,
+        "base_research_score": 0.5788,
+        "reliability_weighted_score": 0.229311,
+        "overfit_risk": true,
+        "rank": 17
+      },
+      {
+        "id": "mined_k3_oikiri_rating-WK_B_owner-OWNER_WEAK_sire-SIRE_MID",
+        "label": "oikiri_rating=WK_B + owner=OWNER_WEAK + sire=SIRE_MID",
+        "source": "mined_3way",
+        "n_horses": 3,
+        "n_races": 3,
+        "win_rate": 1.0,
+        "place_rate": 1.0,
+        "roi": 4.266666666666667,
+        "strict_rate": 1.0,
+        "soft_rate": 1.0,
+        "features_used": [
+          "oikiri_rating",
+          "owner",
+          "sire"
+        ],
+        "mean_feature_reliability": 66.9,
+        "reliability_weight": 0.6687,
+        "base_research_score": 0.613909,
+        "reliability_weighted_score": 0.225775,
+        "overfit_risk": true,
+        "rank": 18
+      },
+      {
+        "id": "mined_k3_oikiri_rating-WK_B_owner-OWNER_WEAK_trainer-TRAINER_MID",
+        "label": "oikiri_rating=WK_B + owner=OWNER_WEAK + trainer=TRAINER_MID",
+        "source": "mined_3way",
+        "n_horses": 3,
+        "n_races": 3,
+        "win_rate": 1.0,
+        "place_rate": 1.0,
+        "roi": 4.0,
+        "strict_rate": 1.0,
+        "soft_rate": 1.0,
+        "features_used": [
+          "oikiri_rating",
+          "owner",
+          "trainer"
+        ],
+        "mean_feature_reliability": 66.7,
+        "reliability_weight": 0.6667,
+        "base_research_score": 0.613909,
+        "reliability_weighted_score": 0.2251,
+        "overfit_risk": true,
+        "rank": 19
+      },
+      {
+        "id": "mined_k3_damsire-DAMSIRE_STRONG_popularity-P2-3_sale_price-SALE_LOW",
+        "label": "damsire=DAMSIRE_STRONG + popularity=P2-3 + sale_price=SALE_LOW",
+        "source": "mined_3way",
+        "n_horses": 2,
+        "n_races": 2,
+        "win_rate": 1.0,
+        "place_rate": 1.0,
+        "roi": 2.45,
+        "strict_rate": 1.0,
+        "soft_rate": 1.0,
+        "features_used": [
+          "damsire",
+          "popularity",
+          "sale_price"
+        ],
+        "mean_feature_reliability": 69.1,
+        "reliability_weight": 0.6907,
+        "base_research_score": 0.5788,
+        "reliability_weighted_score": 0.219867,
+        "overfit_risk": true,
+        "rank": 20
+      },
+      {
+        "id": "mined_k3_oikiri_rating-WK_B_popularity-P2-3_sire-SIRE_MID",
+        "label": "oikiri_rating=WK_B + popularity=P2-3 + sire=SIRE_MID",
+        "source": "mined_3way",
+        "n_horses": 2,
+        "n_races": 2,
+        "win_rate": 1.0,
+        "place_rate": 1.0,
+        "roi": 2.05,
+        "strict_rate": 1.0,
+        "soft_rate": 1.0,
+        "features_used": [
+          "oikiri_rating",
+          "popularity",
+          "sire"
+        ],
+        "mean_feature_reliability": 67.3,
+        "reliability_weight": 0.6727,
+        "base_research_score": 0.5788,
+        "reliability_weighted_score": 0.214136,
+        "overfit_risk": true,
+        "rank": 21
+      },
+      {
+        "id": "mined_k3_oikiri_rating-WK_B_popularity-P2-3_win_odds-O_SHORT",
+        "label": "oikiri_rating=WK_B + popularity=P2-3 + win_odds=O_SHORT",
+        "source": "mined_3way",
+        "n_horses": 3,
+        "n_races": 3,
+        "win_rate": 1.0,
+        "place_rate": 1.0,
+        "roi": 1.8666666666666667,
+        "strict_rate": 1.0,
+        "soft_rate": 1.0,
+        "features_used": [
+          "oikiri_rating",
+          "popularity",
+          "win_odds"
+        ],
+        "mean_feature_reliability": 64.4,
+        "reliability_weight": 0.6437,
+        "base_research_score": 0.600576,
+        "reliability_weighted_score": 0.212614,
+        "overfit_risk": true,
+        "rank": 22
+      },
+      {
+        "id": "mined_k3_oikiri_rating-WK_B_owner-OWNER_WEAK_win_odds-O_SHORT",
+        "label": "oikiri_rating=WK_B + owner=OWNER_WEAK + win_odds=O_SHORT",
+        "source": "mined_3way",
+        "n_horses": 3,
+        "n_races": 3,
+        "win_rate": 1.0,
+        "place_rate": 1.0,
+        "roi": 1.8666666666666667,
+        "strict_rate": 1.0,
+        "soft_rate": 1.0,
+        "features_used": [
+          "oikiri_rating",
+          "owner",
+          "win_odds"
+        ],
+        "mean_feature_reliability": 64.0,
+        "reliability_weight": 0.6397,
+        "base_research_score": 0.600576,
+        "reliability_weighted_score": 0.211292,
+        "overfit_risk": true,
+        "rank": 23
+      },
+      {
+        "id": "high_sale_market",
+        "label": "High Sale + Market Top3",
+        "source": "hypothesis",
+        "n_horses": 2,
+        "n_races": 2,
+        "win_rate": 1.0,
+        "place_rate": 1.0,
+        "roi": 3.65,
+        "strict_rate": 1.0,
+        "soft_rate": 1.0,
+        "features_used": [
+          "sale_price",
+          "popularity"
+        ],
+        "mean_feature_reliability": 66.2,
+        "reliability_weight": 0.6615,
+        "base_research_score": 0.5788,
+        "reliability_weighted_score": 0.210582,
+        "overfit_risk": true,
+        "rank": 24
+      },
+      {
+        "id": "mined_k3_damsire-DAMSIRE_STRONG_sale_price-SALE_LOW_win_odds-O_SHORT",
+        "label": "damsire=DAMSIRE_STRONG + sale_price=SALE_LOW + win_odds=O_SHORT",
+        "source": "mined_3way",
+        "n_horses": 2,
+        "n_races": 2,
+        "win_rate": 1.0,
+        "place_rate": 1.0,
+        "roi": 2.45,
+        "strict_rate": 1.0,
+        "soft_rate": 1.0,
+        "features_used": [
+          "damsire",
+          "sale_price",
+          "win_odds"
+        ],
+        "mean_feature_reliability": 65.9,
+        "reliability_weight": 0.6587,
+        "base_research_score": 0.5788,
+        "reliability_weighted_score": 0.20968,
+        "overfit_risk": true,
+        "rank": 25
+      }
+    ],
+    "note": "Archetype scores multiplied by mean Reliability Score of involved features / 100."
+  }
+}

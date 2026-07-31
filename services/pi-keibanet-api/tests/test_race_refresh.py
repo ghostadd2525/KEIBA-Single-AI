@@ -21,12 +21,16 @@ from pi_keibanet.race_refresh import (
     RefreshConfig,
     RaceSnapshotEntry,
     compute_entries_fingerprint,
+    daily_features_path,
+    features_output_path,
     in_refresh_window,
     load_snapshot,
+    merge_daily_features,
     merge_day_frames,
     run_refresh,
     save_snapshot,
     select_races_for_update,
+    write_daily_features,
     write_report_json,
 )
 
@@ -141,6 +145,87 @@ class MergeFramesTest(unittest.TestCase):
             self.assertEqual(str(r1.iloc[0]["horse_id"]), "H2")
 
 
+class MergeDailyFeaturesTest(unittest.TestCase):
+    def test_keeps_unupdated_race_rows(self):
+        existing = pd.DataFrame(
+            [
+                {"race_id": "A", "horse_id": "H1", "history_score": 0.9},
+                {"race_id": "B", "horse_id": "H2", "history_score": 0.1},
+            ]
+        )
+        new_features = pd.DataFrame(
+            [
+                {"race_id": "B", "horse_id": "H9", "history_score": 0.5},
+                {"race_id": "C", "horse_id": "H3", "history_score": 0.2},
+            ]
+        )
+        merged = merge_daily_features(existing, new_features, {"B"})
+        races = set(merged["race_id"].astype(str))
+        self.assertEqual(races, {"A", "B"})
+        a = merged[merged["race_id"] == "A"].iloc[0]
+        b = merged[merged["race_id"] == "B"].iloc[0]
+        self.assertEqual(float(a["history_score"]), 0.9)
+        self.assertEqual(str(b["horse_id"]), "H9")
+        self.assertEqual(float(b["history_score"]), 0.5)
+
+    def test_none_updated_rewrites_all(self):
+        existing = pd.DataFrame([{"race_id": "A", "horse_id": "H1"}])
+        new_features = pd.DataFrame([{"race_id": "B", "horse_id": "H2"}])
+        merged = merge_daily_features(existing, new_features, None)
+        self.assertEqual(list(merged["race_id"]), ["B"])
+
+    @patch("pi_keibanet.race_refresh.build_features")
+    def test_write_daily_features_merges_and_shadow(self, mock_build):
+        mock_build.return_value = pd.DataFrame(
+            [{"race_id": "B", "horse_id": "H9", "history_score": 0.55}]
+        )
+        with tempfile.TemporaryDirectory() as tmp:
+            data_root = Path(tmp) / "data"
+            shadow = Path(tmp) / "shadow"
+            state = Path(tmp) / "state"
+            cfg = RefreshConfig(data_root=data_root, state_root=state, features_shadow_dir=shadow)
+            date = "2026-07-25"
+            baseline = daily_features_path(cfg, date)
+            baseline.parent.mkdir(parents=True, exist_ok=True)
+            pd.DataFrame(
+                [
+                    {"race_id": "A", "horse_id": "H1", "history_score": 0.9},
+                    {"race_id": "B", "horse_id": "H2", "history_score": 0.1},
+                ]
+            ).to_csv(baseline, index=False, encoding="utf-8-sig")
+
+            runners = pd.DataFrame(
+                [
+                    {
+                        "race_id": "B",
+                        "horse_id": "H9",
+                        "horse_number": 9,
+                        "horse_number_source": "umaban",
+                        "frame_number": 1,
+                        "date": date,
+                    }
+                ]
+            )
+            history = pd.DataFrame()
+            out = write_daily_features(
+                cfg, date, runners, history, updated_race_ids={"B"}
+            )
+            self.assertEqual(out, features_output_path(cfg, date))
+            self.assertTrue(out.is_file())
+            self.assertFalse(out == baseline)
+
+            shadow_df = pd.read_csv(out, encoding="utf-8-sig")
+            self.assertEqual(set(shadow_df["race_id"].astype(str)), {"A", "B"})
+            a = shadow_df[shadow_df["race_id"] == "A"].iloc[0]
+            b = shadow_df[shadow_df["race_id"] == "B"].iloc[0]
+            self.assertEqual(float(a["history_score"]), 0.9)
+            self.assertEqual(str(b["horse_id"]), "H9")
+
+            # Production baseline unchanged
+            prod = pd.read_csv(baseline, encoding="utf-8-sig")
+            self.assertEqual(str(prod[prod["race_id"] == "B"].iloc[0]["horse_id"]), "H2")
+
+
 class RunRefreshIntegrationTest(unittest.TestCase):
     def test_outside_window_skips_without_force(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -176,7 +261,16 @@ class RunRefreshIntegrationTest(unittest.TestCase):
         }]
         mock_discover.return_value = ([MagicMock()], published, 2)
         mock_process.return_value = (
-            [{"race_id": "2026-07-25-01-06", "horse_id": "H1", "horse_number": 1, "date": "2026-07-25"}],
+            [
+                {
+                    "race_id": "2026-07-25-01-06",
+                    "horse_id": "H1",
+                    "horse_number": 1,
+                    "horse_number_source": "umaban",
+                    "frame_number": 1,
+                    "date": "2026-07-25",
+                }
+            ],
             [],
             {},
         )

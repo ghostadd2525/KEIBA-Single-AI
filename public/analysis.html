@@ -7,13 +7,13 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Noto+Sans+JP:wght@400;500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="assets/styles.css?v=18" />
-  <link rel="stylesheet" href="assets/screens.css?v=18" />
-  <link rel="stylesheet" href="assets/ux.css?v=16" />
-  <link rel="stylesheet" href="assets/vqa.css" />
+  <link rel="stylesheet" href="assets/styles.css?v=23" />
+  <link rel="stylesheet" href="assets/screens.css?v=39" />
+  <link rel="stylesheet" href="assets/ux.css?v=18" />
+  <link rel="stylesheet" href="assets/vqa.css?v=4" />
   <script src="assets/api/calendar-weekend.js?v=14"></script>
-  <script src="assets/auto-maintenance.js?v=11.3"></script>
-  <script src="assets/auth.js?v=4"></script>
+  <script src="assets/auto-maintenance.js?v=12.4"></script>
+  <script src="assets/auth.js?v=6"></script>
   <script>
     if (ExpectAuth.requireAuth() && window.ExpectAutoMaintenance) {
       ExpectAutoMaintenance.run();
@@ -37,7 +37,7 @@
     <div class="screen">
       <section class="chart-card analysis-summary is-loading" id="analysisSummary" aria-labelledby="aiSummaryTitle">
         <h3 id="aiSummaryTitle">AI総評パラメータ</h3>
-        <p class="analysis-lead">お気に入り登録レースを集計した総合評価です。</p>
+        <p class="analysis-lead">お気に入りに登録したレースをもとに、AI評価をまとめて表示しています。</p>
         <div class="pie-layout">
           <div class="pie-chart pie-chart--lg" id="summaryPie" role="img" aria-label="AI総評の円グラフ">
             <div class="pie-chart-center">
@@ -51,7 +51,7 @@
 
       <section class="chart-card" aria-labelledby="favAiTitle">
         <h3 id="favAiTitle">お気に入りレースのAI評価</h3>
-        <p class="analysis-lead">登録中のレースごとにパラメータを円グラフ表示します。</p>
+        <p class="analysis-lead">お気に入りに登録したレースごとのAI評価を確認できます。</p>
         <div class="fav-ai-grid" id="favAiGrid" aria-busy="true">
           <div class="expect-loading expect-loading--compact" role="status" aria-live="polite" aria-busy="true" data-expect-loading="1">
             <div class="expect-loading__spinner" aria-hidden="true"></div>
@@ -59,7 +59,7 @@
             <p class="expect-loading__msg">しばらくお待ちください。</p>
             <div class="expect-loading__progress" data-expect-load-track role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
               <div class="expect-loading__track">
-                <img class="expect-loading__runner" data-expect-load-runner src="assets/images/mascot-loading-run.png?v=3" alt="" width="56" height="56" draggable="false" />
+                <img class="expect-loading__runner" data-expect-load-runner src="assets/images/mascot-loading-run.webp?v=3" alt="" width="56" height="56" draggable="false" />
                 <div class="expect-loading__bar"><span class="expect-loading__fill" data-expect-load-fill></span></div>
               </div>
               <p class="expect-loading__meta" data-expect-load-meta>経過 0.0秒</p>
@@ -72,7 +72,7 @@
     <aside class="mascot-ka0ba" id="mascotKa0ba" data-mascot-mode="png">
       <div class="mascot-bubble" id="mascotBubble" role="status" aria-live="polite"></div>
       <button type="button" class="mascot-figure" id="mascotTalkBtn" aria-label="KA0BAに話しかける">
-        <img data-mascot-fallback src="assets/images/mascot-ka0ba.png?v=10" alt="" height="140" draggable="false" />
+        <img data-mascot-fallback src="assets/images/mascot-ka0ba.webp?v=10" alt="" height="140" draggable="false" />
       </button>
     </aside>
 
@@ -81,11 +81,11 @@
   <script src="assets/api/mock-gate.js"></script>
   <script src="assets/api/auth.js"></script>
   <script src="assets/api/contract-guard.js"></script>
-  <script src="assets/api/prediction.js"></script>
-  <script src="assets/api/analysis.js"></script>
-  <script src="assets/api/analysis-bind.js?v=30"></script>
+  <script src="assets/api/http-cache.js?v=1"></script>
+  <script src="assets/api/prediction.js?v=16"></script>
+  <script src="assets/api/analysis-bind.js?v=31"></script>
   <script src="assets/ux.js?v=15"></script>
-  <script src="assets/favorites.js?v=4"></script>
+  <script src="assets/favorites.js?v=7"></script>
   <script src="assets/shell.js"></script>
   <script src="assets/reminders.js"></script>
   <script src="assets/partials-nav.js"></script>
@@ -97,7 +97,6 @@
         ["history", "distance", "style_fit", "front", "pace_resilience"];
       var LABELS =
         (window.ExpectAnalysisBind && ExpectAnalysisBind.DEFAULT_LABELS) ||
-        (window.ExpectFavorites && ExpectFavorites.AI_PARAM_LABELS) ||
         {
           history: "近走成績",
           distance: "距離適性",
@@ -105,18 +104,45 @@
           front: "先行傾向",
           pace_resilience: "展開耐性",
         };
+      var EMPTY_MSG =
+        "お気に入りレースはまだありません。<br>レース画面から登録するとここに表示されます。";
 
       function escapeHtml(s) {
-        return String(s)
+        return String(s == null ? "" : s)
           .replace(/&/g, "&amp;")
           .replace(/</g, "&lt;")
           .replace(/>/g, "&gt;")
           .replace(/"/g, "&quot;");
       }
 
+      function emptyAi() {
+        return {
+          overall: null,
+          history: null,
+          distance: null,
+          style_fit: null,
+          front: null,
+          pace_resilience: null,
+        };
+      }
+
+      function hasRealAi(ai) {
+        if (!ai) return false;
+        return PARAM_KEYS.some(function (k) {
+          return ai[k] != null && isFinite(Number(ai[k]));
+        });
+      }
+
       function conicFromScores(ai) {
-        var values = PARAM_KEYS.map(function (k) { return Number(ai[k]) || 0; });
-        var total = values.reduce(function (a, b) { return a + b; }, 0) || 1;
+        var values = PARAM_KEYS.map(function (k) {
+          return Number(ai && ai[k]) || 0;
+        });
+        var total = values.reduce(function (a, b) {
+          return a + b;
+        }, 0);
+        if (!total) {
+          return "conic-gradient(from -90deg, rgba(255,255,255,0.08) 0 100%)";
+        }
         var cursor = 0;
         var parts = [];
         values.forEach(function (v, i) {
@@ -128,28 +154,11 @@
         return "conic-gradient(from -90deg, " + parts.join(", ") + ")";
       }
 
-      function donutConfidence(score) {
-        var s = Math.max(0, Math.min(100, Number(score) || 0));
-        return (
-          "conic-gradient(from -90deg, #d4b37d 0% " +
-          s +
-          "%, rgba(255,255,255,0.08) " +
-          s +
-          "% 100%)"
-        );
-      }
-
-      function avgParams(list) {
-        if (!list.length) {
-          return {
-            overall: 0,
-            history: 0,
-            distance: 0,
-            style_fit: 0,
-            front: 0,
-            pace_resilience: 0,
-          };
-        }
+      function avgParams(rows) {
+        var usable = (rows || []).filter(function (r) {
+          return r && r.ready && hasRealAi(r.ai);
+        });
+        if (!usable.length) return emptyAi();
         var acc = {
           overall: 0,
           history: 0,
@@ -158,105 +167,136 @@
           front: 0,
           pace_resilience: 0,
         };
-        list.forEach(function (item) {
-          var ai = item.ai || ExpectFavorites.getAi(item.id);
+        var counts = {
+          overall: 0,
+          history: 0,
+          distance: 0,
+          style_fit: 0,
+          front: 0,
+          pace_resilience: 0,
+        };
+        usable.forEach(function (item) {
+          var ai = item.ai;
           Object.keys(acc).forEach(function (k) {
-            acc[k] += Number(ai[k]) || 0;
+            if (ai[k] == null || !isFinite(Number(ai[k]))) return;
+            acc[k] += Number(ai[k]);
+            counts[k] += 1;
           });
         });
         Object.keys(acc).forEach(function (k) {
-          acc[k] = Math.round(acc[k] / list.length);
+          acc[k] = counts[k] ? Math.round(acc[k] / counts[k]) : null;
         });
         return acc;
       }
 
-      function renderSummary(list) {
-        var ai = avgParams(list);
+      function raceTitle(item) {
+        return (item && (item.name || item.place)) || "レース";
+      }
+
+      function raceSub(item) {
+        var bits = [];
+        if (item.place && item.name && item.place !== item.name) bits.push(item.place);
+        if (item.badge) bits.push(item.badge);
+        return bits.join(" · ");
+      }
+
+      function renderSummary(rows) {
         var pie = document.getElementById("summaryPie");
         var overall = document.getElementById("summaryOverall");
         var legend = document.getElementById("summaryLegend");
         if (!pie || !overall || !legend) return;
 
-        if (!list.length) {
+        var ready = (rows || []).filter(function (r) {
+          return r && r.ready && hasRealAi(r.ai);
+        });
+        if (!ready.length) {
           pie.style.background = "conic-gradient(from -90deg, rgba(255,255,255,0.08) 0 100%)";
           overall.textContent = "—";
           legend.innerHTML =
-            '<li class="pie-legend-empty">お気に入りレースを登録すると、<br>総評パラメータが円グラフで表示されます。</li>';
+            '<li class="pie-legend-empty">' +
+            (rows && rows.length
+              ? "Prediction データ取得後に総評が表示されます。"
+              : EMPTY_MSG) +
+            "</li>";
           return;
         }
 
+        var ai = avgParams(ready);
         pie.style.background = conicFromScores(ai);
-        overall.textContent = ai.overall + "%";
+        overall.textContent = ai.overall != null ? ai.overall + "%" : "—";
         legend.innerHTML = PARAM_KEYS.map(function (key, i) {
+          var v = ai[key];
           return (
             '<li><i style="background:' +
             COLORS[i] +
             '"></i><span>' +
             escapeHtml(LABELS[key] || key) +
-            '</span><b>' +
-            ai[key] +
-            "%</b></li>"
+            "</span><b>" +
+            (v != null ? v + "%" : "—") +
+            "</b></li>"
           );
         }).join("");
       }
 
-      function renderFavorites(list) {
+      function renderFavorites(rows) {
         var grid = document.getElementById("favAiGrid");
         if (!grid) return;
 
-        if (!list.length) {
+        if (!rows.length) {
           grid.innerHTML =
-            '<div class="fav-ai-empty">' +
-            "<p>まだお気に入りがありません。</p>" +
-            '<a href="races.html">レース一覧で ★ 登録する ›</a>' +
-            "</div>";
+            '<div class="fav-ai-empty"><p>' + EMPTY_MSG + "</p></div>";
           return;
         }
 
-        grid.innerHTML = list
+        grid.innerHTML = rows
           .map(function (item) {
-            var ai = item.ai || ExpectFavorites.getAi(item.id);
+            var ai = item.ai || emptyAi();
+            var ready = item.ready && hasRealAi(ai);
             var href = "race.html?race_id=" + encodeURIComponent(item.id);
+            var title = raceTitle(item);
+            var sub = raceSub(item);
+            var overallLabel = ready && ai.overall != null ? ai.overall + "%" : "—";
+
             var legend = PARAM_KEYS.map(function (key, i) {
+              var v = ready ? ai[key] : null;
               return (
                 '<li><i style="background:' +
                 COLORS[i] +
                 '"></i><span>' +
                 escapeHtml(LABELS[key] || key) +
                 "</span><b>" +
-                ai[key] +
-                "%</b></li>"
+                (v != null ? v + "%" : "—") +
+                "</b></li>"
               );
             }).join("");
 
             return (
-              '<article class="fav-ai-card">' +
+              '<article class="fav-ai-card' +
+              (ready ? "" : " is-pending") +
+              '">' +
               '<div class="fav-ai-card-top">' +
               '<div class="pie-chart pie-chart--md" style="background:' +
-              conicFromScores(ai) +
+              (ready ? conicFromScores(ai) : "conic-gradient(from -90deg, rgba(255,255,255,0.08) 0 100%)") +
               '" role="img" aria-label="' +
-              escapeHtml(item.place) +
+              escapeHtml(title) +
               'のAI評価円グラフ">' +
               '<div class="pie-chart-center">' +
               "<strong>" +
-              ai.overall +
-              "%</strong>" +
-              "<small>総合</small>" +
+              overallLabel +
+              "</strong>" +
+              "<small>AI総合</small>" +
               "</div></div>" +
               '<div class="fav-ai-meta">' +
               "<h4>" +
-              escapeHtml(item.place) +
+              escapeHtml(title) +
               "</h4>" +
-              "<p>" +
-              escapeHtml(item.name || "") +
-              (item.badge ? " · " + escapeHtml(item.badge) : "") +
+              (sub ? "<p>" + escapeHtml(sub) + "</p>" : "<p></p>") +
+              '<p class="fav-ai-conf">AI総合 ' +
+              overallLabel +
               "</p>" +
-              '<div class="pie-chart pie-chart--sm" style="background:' +
-              donutConfidence(ai.overall) +
-              '" title="AI信頼度"></div>' +
-              '<p class="fav-ai-conf">AI信頼度 ' +
-              ai.overall +
-              "%</p>" +
+              (ready
+                ? ""
+                : '<p class="fav-ai-pending">データ取得中または未取得</p>') +
               '<a href="' +
               href +
               '">詳細を見る ›</a>' +
@@ -270,26 +310,34 @@
           .join("");
       }
 
-      function render() {
-        var list = ExpectFavorites.list();
-        renderSummary(list);
-        renderFavorites(list);
+      function paint(rows) {
+        renderSummary(rows);
+        renderFavorites(rows);
 
-        var top = list[0];
+        var ready = rows.filter(function (r) {
+          return r.ready && hasRealAi(r.ai);
+        });
+        var top = ready[0];
         var lines = [
-          "お気に入りのAI評価を<br>円グラフでまとめたよ！",
-          "パラメータのバランスを<br>見て買い目を考えよう♪"
+          "お気に入りはあなた専用だよ<br>（最大3件）",
+          "パラメータの平均で<br>総評をまとめているよ♪",
         ];
-        if (top && top.ai) {
+        if (top) {
           lines.unshift(
-            "いま一番の注目は<br><strong>" +
-              top.place +
-              "</strong><br>総合 <strong>" +
-              top.ai.overall +
-              "%</strong> だよ！"
+            "注目レースは<br><strong>" +
+              escapeHtml(raceTitle(top)) +
+              "</strong><br>AI総合 <strong>" +
+              (top.ai.overall != null ? top.ai.overall : "—") +
+              "%</strong>"
           );
+        } else if (!rows.length) {
+          lines = [
+            "お気に入りはまだないよ<br>レース画面の ★ から登録してね",
+          ];
         }
-        ExpectShell.initMascotTalk(lines);
+        if (window.ExpectShell && ExpectShell.initMascotTalk) {
+          ExpectShell.initMascotTalk(lines);
+        }
       }
 
       function finishLoading() {
@@ -302,73 +350,99 @@
         }
       }
 
-      function enrichFromApi(list) {
-        var grid = document.getElementById("favAiGrid");
-        if (!list.length || !window.ExpectApi || !ExpectApi.Prediction || !ExpectApi.Analysis) {
-          render();
+      function favoriteRows() {
+        var list = (window.ExpectFavorites && ExpectFavorites.list()) || [];
+        return list.slice(0, 3).map(function (item) {
+          return {
+            id: item.id,
+            place: item.place || "",
+            name: item.name || "",
+            badge: item.badge || "",
+            postTime: item.postTime || "",
+            ai: emptyAi(),
+            ready: false,
+          };
+        });
+      }
+
+      function enrichFromPrediction(rows) {
+        if (!rows.length) {
+          paint(rows);
           finishLoading();
           return;
         }
-        var rejected = 0;
+        if (!window.ExpectApi || !ExpectApi.Prediction || !ExpectApi.Prediction.get) {
+          paint(rows);
+          finishLoading();
+          return;
+        }
+
         Promise.all(
-          list.map(function (item) {
-            var rid = item.id;
-            return Promise.all([
-              ExpectApi.Prediction.get(rid),
-              ExpectApi.Analysis.get(rid),
-            ]).then(function (pair) {
-              var bundle = pair[0];
-              var analysis = pair[1];
-              var pbOk = !bundle || !bundle.__contract || bundle.__contract.ok;
-              var aOk = !analysis || !analysis.__contract || analysis.__contract.ok;
-              if (!pbOk || !aOk) {
-                rejected += 1;
-                return;
-              }
-              item.ai = ExpectAnalysisBind.toAiParams(bundle, analysis);
-              if (bundle && bundle.race_info) {
-                var info = bundle.race_info;
-                item.place =
-                  item.place ||
-                  (info.venue || "") + (info.race_no != null ? " " + info.race_no + "R" : "");
-                item.name = item.name || info.class_label || "";
-                item.badge = item.badge || info.grade || "";
-              }
-            });
+          rows.map(function (item) {
+            return ExpectApi.Prediction.get(item.id)
+              .then(function (bundle) {
+                var pbOk = !bundle || !bundle.__contract || bundle.__contract.ok;
+                if (!bundle || !pbOk) return;
+                if (window.ExpectFavorites && ExpectFavorites.cacheBundle) {
+                  ExpectFavorites.cacheBundle(bundle);
+                }
+                var ai =
+                  window.ExpectAnalysisBind && ExpectAnalysisBind.toAiParams
+                    ? ExpectAnalysisBind.toAiParams(bundle, null)
+                    : null;
+                if (!ai || !hasRealAi(ai)) return;
+                item.ai = {
+                  overall: ai.overall != null ? ai.overall : null,
+                  history: ai.history != null ? ai.history : null,
+                  distance: ai.distance != null ? ai.distance : null,
+                  style_fit: ai.style_fit != null ? ai.style_fit : null,
+                  front: ai.front != null ? ai.front : null,
+                  pace_resilience:
+                    ai.pace_resilience != null ? ai.pace_resilience : null,
+                };
+                item.ready = true;
+                if (bundle.race_info) {
+                  var info = bundle.race_info;
+                  var raceNo =
+                    info.race_no != null ? info.race_no : info.race_number;
+                  item.place =
+                    info.race_label ||
+                    (info.venue || "") +
+                      (raceNo != null ? " " + raceNo + "R" : "") ||
+                    item.place;
+                  item.name =
+                    info.race_name || info.class_label || item.name || "";
+                  item.badge = info.grade || item.badge || "";
+                }
+              })
+              .catch(function () {
+                /* keep pending — no mock 70% */
+              });
           })
         ).then(function () {
-          if (rejected && window.ExpectContractGuard && grid) {
-            ExpectContractGuard.showErrorCard(grid, {
-              title: "一部のお気に入りを更新できません",
-              message: rejected + "件が API 契約違反のためスキップしました。",
-            });
-          }
-          render();
-          finishLoading();
-        }).catch(function () {
-          if (window.ExpectUx && grid) {
-            grid.innerHTML = "";
-            grid.appendChild(
-              ExpectUx.stateCard({
-                kind: "error",
-                title: "AI分析を更新できません",
-                message: "Prediction / Analysis の取得に失敗しました。",
-                onRetry: function () {
-                  location.reload();
-                },
-              })
-            );
-          } else if (window.ExpectContractGuard && grid) {
-            ExpectContractGuard.showErrorCard(grid, {
-              title: "AI分析を更新できません",
-              message: "Prediction / Analysis の取得に失敗しました。",
-            });
-          }
+          paint(rows);
           finishLoading();
         });
       }
 
-      enrichFromApi(ExpectFavorites.list());
+      function loadDashboard() {
+        var rows = favoriteRows();
+        enrichFromPrediction(rows);
+      }
+
+      loadDashboard();
+      window.addEventListener("expect:favorites-changed", function () {
+        var grid = document.getElementById("favAiGrid");
+        var summary = document.getElementById("analysisSummary");
+        if (summary) summary.classList.add("is-loading");
+        if (grid) {
+          grid.setAttribute("aria-busy", "true");
+          if (window.ExpectUx && ExpectUx.showLoading) {
+            ExpectUx.showLoading(grid, { compact: true, title: "更新中..." });
+          }
+        }
+        loadDashboard();
+      });
     })();
   </script>
 </body>

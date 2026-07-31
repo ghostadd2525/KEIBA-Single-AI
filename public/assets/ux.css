@@ -150,7 +150,6 @@
   inset: 0;
   z-index: 40;
   min-height: 0;
-  overflow: hidden;
   border-radius: inherit;
   background: rgba(8, 10, 14, 0.78);
   backdrop-filter: blur(6px);
@@ -160,7 +159,6 @@
 .is-api-loading {
   position: relative;
   min-height: 180px;
-  overflow: hidden;
 }
 
 /* —— Skeleton —— */
@@ -529,23 +527,6 @@
   border-style: solid;
   border-color: rgba(193, 162, 109, 0.22);
   background: rgba(20, 24, 32, 0.45);
-  padding-right: 36px;
-}
-
-.chat-live2d-dismiss {
-  position: absolute;
-  right: 8px;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 28px;
-  height: 28px;
-  border: 0;
-  border-radius: 8px;
-  background: transparent;
-  color: var(--muted, #9aa3b2);
-  font-size: 18px;
-  line-height: 1;
-  cursor: pointer;
 }
 
 .chat-return-row {

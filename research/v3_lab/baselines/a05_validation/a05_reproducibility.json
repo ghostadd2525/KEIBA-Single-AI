@@ -1,0 +1,41 @@
+{
+  "pass": true,
+  "rounds": 2,
+  "reference": {
+    "control_hit": 59,
+    "treatment_hit": 66,
+    "delta_hit": 7,
+    "churn_hit": 0,
+    "pick_churn": 46,
+    "worsened_winner_rank1": 0,
+    "improved_n": 7,
+    "worsened_n": 0,
+    "treatment_roi": 0.5235,
+    "improved_race_ids": [
+      "2024-02-11-東京-10",
+      "2024-04-21-東京-10",
+      "2024-04-28-東京-10",
+      "2024-06-02-京都-10",
+      "2024-06-30-小倉-10",
+      "2026-02-15-京都-11",
+      "2026-03-22-中京-11"
+    ]
+  },
+  "rounds_detail": [
+    {
+      "panel": "offline_round_1",
+      "pass": true,
+      "hit": 66,
+      "delta_hit": 7,
+      "worsened_rank1": 0
+    },
+    {
+      "panel": "offline_round_2",
+      "pass": true,
+      "hit": 66,
+      "delta_hit": 7,
+      "worsened_rank1": 0
+    }
+  ],
+  "matches_expected": true
+}

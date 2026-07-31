@@ -1,0 +1,70 @@
+[
+  {
+    "case": "maintenance_mode=true",
+    "status_http": 200,
+    "ops": {
+      "ops_mode": "CLOSED",
+      "reason": "manual_maintenance_mode",
+      "manual_override": true,
+      "auto_maintenance_enabled": true,
+      "is_race_day": false,
+      "date_jst": "2026-07-21",
+      "next_open_date_jst": "2026-07-25",
+      "calendar_source": "weekend",
+      "message": "ただいまメンテナンス中です。しばらくしてから再度お試しください。"
+    },
+    "pred_http": 503,
+    "pred_code": "OPS_CLOSED"
+  },
+  {
+    "case": "ops_mode=CLOSED",
+    "status_http": 200,
+    "ops": {
+      "ops_mode": "CLOSED",
+      "reason": "manual_ops_mode",
+      "manual_override": true,
+      "auto_maintenance_enabled": true,
+      "is_race_day": false,
+      "date_jst": "2026-07-21",
+      "next_open_date_jst": "2026-07-25",
+      "calendar_source": "weekend",
+      "message": "ただいまメンテナンス中です。しばらくしてから再度お試しください。"
+    },
+    "pred_http": 503,
+    "pred_code": "OPS_CLOSED"
+  },
+  {
+    "case": "ops_mode=PUBLIC",
+    "status_http": 200,
+    "ops": {
+      "ops_mode": "PUBLIC",
+      "reason": "manual_ops_mode",
+      "manual_override": true,
+      "auto_maintenance_enabled": true,
+      "is_race_day": false,
+      "date_jst": "2026-07-21",
+      "next_open_date_jst": "2026-07-25",
+      "calendar_source": "weekend",
+      "message": "ただいまメンテナンス中です。しばらくしてから再度お試しください。"
+    },
+    "pred_http": 200,
+    "pred_code": null
+  },
+  {
+    "case": "restore auto (ops_mode=null)",
+    "status_http": 200,
+    "ops": {
+      "ops_mode": "CLOSED",
+      "reason": "auto_calendar",
+      "manual_override": false,
+      "auto_maintenance_enabled": true,
+      "is_race_day": false,
+      "date_jst": "2026-07-21",
+      "next_open_date_jst": "2026-07-25",
+      "calendar_source": "weekend",
+      "message": "ただいまメンテナンス中です。しばらくしてから再度お試しください。"
+    },
+    "pred_http": 503,
+    "pred_code": "OPS_CLOSED"
+  }
+]

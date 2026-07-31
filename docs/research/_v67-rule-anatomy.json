@@ -1,0 +1,367 @@
+{
+  "schema": "v67-trigger-rule-anatomy/1.0",
+  "n": 285,
+  "target_rules": [
+    "R1_mixed_short_field",
+    "R7_midupper_diff",
+    "R8_core_default"
+  ],
+  "rule_internal": {
+    "R1_mixed_short_field": {
+      "world": "mixed_world",
+      "structure": "AND(sfp>=0.72, OR(phase>=0.48, chaos>=0.42, difficulty>=0.42))",
+      "logic": "AND of Must-like gate + OR Aux bundle (product code; roles descriptive)",
+      "atoms": [
+        {
+          "id": "R1.sfp_ge_0.72",
+          "signal": "short_field_pressure",
+          "op": "ge",
+          "threshold": 0.72,
+          "role": "AND_gate"
+        },
+        {
+          "id": "R1.phase_ge_0.48",
+          "signal": "phase",
+          "op": "ge",
+          "threshold": 0.48,
+          "role": "OR_arm"
+        },
+        {
+          "id": "R1.chaos_ge_0.42",
+          "signal": "chaos",
+          "op": "ge",
+          "threshold": 0.42,
+          "role": "OR_arm"
+        },
+        {
+          "id": "R1.difficulty_ge_0.42",
+          "signal": "difficulty",
+          "op": "ge",
+          "threshold": 0.42,
+          "role": "OR_arm"
+        }
+      ],
+      "composites": [
+        {
+          "id": "R1.OR_bundle",
+          "role": "OR",
+          "of": [
+            "R1.phase_ge_0.48",
+            "R1.chaos_ge_0.42",
+            "R1.difficulty_ge_0.42"
+          ]
+        },
+        {
+          "id": "R1.full",
+          "role": "AND",
+          "of": [
+            "R1.sfp_ge_0.72",
+            "R1.OR_bundle"
+          ]
+        }
+      ]
+    },
+    "R7_midupper_diff": {
+      "world": "midupper_world",
+      "structure": "AND(difficulty>=0.50)",
+      "logic": "single Must-like atom (no Aux/Exclusion in rule body)",
+      "atoms": [
+        {
+          "id": "R7.difficulty_ge_0.50",
+          "signal": "difficulty",
+          "op": "ge",
+          "threshold": 0.5,
+          "role": "AND_only"
+        }
+      ],
+      "composites": [
+        {
+          "id": "R7.full",
+          "role": "AND",
+          "of": [
+            "R7.difficulty_ge_0.50"
+          ]
+        }
+      ]
+    },
+    "R8_core_default": {
+      "world": "core_world",
+      "structure": "DEFAULT (no positive Must; residual after R1–R7 FAIL)",
+      "logic": "Exclusion-of-others / residual — not Ability Must (V42)",
+      "atoms": [],
+      "composites": [
+        {
+          "id": "R8.default_always",
+          "role": "DEFAULT",
+          "of": []
+        }
+      ]
+    }
+  },
+  "condition_analysis": {
+    "R1.sfp_ge_0.72": {
+      "pass_n": 56,
+      "gt_support": 40,
+      "tp": 6,
+      "fp": 50,
+      "fn": 34,
+      "precision": 0.10714285714285714,
+      "recall": 0.15,
+      "pass_rate": 0.19649122807017544,
+      "missing_rate": 0.15789473684210525,
+      "role": "AND_gate",
+      "rule": "R1_mixed_short_field"
+    },
+    "R1.phase_ge_0.48": {
+      "pass_n": 163,
+      "gt_support": 40,
+      "tp": 20,
+      "fp": 143,
+      "fn": 20,
+      "precision": 0.12269938650306748,
+      "recall": 0.5,
+      "pass_rate": 0.5719298245614035,
+      "missing_rate": 0.15789473684210525,
+      "role": "OR_arm",
+      "rule": "R1_mixed_short_field"
+    },
+    "R1.chaos_ge_0.42": {
+      "pass_n": 157,
+      "gt_support": 40,
+      "tp": 16,
+      "fp": 141,
+      "fn": 24,
+      "precision": 0.10191082802547771,
+      "recall": 0.4,
+      "pass_rate": 0.5508771929824562,
+      "missing_rate": 0.15789473684210525,
+      "role": "OR_arm",
+      "rule": "R1_mixed_short_field"
+    },
+    "R1.difficulty_ge_0.42": {
+      "pass_n": 225,
+      "gt_support": 40,
+      "tp": 33,
+      "fp": 192,
+      "fn": 7,
+      "precision": 0.14666666666666667,
+      "recall": 0.825,
+      "pass_rate": 0.7894736842105263,
+      "missing_rate": 0.15789473684210525,
+      "role": "OR_arm",
+      "rule": "R1_mixed_short_field"
+    },
+    "R1.OR_bundle": {
+      "pass_n": 226,
+      "gt_support": 40,
+      "tp": 33,
+      "fp": 193,
+      "fn": 7,
+      "precision": 0.14601769911504425,
+      "recall": 0.825,
+      "pass_rate": 0.7929824561403509,
+      "missing_rate": null,
+      "role": "OR",
+      "rule": "R1_mixed_short_field"
+    },
+    "R1.full": {
+      "pass_n": 56,
+      "gt_support": 40,
+      "tp": 6,
+      "fp": 50,
+      "fn": 34,
+      "precision": 0.10714285714285714,
+      "recall": 0.15,
+      "pass_rate": 0.19649122807017544,
+      "missing_rate": null,
+      "role": "AND_full",
+      "rule": "R1_mixed_short_field"
+    },
+    "R7.difficulty_ge_0.50": {
+      "pass_n": 178,
+      "gt_support": 92,
+      "tp": 61,
+      "fp": 117,
+      "fn": 31,
+      "precision": 0.34269662921348315,
+      "recall": 0.6630434782608695,
+      "pass_rate": 0.624561403508772,
+      "missing_rate": 0.15789473684210525,
+      "role": "AND_only",
+      "rule": "R7_midupper_diff"
+    },
+    "R8.default_fires": {
+      "pass_n": 104,
+      "gt_support": 45,
+      "tp": 20,
+      "fp": 84,
+      "fn": 25,
+      "precision": 0.19230769230769232,
+      "recall": 0.4444444444444444,
+      "pass_rate": 0.3649122807017544,
+      "missing_rate": null,
+      "role": "DEFAULT",
+      "rule": "R8_core_default"
+    }
+  },
+  "dead_conditions": [],
+  "failure_modes": {
+    "R1": {
+      "OR_multi:3": 42,
+      "sfp_gate_true": 50,
+      "dep:Rule設計": 50,
+      "OR_multi:2": 7,
+      "OR_sole:R1.difficulty_ge_0.42": 1
+    },
+    "R1_or_arm_contrib_on_trigger_fp": {
+      "R1.phase_ge_0.48": 42,
+      "R1.chaos_ge_0.42": 49,
+      "R1.difficulty_ge_0.42": 50
+    },
+    "R1_fn_bottleneck_gt_mixed": {
+      "sfp_fail": 27,
+      "both_sfp_and_OR": 7
+    },
+    "R7": {
+      "difficulty_ge_0.50": 57,
+      "dep:Rule設計": 57
+    },
+    "R8": {
+      "dep:Rule設計": 46
+    },
+    "R8_prior_bottlenecks": [
+      [
+        "R1_mixed_short_field:short_field_pressure:margin",
+        46
+      ],
+      [
+        "R2_midupper_sf_diff:short_field_pressure:margin",
+        46
+      ],
+      [
+        "R3_mixed_phase:phase:margin",
+        46
+      ],
+      [
+        "R4_midhole:late_stop:margin",
+        46
+      ],
+      [
+        "R5_rank7:chaos:margin",
+        46
+      ],
+      [
+        "R6_bug:chaos:margin",
+        46
+      ],
+      [
+        "R7_midupper_diff:difficulty:margin",
+        46
+      ]
+    ]
+  },
+  "dependency": {
+    "R1_mixed_short_field": {
+      "Rule設計": 50,
+      "Data": 0,
+      "Signal": 0,
+      "n_trigger_fp": 50
+    },
+    "R7_midupper_diff": {
+      "Rule設計": 57,
+      "Data": 0,
+      "Signal": 0,
+      "n_trigger_fp": 57
+    },
+    "R8_core_default": {
+      "Rule設計": 46,
+      "Data": 0,
+      "Signal": 0,
+      "n_trigger_fp": 46
+    }
+  },
+  "priority": {
+    "R1_mixed_short_field": [
+      {
+        "condition": "R1.sfp_ge_0.72",
+        "note": "AND gate required for all R1 fires",
+        "trigger_fp_n": 50,
+        "precision": 0.10714285714285714
+      },
+      {
+        "condition": "R1.difficulty_ge_0.42",
+        "note": "OR arm contribution on R1 FP",
+        "or_contrib_on_fp": 50,
+        "precision": 0.14666666666666667
+      },
+      {
+        "condition": "R1.chaos_ge_0.42",
+        "note": "OR arm contribution on R1 FP",
+        "or_contrib_on_fp": 49,
+        "precision": 0.10191082802547771
+      },
+      {
+        "condition": "R1.phase_ge_0.48",
+        "note": "OR arm contribution on R1 FP",
+        "or_contrib_on_fp": 42,
+        "precision": 0.12269938650306748
+      }
+    ],
+    "R7_midupper_diff": [
+      {
+        "condition": "R7.difficulty_ge_0.50",
+        "note": "sole atom; all 57 Trigger FP pass through this condition",
+        "trigger_fp_n": 57,
+        "precision": 0.34269662921348315,
+        "pass_rate": 0.624561403508772
+      }
+    ],
+    "R8_core_default": [
+      {
+        "condition": "R8.DEFAULT_residual",
+        "note": "no positive Must; fires when R1–R7 all FAIL",
+        "trigger_fp_n": 46,
+        "precision": 0.19230769230769232,
+        "top_prior_bottlenecks": [
+          [
+            "R1_mixed_short_field:short_field_pressure:margin",
+            46
+          ],
+          [
+            "R2_midupper_sf_diff:short_field_pressure:margin",
+            46
+          ],
+          [
+            "R3_mixed_phase:phase:margin",
+            46
+          ],
+          [
+            "R4_midhole:late_stop:margin",
+            46
+          ],
+          [
+            "R5_rank7:chaos:margin",
+            46
+          ],
+          [
+            "R6_bug:chaos:margin",
+            46
+          ],
+          [
+            "R7_midupper_diff:difficulty:margin",
+            46
+          ]
+        ]
+      }
+    ]
+  },
+  "governance": {
+    "grade": "C",
+    "reason": "Condition-level failures identified, but dominant patterns are structural: R8=DEFAULT residual (no Must), R7=difficulty-only Must, R1=broad OR after sfp gate. Not explained away as Signal/Data alone."
+  },
+  "fires": {
+    "R1": 56,
+    "R7": 108,
+    "R8": 104
+  }
+}

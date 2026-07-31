@@ -1,0 +1,169 @@
+{
+  "race_id": "2026-07-25-01-07",
+  "race_date": "2026-07-25",
+  "course": "新潟",
+  "venue": "新潟",
+  "race_number": 7,
+  "race_no": 7,
+  "race_name": "新潟日報賞",
+  "race_label": "新潟7R",
+  "status": "published",
+  "prediction_available": true,
+  "prediction": {
+    "race_id": "2026-07-25-01-07",
+    "candidates": [
+      {
+        "CandidateID": "コートアリシアン",
+        "Rank": 1,
+        "Confidence": 0.06583208142453173,
+        "HorseNumber": 7,
+        "WorldMeta": "midupper_world",
+        "SubWorldMeta": "midupper_route"
+      },
+      {
+        "CandidateID": "ウナギノボリ",
+        "Rank": 2,
+        "Confidence": 0.05698323615425386,
+        "HorseNumber": 3,
+        "WorldMeta": "midupper_world",
+        "SubWorldMeta": "midupper_route"
+      },
+      {
+        "CandidateID": "エイムフォーエース",
+        "Rank": 3,
+        "Confidence": 0.05645464481117616,
+        "HorseNumber": 4,
+        "WorldMeta": "midupper_world",
+        "SubWorldMeta": "midupper_route"
+      },
+      {
+        "CandidateID": "ボンヌソワレ",
+        "Rank": 4,
+        "Confidence": 0.055791144692717565,
+        "HorseNumber": 14,
+        "WorldMeta": "midupper_world",
+        "SubWorldMeta": "midupper_route"
+      },
+      {
+        "CandidateID": "スマイルアップ",
+        "Rank": 5,
+        "Confidence": 0.055561241895177575,
+        "HorseNumber": 9,
+        "WorldMeta": "midupper_world",
+        "SubWorldMeta": "midupper_route"
+      },
+      {
+        "CandidateID": "キタサンダムール",
+        "Rank": 6,
+        "Confidence": 0.05531764717333922,
+        "HorseNumber": 6,
+        "WorldMeta": "midupper_world",
+        "SubWorldMeta": "midupper_route"
+      },
+      {
+        "CandidateID": "チューラワンサ",
+        "Rank": 7,
+        "Confidence": 0.05519223584039891,
+        "HorseNumber": 10,
+        "WorldMeta": "midupper_world",
+        "SubWorldMeta": "midupper_route"
+      },
+      {
+        "CandidateID": "フライングブレード",
+        "Rank": 8,
+        "Confidence": 0.054891102283175536,
+        "HorseNumber": 12,
+        "WorldMeta": "midupper_world",
+        "SubWorldMeta": "midupper_route"
+      },
+      {
+        "CandidateID": "モジャーリオ",
+        "Rank": 9,
+        "Confidence": 0.05486797581264445,
+        "HorseNumber": 16,
+        "WorldMeta": "midupper_world",
+        "SubWorldMeta": "midupper_route"
+      },
+      {
+        "CandidateID": "ルミノメテオール",
+        "Rank": 10,
+        "Confidence": 0.05482948284420672,
+        "HorseNumber": 18,
+        "WorldMeta": "midupper_world",
+        "SubWorldMeta": "midupper_route"
+      },
+      {
+        "CandidateID": "エマヌエーレ",
+        "Rank": 11,
+        "Confidence": 0.05478169513563188,
+        "HorseNumber": 5,
+        "WorldMeta": "midupper_world",
+        "SubWorldMeta": "midupper_route"
+      },
+      {
+        "CandidateID": "モンテシート",
+        "Rank": 12,
+        "Confidence": 0.05469841728154386,
+        "HorseNumber": 17,
+        "WorldMeta": "midupper_world",
+        "SubWorldMeta": "midupper_route"
+      },
+      {
+        "CandidateID": "ポッドロワール",
+        "Rank": 13,
+        "Confidence": 0.05455148954183422,
+        "HorseNumber": 13,
+        "WorldMeta": "midupper_world",
+        "SubWorldMeta": "midupper_route"
+      },
+      {
+        "CandidateID": "ピコローズ",
+        "Rank": 14,
+        "Confidence": 0.054415205034227865,
+        "HorseNumber": 11,
+        "WorldMeta": "midupper_world",
+        "SubWorldMeta": "midupper_route"
+      },
+      {
+        "CandidateID": "スティールブルー",
+        "Rank": 15,
+        "Confidence": 0.05417555111247035,
+        "HorseNumber": 8,
+        "WorldMeta": "midupper_world",
+        "SubWorldMeta": "midupper_route"
+      },
+      {
+        "CandidateID": "ヴェサリウス",
+        "Rank": 16,
+        "Confidence": 0.05413150775294306,
+        "HorseNumber": 2,
+        "WorldMeta": "midupper_world",
+        "SubWorldMeta": "midupper_route"
+      },
+      {
+        "CandidateID": "ミストレス",
+        "Rank": 17,
+        "Confidence": 0.053774738293341576,
+        "HorseNumber": 15,
+        "WorldMeta": "midupper_world",
+        "SubWorldMeta": "midupper_route"
+      },
+      {
+        "CandidateID": "アームテイル",
+        "Rank": 18,
+        "Confidence": 0.053750602916385504,
+        "HorseNumber": 1,
+        "WorldMeta": "midupper_world",
+        "SubWorldMeta": "midupper_route"
+      }
+    ],
+    "world": "midupper_world",
+    "sub_world": "midupper_route",
+    "overall_confidence": 0.03842470544506938,
+    "core_version": "ai-core-migrated/1.0-phase1",
+    "meta": {
+      "generated_at": "2026-07-25T15:53:09.680311+09:00",
+      "source": "local_core_pipeline"
+    }
+  }
+}

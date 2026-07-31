@@ -116,13 +116,33 @@
     );
   }
 
-  function heatmapCellHtml(cell) {
+  function cellTitleAttr(cell, rowLabel, colLabel) {
+    if (!cell || cell.n == null || Number(cell.n) < 1) return "";
+    var n = Number(cell.n);
+    var hits = cell.hits != null ? Number(cell.hits) : null;
+    var pct =
+      cell.pct != null
+        ? cell.pct + "%"
+        : cell.hit_rate != null
+          ? Math.round((Number(cell.hit_rate) > 1 ? Number(cell.hit_rate) : Number(cell.hit_rate) * 100) * 10) / 10 + "%"
+          : "";
+    var parts = [];
+    if (rowLabel && colLabel) parts.push(rowLabel + " " + colLabel);
+    parts.push(n + "R");
+    if (hits != null) parts.push("Hit " + hits + "R");
+    if (pct) parts.push(pct);
+    return ' title="' + escapeHtml(parts.join(" · ")) + '"';
+  }
+
+  function heatmapCellHtml(cell, rowLabel, colLabel) {
     if (!cell || cell.pct == null) {
       return '<td><span class="hv hv--empty" style="--v:0"><b>—</b><i></i></span></td>';
     }
     var band = cell.band && cell.band !== "unknown" ? " hv--" + cell.band : "";
     return (
-      '<td><span class="hv' +
+      "<td" +
+      cellTitleAttr(cell, rowLabel, colLabel) +
+      '><span class="hv' +
       band +
       '" style="--v:' +
       cell.pct +
@@ -132,14 +152,22 @@
     );
   }
 
-  function conditionCellHtml(cell) {
+  function conditionCellHtml(cell, rowLabel, colLabel) {
     if (!cell || cell.pct == null) {
       return '<td style="--v:0">—</td>';
     }
-    return '<td style="--v:' + cell.pct + '">' + cell.pct + "%</td>";
+    return (
+      "<td" +
+      cellTitleAttr(cell, rowLabel, colLabel) +
+      ' style="--v:' +
+      cell.pct +
+      '">' +
+      cell.pct +
+      "%</td>"
+    );
   }
 
-  function formatHeatNote(data, venueCount) {
+  function formatHeatNote(data, weekVenues) {
     var when = "";
     if (data && data.updated_at) {
       try {
@@ -160,9 +188,19 @@
         when = String(data.updated_at);
       }
     }
-    var parts = ["◎的中率（過去実績）"];
-    if (venueCount) parts.push("対象会場 " + venueCount + "場");
-    if (data && data.races_evaluated) parts.push(data.races_evaluated + "R評価");
+    var n = data && data.races_evaluated != null ? Number(data.races_evaluated) : 0;
+    var hits = data && data.overall_hits != null ? Number(data.overall_hits) : null;
+    var rate = data && data.overall_hit_rate != null ? Number(data.overall_hit_rate) : null;
+    var parts = ["総合実績"];
+    parts.push("対象 " + (Number.isFinite(n) ? n : 0) + "R");
+    if (hits != null && Number.isFinite(hits)) parts.push("Hit " + hits + "R");
+    if (rate != null && Number.isFinite(rate) && n > 0) {
+      var pct = rate > 1 ? rate : rate * 100;
+      parts.push((Math.round(pct * 10) / 10) + "%");
+    }
+    if (weekVenues && weekVenues.length) {
+      parts.push("今週 " + weekVenues.join("・"));
+    }
     if (when) parts.push("※" + when + " 更新");
     return parts.join(" · ");
   }
@@ -171,35 +209,69 @@
     var dist = (data && data.distance) || {};
     var cond = (data && data.condition) || {};
     var venues = dist.venues || [];
-    var appliedFilter = venueFilter && venueFilter.length ? venueFilter : null;
-    if (appliedFilter) {
+    // Array（空含む）= 今週スコープ確定。null/undefined のみ未フィルタ。
+    // ※ [] を「フィルタなし＝全会場」と誤認すると全件→今週のフリッカーになる。
+    var weekVenues = Array.isArray(venueFilter) ? venueFilter.slice() : null;
+    // 表示のみ今週開催会場に絞る（集計・総合Hit率は全実績のまま）
+    if (weekVenues) {
       var allow = {};
-      appliedFilter.forEach(function (v) {
+      weekVenues.forEach(function (v) {
         allow[v] = true;
       });
-      var filtered = venues.filter(function (v) {
+      venues = venues.filter(function (v) {
         return allow[v];
       });
-      // 当日会場名とセグメントキーが一致しない場合は全会場表示へフォールバック
-      if (filtered.length) venues = filtered;
-      else appliedFilter = null;
     }
+    var distCols = dist.cols || [
+      "芝1200",
+      "芝1600",
+      "芝2000",
+      "芝2400",
+      "ダ1200",
+      "ダ1600",
+      "ダ2000",
+      "ダ2400",
+    ];
+    var condCols = (cond.cols || ["良", "稍重", "重", "不良"]);
 
     var distBody = document.querySelector("#heatmapBody");
     if (distBody) {
-      if (!venues.length) {
+      if (weekVenues && !weekVenues.length) {
         distBody.innerHTML =
-          '<tr><td colspan="9" class="muted">過去実績データがありません</td></tr>';
+          '<tr><td colspan="9" class="muted">今週の開催会場がありません</td></tr>';
+      } else if (!venues.length) {
+        distBody.innerHTML =
+          weekVenues && weekVenues.length
+            ? '<tr><td colspan="9" class="muted">今週会場（' +
+              escapeHtml(weekVenues.join("・")) +
+              "）の総合実績セグメントがありません</td></tr>"
+            : '<tr><td colspan="9" class="muted">AI総合実績データがありません</td></tr>';
       } else {
         var distRows = (dist.rows || []).filter(function (row) {
-          return venues.indexOf(row.venue) >= 0;
+          return !weekVenues || weekVenues.indexOf(row.venue) >= 0;
         });
-        distBody.innerHTML = distRows
-          .map(function (row) {
-            var cells = (row.cells || []).map(heatmapCellHtml).join("");
+        var byVenue = {};
+        distRows.forEach(function (row) {
+          byVenue[row.venue] = row;
+        });
+        var ordered =
+          weekVenues && weekVenues.length ? weekVenues.slice() : venues.slice();
+        distBody.innerHTML = ordered
+          .map(function (venue) {
+            var row = byVenue[venue] || {
+              venue: venue,
+              cells: distCols.map(function () {
+                return null;
+              }),
+            };
+            var cells = (row.cells || [])
+              .map(function (cell, i) {
+                return heatmapCellHtml(cell, venue, distCols[i]);
+              })
+              .join("");
             return (
               '<tr><th class="row-head">' +
-              escapeHtml(row.venue) +
+              escapeHtml(venue) +
               "</th>" +
               cells +
               "</tr>"
@@ -212,31 +284,62 @@
     var condBody = document.querySelector("#conditionHeatmapBody");
     if (condBody) {
       var condRows = cond.rows || [];
-      if (appliedFilter) {
-        var allowVenues = {};
-        appliedFilter.forEach(function (v) {
-          allowVenues[v] = true;
+      if (weekVenues) {
+        var allowC = {};
+        weekVenues.forEach(function (v) {
+          allowC[v] = true;
         });
         condRows = condRows.filter(function (row) {
-          return allowVenues[row.venue];
+          return allowC[row.venue] || allowC[row.label];
+        });
+        // 未整備会場も行を出す
+        var have = {};
+        condRows.forEach(function (row) {
+          have[row.venue || row.label] = row;
+        });
+        condRows = weekVenues.map(function (venue) {
+          return (
+            have[venue] || {
+              venue: venue,
+              label: venue,
+              cells: condCols.map(function () {
+                return null;
+              }),
+            }
+          );
         });
       }
-      if (!condRows.length) {
+      if (weekVenues && !weekVenues.length) {
         condBody.innerHTML =
-          '<tr><td colspan="5" class="muted">過去実績データがありません</td></tr>';
+          '<tr><td colspan="5" class="muted">今週の開催会場がありません</td></tr>';
+      } else if (!condRows.length) {
+        condBody.innerHTML =
+          '<tr><td colspan="5" class="muted">AI総合実績データがありません</td></tr>';
       } else {
         condBody.innerHTML = condRows
           .map(function (row) {
-            var cells = (row.cells || []).map(conditionCellHtml).join("");
-            return "<tr><th>" + escapeHtml(row.label || "") + "</th>" + cells + "</tr>";
+            var label = row.label || row.venue || "";
+            var cells = (row.cells || [])
+              .map(function (cell, i) {
+                return conditionCellHtml(cell, label, condCols[i]);
+              })
+              .join("");
+            return "<tr><th>" + escapeHtml(label) + "</th>" + cells + "</tr>";
           })
           .join("");
       }
     }
 
-    var noteText = formatHeatNote(data, venues.length);
+    var noteText = formatHeatNote(data, weekVenues);
     document.querySelectorAll("[data-heat-asof]").forEach(function (note) {
       note.textContent = noteText;
+    });
+    document.querySelectorAll("[data-heat-scope]").forEach(function (el) {
+      el.textContent = "総合実績";
+    });
+    document.querySelectorAll("[data-heat-races]").forEach(function (el) {
+      var rn = data && data.races_evaluated != null ? Number(data.races_evaluated) : 0;
+      el.textContent = "対象 " + (Number.isFinite(rn) ? rn : 0) + "R";
     });
   }
 
@@ -245,32 +348,40 @@
 
   function fetchAndPaintHeatmap(opts) {
     opts = opts || {};
-    var venues = opts.venues || null;
-    if (venues && venues.length) {
-      heatmapPollOpts = Object.assign({}, heatmapPollOpts || {}, { venues: venues });
-    } else if (opts.venues === null) {
-      heatmapPollOpts = Object.assign({}, heatmapPollOpts || {}, { venues: null });
-    }
-    var query = {};
-    if (venues && venues.length) query.venues = venues.join(",");
+    heatmapPollOpts = Object.assign({}, heatmapPollOpts || {}, opts);
+    var explicitVenues = Array.isArray(opts.venues);
+    // 集計は全会場のまま取得。表示フィルタのみ今週会場
     var req =
       global.ExpectApi && ExpectApi.Stats && ExpectApi.Stats.heatmap
-        ? ExpectApi.Stats.heatmap(query)
-        : fetch(
-            "/api/v1/stats/heatmap" +
-              (query.venues ? "?venues=" + encodeURIComponent(query.venues) : "")
-          )
+        ? ExpectApi.Stats.heatmap({})
+        : fetch("/api/v1/stats/heatmap")
             .then(function (res) {
               return res.json();
             })
             .then(function (payload) {
               return payload && payload.data != null ? payload.data : payload;
             });
-    return req
-      .then(function (data) {
-        paintHeatmapFromStats(data, venues);
+
+    var venuesP = explicitVenues
+      ? Promise.resolve(opts.venues)
+      : resolveWeekVenues().catch(function () {
+          return [];
+        });
+
+    return Promise.all([req, venuesP]).then(function (pair) {
+      var data = pair[0];
+      var weekVenues = Array.isArray(pair[1]) ? pair[1] : [];
+      // 今週会場が未解決（空）のあいだは全件を描画しない。初期スケルトンを維持。
+      // 明示 venues（本命バンドル等）が来てから、または会場が取れたときだけ描画。
+      if (!weekVenues.length) {
+        if (explicitVenues) {
+          paintHeatmapFromStats(data, weekVenues);
+        }
         return data;
-      });
+      }
+      paintHeatmapFromStats(data, weekVenues);
+      return data;
+    });
   }
 
   function uniqueVenuesFromRaces(races) {
@@ -331,30 +442,15 @@
 
   function startHeatmapPolling(opts) {
     opts = opts || {};
-    heatmapPollOpts = opts;
+    heatmapPollOpts = Object.assign({}, opts);
     var intervalMs = opts.intervalMs || 60000;
     if (heatmapPollTimer) clearInterval(heatmapPollTimer);
 
     function tick() {
-      var base = heatmapPollOpts || {};
-      var run = function (venues) {
-        var next = Object.assign({}, base);
-        if (venues && venues.length) next.venues = venues;
-        heatmapPollOpts = next;
-        return fetchAndPaintHeatmap(next);
-      };
-      // 会場未指定時は週次会場に絞る（全10場の羅列を避ける）
-      if (base.venues && base.venues.length) {
-        fetchAndPaintHeatmap(base).catch(function () {});
-        return;
-      }
-      resolveWeekVenues()
-        .then(function (venues) {
-          return run(venues);
-        })
-        .catch(function () {
-          fetchAndPaintHeatmap(base).catch(function () {});
-        });
+      // 毎回今週会場を再解決（週が変わったら表示行が切り替わる）
+      var base = Object.assign({}, heatmapPollOpts || {});
+      delete base.venues;
+      fetchAndPaintHeatmap(base).catch(function () {});
     }
     tick();
     heatmapPollTimer = setInterval(tick, intervalMs);
@@ -589,29 +685,51 @@
     var card = document.querySelector(".profile-card");
     if (!card || !me) return;
     var p = me.profile || {};
+    var progress = me.progress || {};
+    if (global.ExpectUserProgress && ExpectUserProgress.fromMe) {
+      ExpectUserProgress.fromMe(me);
+    }
     var h2 = card.querySelector("h2");
-    var metas = card.querySelectorAll(".meta");
     var badge = card.querySelector(".badge-premium");
     if (h2) h2.textContent = p.display_name || me.login_id || "ユーザー";
-    if (metas[0]) metas[0].textContent = "login_id · " + (me.login_id || "—");
     if (badge) {
       var role = me.role || (me.user && me.user.role) || "";
       badge.textContent = role ? String(role) : me.status || "USER";
     }
-    if (metas[1]) {
-      var histN = (history && history.count) || 0;
-      var chatN = (chat && chat.count) || 0;
-      metas[1].textContent = "Lv. — · 閲覧 " + histN + " · チャット " + chatN;
+    var lv = progress.level || 1;
+    var pts = progress.cumulative_points || 0;
+    var toNext = progress.points_to_next_level != null ? progress.points_to_next_level : 100;
+    var act = document.getElementById("profileActivityMeta");
+    if (act) act.textContent = "Lv." + lv;
+    var ptsMeta = document.getElementById("profilePointsMeta");
+    if (ptsMeta) {
+      ptsMeta.textContent =
+        "累積 " + pts.toLocaleString("ja-JP") + " P · 次レベルまで残り " + toNext + " P";
     }
-    var stats = document.querySelector(".stats-grid");
-    if (stats && history) {
-      var cells = stats.querySelectorAll(".stat-cell b");
-      var n = Number(history.count) || 0;
-      if (cells[0]) cells[0].textContent = n + "件";
-      if (cells[1]) cells[1].textContent = "—";
-      if (cells[2]) cells[2].textContent = "—";
-      if (cells[3]) cells[3].textContent = n + "R";
-      stats.querySelector("h3").textContent = "アクティビティ（User API）";
+    var fill = document.getElementById("profileLevelBarFill");
+    if (fill) {
+      var pctFill = Math.max(0, Math.min(100, ((100 - toNext) / 100) * 100));
+      fill.style.width = pctFill + "%";
+    }
+  }
+
+  function bindMypageUserMonth(summary) {
+    var stats = document.getElementById("mypageUserStats");
+    if (!stats || !summary) return;
+    var cells = stats.querySelectorAll(".stat-cell b");
+    var profit = Number(summary.profit) || 0;
+    if (cells[0]) cells[0].textContent = summary.hit_rate != null ? summary.hit_rate + "%" : "—";
+    if (cells[1]) cells[1].textContent = summary.recovery_rate != null ? summary.recovery_rate + "%" : "—";
+    if (cells[2]) {
+      cells[2].textContent =
+        (profit > 0 ? "+" : "") + "¥" + Math.abs(profit).toLocaleString("ja-JP");
+      cells[2].classList.toggle("is-plus", profit > 0);
+      cells[2].classList.toggle("is-minus", profit < 0);
+    }
+    if (cells[3]) {
+      cells[3].textContent =
+        (summary.hit_count != null ? summary.hit_count : "—") +
+        (summary.race_count != null ? " / " + summary.race_count : "");
     }
   }
 
@@ -715,6 +833,7 @@
     paintDashMetrics: paintDashMetrics,
     applyRacesFilters: applyRacesFilters,
     bindMypageProfile: bindMypageProfile,
+    bindMypageUserMonth: bindMypageUserMonth,
     bindSavedPage: bindSavedPage,
     mascotLinesFromData: mascotLinesFromData,
     cacheBundles: cacheBundles,

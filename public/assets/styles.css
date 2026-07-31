@@ -754,12 +754,12 @@ a.back-btn { color: var(--gold-soft); }
   position: relative;
   flex: 0 0 132px;
   scroll-snap-align: start;
-  border-radius: 12px;
+  border-radius: var(--radius, 16px);
   overflow: hidden;
-  background-color: #10151d;
+  background-color: #10141c;
   background-size: cover;
   background-position: center;
-  border: 1px solid rgba(193, 162, 109, 0.22);
+  border: 1px solid rgba(193, 162, 109, 0.18);
   display: flex;
   flex-direction: column;
   min-height: 148px;
@@ -775,7 +775,7 @@ a.back-btn { color: var(--gold-soft); }
   inset: 0;
   z-index: 0;
   background:
-    linear-gradient(180deg, rgba(8, 10, 14, 0.55) 0%, rgba(8, 10, 14, 0.78) 48%, rgba(8, 10, 14, 0.9) 100%);
+    linear-gradient(100deg, rgba(8, 10, 14, 0.88) 0%, rgba(8, 10, 14, 0.72) 48%, rgba(8, 10, 14, 0.48) 100%);
   pointer-events: none;
 }
 
@@ -793,7 +793,6 @@ a.back-btn { color: var(--gold-soft); }
   margin: 0;
   font-size: 10px;
   color: rgba(255, 255, 255, 0.82);
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.85);
 }
 
 .fav-meta-sep {
@@ -807,41 +806,22 @@ a.back-btn { color: var(--gold-soft); }
 
 .fav-place {
   margin: 3px 0 0;
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
   color: #fff;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.9);
 }
 
 .fav-name {
-  margin: 2px 0 6px;
-  font-size: 12px;
-  font-weight: 600;
-  color: #fff;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.9);
+  margin: 3px 0 0;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--muted, #9aa3b2);
 }
 
-/* Phase 5: ホーム fav レールへ ◎ / 信頼度%（v2_race_list_ui ON 時のみ HTML 出力） */
-.fav-summary {
-  margin: -2px 0 6px;
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.02em;
-  color: #f0e6d2;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.9);
-}
-
+/* ホームお気に入りはレース情報のみ（予想・信頼度は出さない） */
+.fav-summary,
 .fav-badge {
-  display: inline-block;
-  align-self: flex-start;
-  font-size: 9px;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  color: #ffe7a8;
-  border: 1px solid rgba(193, 162, 109, 0.55);
-  border-radius: 999px;
-  padding: 2px 7px;
-  background: rgba(0, 0, 0, 0.45);
+  display: none !important;
 }
 
 .fav-card-photo {
@@ -1106,6 +1086,19 @@ body.is-fav-dialog {
   margin-top: 1px;
 }
 
+/* UI8: ホーム本命 — % ではなく ★ + 文言（既存ゲージ枠を流用） */
+.ai-gauge--stars .ai-gauge-num {
+  font-size: 9px;
+  letter-spacing: -0.6px;
+  white-space: nowrap;
+}
+
+.ai-gauge--stars .ai-gauge-label {
+  font-size: 8px;
+  font-weight: 700;
+  color: var(--gold-soft);
+}
+
 .ai-pill {
   display: inline-flex;
   align-items: center;
@@ -1173,6 +1166,31 @@ body.is-fav-dialog {
   flex: 0 0 auto;
 }
 
+.heat-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  flex: 0 0 auto;
+}
+
+.heat-badge {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: #1a2a2a;
+  background: var(--gold, #d4af37);
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+
+.heat-races {
+  font-size: 11px;
+  font-weight: 600;
+  color: #fff;
+}
+
 .heat-title {
   margin: 0;
   display: inline-flex;
@@ -1196,8 +1214,8 @@ body.is-fav-dialog {
   width: 52px;
   height: 6px;
   border-radius: 999px;
-  /* 低(青緑) → 中(黄) → 高(赤) */
-  background: linear-gradient(90deg, #1f8a8a 0%, #e6c84a 50%, #e24b4b 100%);
+  /* 低(赤) → 中(黄) → 高(青緑) */
+  background: linear-gradient(90deg, #e24b4b 0%, #e6c84a 50%, #1f8a8a 100%);
 }
 
 .heatmap-scroll,
@@ -1269,8 +1287,8 @@ body.is-fav-dialog {
 
 .hv {
   --v: 50;
-  /* 低=青緑(180) → 中=黄 → 高=赤(0) */
-  --heat-h: calc(180 - (var(--v) * 1.8));
+  /* 低=赤(0) → 中=黄 → 高=青緑(180) */
+  --heat-h: calc(var(--v) * 1.8);
   display: grid;
   grid-template-columns: 30px 42px;
   align-items: center;
@@ -1335,7 +1353,8 @@ body.is-fav-dialog {
 
 .cond-table td {
   --v: 50;
-  --heat-h: calc(180 - (var(--v) * 1.8));
+  /* 低=赤(0) → 中=黄 → 高=青緑(180) */
+  --heat-h: calc(var(--v) * 1.8);
   text-align: center;
   color: #f7f1df;
   font-weight: 600;
@@ -1725,11 +1744,15 @@ details.fold > summary::-webkit-details-marker { display: none; }
 }
 
 .page-tab .bottom-nav {
-  position: sticky;
-  bottom: 0;
+  /* sticky は overflow:hidden の .app 内で上へ飛ぶことがあるため flex 末尾固定 */
+  position: relative;
+  left: auto;
+  right: auto;
+  bottom: auto;
+  top: auto;
   flex-shrink: 0;
   width: 100%;
-  z-index: 40;
+  z-index: 50;
   margin-top: auto;
   background: rgba(8, 12, 18, 0.98);
 }

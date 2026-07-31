@@ -1,0 +1,31 @@
+{
+  "ok": true,
+  "data": {
+    "schema": "site-integration/single/v1",
+    "race_id": "20260719_hanshin_11",
+    "api_version": "i1/1.0",
+    "single": {
+      "schema": "consumer-api/single/v1",
+      "race_id": "20260719_hanshin_11",
+      "registry": {
+        "policy_id": "policy_rank7_ready"
+      },
+      "ticket": null,
+      "presentation": null,
+      "natural_explanation": null,
+      "decision_reason": null,
+      "core_ref": {
+        "race_id": "20260719_hanshin_11",
+        "payload_fingerprint": "<fingerprint>"
+      }
+    }
+  },
+  "meta": {
+    "service": "single-ai-site",
+    "api_version": "i1/1.0",
+    "latency_ms": 1.2,
+    "timeout_ms": 12000,
+    "platform": "CorePlatformVersion1",
+    "single_ai": "SingleAIVersion1"
+  }
+}

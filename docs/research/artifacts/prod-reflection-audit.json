@@ -1,0 +1,263 @@
+{
+  "env": "production",
+  "base": "https://expect-keiba.com",
+  "rid": "2026-08-01-01-02",
+  "meta_endpoints": {
+    "/api/health": {
+      "http": 200,
+      "cf_ray": null,
+      "body": {
+        "ok": true,
+        "meta": {
+          "generated_at": "2026-07-29T02:50:04.664Z",
+          "source": "mock",
+          "cache": "no-store",
+          "service": "BffHealth"
+        },
+        "data": {
+          "status": "degraded",
+          "service": "bff",
+          "runtime": "cloudflare-pages-functions",
+          "expect_env": "production",
+          "auth_mode": "stub",
+          "allow_stub_auth": true,
+          "ai_proxy_configured": true,
+          "pi_proxy_configured": true,
+          "result_automation": {
+            "ok": false,
+            "status": "unhealthy",
+            "issues": [
+              "failed_latest race_date=2026-07-29 run_id=4674",
+              "failed_latest race_date=2026-07-28 run_id=4676",
+              "failed_latest race_date=2026-07-27 run_id=3611"
+            ],
+            "stale_active": 0,
+            "failed_latest": 3,
+            "degraded_latest": 0,
+            "manifest_missing": 0,
+            "summary_missing": 0
+          },
+          "pi": {
+            "configured": true,
+            "ok": true,
+            "status": "ok",
+            "latency_ms": 24,
+            "service": null
+          }
+        }
+      }
+    },
+    "/api/ui/features": {
+      "http": 200,
+      "cf_ray": null,
+      "body": {
+        "_non_json": true,
+        "preview": "<!DOCTYPE html>\n<html lang=\"ja\">\n<head>\n  <meta charset=\"UTF-8\" />\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1, viewport-fit=cover\" />\n  <title>Expect ～ KEIBA AI ～</title>"
+      }
+    },
+    "/api/ops/public-status": {
+      "http": 200,
+      "cf_ray": null,
+      "body": {
+        "ok": true,
+        "meta": {
+          "generated_at": "2026-07-29T02:50:04.876Z",
+          "source": "mock",
+          "cache": "no-store",
+          "service": "OpsPublicStatus"
+        },
+        "data": {
+          "ops_mode": "CLOSED",
+          "reason": "research_week_maintenance",
+          "manual_override": false,
+          "auto_maintenance_enabled": true,
+          "maintenance": true,
+          "maintenance_start": "2026-07-26T21:00:00+09:00",
+          "maintenance_end": "2026-08-01T00:00:00+09:00",
+          "schedule_reason": "Research Week",
+          "is_race_day": false,
+          "date_jst": null,
+          "next_open_date_jst": "2026-08-01",
+          "calendar_source": "research_week_jst",
+          "message": "ただいまメンテナンス中です（Research Week）。日曜 21:00 〜 土曜 0:00（JST）はご利用いただけません。公開再開後に再ログインしてください。"
+        }
+      }
+    },
+    "/api/system/status": {
+      "http": 200,
+      "cf_ray": null,
+      "body": {
+        "ok": true,
+        "meta": {
+          "generated_at": "2026-07-29T02:50:06.613Z",
+          "source": "mock",
+          "cache": "no-store",
+          "service": "SystemStatus"
+        },
+        "data": {
+          "maintenance": true,
+          "maintenance_start": "2026-07-26T21:00:00+09:00",
+          "maintenance_end": "2026-08-01T00:00:00+09:00",
+          "reason": "Research Week",
+          "ops_mode": "CLOSED",
+          "resolve_reason": "research_week_maintenance",
+          "message": "ただいまメンテナンス中です（Research Week）。日曜 21:00 〜 土曜 0:00（JST）はご利用いただけません。公開再開後に再ログインしてください。",
+          "server_time_iso": "2026-07-29T02:50:06.613Z"
+        }
+      }
+    }
+  },
+  "ui3_ensure_fingerprint": {
+    "http": 200,
+    "ok": true,
+    "meta": {
+      "generated_at": "2026-07-29T02:50:06.747Z",
+      "source": "bff-local",
+      "cache": "miss",
+      "service": "UiAdaptation",
+      "adapter": "singleToBundleMapper",
+      "layout_changed": false,
+      "internal_terms_exposed": false
+    },
+    "error": null,
+    "observed": {
+      "schema_version": "single-prediction-bundle/2.0",
+      "race_id": "2026-08-01-01-02",
+      "venue": "unknown",
+      "venue_type": "str",
+      "race_no": 2,
+      "race_no_type": "int",
+      "narrative": "",
+      "narrative_type": "str",
+      "narrative_key_present": true,
+      "score": null,
+      "score_type": "NoneType",
+      "items_is_list": true,
+      "items": []
+    },
+    "ensure_signals": {
+      "race_no_coerced_to_number": true,
+      "venue_coerced_to_nonempty_string": true,
+      "narrative_present_as_string": true,
+      "items_present_as_array": true,
+      "score_coerced_to_number_or_null": true
+    },
+    "ensure_likely_present": true
+  },
+  "race_probes": {
+    "predictions": {
+      "http": 202,
+      "sha256": "f5b1283432874e5dd5ac5bbbc63add088bf226c3225ffdcfa5fe6cd010a82512",
+      "bytes": 606,
+      "cf_ray": null,
+      "ok": false,
+      "meta": {
+        "generated_at": "2026-07-29T02:50:10.854Z",
+        "prediction_status": "pending",
+        "source": "pi-keibanet-api",
+        "service": "PredictionService",
+        "provider": "pi",
+        "adapter": "PredictionAdapter",
+        "engine": "n/a",
+        "engine_source": "pi_catalog_projection",
+        "model_version": null,
+        "inference_generated_at": null,
+        "race_id": "2026-08-01-01-02",
+        "numeric_race_id": "202604020302",
+        "fallback_reason": "pi_prediction_unavailable_pending"
+      },
+      "error": {
+        "code": "PREDICTION_PENDING",
+        "message": "Prediction pending",
+        "details": {
+          "race_id": "2026-08-01-01-02",
+          "numeric_race_id": "202604020302",
+          "reason": "pi_prediction_unavailable_pending"
+        }
+      },
+      "artifact": {
+        "schema_version": null,
+        "race_id": null,
+        "race_info": null,
+        "narrative_type": null,
+        "runners_n": null
+      },
+      "artifact_path": "C:\\win5-ai\\KEIBA-Single-AI\\docs\\research\\artifacts\\prod-predictions-2026-08-01-01-02.json"
+    },
+    "single_detail": {
+      "http": 202,
+      "sha256": "2f437a6ff015d2955b8b7d8ec940938625774bdbedd6ddf7469ee1d5f7daf653",
+      "bytes": 534,
+      "cf_ray": null,
+      "ok": false,
+      "meta": {
+        "generated_at": "2026-07-29T02:50:15.005Z",
+        "prediction_status": "pending",
+        "service": "SingleDetailAdapter",
+        "adapter": "SingleDetailAdapter",
+        "engine": "n/a",
+        "engine_source": "pi_catalog_projection",
+        "model_version": null,
+        "inference_generated_at": null,
+        "race_id": "2026-08-01-01-02",
+        "numeric_race_id": "202604020302",
+        "fallback_reason": "pi_prediction_unavailable_pending"
+      },
+      "error": {
+        "code": "PREDICTION_PENDING",
+        "message": "Prediction pending",
+        "details": {
+          "race_id": "2026-08-01-01-02",
+          "reason": "pi_prediction_unavailable_pending"
+        }
+      },
+      "artifact": {
+        "schema_version": null,
+        "race_id": null,
+        "race_info": null,
+        "narrative_type": null,
+        "runners_n": null
+      },
+      "artifact_path": "C:\\win5-ai\\KEIBA-Single-AI\\docs\\research\\artifacts\\prod-single_detail-2026-08-01-01-02.json"
+    },
+    "ui_prediction_bundle": {
+      "http": 200,
+      "sha256": "93deed491183c9cbeceb416002c990a98baff0b00040e36eb930cf6e42f4a2ca",
+      "bytes": 1091,
+      "cf_ray": null,
+      "ok": true,
+      "meta": {
+        "generated_at": "2026-07-29T02:50:15.100Z",
+        "source": "bff-local",
+        "cache": "miss",
+        "service": "UiAdaptation",
+        "adapter": "singleToBundleMapper",
+        "layout_changed": false,
+        "internal_terms_exposed": false
+      },
+      "error": null,
+      "artifact": {
+        "schema_version": "single-prediction-bundle/2.0",
+        "race_id": "2026-08-01-01-02",
+        "race_info": {
+          "race_id": "2026-08-01-01-02",
+          "date": "2026-08-01",
+          "venue": "unknown",
+          "race_no": 2,
+          "post_time": null,
+          "distance": null,
+          "surface": null,
+          "course": null,
+          "class_label": null,
+          "grade": null,
+          "field_size": null,
+          "race_status": null,
+          "race_name": null
+        },
+        "narrative_type": "str",
+        "runners_n": 0
+      },
+      "artifact_path": "C:\\win5-ai\\KEIBA-Single-AI\\docs\\research\\artifacts\\prod-ui_prediction_bundle-2026-08-01-01-02.json"
+    }
+  }
+}

@@ -7,14 +7,14 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Noto+Sans+JP:wght@400;500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="assets/styles.css?v=18" />
-  <link rel="stylesheet" href="assets/screens.css?v=33" />
+  <link rel="stylesheet" href="assets/styles.css?v=25" />
+  <link rel="stylesheet" href="assets/screens.css?v=53" />
   <link rel="stylesheet" href="assets/ux.css?v=16" />
-  <link rel="stylesheet" href="assets/vqa.css" />
-  <link rel="stylesheet" href="assets/v11.css?v=11" />
+  <link rel="stylesheet" href="assets/vqa.css?v=52" />
+  <link rel="stylesheet" href="assets/v11.css?v=12" />
   <script src="assets/api/calendar-weekend.js?v=15"></script>
-  <script src="assets/auto-maintenance.js?v=11.3"></script>
-  <script src="assets/auth.js?v=4"></script>
+  <script src="assets/auto-maintenance.js?v=12.4"></script>
+  <script src="assets/auth.js?v=6"></script>
   <script>
     if (ExpectAuth.requireAuth() && window.ExpectAutoMaintenance) {
       ExpectAutoMaintenance.run();
@@ -101,7 +101,7 @@
           <p class="expect-loading__msg">しばらくお待ちください。</p>
           <div class="expect-loading__progress" data-expect-load-track role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
             <div class="expect-loading__track">
-              <img class="expect-loading__runner" data-expect-load-runner src="assets/images/mascot-loading-run.png?v=3" alt="" width="72" height="72" draggable="false" />
+              <img class="expect-loading__runner" data-expect-load-runner src="assets/images/mascot-loading-run.webp?v=3" alt="" width="72" height="72" draggable="false" />
               <div class="expect-loading__bar"><span class="expect-loading__fill" data-expect-load-fill></span></div>
             </div>
             <p class="expect-loading__meta" data-expect-load-meta>経過 0.0秒</p>
@@ -113,7 +113,7 @@
     <aside class="mascot-ka0ba" id="mascotKa0ba" data-mascot-mode="png">
       <div class="mascot-bubble" id="mascotBubble" role="status" aria-live="polite"></div>
       <button type="button" class="mascot-figure" id="mascotTalkBtn" aria-label="KAOBAに話しかける">
-        <img data-mascot-fallback src="assets/images/mascot-ka0ba.png?v=10" alt="" height="140" draggable="false" />
+        <img data-mascot-fallback src="assets/images/mascot-ka0ba.webp?v=10" alt="" height="140" draggable="false" />
       </button>
     </aside>
 
@@ -122,19 +122,20 @@
   <script src="assets/api/mock-gate.js"></script>
   <script src="assets/api/auth.js"></script>
   <script src="assets/api/contract-guard.js"></script>
+  <script src="assets/api/http-cache.js?v=1"></script>
   <script src="assets/api/race-list-url.js?v=15"></script>
-  <script src="assets/api/race.js?v=15"></script>
-  <script src="assets/api/race-cards.js?v=15"></script>
-  <script src="assets/api/prediction.js?v=15"></script>
+  <script src="assets/api/race.js?v=16"></script>
+  <script src="assets/api/race-cards.js?v=16"></script>
+  <script src="assets/api/prediction.js?v=16"></script>
   <script src="assets/api/race-id-meta.js?v=15"></script>
-  <script src="assets/api/prediction-bind.js?v=35"></script>
+  <script src="assets/api/prediction-bind.js?v=52"></script>
   <script src="assets/api/race-prefetch.js?v=1"></script>
   <script src="assets/api/real-data-bind.js?v=16"></script>
-  <script src="assets/ux.js?v=21"></script>
+  <script src="assets/ux.js?v=22"></script>
   <script src="assets/api/ui-features.js?v=15"></script>
   <script src="assets/api/race-search.js?v=15"></script>
   <script src="assets/v11.js?v=11"></script>
-  <script src="assets/favorites.js?v=4"></script>
+  <script src="assets/favorites.js?v=8"></script>
   <script src="assets/shell.js"></script>
   <script src="assets/reminders.js"></script>
   <script src="assets/partials-nav.js"></script>

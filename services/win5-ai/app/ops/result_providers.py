@@ -133,17 +133,128 @@ class CsvResultProvider(ResultProvider):
         return out
 
 
+class NetkeibaResultProvider(ResultProvider):
+    """
+    Production official results via netkeiba result HTML.
+    Race identity (Win5 race_id) comes from PI catalog.
+    Only returns races that already have a published result table.
+    """
+
+    def __init__(self, http: Any | None = None):
+        from .netkeiba_results import NetkeibaHttp
+
+        self.http = http or NetkeibaHttp()
+
+    def fetch(self, race_date: str) -> list[RaceResultRow]:
+        from .netkeiba_results import (
+            NetkeibaResultError,
+            fetch_pi_race_catalog,
+            parse_result_html,
+        )
+
+        catalog = fetch_pi_race_catalog(race_date)
+        if not catalog:
+            raise NetkeibaResultError(f"PI catalog empty for {race_date}")
+
+        rows: list[RaceResultRow] = []
+        errors: list[str] = []
+        for race in catalog:
+            race_id = str(race.get("race_id") or "").strip()
+            numeric = str(race.get("numeric_race_id") or "").strip()
+            if not race_id or not numeric:
+                continue
+            try:
+                html = self.http.fetch_result_html(numeric)
+                parsed = parse_result_html(html)
+            except Exception as exc:
+                errors.append(f"{race_id}:{exc}")
+                continue
+            if not parsed:
+                # not finalized yet
+                continue
+            finish_order = parsed["finish_order"]
+            rows.append(
+                RaceResultRow(
+                    race_id=race_id,
+                    race_date=str(race.get("race_date") or race_date),
+                    venue=(race.get("venue") or race.get("course") or None),
+                    winner_horse_number=int(parsed["winner_horse_number"]),
+                    field_size=int(parsed.get("field_size") or len(finish_order)),
+                    winner_name=parsed.get("winner_name"),
+                    source=f"netkeiba:{numeric}",
+                    extra={
+                        "finish_order": finish_order,
+                        "payouts": parsed.get("payouts") or {},
+                        "numeric_race_id": numeric,
+                        "chakujun": finish_order,
+                        "haraimodoshi": parsed.get("payouts") or {},
+                    },
+                    surface=None,
+                    distance=None,
+                    going=None,
+                )
+            )
+
+        if not rows:
+            if errors and not catalog:
+                raise NetkeibaResultError(
+                    f"no finalized netkeiba results for {race_date}: "
+                    + "; ".join(errors[:5])
+                )
+            # Catalog OK but races not finalized yet — incremental poll returns empty.
+            return []
+        return rows
+
+
+class CompositeResultProvider(ResultProvider):
+    """Try providers in order; first non-empty success wins."""
+
+    def __init__(self, providers: list[ResultProvider]):
+        self.providers = providers
+
+    def fetch(self, race_date: str) -> list[RaceResultRow]:
+        errors: list[str] = []
+        empty_ok = False
+        for p in self.providers:
+            try:
+                rows = p.fetch(race_date)
+                if rows:
+                    return rows
+                empty_ok = True
+                errors.append(f"{type(p).__name__}: empty")
+            except Exception as exc:
+                errors.append(f"{type(p).__name__}: {exc}")
+        if empty_ok:
+            return []
+        raise RuntimeError(
+            "all result providers failed for "
+            f"{race_date}: "
+            + " | ".join(errors)
+        )
+
+
 def default_provider() -> ResultProvider:
     import os
 
+    mode = (os.environ.get("EXPECT_RESULTS_PROVIDER") or "auto").strip().lower()
     raw = (os.environ.get("EXPECT_RESULTS_CSV") or "").strip()
     data_dir = (os.environ.get("EXPECT_RESULTS_DATA_DIR") or "").strip()
     paths = [Path(raw)] if raw else []
     dd = Path(data_dir) if data_dir else None
-    if dd is None:
-        # repo fixtures fallback for local/dev
+    if dd is None and mode in ("csv", "auto"):
         root = Path(__file__).resolve().parents[2]
         guess = root / "tests" / "ops" / "fixtures"
-        if guess.is_dir():
+        # only use fixtures when explicitly csv mode
+        if mode == "csv" and guess.is_dir():
             dd = guess
-    return CsvResultProvider(paths=paths, data_dir=dd)
+    csv_provider = CsvResultProvider(paths=paths, data_dir=dd)
+
+    if mode == "csv":
+        return csv_provider
+    if mode == "netkeiba":
+        return NetkeibaResultProvider()
+    # auto: production netkeiba first, optional CSV override if configured
+    providers: list[ResultProvider] = [NetkeibaResultProvider()]
+    if raw or data_dir:
+        providers.append(csv_provider)
+    return CompositeResultProvider(providers)

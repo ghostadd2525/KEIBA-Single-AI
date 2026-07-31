@@ -10,8 +10,70 @@ import { catalogToPredictionBundle, normalizePredictionBundle } from "../domain.
 import { getEnv, useAiProxy } from "../env.js";
 import { mapPiPredictionToBundle, piProvenanceItem } from "../piPredictionMapper.js";
 import { piFetch, usePiProxy } from "../piProxy.js";
+import {
+  isReadyPredictionBundle,
+  warnProjectionSuppressed,
+} from "../predictionReady.js";
 import { findPiRaceInCatalog } from "../raceIdResolve.js";
 import { normalizeRaceIdYear } from "../raceIdYear.js";
+
+/** 空 Projection を pending として返す（成功 Bundle にはしない） */
+function pendingPredictionResult({
+  raceId,
+  numericRaceId = null,
+  reason = "pi_prediction_unavailable",
+  requestedRaceId = undefined,
+  yearCorrected = undefined,
+  piError = undefined,
+}) {
+  warnProjectionSuppressed({
+    race_id: raceId,
+    numeric_race_id: numericRaceId,
+    reason,
+  });
+  return {
+    ok: false,
+    pending: true,
+    status: 202,
+    error: "Prediction pending",
+    code: "PREDICTION_PENDING",
+    provenanceMeta: {
+      engine: "n/a",
+      engine_source: "pi_catalog_projection",
+      prediction_status: "pending",
+      race_id: raceId,
+      numeric_race_id: numericRaceId || null,
+      requested_race_id: requestedRaceId,
+      year_corrected: yearCorrected,
+      fallback_reason: "pi_prediction_unavailable_pending",
+      reason,
+      pi_error: piError,
+    },
+  };
+}
+
+/** 成功応答のガード: 空 runners / projection は pending に落とす */
+function guardReadyOrPending(result, raceId) {
+  if (!result || !result.ok) return result;
+  const meta = result.provenanceMeta || {};
+  if (isReadyPredictionBundle(result.bundle, meta)) return result;
+  return pendingPredictionResult({
+    raceId: raceId || (result.bundle && result.bundle.race_id) || meta.race_id,
+    numericRaceId: meta.numeric_race_id || null,
+    reason:
+      meta.fallback_reason ||
+      (bundleRunnersLen(result.bundle) === 0
+        ? "empty_runners"
+        : "not_ready_prediction"),
+    piError: meta.pi_error,
+  });
+}
+
+function bundleRunnersLen(bundle) {
+  const ev = (bundle && bundle.evaluation) || {};
+  const runners = Array.isArray(ev.runners) ? ev.runners : [];
+  return runners.length;
+}
 
 function bffMockItem(bundle) {
   return {
@@ -160,6 +222,11 @@ async function fetchFromPiList(context, query = {}) {
     );
     for (const row of results) {
       if (!row || !row.one || !row.one.ok) continue;
+      if (
+        !isReadyPredictionBundle(row.one.bundle, row.one.provenanceMeta || { engine_source: "pi" })
+      ) {
+        continue;
+      }
       bundles.push(row.one.bundle);
       items.push(
         piProvenanceItem(row.rid, row.one.bundle, {
@@ -169,31 +236,30 @@ async function fetchFromPiList(context, query = {}) {
     }
   }
 
+  // 空 Projection（runners=[] / pi_catalog_projection）は一覧の成功 Bundle にしない。
+  // レースカード自体は /api/race-cards・カタログ経路を使う。
   if (!bundles.length) {
-    // 予想本体が全滅してもカタログ投影で一覧/ホームを生かす
-    for (const race of races) {
-      const projected = catalogToPredictionBundle({
-        race_id: String(race.race_id || ""),
-        date: race.date,
-        venue: race.course || race.venue,
-        race_no: race.race_number != null ? race.race_number : race.race_no,
-        post_time: race.post_time,
-        class_label: race.race_name || race.race_label || "",
-        status: race.status || "scheduled",
+    if (races.length) {
+      warnProjectionSuppressed({
+        race_id: String(races[0].race_id || date),
+        numeric_race_id: races[0].numeric_race_id || null,
+        reason: "pi_list_all_unavailable_no_projection",
       });
-      if (!projected || !projected.race_id) continue;
-      bundles.push(projected);
-      items.push(
-        piProvenanceItem(projected.race_id, projected, {
-          numeric_race_id: race.numeric_race_id || null,
-          engine_source: "pi_catalog_projection",
-        })
-      );
     }
-  }
-
-  if (!bundles.length) {
-    return { ok: false, error: "No PI predictions available for date", status: 404 };
+    return {
+      ok: false,
+      pending: true,
+      status: 202,
+      error: "Prediction list pending",
+      code: "PREDICTION_PENDING",
+      provenanceMeta: {
+        engine: "n/a",
+        engine_source: "pi_catalog_projection",
+        prediction_status: "pending",
+        reason: "pi_list_all_unavailable_no_projection",
+        date,
+      },
+    };
   }
 
   return {
@@ -353,7 +419,7 @@ export async function adaptPredictionGet(context, raceId) {
         fromPi.provenanceMeta.race_id = normalizedId;
         fromPi.provenanceMeta.year_corrected = true;
       }
-      return fromPi;
+      return guardReadyOrPending(fromPi, normalizedId);
     }
 
     // PI 不通・タイムアウト時のみ AI へフェイルオーバー（同一オリジンならスキップ）
@@ -372,64 +438,49 @@ export async function adaptPredictionGet(context, raceId) {
             fromPy.provenanceMeta.year_corrected = true;
           }
         }
-        return fromPy;
+        return guardReadyOrPending(fromPy, normalizedId);
       }
     }
 
-    // 最終手段: カタログ行から最低限の Bundle を組み立て（詳細ページが真っ白にならない）
+    // 旧: カタログ空 Projection を HTTP200 成功で返していた → pending に変更
+    // （ヘッダー用メタはクライアントの race_list_cache / prefetch meta が担う）
+    let numericFromCatalog = null;
     const m = String(normalizedId || "").match(/^(\d{4}-\d{2}-\d{2})/);
     if (m) {
-      const catalogProxied = await piFetch(context, `/v1/races?date=${encodeURIComponent(m[1])}`, {
-        timeoutMs: 6000,
-      });
-      if (catalogProxied && !(catalogProxied instanceof Response) && catalogProxied.ok) {
-        const races = Array.isArray(catalogProxied.payload.races)
-          ? catalogProxied.payload.races
-          : [];
-        const row = races.find((r) => String(r.race_id || "") === String(normalizedId));
-        if (row) {
-          const bundle = catalogToPredictionBundle({
-            race_id: String(row.race_id || normalizedId),
-            date: row.date || m[1],
-            venue: row.course || row.venue,
-            race_no: row.race_number != null ? row.race_number : row.race_no,
-            post_time: row.post_time,
-            class_label: row.race_name || row.race_label || "",
-            status: row.status || "scheduled",
-          });
-          return {
-            ok: true,
-            bundle,
-            source: "pi-keibanet-api",
-            provider: "pi",
-            provenanceMeta: {
-              engine: "n/a",
-              engine_source: "pi_catalog_projection",
-              race_id: normalizedId,
-              requested_race_id: idChanged ? raceId : undefined,
-              year_corrected: idChanged || undefined,
-              fallback_reason: "pi_prediction_unavailable_catalog_projection",
-              pi_error: fromPi?.error || "pi_failed",
-            },
-          };
+      try {
+        const catalogProxied = await piFetch(
+          context,
+          `/v1/races?date=${encodeURIComponent(m[1])}`,
+          { timeoutMs: 6000 }
+        );
+        if (catalogProxied && !(catalogProxied instanceof Response) && catalogProxied.ok) {
+          const races = Array.isArray(catalogProxied.payload.races)
+            ? catalogProxied.payload.races
+            : [];
+          const row = races.find((r) => String(r.race_id || "") === String(normalizedId));
+          if (row && row.numeric_race_id) numericFromCatalog = row.numeric_race_id;
         }
+      } catch {
+        /* ignore catalog lookup */
       }
     }
 
-    if (fromPi && fromPi.errorResponse) return fromPi;
-    return {
-      ok: false,
-      error: fromPi?.error || "Prediction not found",
-      status: fromPi?.status || 404,
-    };
+    return pendingPredictionResult({
+      raceId: normalizedId,
+      numericRaceId: numericFromCatalog,
+      reason: fromPi?.error || "pi_prediction_unavailable",
+      requestedRaceId: idChanged ? raceId : undefined,
+      yearCorrected: idChanged || undefined,
+      piError: fromPi?.error || "pi_failed",
+    });
   }
   if (useAiProxy(env)) {
     const fromPy = await fetchFromPythonGet(context, normalizedId);
-    if (fromPy && fromPy.ok) return fromPy;
+    if (fromPy && fromPy.ok) return guardReadyOrPending(fromPy, normalizedId);
     if (fromPy && fromPy.errorResponse) return fromPy;
     return { ok: false, error: "Prediction unavailable", status: 502 };
   }
-  return fetchFromMockGet(context, normalizedId);
+  return guardReadyOrPending(await fetchFromMockGet(context, normalizedId), normalizedId);
 }
 
 export const PredictionAdapter = {

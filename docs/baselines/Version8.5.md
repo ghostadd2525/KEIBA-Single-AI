@@ -27,4 +27,5 @@
 
 ## Successor
 
-正式 Production Baseline は **[Version8.5.1](./Version8.5.1.md)**。
+正式 Production Baseline は **[Version8.5.1](./Version8.5.1.md)**。  
+後続の運用機能: Approval Workflow = **Version8.8**（[`docs/ops/v8.8-approval-workflow.md`](../ops/v8.8-approval-workflow.md)）。PE/CE/AI 非変更・Deploy Note → Human Deploy。

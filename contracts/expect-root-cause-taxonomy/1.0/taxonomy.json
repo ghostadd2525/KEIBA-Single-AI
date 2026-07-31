@@ -1,0 +1,82 @@
+{
+  "schema_version": "expect-root-cause-taxonomy/1.0",
+  "families": [
+    {
+      "id": "candidate_pool",
+      "label": "Candidate Pool",
+      "description": "Winner outside or weakly represented in candidate pool.",
+      "related_miss_categories": ["miss_top5", "miss_top3"],
+      "analyzer_hints": ["empty_pool", "winner_not_in_pool", "pool_too_narrow"]
+    },
+    {
+      "id": "repick",
+      "label": "Repick / Marks",
+      "description": "Pool contains winner but marks/repick order wrong.",
+      "related_miss_categories": ["miss_top1", "miss_top3"],
+      "analyzer_hints": ["honmei_miss", "rival_swap"]
+    },
+    {
+      "id": "delete",
+      "label": "Delete / Exclusion",
+      "description": "Winner incorrectly deleted or over-excluded.",
+      "related_miss_categories": ["miss_top5"],
+      "analyzer_hints": ["delete_hit_winner"]
+    },
+    {
+      "id": "purchase",
+      "label": "Purchase / Ticket",
+      "description": "Prediction direction OK but ticket construction missed value.",
+      "related_miss_categories": ["miss_top1", "miss_top3"],
+      "analyzer_hints": ["ticket_coverage"]
+    },
+    {
+      "id": "confidence",
+      "label": "Confidence",
+      "description": "High confidence miss or calibration error.",
+      "related_miss_categories": ["miss_top1", "miss_top3", "miss_top5"],
+      "analyzer_hints": ["high_conf_miss"]
+    },
+    {
+      "id": "world",
+      "label": "World",
+      "description": "World selection mismatch vs race shape.",
+      "related_miss_categories": ["miss_top3", "miss_top5"],
+      "analyzer_hints": ["world_mismatch"]
+    },
+    {
+      "id": "subworld",
+      "label": "Sub-world",
+      "description": "Sub-world / pace-market slice mismatch.",
+      "related_miss_categories": ["miss_top3", "miss_top5"],
+      "analyzer_hints": ["subworld_mismatch"]
+    },
+    {
+      "id": "ranking",
+      "label": "Ranking",
+      "description": "Generic near/mid/far ranking miss (legacy miss_top*).",
+      "related_miss_categories": ["miss_top1", "miss_top3", "miss_top5"],
+      "analyzer_hints": ["miss_top1", "miss_top3", "miss_top5"]
+    },
+    {
+      "id": "features",
+      "label": "Features / Data",
+      "description": "Feature missing or stale inputs (ops-adjacent).",
+      "related_miss_categories": ["miss_top5"],
+      "analyzer_hints": ["feature_missing"]
+    },
+    {
+      "id": "ops_data",
+      "label": "Ops Data",
+      "description": "Result sync / prediction failed — not Core quality.",
+      "related_miss_categories": [],
+      "analyzer_hints": ["result_sync_failed", "prediction_failed"]
+    },
+    {
+      "id": "unknown",
+      "label": "Unknown",
+      "description": "Insufficient evidence for family assignment.",
+      "related_miss_categories": ["miss_top1", "miss_top3", "miss_top5"],
+      "analyzer_hints": []
+    }
+  ]
+}

@@ -1,0 +1,74 @@
+{
+  "base": "http://127.0.0.1:8788",
+  "at": "2026-07-21T04:41:39.213Z",
+  "results": [
+    {
+      "name": "public-status weekday closed",
+      "pass": true,
+      "http": 200,
+      "data": {
+        "ops_mode": "CLOSED",
+        "reason": "auto_calendar",
+        "manual_override": false,
+        "auto_maintenance_enabled": true,
+        "is_race_day": false,
+        "date_jst": "2026-07-21",
+        "next_open_date_jst": "2026-07-25",
+        "calendar_source": "weekend",
+        "message": "ただいまメンテナンス中です。しばらくしてから再度お試しください。"
+      }
+    },
+    {
+      "name": "ADMIN login",
+      "pass": true,
+      "http": 200,
+      "url": "/api/auth/login"
+    },
+    {
+      "name": "ADMIN predictions",
+      "pass": true,
+      "http": 200,
+      "url": "/api/predictions"
+    },
+    {
+      "name": "ADMIN conversation",
+      "pass": true,
+      "http": 200,
+      "note": "ADMIN must not be OPS_CLOSED; 200/4xx/502 ok if AI down, not OPS_CLOSED"
+    },
+    {
+      "name": "USER login",
+      "pass": true,
+      "http": 200,
+      "url": "/api/auth/login"
+    },
+    {
+      "name": "USER predictions OPS_CLOSED",
+      "pass": true,
+      "http": 503,
+      "code": "OPS_CLOSED",
+      "url": "/api/predictions"
+    },
+    {
+      "name": "USER conversation OPS_CLOSED",
+      "pass": true,
+      "http": 503,
+      "code": "OPS_CLOSED",
+      "url": "/api/conversation/chat"
+    },
+    {
+      "name": "一時ID invite/start",
+      "pass": true,
+      "http": 200,
+      "note": "invite endpoint available during CLOSED",
+      "body": {
+        "schema_version": "expect-auth/1.0",
+        "invite_id": "BETA-F6D1-E07E",
+        "setup_token": "stub.eyJzdWIiOiJCRVRBLUY2RDEtRTA3RSIsImV4cCI6MTc4NDYxMDY5OSwicHVycG9zZSI6InNldHVwIn0.1784610699",
+        "token_type": "bearer",
+        "expires_in": 1800,
+        "next": "setup"
+      }
+    }
+  ]
+}

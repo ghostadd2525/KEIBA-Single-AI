@@ -102,7 +102,7 @@ class HorseHistoryParserTest(unittest.TestCase):
         from pi_keibanet.netkeiba.horse_history import fetch_horse_history
 
         class MockClient:
-            def fetch(self, url, *, label=""):
+            def fetch(self, url, *, label="", accept=None):
                 self.last_url = url
                 frag = SAMPLE_HORSE_TABLE
                 return json.dumps({"status": "OK", "data": frag})
@@ -112,6 +112,43 @@ class HorseHistoryParserTest(unittest.TestCase):
         self.assertIn("ajax_horse_results.html", client.last_url)
         self.assertIn("id=2022103522", client.last_url)
         self.assertEqual(len(rows), 3)
+
+    def test_fetch_horse_history_falls_back_to_sp_html(self):
+        from pi_keibanet.netkeiba.client import NetkeibaFetchError
+        from pi_keibanet.netkeiba.horse_history import fetch_horse_history
+
+        class MockClient:
+            def __init__(self):
+                self.urls = []
+
+            def fetch(self, url, *, label="", accept=None):
+                self.urls.append(url)
+                if "ajax_horse_results" in url:
+                    raise NetkeibaFetchError(f"HTML取得失敗 HTTP 400: {url}")
+                return SAMPLE_HORSE_TABLE
+
+        client = MockClient()
+        rows = fetch_horse_history(client, "2022103522")
+        self.assertEqual(len(client.urls), 2)
+        self.assertIn("ajax_horse_results.html", client.urls[0])
+        self.assertIn("db.sp.netkeiba.com/horse/2022103522/", client.urls[1])
+        self.assertEqual(len(rows), 3)
+
+    def test_enrich_sp_packed_race_name(self):
+        from pi_keibanet.netkeiba.horse_history import _enrich_history_row
+
+        row = _enrich_history_row(
+            {
+                "history_date": "",
+                "history_place": "",
+                "history_race_name": "26/05/30 東京 10R\n葉山特別\n2勝",
+                "history_class": "",
+            }
+        )
+        self.assertEqual(row["history_date"], "26/05/30")
+        self.assertEqual(row["history_place"], "東京")
+        self.assertEqual(row["history_race_name"], "葉山特別")
+        self.assertEqual(row["history_class"], "2勝")
 
 
 class FeaturesBuilderTest(unittest.TestCase):

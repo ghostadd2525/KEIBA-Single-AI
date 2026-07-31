@@ -2,8 +2,10 @@
 #
 # ルート `/` は index.html（ホーム）を配信する。
 # `/` → login.html の強制リダイレクトは置かない。
-# （Wrangler / Pages が index.html を `/` に正規化するため、
-#  ログイン後の index.html 遷移が login に戻りループする）
 #
-# ログイン画面: /login.html（login /login）
-# ホーム:       / および /index.html
+# 重要: /login → login.html の明示 rewrite（200）は禁止。
+# Cloudflare Pages の pretty URL（login.html → /login の 308）と衝突し、
+# /login ↔ /login の ERR_TOO_MANY_REDIRECTS になる。
+# /login は login.html の自動解決に任せる（/ops と同じ方針）。
+#
+# /ops / maintenance / terms / setup も同様に明示 rewrite しない。

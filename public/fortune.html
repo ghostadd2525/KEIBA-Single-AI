@@ -7,11 +7,11 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Noto+Sans+JP:wght@400;500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="assets/styles.css?v=17" />
-  <link rel="stylesheet" href="assets/screens.css" />
+  <link rel="stylesheet" href="assets/styles.css?v=24" />
+  <link rel="stylesheet" href="assets/screens.css?v=49" />
   <script src="assets/api/calendar-weekend.js?v=14"></script>
-  <script src="assets/auto-maintenance.js?v=11.5"></script>
-  <script src="assets/auth.js?v=4"></script>
+  <script src="assets/auto-maintenance.js?v=12.4"></script>
+  <script src="assets/auth.js?v=6"></script>
   <script>
     if (ExpectAuth.requireAuth() && window.ExpectAutoMaintenance) {
       ExpectAutoMaintenance.run();
@@ -38,7 +38,7 @@
         <p class="fortune-kicker" id="fortuneDate">—</p>
         <div class="fortune-result-row">
           <div class="fortune-emotion" aria-hidden="true">
-            <img id="fortuneEmotionImg" src="assets/images/kaoba-emotion-joy.png?v=3" alt="" />
+            <img id="fortuneEmotionImg" src="assets/images/kaoba-emotion-joy.webp?v=3" alt="" />
           </div>
           <div class="fortune-result-text">
             <p class="fortune-rank-label">本日の競馬運</p>
@@ -73,7 +73,7 @@
     <aside class="mascot-ka0ba" id="mascotKa0ba" data-mascot-mode="png">
       <div class="mascot-bubble" id="mascotBubble" role="status" aria-live="polite"></div>
       <button type="button" class="mascot-figure" id="mascotTalkBtn" aria-label="KAOBAに話しかける">
-        <img data-mascot-fallback src="assets/images/mascot-ka0ba.png?v=10" alt="" height="140" draggable="false" />
+        <img data-mascot-fallback src="assets/images/mascot-ka0ba.webp?v=10" alt="" height="140" draggable="false" />
       </button>
     </aside>
 
@@ -81,8 +81,9 @@
   </div>
   <script src="assets/api/mock-gate.js"></script>
   <script src="assets/api/auth.js"></script>
+  <script src="assets/api/http-cache.js?v=1"></script>
   <script src="assets/api/race-list-url.js?v=12"></script>
-  <script src="assets/api/race.js"></script>
+  <script src="assets/api/race.js?v=16"></script>
   <script src="assets/api/real-data-bind.js"></script>
   <script src="assets/favorites.js?v=4"></script>
   <script src="assets/shell.js"></script>
@@ -92,7 +93,12 @@
     (function () {
       var FORTUNE_KEY = "expect_fortune_daily_v1";
       var POOLS_KEY = "expect_fortune_pools_v1";
-      var RACE_LIST_CACHE_KEY = "expect_race_list_cache_v2";
+      var RACE_LIST_CACHE_KEYS = [
+        "expect_race_list_cache_v6",
+        "expect_race_list_cache_v5",
+        "expect_race_list_cache_v4",
+        "expect_race_list_cache_v2",
+      ];
       var HOME_HONMEI_KEY = "expect_home_honmei_v1";
       var CATALOG_TIMEOUT_MS = 12000;
       var NUMBER_FALLBACK = [
@@ -100,18 +106,29 @@
         "10", "11", "12", "13", "14", "15", "16", "17", "18"
       ];
       var EMOTIONS = {
-        joy:     { src: "assets/images/kaoba-emotion-joy.png?v=3",     label: "喜（よろこび）" },
-        anger:   { src: "assets/images/kaoba-emotion-anger.png?v=3",   label: "怒（いかり）" },
-        sorrow:  { src: "assets/images/kaoba-emotion-sorrow.png?v=3",  label: "哀（かなしみ）" },
-        fun:     { src: "assets/images/kaoba-emotion-fun.png?v=3",     label: "楽（たのしみ）" },
-        tantrum: { src: "assets/images/kaoba-emotion-tantrum.png?v=3", label: "駄々っ子" }
+        // 喜 / 怒 / 哀 / 楽 / 駄々っ子（怒は警戒日など将来用・通常運勢では未使用）
+        joy:     { src: "assets/images/kaoba-fortune-happy.webp?v=1", label: "喜（よろこび）" },
+        anger:   { src: "assets/images/kaoba-fortune-angry.webp?v=1", label: "怒（いかり）" },
+        sorrow:  { src: "assets/images/kaoba-fortune-sad.webp?v=1",   label: "哀（かなしみ）" },
+        fun:     { src: "assets/images/kaoba-fortune-fun.webp?v=1",   label: "楽（たのしみ）" },
+        tantrum: { src: "assets/images/kaoba-fortune-dada.webp?v=1",  label: "駄々っ子" }
+      };
+      // 運勢 → 表示画像（スコア計算とは独立）
+      var RANK_EMOTION = {
+        "大吉": "fun",
+        "中吉": "joy",
+        "小吉": "fun",
+        "吉": "joy",
+        "末吉": "fun",
+        "凶": "sorrow",
+        "大凶": "tantrum"
       };
       var RANKS = [
-        { rank: "大吉", score: 96, emotion: "joy",     msg: "流れが味方してる日！自信のあるレースに素直に乗ろう。" },
-        { rank: "中吉", score: 84, emotion: "fun",     msg: "堅実な判断が光る一日。軸を明確にして点数を抑えめに。" },
-        { rank: "吉",   score: 72, emotion: "sorrow",  msg: "まずまずの運気。人気薄の大穴より、評価の高い軸を優先。" },
-        { rank: "小吉", score: 64, emotion: "anger",   msg: "小さな的中を積み重ねる日。ワイドや馬連が相性◎。" },
-        { rank: "末吉", score: 52, emotion: "tantrum", msg: "焦らず様子見も吉。気になる1鞍だけに絞ると◎。" }
+        { rank: "大吉", score: 96, emotion: "fun",     msg: "流れが味方してる日！自信のあるレースに素直に乗ろう。" },
+        { rank: "中吉", score: 84, emotion: "joy",     msg: "堅実な判断が光る一日。軸を明確にして点数を抑えめに。" },
+        { rank: "吉",   score: 72, emotion: "joy",     msg: "まずまずの運気。人気薄の大穴より、評価の高い軸を優先。" },
+        { rank: "小吉", score: 64, emotion: "fun",     msg: "小さな的中を積み重ねる日。ワイドや馬連が相性◎。" },
+        { rank: "末吉", score: 52, emotion: "fun",     msg: "焦らず様子見も吉。気になる1鞍だけに絞ると◎。" }
       ];
       var COLORS = ["赤", "金", "紺", "緑", "紫", "白"];
       var STYLE_FALLBACK = ["逃げ", "先行", "差し", "追込"];
@@ -123,12 +140,41 @@
         closer_route: "差し",
         deep_closer_route: "追込",
       };
-      var ADVICE = [
-        "本命は1頭に絞り、相手は最大3頭まで。深追いは今日は控えめに。",
-        "午前中の気配を見てから午後の勝負レースへ。焦らないのが勝ち。",
-        "人気薄を1頭だけ絡めると妙味が出やすい日。点数は増やしすぎないで。",
-        "展開予想が当たる気配。ペースが速そうなレースを優先して見てみて。",
-        "回収より的中率を意識。少点数のフォーメーションが今日の鍵。"
+      var ADVICE_TEMPLATES = [
+        function (c) {
+          return "今日は点数を広げすぎず本命中心がおすすめです。";
+        },
+        function (c) {
+          return "人気馬を軸に相手を絞ると運気を活かせそうです。";
+        },
+        function (c) {
+          return "穴狙いより堅実な買い方が向いています。";
+        },
+        function (c) {
+          return c.venue && c.venue !== "—"
+            ? c.venue + "は堅実に構えて、軸を明確にする一日です。"
+            : "軸を明確にして、少点数で丁寧に狙う一日です。";
+        },
+        function (c) {
+          return c.bet
+            ? "今日のラッキー券種は" + c.bet + "。広げすぎずその券種を中心に。"
+            : "券種を絞って、同じ型で淡々と組み立てると◎。";
+        },
+        function (c) {
+          return c.style
+            ? c.style + "脚質の馬を意識すると流れに乗りやすい日です。"
+            : "展開のイメージが合うレースだけを選ぶと◎。";
+        },
+        function (c) {
+          return c.rank === "大吉" || c.rank === "中吉"
+            ? "運気が良い日。自信のあるレースに素直に乗ってみよう。"
+            : "無理に追わず、気になる1鞍に集中するのが吉。";
+        },
+        function (c) {
+          return c.color
+            ? "ラッキーカラーの" + c.color + "を意識して、気持ちを整えて臨もう。"
+            : "焦らずペースを守る買い方が今日の鍵。";
+        },
       ];
 
       var drawBtn = document.getElementById("fortuneDraw");
@@ -144,9 +190,21 @@
         return h;
       }
 
+      /** 負の seed シフトでも安全に要素を返す */
       function pick(arr, n) {
         if (!arr || !arr.length) return "";
-        return arr[n % arr.length];
+        var len = arr.length;
+        var i = Number(n) % len;
+        if (i < 0) i += len;
+        var v = arr[i];
+        return v == null ? "" : v;
+      }
+
+      function displayText(v, fallback) {
+        if (v == null) return fallback || "—";
+        var s = String(v).trim();
+        if (!s || s === "undefined" || s === "null") return fallback || "—";
+        return s;
       }
 
       function unique(list) {
@@ -272,15 +330,22 @@
       }
 
       function readRaceListCards(dateKey) {
-        try {
-          var store = JSON.parse(localStorage.getItem(RACE_LIST_CACHE_KEY) || "null");
-          if (!store || !store.entries) return null;
-          var hit = store.entries["v2:" + dateKey];
-          if (!hit || !hit.payload) return null;
-          return hit.payload.race_cards || null;
-        } catch (e) {
-          return null;
+        for (var k = 0; k < RACE_LIST_CACHE_KEYS.length; k++) {
+          try {
+            var store = JSON.parse(localStorage.getItem(RACE_LIST_CACHE_KEYS[k]) || "null");
+            if (!store || !store.entries) continue;
+            var keys = Object.keys(store.entries);
+            for (var i = 0; i < keys.length; i++) {
+              var entryKey = keys[i];
+              if (entryKey.indexOf(dateKey) < 0) continue;
+              var hit = store.entries[entryKey];
+              if (hit && hit.payload && Array.isArray(hit.payload.race_cards)) {
+                return hit.payload.race_cards;
+              }
+            }
+          } catch (e) { /* try next key */ }
         }
+        return null;
       }
 
       function readHonmeiSnap(dateKey) {
@@ -425,46 +490,112 @@
         };
       }
 
+      function buildAdvice(seed, ctx) {
+        var fn = pick(ADVICE_TEMPLATES, seed >> 2);
+        if (typeof fn !== "function") {
+          return "今日は点数を広げすぎず本命中心がおすすめです。";
+        }
+        try {
+          var text = fn(ctx || {});
+          return displayText(text, "今日は点数を広げすぎず本命中心がおすすめです。");
+        } catch (e) {
+          return "今日は点数を広げすぎず本命中心がおすすめです。";
+        }
+      }
+
       function buildFortune(seed, pools) {
-        var rank = pick(RANKS, seed);
-        var venue = pick(pools.venues, seed >> 5) || "—";
-        var style = pick(pools.styles, seed >> 7) || pick(STYLE_FALLBACK, seed >> 7);
-        var number = pick(pools.numbers, seed >> 11) || "—";
-        var bet = pick(pools.bets, seed >> 9) || pick(BET_FALLBACK, seed >> 9);
-        return {
+        var rank = pick(RANKS, seed) || RANKS[0];
+        var venue = displayText(pick(pools.venues, seed >> 5), "—");
+        var style = displayText(
+          pick(pools.styles, seed >> 7) || pick(STYLE_FALLBACK, seed >> 7),
+          STYLE_FALLBACK[0]
+        );
+        var number = displayText(pick(pools.numbers, seed >> 11), "—");
+        var bet = displayText(
+          pick(pools.bets, seed >> 9) || pick(BET_FALLBACK, seed >> 9),
+          BET_FALLBACK[0]
+        );
+        var color = displayText(pick(COLORS, seed >> 3), COLORS[0]);
+        var fortune = {
           rank: rank.rank,
           score: Math.max(40, rank.score - (seed % 7)),
           emotion: rank.emotion,
           message: rank.msg,
-          color: pick(COLORS, seed >> 3),
+          color: color,
           venue: venue,
           style: style,
           bet: bet,
           number: number,
-          advice: pick(ADVICE, seed >> 2),
+          advice: "",
         };
+        fortune.advice = buildAdvice(seed, fortune);
+        return fortune;
+      }
+
+      /** 保存済み結果の欠けた表示フィールドだけ補完（rank/score/日付は維持） */
+      function repairFortune(f, seed, pools) {
+        if (!f || typeof f !== "object") return f;
+        pools = pools || emptyPools();
+        var next = Object.assign({}, f);
+        if (!displayText(next.color, "")) next.color = displayText(pick(COLORS, seed >> 3), COLORS[0]);
+        if (!displayText(next.style, "")) {
+          next.style = displayText(
+            pick(pools.styles, seed >> 7) || pick(STYLE_FALLBACK, seed >> 7),
+            STYLE_FALLBACK[0]
+          );
+        }
+        if (!displayText(next.bet, "")) {
+          next.bet = displayText(
+            pick(pools.bets, seed >> 9) || pick(BET_FALLBACK, seed >> 9),
+            BET_FALLBACK[0]
+          );
+        }
+        if (!displayText(next.venue, "") || next.venue === "—") {
+          var v = displayText(pick(pools.venues, seed >> 5), "");
+          if (v) next.venue = v;
+        }
+        if (!displayText(next.number, "") || next.number === "—") {
+          var n = displayText(pick(pools.numbers, seed >> 11), "");
+          if (n) next.number = n;
+        }
+        if (!displayText(next.advice, "")) next.advice = buildAdvice(seed, next);
+        return next;
+      }
+
+      function currentSeed() {
+        var user = ExpectAuth.current && ExpectAuth.current();
+        return hashStr(raceDateIso + "|" + ((user && user.id) || "guest"));
       }
 
       function render(f, label, opts) {
         opts = opts || {};
+        var seed = currentSeed();
+        f = repairFortune(f, seed, racePools || emptyPools());
         document.getElementById("fortuneDate").textContent = label;
-        document.getElementById("fortuneRank").textContent = f.rank;
-        document.getElementById("fortuneScore").textContent = "運気スコア " + f.score;
-        document.getElementById("fortuneMessage").textContent = f.message;
-        document.getElementById("fortuneAdvice").textContent = f.advice;
+        document.getElementById("fortuneRank").textContent = displayText(f.rank, "—");
+        document.getElementById("fortuneScore").textContent =
+          f.score != null && f.score !== "" ? "運気スコア " + f.score : "";
+        document.getElementById("fortuneMessage").textContent = displayText(f.message, "");
+        document.getElementById("fortuneAdvice").textContent = displayText(
+          f.advice,
+          "今日は点数を広げすぎず本命中心がおすすめです。"
+        );
         document.getElementById("fortuneLucky").innerHTML =
-          "<li><span>ラッキー会場</span><b>" + f.venue + "</b></li>" +
-          "<li><span>ラッキー脚質</span><b>" + f.style + "</b></li>" +
-          "<li><span>ラッキー番号</span><b>" + f.number + "番</b></li>" +
-          "<li><span>ラッキー券種</span><b>" + f.bet + "</b></li>" +
-          "<li><span>ラッキーカラー</span><b>" + f.color + "</b></li>";
+          "<li><span>ラッキー会場</span><b>" + displayText(f.venue, "—") + "</b></li>" +
+          "<li><span>ラッキー脚質</span><b>" + displayText(f.style, "—") + "</b></li>" +
+          "<li><span>ラッキー番号</span><b>" +
+          (displayText(f.number, "—") === "—" ? "—" : displayText(f.number, "—") + "番") +
+          "</b></li>" +
+          "<li><span>ラッキー券種</span><b>" + displayText(f.bet, "—") + "</b></li>" +
+          "<li><span>ラッキーカラー</span><b>" + displayText(f.color, COLORS[0]) + "</b></li>";
 
-        var emo = EMOTIONS[f.emotion] || EMOTIONS.joy;
+        var emotionKey = RANK_EMOTION[f.rank] || f.emotion || "joy";
+        var emo = EMOTIONS[emotionKey] || EMOTIONS.joy;
         var emoImg = document.getElementById("fortuneEmotionImg");
         var emoLabel = document.getElementById("fortuneEmotionLabel");
         emoImg.src = emo.src;
-        emoImg.alt = emo.label;
-        emoLabel.textContent = emo.label;
+        emoImg.alt = "";
+        emoLabel.textContent = "";
 
         var hero = document.getElementById("fortuneHero");
         hero.classList.remove("is-reveal");
@@ -544,17 +675,33 @@
         if (!window.ExpectApi || !ExpectApi.Race || typeof ExpectApi.Race.list !== "function") {
           return Promise.resolve(emptyPools());
         }
-        return withTimeout(
-          ExpectApi.Race.list({ date: raceDateIso }),
-          CATALOG_TIMEOUT_MS,
-          "races catalog timeout"
-        )
-          .then(function (catalog) {
-            return extractPoolsFromCatalog((catalog && catalog.items) || []);
-          })
-          .catch(function () {
-            return emptyPools();
+        var dates = [raceDateIso];
+        if (window.ExpectWeekendCalendar && ExpectWeekendCalendar.weekendRaceDates) {
+          (ExpectWeekendCalendar.weekendRaceDates(new Date()) || []).forEach(function (d) {
+            if (d && dates.indexOf(d) < 0) dates.push(d);
           });
+        }
+        return Promise.all(
+          dates.map(function (iso) {
+            return withTimeout(
+              ExpectApi.Race.list({ date: iso }),
+              CATALOG_TIMEOUT_MS,
+              "races catalog timeout"
+            )
+              .then(function (catalog) {
+                return extractPoolsFromCatalog((catalog && catalog.items) || []);
+              })
+              .catch(function () {
+                return emptyPools();
+              });
+          })
+        ).then(function (list) {
+          var merged = emptyPools();
+          list.forEach(function (p) {
+            merged = mergePools(merged, p);
+          });
+          return merged;
+        });
       }
 
       function drawOnce() {
@@ -584,7 +731,7 @@
             "今日の運勢は<br><strong>" +
               fortune.rank +
               "</strong> だよ！<br>ラッキー会場は <strong>" +
-              fortune.venue +
+              displayText(fortune.venue, "—") +
               "</strong>♪",
             5200
           );
@@ -608,17 +755,20 @@
       var existing = readStored();
       if (existing && existing.date === raceDateIso && existing.result) {
         render(existing.result, dateLabel, { locked: true });
-        // 引済みでもプールは裏で温める（翌日以降の高速化用ではないが無害）
+        function afterPools(raw) {
+          racePools = finalizePools(raw);
+          poolsReady = true;
+          if (racePools.venues.length) writePoolsCache(raceDateIso, racePools);
+          var repaired = repairFortune(existing.result, currentSeed(), racePools);
+          writeStored({ date: raceDateIso, result: repaired, at: existing.at || Date.now() });
+          render(repaired, dateLabel, { locked: true });
+        }
         var warm = collectLocalPools();
         if (warm.venues.length) {
-          racePools = finalizePools(warm);
-          poolsReady = true;
-          writePoolsCache(raceDateIso, racePools);
+          afterPools(warm);
         } else {
           fetchCatalogPools().then(function (cat) {
-            racePools = finalizePools(mergePools(warm, cat));
-            poolsReady = true;
-            if (racePools.venues.length) writePoolsCache(raceDateIso, racePools);
+            afterPools(mergePools(warm, cat));
           });
         }
         return;

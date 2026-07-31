@@ -1,0 +1,120 @@
+{
+  "schema_version": "expect-v8-weekly-ops-report/1.2",
+  "baseline_version": "8.5",
+  "baseline_lock": "Version8.5",
+  "operations_mode": true,
+  "week_id": "2026-W30",
+  "generated_at": "2026-07-26T12:59:35.691Z",
+  "date_jst": "2026-07-26",
+  "weekday_jst": "Sun",
+  "phase": "operations",
+  "research_ran": false,
+  "decision": {
+    "value": "no_improvement",
+    "ok": true,
+    "reason": "改善案なし / 優位差なし。Version 維持は成功。",
+    "promote_to_production": false,
+    "no_improvement_is_success": true
+  },
+  "production": {
+    "result_automation": "ops_probe",
+    "race_results": null,
+    "race_evaluations": null,
+    "miss_count": 1,
+    "archive_count": null,
+    "note": "race_results / race_evaluations 件数は Production DB 連携時に埋める。Research は読取のみ。"
+  },
+  "research": {
+    "miss_count": 1,
+    "root_cause_share": {
+      "miss_top1": 1
+    },
+    "root_cause_primary": "miss_top1",
+    "proposal_count": null,
+    "validation_pass_rate_pct": null,
+    "canary_success_rate_pct": null,
+    "accept_rate_pct": null,
+    "reject_rate_pct": null,
+    "no_improvement_rate_pct": null
+  },
+  "knowledge": {
+    "active_pattern": null,
+    "stale_pattern": null,
+    "archived_pattern": null,
+    "average_knowledge_score": null,
+    "merge_candidates": null
+  },
+  "governance": {
+    "active_pattern": null,
+    "stale_pattern": null,
+    "archived_pattern": null,
+    "merge_candidates": null,
+    "merge_candidate_count": null,
+    "average_knowledge_score": null
+  },
+  "analyzer": {
+    "precision": null,
+    "recall": null,
+    "prediction_error": null,
+    "confidence_calibration": {},
+    "validation_calibration": null
+  },
+  "improvement": {
+    "vs_prev_week": {
+      "hit": null,
+      "purchase": null,
+      "rank710": null,
+      "other_miss": null,
+      "rank46": null,
+      "note": "purchase / other_miss / rank46 は Production stats 連携時に埋める。現状 Research 成果物のみ。"
+    },
+    "vs_285r": {
+      "hit": null,
+      "purchase": null,
+      "rank710": null,
+      "other_miss": null,
+      "rank46": null
+    },
+    "current_hit_delta": null
+  },
+  "baseline_285r": {
+    "baseline_id": "formal-285r-offline-corpus",
+    "measured_delta_hit_at_1": null,
+    "verdict": null,
+    "pe_mutated": false
+  },
+  "baseline_health": {
+    "schema_version": "expect-v85-baseline-health-check/1.0",
+    "pe_changed": "無",
+    "ce_changed": "無",
+    "ai_changed": "無",
+    "result_automation": "OK",
+    "miss_evidence": "OK",
+    "knowledge_updated": "OK",
+    "governance_ran": "NG",
+    "baseline_285r_ran": "NG",
+    "feature_flag_mis_on": "無",
+    "production_canary_leak": "無",
+    "baseline_lock": "Version8.5",
+    "critical_ng": [],
+    "ok": true,
+    "research_only": true
+  },
+  "kpi_vs_prev": {
+    "prev_week": "2026-W29",
+    "validation_pass_rate_pct": null,
+    "accept_rate_pct": null,
+    "note": "前週 Research 完了後に差分が埋まる。"
+  },
+  "safety": {
+    "pe_ce_ai_unchanged": true,
+    "production_untouched_by_research": true,
+    "new_research_features": false,
+    "baseline_locked": "8.5"
+  },
+  "incident": {
+    "has_incident": false,
+    "incident_count": 0,
+    "codes": []
+  }
+}

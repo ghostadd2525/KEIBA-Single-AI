@@ -1,0 +1,1391 @@
+{
+  "measuredAt": "2026-07-31T06:34:24.360Z",
+  "results": [
+    {
+      "name": "home",
+      "finalHref": "https://expect-keiba.com/",
+      "path": "/",
+      "redirectedToLogin": false,
+      "title": "SingleAI v2 — 開催一覧",
+      "raceCards": 0,
+      "transferMB": {
+        "js": 0.1,
+        "css": 0.15,
+        "img": 1.87,
+        "api": 0.01,
+        "font": 0.57,
+        "other": 0.01,
+        "total": 2.71
+      },
+      "transferBytes": {
+        "js": 100077,
+        "css": 161745,
+        "img": 1965129,
+        "api": 6371,
+        "font": 594647,
+        "doc": 8661,
+        "other": 468,
+        "total": 2837098
+      },
+      "reqCount": 79,
+      "vitals": {
+        "fcp": 984,
+        "lcp": null,
+        "cls": 0,
+        "dcl": 999,
+        "load": 1848
+      },
+      "longTasks": [],
+      "memory": {
+        "heapAfterLoadMB": 1.59,
+        "heapLaterMB": 1.61,
+        "nodesAfterLoad": 200,
+        "nodesLater": 200,
+        "heapDeltaMB": 0.02,
+        "nodeDelta": 0
+      },
+      "apiCalls": [
+        {
+          "url": "/config/beta.json",
+          "cat": "api",
+          "kb": 1,
+          "status": 200,
+          "cached": false,
+          "type": "Fetch",
+          "ms": 525
+        },
+        {
+          "url": "/api/v1/history",
+          "cat": "api",
+          "kb": 1,
+          "status": 401,
+          "cached": false,
+          "type": "Fetch",
+          "ms": 523
+        },
+        {
+          "url": "/api/predictions",
+          "cat": "api",
+          "kb": 1,
+          "status": 401,
+          "cached": false,
+          "type": "Fetch",
+          "ms": 523
+        },
+        {
+          "url": "/api/data/coverage",
+          "cat": "api",
+          "kb": 1,
+          "status": 401,
+          "cached": false,
+          "type": "Fetch",
+          "ms": 522
+        },
+        {
+          "url": "/api/data/coverage",
+          "cat": "api",
+          "kb": 1,
+          "status": 401,
+          "cached": false,
+          "type": "Fetch",
+          "ms": 522
+        },
+        {
+          "url": "/api/races?date=2026-08-01",
+          "cat": "api",
+          "kb": 1,
+          "status": 503,
+          "cached": false,
+          "type": "Fetch",
+          "ms": 522
+        },
+        {
+          "url": "/api/v1/stats/heatmap",
+          "cat": "api",
+          "kb": 1,
+          "status": 401,
+          "cached": false,
+          "type": "Fetch",
+          "ms": 521
+        },
+        {
+          "url": "/api/predictions?date=2026-08-01",
+          "cat": "api",
+          "kb": 1,
+          "status": 401,
+          "cached": false,
+          "type": "Fetch",
+          "ms": 521
+        },
+        {
+          "url": "/api/v1/challenge/monthly?month=2026-07",
+          "cat": "api",
+          "kb": 1,
+          "status": 401,
+          "cached": false,
+          "type": "Fetch",
+          "ms": 520
+        },
+        {
+          "url": "/api/races?date=2026-08-02",
+          "cat": "api",
+          "kb": 1,
+          "status": 503,
+          "cached": false,
+          "type": "Fetch",
+          "ms": 520
+        }
+      ],
+      "dups": [
+        {
+          "u": "/api/data/coverage",
+          "c": 2
+        }
+      ],
+      "topImg": [
+        {
+          "url": "/assets/images/ai-card-bg-honmei.png?v=2",
+          "cat": "img",
+          "kb": 618,
+          "status": 200,
+          "cached": false,
+          "type": "Image",
+          "ms": 91
+        },
+        {
+          "url": "/assets/images/mascot-ka0ba.png?v=10",
+          "cat": "img",
+          "kb": 346,
+          "status": 200,
+          "cached": false,
+          "type": "Image",
+          "ms": 659
+        },
+        {
+          "url": "/assets/images/ai-card-bg-pedigree.png?v=2",
+          "cat": "img",
+          "kb": 327,
+          "status": 200,
+          "cached": false,
+          "type": "Image",
+          "ms": 664
+        },
+        {
+          "url": "/assets/images/ai-card-bg-odds.png?v=2",
+          "cat": "img",
+          "kb": 316,
+          "status": 200,
+          "cached": false,
+          "type": "Image",
+          "ms": 137
+        },
+        {
+          "url": "/assets/images/mascot-loading-run.png?v=3",
+          "cat": "img",
+          "kb": 310,
+          "status": 200,
+          "cached": false,
+          "type": "Image",
+          "ms": 400
+        },
+        {
+          "url": "/assets/icons/icon-info.svg",
+          "cat": "img",
+          "kb": 1,
+          "status": 200,
+          "cached": false,
+          "type": "Image",
+          "ms": 55
+        },
+        {
+          "url": "/assets/icons/icon-brain.svg",
+          "cat": "img",
+          "kb": 1,
+          "status": 200,
+          "cached": false,
+          "type": "Image",
+          "ms": 85
+        },
+        {
+          "url": "/assets/icons/icon-bars.svg",
+          "cat": "img",
+          "kb": 1,
+          "status": 200,
+          "cached": false,
+          "type": "Image",
+          "ms": 142
+        },
+        {
+          "url": "/assets/icons/icon-dna.svg",
+          "cat": "img",
+          "kb": 1,
+          "status": 200,
+          "cached": false,
+          "type": "Image",
+          "ms": 654
+        }
+      ],
+      "topJs": [
+        {
+          "url": "/assets/api/prediction-bind.js?v=52",
+          "cat": "js",
+          "kb": 13,
+          "status": 200,
+          "cached": false,
+          "type": "Script",
+          "ms": 688
+        },
+        {
+          "url": "https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496",
+          "cat": "js",
+          "kb": 11,
+          "status": 200,
+          "cached": false,
+          "type": "Script",
+          "ms": 88
+        },
+        {
+          "url": "/assets/favorites.js?v=7",
+          "cat": "js",
+          "kb": 9,
+          "status": 200,
+          "cached": false,
+          "type": "Script",
+          "ms": 673
+        },
+        {
+          "url": "/assets/api/real-data-bind.js?v=17",
+          "cat": "js",
+          "kb": 9,
+          "status": 200,
+          "cached": false,
+          "type": "Script",
+          "ms": 684
+        },
+        {
+          "url": "/assets/app.js",
+          "cat": "js",
+          "kb": 6,
+          "status": 200,
+          "cached": false,
+          "type": "Script",
+          "ms": 673
+        },
+        {
+          "url": "/assets/api/challenge-dashboard.js?v=2",
+          "cat": "js",
+          "kb": 6,
+          "status": 200,
+          "cached": false,
+          "type": "Script",
+          "ms": 681
+        },
+        {
+          "url": "/assets/ux.js?v=21",
+          "cat": "js",
+          "kb": 5,
+          "status": 200,
+          "cached": false,
+          "type": "Script",
+          "ms": 680
+        },
+        {
+          "url": "/assets/auth.js?v=6",
+          "cat": "js",
+          "kb": 4,
+          "status": 200,
+          "cached": false,
+          "type": "Script",
+          "ms": 48
+        },
+        {
+          "url": "/assets/api/prediction.js?v=11",
+          "cat": "js",
+          "kb": 4,
+          "status": 200,
+          "cached": false,
+          "type": "Script",
+          "ms": 672
+        },
+        {
+          "url": "/assets/reminders.js?v=2",
+          "cat": "js",
+          "kb": 4,
+          "status": 200,
+          "cached": false,
+          "type": "Script",
+          "ms": 686
+        },
+        {
+          "url": "/assets/shell.js",
+          "cat": "js",
+          "kb": 4,
+          "status": 200,
+          "cached": false,
+          "type": "Script",
+          "ms": 690
+        },
+        {
+          "url": "/assets/api/contract-guard.js",
+          "cat": "js",
+          "kb": 3,
+          "status": 200,
+          "cached": false,
+          "type": "Script",
+          "ms": 671
+        },
+        {
+          "url": "/assets/onboarding.js",
+          "cat": "js",
+          "kb": 3,
+          "status": 200,
+          "cached": false,
+          "type": "Script",
+          "ms": 685
+        },
+        {
+          "url": "/assets/v11.js?v=12",
+          "cat": "js",
+          "kb": 3,
+          "status": 200,
+          "cached": false,
+          "type": "Script",
+          "ms": 687
+        },
+        {
+          "url": "/assets/api/calendar-weekend.js?v=14",
+          "cat": "js",
+          "kb": 2,
+          "status": 200,
+          "cached": false,
+          "type": "Script",
+          "ms": 76
+        }
+      ],
+      "note": "auto-maintenance.js aborted + system/status stubbed to keep session for measurement"
+    },
+    {
+      "name": "races",
+      "finalHref": "https://expect-keiba.com/races",
+      "path": "/races",
+      "redirectedToLogin": false,
+      "title": "Expect ～ KEIBA AI ～ · レース一覧",
+      "raceCards": 0,
+      "transferMB": {
+        "js": 0.09,
+        "css": 0.15,
+        "img": 0.64,
+        "api": 0,
+        "font": 0.3,
+        "other": 0.01,
+        "total": 1.2
+      },
+      "transferBytes": {
+        "js": 95585,
+        "css": 160277,
+        "img": 671229,
+        "api": 3366,
+        "font": 319509,
+        "doc": 13039,
+        "other": 462,
+        "total": 1263467
+      },
+      "reqCount": 52,
+      "vitals": {
+        "fcp": 600,
+        "lcp": null,
+        "cls": 0,
+        "dcl": 730,
+        "load": 763
+      },
+      "longTasks": [],
+      "memory": {
+        "heapAfterLoadMB": 1.7,
+        "heapLaterMB": 1.77,
+        "nodesAfterLoad": 148,
+        "nodesLater": 148,
+        "heapDeltaMB": 0.07,
+        "nodeDelta": 0
+      },
+      "apiCalls": [
+        {
+          "url": "/config/beta.json",
+          "cat": "api",
+          "kb": 1,
+          "status": 200,
+          "cached": false,
+          "type": "Fetch",
+          "ms": 135
+        },
+        {
+          "url": "/api/races?date=2026-08-01",
+          "cat": "api",
+          "kb": 1,
+          "status": 401,
+          "cached": false,
+          "type": "Fetch",
+          "ms": 36
+        },
+        {
+          "url": "/api/races?date=2026-08-02",
+          "cat": "api",
+          "kb": 1,
+          "status": 401,
+          "cached": false,
+          "type": "Fetch",
+          "ms": 36
+        },
+        {
+          "url": "/api/race-cards?date=2026-08-02",
+          "cat": "api",
+          "kb": 1,
+          "status": 401,
+          "cached": false,
+          "type": "Fetch",
+          "ms": 31
+        },
+        {
+          "url": "/api/race-cards?date=2026-08-01",
+          "cat": "api",
+          "kb": 1,
+          "status": 401,
+          "cached": false,
+          "type": "Fetch",
+          "ms": 31
+        }
+      ],
+      "dups": [],
+      "topImg": [
+        {
+          "url": "/assets/images/mascot-ka0ba.png?v=10",
+          "cat": "img",
+          "kb": 346,
+          "status": 200,
+          "cached": false,
+          "type": "Image",
+          "ms": 78
+        },
+        {
+          "url": "/assets/images/mascot-loading-run.png?v=3",
+          "cat": "img",
+          "kb": 310,
+          "status": 200,
+          "cached": false,
+          "type": "Image",
+          "ms": 441
+        }
+      ],
+      "topJs": [
+        {
+          "url": "/assets/api/prediction-bind.js?v=52",
+          "cat": "js",
+          "kb": 13,
+          "status": 200,
+          "cached": false,
+          "type": "Script",
+          "ms": 452
+        },
+        {
+          "url": "https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496",
+          "cat": "js",
+          "kb": 11,
+          "status": 200,
+          "cached": false,
+          "type": "Script",
+          "ms": 65
+        },
+        {
+          "url": "/assets/favorites.js?v=7",
+          "cat": "js",
+          "kb": 9,
+          "status": 200,
+          "cached": false,
+          "type": "Script",
+          "ms": 448
+        },
+        {
+          "url": "/assets/api/real-data-bind.js?v=16",
+          "cat": "js",
+          "kb": 9,
+          "status": 200,
+          "cached": false,
+          "type": "Script",
+          "ms": 451
+        },
+        {
+          "url": "/assets/ux.js?v=21",
+          "cat": "js",
+          "kb": 5,
+          "status": 200,
+          "cached": false,
+          "type": "Script",
+          "ms": 445
+        },
+        {
+          "url": "/assets/api/race-prefetch.js?v=1",
+          "cat": "js",
+          "kb": 5,
+          "status": 200,
+          "cached": false,
+          "type": "Script",
+          "ms": 450
+        },
+        {
+          "url": "/assets/auth.js?v=6",
+          "cat": "js",
+          "kb": 4,
+          "status": 200,
+          "cached": false,
+          "type": "Script",
+          "ms": 42
+        },
+        {
+          "url": "/assets/shell.js",
+          "cat": "js",
+          "kb": 4,
+          "status": 200,
+          "cached": false,
+          "type": "Script",
+          "ms": 446
+        },
+        {
+          "url": "/assets/reminders.js",
+          "cat": "js",
+          "kb": 4,
+          "status": 200,
+          "cached": false,
+          "type": "Script",
+          "ms": 452
+        },
+        {
+          "url": "/assets/api/prediction.js?v=15",
+          "cat": "js",
+          "kb": 4,
+          "status": 200,
+          "cached": false,
+          "type": "Script",
+          "ms": 458
+        },
+        {
+          "url": "/assets/api/contract-guard.js",
+          "cat": "js",
+          "kb": 3,
+          "status": 200,
+          "cached": false,
+          "type": "Script",
+          "ms": 110
+        },
+        {
+          "url": "/assets/api/race.js?v=15",
+          "cat": "js",
+          "kb": 3,
+          "status": 200,
+          "cached": false,
+          "type": "Script",
+          "ms": 443
+        },
+        {
+          "url": "/assets/api/race-search.js?v=15",
+          "cat": "js",
+          "kb": 3,
+          "status": 200,
+          "cached": false,
+          "type": "Script",
+          "ms": 454
+        },
+        {
+          "url": "/assets/v11.js?v=11",
+          "cat": "js",
+          "kb": 3,
+          "status": 200,
+          "cached": false,
+          "type": "Script",
+          "ms": 457
+        },
+        {
+          "url": "/assets/api/calendar-weekend.js?v=15",
+          "cat": "js",
+          "kb": 2,
+          "status": 200,
+          "cached": false,
+          "type": "Script",
+          "ms": 41
+        }
+      ],
+      "note": "auto-maintenance.js aborted + system/status stubbed to keep session for measurement"
+    },
+    {
+      "name": "detail",
+      "finalHref": "https://expect-keiba.com/race?race_id=2026-08-01-01-02",
+      "path": "/race",
+      "redirectedToLogin": false,
+      "title": "Expect ～ KEIBA AI ～ · レース詳細",
+      "raceCards": 0,
+      "transferMB": {
+        "js": 0.1,
+        "css": 0.15,
+        "img": 0.34,
+        "api": 0,
+        "font": 0.49,
+        "other": 0.01,
+        "total": 1.09
+      },
+      "transferBytes": {
+        "js": 107034,
+        "css": 160275,
+        "img": 354209,
+        "api": 2300,
+        "font": 509158,
+        "doc": 8891,
+        "other": 469,
+        "total": 1142336
+      },
+      "reqCount": 63,
+      "vitals": {
+        "fcp": 876,
+        "lcp": null,
+        "cls": 0,
+        "dcl": 1086,
+        "load": 1089
+      },
+      "longTasks": [],
+      "memory": {
+        "heapAfterLoadMB": 1.53,
+        "heapLaterMB": 1.53,
+        "nodesAfterLoad": 247,
+        "nodesLater": 247,
+        "heapDeltaMB": 0,
+        "nodeDelta": 0
+      },
+      "apiCalls": [
+        {
+          "url": "/config/beta.json",
+          "cat": "api",
+          "kb": 1,
+          "status": 200,
+          "cached": false,
+          "type": "Fetch",
+          "ms": 420
+        },
+        {
+          "url": "/api/races/2026-08-01-01-02/board",
+          "cat": "api",
+          "kb": 1,
+          "status": 401,
+          "cached": false,
+          "type": "Fetch",
+          "ms": 418
+        },
+        {
+          "url": "/api/predictions/2026-08-01-01-02",
+          "cat": "api",
+          "kb": 1,
+          "status": 401,
+          "cached": false,
+          "type": "Fetch",
+          "ms": 23
+        }
+      ],
+      "dups": [],
+      "topImg": [
+        {
+          "url": "/assets/images/mascot-ka0ba.png?v=10",
+          "cat": "img",
+          "kb": 346,
+          "status": 200,
+          "cached": false,
+          "type": "Image",
+          "ms": 86
+        }
+      ],
+      "topJs": [
+        {
+          "url": "/assets/api/prediction-bind.js?v=52",
+          "cat": "js",
+          "kb": 13,
+          "status": 200,
+          "cached": false,
+          "type": "Script",
+          "ms": 676
+        },
+        {
+          "url": "https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496",
+          "cat": "js",
+          "kb": 11,
+          "status": 200,
+          "cached": false,
+          "type": "Script",
+          "ms": 72
+        },
+        {
+          "url": "/assets/favorites.js?v=4",
+          "cat": "js",
+          "kb": 9,
+          "status": 200,
+          "cached": false,
+          "type": "Script",
+          "ms": 684
+        },
+        {
+          "url": "/assets/api/race-detail-tabs.js?v=16",
+          "cat": "js",
+          "kb": 8,
+          "status": 200,
+          "cached": false,
+          "type": "Script",
+          "ms": 682
+        },
+        {
+          "url": "/assets/api/explain-ux.js?v=3",
+          "cat": "js",
+          "kb": 7,
+          "status": 200,
+          "cached": false,
+          "type": "Script",
+          "ms": 669
+        },
+        {
+          "url": "/assets/api/race-prefetch.js?v=1",
+          "cat": "js",
+          "kb": 5,
+          "status": 200,
+          "cached": false,
+          "type": "Script",
+          "ms": 677
+        },
+        {
+          "url": "/assets/ux.js?v=20",
+          "cat": "js",
+          "kb": 5,
+          "status": 200,
+          "cached": false,
+          "type": "Script",
+          "ms": 678
+        },
+        {
+          "url": "/assets/auth.js?v=6",
+          "cat": "js",
+          "kb": 4,
+          "status": 200,
+          "cached": false,
+          "type": "Script",
+          "ms": 23
+        },
+        {
+          "url": "/assets/reminders.js?v=2",
+          "cat": "js",
+          "kb": 4,
+          "status": 200,
+          "cached": false,
+          "type": "Script",
+          "ms": 671
+        },
+        {
+          "url": "/assets/shell.js",
+          "cat": "js",
+          "kb": 4,
+          "status": 200,
+          "cached": false,
+          "type": "Script",
+          "ms": 672
+        },
+        {
+          "url": "/assets/api/prediction.js?v=10",
+          "cat": "js",
+          "kb": 4,
+          "status": 200,
+          "cached": false,
+          "type": "Script",
+          "ms": 674
+        },
+        {
+          "url": "/assets/api/analysis-bind.js?v=30",
+          "cat": "js",
+          "kb": 4,
+          "status": 200,
+          "cached": false,
+          "type": "Script",
+          "ms": 685
+        },
+        {
+          "url": "/assets/api/contract-guard.js",
+          "cat": "js",
+          "kb": 3,
+          "status": 200,
+          "cached": false,
+          "type": "Script",
+          "ms": 131
+        },
+        {
+          "url": "/assets/v11.js?v=11",
+          "cat": "js",
+          "kb": 3,
+          "status": 200,
+          "cached": false,
+          "type": "Script",
+          "ms": 675
+        },
+        {
+          "url": "/assets/api/conversation-ui.js?v=7",
+          "cat": "js",
+          "kb": 3,
+          "status": 200,
+          "cached": false,
+          "type": "Script",
+          "ms": 686
+        }
+      ],
+      "note": "auto-maintenance.js aborted + system/status stubbed to keep session for measurement"
+    },
+    {
+      "name": "analysis",
+      "finalHref": "https://expect-keiba.com/analysis",
+      "path": "/analysis",
+      "redirectedToLogin": false,
+      "title": "Expect ～ KEIBA AI ～ · 分析",
+      "raceCards": 0,
+      "transferMB": {
+        "js": 0.05,
+        "css": 0.15,
+        "img": 0.64,
+        "api": 0,
+        "font": 0.27,
+        "other": 0.01,
+        "total": 1.12
+      },
+      "transferBytes": {
+        "js": 54974,
+        "css": 157446,
+        "img": 671265,
+        "api": 0,
+        "font": 283917,
+        "doc": 5638,
+        "other": 464,
+        "total": 1173704
+      },
+      "reqCount": 35,
+      "vitals": {
+        "fcp": 888,
+        "lcp": null,
+        "cls": 0,
+        "dcl": 893,
+        "load": 1090
+      },
+      "longTasks": [],
+      "memory": {
+        "heapAfterLoadMB": 1.29,
+        "heapLaterMB": 1.32,
+        "nodesAfterLoad": 106,
+        "nodesLater": 106,
+        "heapDeltaMB": 0.03,
+        "nodeDelta": 0
+      },
+      "apiCalls": [],
+      "dups": [],
+      "topImg": [
+        {
+          "url": "/assets/images/mascot-ka0ba.png?v=10",
+          "cat": "img",
+          "kb": 346,
+          "status": 200,
+          "cached": false,
+          "type": "Image",
+          "ms": 85
+        },
+        {
+          "url": "/assets/images/mascot-loading-run.png?v=3",
+          "cat": "img",
+          "kb": 310,
+          "status": 200,
+          "cached": false,
+          "type": "Image",
+          "ms": 530
+        }
+      ],
+      "topJs": [
+        {
+          "url": "https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496",
+          "cat": "js",
+          "kb": 11,
+          "status": 200,
+          "cached": false,
+          "type": "Script",
+          "ms": 69
+        },
+        {
+          "url": "/assets/favorites.js?v=7",
+          "cat": "js",
+          "kb": 9,
+          "status": 200,
+          "cached": false,
+          "type": "Script",
+          "ms": 539
+        },
+        {
+          "url": "/assets/ux.js?v=15",
+          "cat": "js",
+          "kb": 5,
+          "status": 200,
+          "cached": false,
+          "type": "Script",
+          "ms": 534
+        },
+        {
+          "url": "/assets/auth.js?v=6",
+          "cat": "js",
+          "kb": 4,
+          "status": 200,
+          "cached": false,
+          "type": "Script",
+          "ms": 65
+        },
+        {
+          "url": "/assets/api/prediction.js",
+          "cat": "js",
+          "kb": 4,
+          "status": 200,
+          "cached": false,
+          "type": "Script",
+          "ms": 117
+        },
+        {
+          "url": "/assets/reminders.js",
+          "cat": "js",
+          "kb": 4,
+          "status": 200,
+          "cached": false,
+          "type": "Script",
+          "ms": 536
+        },
+        {
+          "url": "/assets/shell.js",
+          "cat": "js",
+          "kb": 4,
+          "status": 200,
+          "cached": false,
+          "type": "Script",
+          "ms": 541
+        },
+        {
+          "url": "/assets/api/contract-guard.js",
+          "cat": "js",
+          "kb": 3,
+          "status": 200,
+          "cached": false,
+          "type": "Script",
+          "ms": 110
+        },
+        {
+          "url": "/assets/api/analysis-bind.js?v=31",
+          "cat": "js",
+          "kb": 3,
+          "status": 200,
+          "cached": false,
+          "type": "Script",
+          "ms": 531
+        },
+        {
+          "url": "/assets/api/calendar-weekend.js?v=14",
+          "cat": "js",
+          "kb": 2,
+          "status": 200,
+          "cached": false,
+          "type": "Script",
+          "ms": 41
+        },
+        {
+          "url": "/assets/api/auth.js",
+          "cat": "js",
+          "kb": 2,
+          "status": 200,
+          "cached": false,
+          "type": "Script",
+          "ms": 76
+        },
+        {
+          "url": "/assets/api/mock-gate.js",
+          "cat": "js",
+          "kb": 1,
+          "status": 200,
+          "cached": false,
+          "type": "Script",
+          "ms": 43
+        },
+        {
+          "url": "/assets/partials-nav.js",
+          "cat": "js",
+          "kb": 1,
+          "status": 200,
+          "cached": false,
+          "type": "Script",
+          "ms": 538
+        }
+      ],
+      "note": "auto-maintenance.js aborted + system/status stubbed to keep session for measurement"
+    },
+    {
+      "name": "fortune",
+      "finalHref": "https://expect-keiba.com/fortune",
+      "path": "/fortune",
+      "redirectedToLogin": false,
+      "title": "Expect ～ KEIBA AI ～ · 今日の運試し",
+      "raceCards": 0,
+      "transferMB": {
+        "js": 0.05,
+        "css": 0.14,
+        "img": 0.54,
+        "api": 0,
+        "font": 0.45,
+        "other": 0.01,
+        "total": 1.2
+      },
+      "transferBytes": {
+        "js": 54059,
+        "css": 149844,
+        "img": 571339,
+        "api": 1070,
+        "font": 475208,
+        "doc": 9553,
+        "other": 466,
+        "total": 1261539
+      },
+      "reqCount": 45,
+      "vitals": {
+        "fcp": 680,
+        "lcp": null,
+        "cls": 0,
+        "dcl": 1005,
+        "load": 1007
+      },
+      "longTasks": [],
+      "memory": {
+        "heapAfterLoadMB": 1.33,
+        "heapLaterMB": 1.36,
+        "nodesAfterLoad": 120,
+        "nodesLater": 120,
+        "heapDeltaMB": 0.03,
+        "nodeDelta": 0
+      },
+      "apiCalls": [
+        {
+          "url": "/api/races?date=2026-08-01",
+          "cat": "api",
+          "kb": 1,
+          "status": 401,
+          "cached": false,
+          "type": "Fetch",
+          "ms": 208
+        },
+        {
+          "url": "/api/races?date=2026-08-02",
+          "cat": "api",
+          "kb": 1,
+          "status": 401,
+          "cached": false,
+          "type": "Fetch",
+          "ms": 208
+        }
+      ],
+      "dups": [],
+      "topImg": [
+        {
+          "url": "/assets/images/mascot-ka0ba.png?v=10",
+          "cat": "img",
+          "kb": 346,
+          "status": 200,
+          "cached": false,
+          "type": "Image",
+          "ms": 96
+        },
+        {
+          "url": "/assets/images/kaoba-emotion-joy.png?v=3",
+          "cat": "img",
+          "kb": 212,
+          "status": 200,
+          "cached": false,
+          "type": "Image",
+          "ms": 94
+        }
+      ],
+      "topJs": [
+        {
+          "url": "https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496",
+          "cat": "js",
+          "kb": 11,
+          "status": 200,
+          "cached": false,
+          "type": "Script",
+          "ms": 69
+        },
+        {
+          "url": "/assets/favorites.js?v=4",
+          "cat": "js",
+          "kb": 9,
+          "status": 200,
+          "cached": false,
+          "type": "Script",
+          "ms": 524
+        },
+        {
+          "url": "/assets/api/real-data-bind.js",
+          "cat": "js",
+          "kb": 9,
+          "status": 200,
+          "cached": false,
+          "type": "Script",
+          "ms": 530
+        },
+        {
+          "url": "/assets/auth.js?v=6",
+          "cat": "js",
+          "kb": 4,
+          "status": 200,
+          "cached": false,
+          "type": "Script",
+          "ms": 25
+        },
+        {
+          "url": "/assets/shell.js",
+          "cat": "js",
+          "kb": 4,
+          "status": 200,
+          "cached": false,
+          "type": "Script",
+          "ms": 523
+        },
+        {
+          "url": "/assets/reminders.js",
+          "cat": "js",
+          "kb": 4,
+          "status": 200,
+          "cached": false,
+          "type": "Script",
+          "ms": 528
+        },
+        {
+          "url": "/assets/api/race.js",
+          "cat": "js",
+          "kb": 3,
+          "status": 200,
+          "cached": false,
+          "type": "Script",
+          "ms": 525
+        },
+        {
+          "url": "/assets/api/calendar-weekend.js?v=14",
+          "cat": "js",
+          "kb": 2,
+          "status": 200,
+          "cached": false,
+          "type": "Script",
+          "ms": 34
+        },
+        {
+          "url": "/assets/api/auth.js",
+          "cat": "js",
+          "kb": 2,
+          "status": 200,
+          "cached": false,
+          "type": "Script",
+          "ms": 141
+        },
+        {
+          "url": "/assets/api/race-list-url.js?v=12",
+          "cat": "js",
+          "kb": 2,
+          "status": 200,
+          "cached": false,
+          "type": "Script",
+          "ms": 526
+        },
+        {
+          "url": "/assets/api/mock-gate.js",
+          "cat": "js",
+          "kb": 1,
+          "status": 200,
+          "cached": false,
+          "type": "Script",
+          "ms": 140
+        },
+        {
+          "url": "/assets/partials-nav.js",
+          "cat": "js",
+          "kb": 1,
+          "status": 200,
+          "cached": false,
+          "type": "Script",
+          "ms": 528
+        }
+      ],
+      "note": "auto-maintenance.js aborted + system/status stubbed to keep session for measurement"
+    },
+    {
+      "name": "consult",
+      "finalHref": "https://expect-keiba.com/chat?mode=review",
+      "path": "/chat",
+      "redirectedToLogin": false,
+      "title": "Expect ～ KEIBA AI ～ · 相談AI",
+      "raceCards": 0,
+      "transferMB": {
+        "js": 0.05,
+        "css": 0.15,
+        "img": 0.34,
+        "api": 0,
+        "font": 0.25,
+        "other": 0.01,
+        "total": 0.8
+      },
+      "transferBytes": {
+        "js": 50422,
+        "css": 157462,
+        "img": 354134,
+        "api": 0,
+        "font": 264918,
+        "doc": 6735,
+        "other": 463,
+        "total": 834134
+      },
+      "reqCount": 32,
+      "vitals": {
+        "fcp": 640,
+        "lcp": null,
+        "cls": 0,
+        "dcl": 653,
+        "load": 713
+      },
+      "longTasks": [],
+      "memory": {
+        "heapAfterLoadMB": 1.28,
+        "heapLaterMB": 1.3,
+        "nodesAfterLoad": 80,
+        "nodesLater": 80,
+        "heapDeltaMB": 0.02,
+        "nodeDelta": 0
+      },
+      "apiCalls": [],
+      "dups": [],
+      "topImg": [
+        {
+          "url": "/assets/images/mascot-ka0ba.png?v=10",
+          "cat": "img",
+          "kb": 346,
+          "status": 200,
+          "cached": false,
+          "type": "Image",
+          "ms": 37
+        }
+      ],
+      "topJs": [
+        {
+          "url": "https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496",
+          "cat": "js",
+          "kb": 11,
+          "status": 200,
+          "cached": false,
+          "type": "Script",
+          "ms": 67
+        },
+        {
+          "url": "/assets/favorites.js?v=4",
+          "cat": "js",
+          "kb": 9,
+          "status": 200,
+          "cached": false,
+          "type": "Script",
+          "ms": 469
+        },
+        {
+          "url": "/assets/ux.js?v=14",
+          "cat": "js",
+          "kb": 5,
+          "status": 200,
+          "cached": false,
+          "type": "Script",
+          "ms": 132
+        },
+        {
+          "url": "/assets/auth.js?v=6",
+          "cat": "js",
+          "kb": 4,
+          "status": 200,
+          "cached": false,
+          "type": "Script",
+          "ms": 23
+        },
+        {
+          "url": "/assets/shell.js",
+          "cat": "js",
+          "kb": 4,
+          "status": 200,
+          "cached": false,
+          "type": "Script",
+          "ms": 466
+        },
+        {
+          "url": "/assets/reminders.js",
+          "cat": "js",
+          "kb": 4,
+          "status": 200,
+          "cached": false,
+          "type": "Script",
+          "ms": 468
+        },
+        {
+          "url": "/assets/api/conversation-ui.js?v=7",
+          "cat": "js",
+          "kb": 3,
+          "status": 200,
+          "cached": false,
+          "type": "Script",
+          "ms": 95
+        },
+        {
+          "url": "/assets/api/calendar-weekend.js?v=14",
+          "cat": "js",
+          "kb": 2,
+          "status": 200,
+          "cached": false,
+          "type": "Script",
+          "ms": 52
+        },
+        {
+          "url": "/assets/api/auth.js",
+          "cat": "js",
+          "kb": 2,
+          "status": 200,
+          "cached": false,
+          "type": "Script",
+          "ms": 69
+        },
+        {
+          "url": "/assets/api/conversation.js?v=8",
+          "cat": "js",
+          "kb": 2,
+          "status": 200,
+          "cached": false,
+          "type": "Script",
+          "ms": 92
+        },
+        {
+          "url": "/assets/api/kaoba.js",
+          "cat": "js",
+          "kb": 2,
+          "status": 200,
+          "cached": false,
+          "type": "Script",
+          "ms": 133
+        },
+        {
+          "url": "/assets/api/mock-gate.js",
+          "cat": "js",
+          "kb": 1,
+          "status": 200,
+          "cached": false,
+          "type": "Script",
+          "ms": 51
+        }
+      ],
+      "note": "auto-maintenance.js aborted + system/status stubbed to keep session for measurement"
+    }
+  ]
+}

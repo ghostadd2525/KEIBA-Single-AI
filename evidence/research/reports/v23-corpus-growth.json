@@ -1,0 +1,545 @@
+{
+  "schema_version": "expect-corpus-growth/1.0",
+  "week_id": "2026-W31",
+  "generated_at": "2026-07-27T11:14:48+00:00",
+  "product_mutation": false,
+  "improvement_implementation": false,
+  "purpose": "Mature research corpus / Evidence Snapshot accumulation",
+  "pipeline": {
+    "steps": {
+      "harvest_backfill": {
+        "ok": true
+      },
+      "harvest_once": {
+        "ok": true,
+        "enqueued": 0,
+        "processed": []
+      },
+      "historical_bundle_ingest": {
+        "ok": true,
+        "_outputs": {
+          "inventory": "/home/ubuntu/KEIBA-Single-AI/docs/research/v111-bundle-inventory.md",
+          "ingest": "/home/ubuntu/KEIBA-Single-AI/docs/research/v111-historical-ingest.md",
+          "growth": "/home/ubuntu/KEIBA-Single-AI/docs/research/v111-corpus-growth.md",
+          "unrecoverable": "/home/ubuntu/KEIBA-Single-AI/docs/research/v111-unrecoverable-predictions.md",
+          "json": "/home/ubuntu/KEIBA-Single-AI/evidence/research/corpus/v111-historical-ingest.json"
+        }
+      },
+      "build_prediction_corpus": {
+        "ok": true,
+        "prediction_count": 340,
+        "tie_count": 15,
+        "young_horse_count": 33,
+        "_outputs": {
+          "prediction_md": "/home/ubuntu/KEIBA-Single-AI/docs/research/v11-prediction-corpus.md",
+          "tie_md": "/home/ubuntu/KEIBA-Single-AI/docs/research/v11-tie-corpus.md",
+          "young_md": "/home/ubuntu/KEIBA-Single-AI/docs/research/v11-young-horse-corpus.md",
+          "json": "/home/ubuntu/KEIBA-Single-AI/evidence/research/corpus/v11-prediction-corpus.json"
+        }
+      },
+      "metadata_completion": {
+        "ok": true,
+        "summary": {
+          "n_races": 337,
+          "baseline_rows": 285,
+          "pi_rows": 9,
+          "source_fills": {
+            "db.research_prediction_corpus": 1212,
+            "db.race_evaluations": 851,
+            "derive.surface": 336,
+            "netkeiba.result_html": 194,
+            "db.races.extra": 190,
+            "db.races": 95,
+            "db.race_results": 51,
+            "db.race_results.json": 51,
+            "db.research_historical_bundles": 1
+          },
+          "netkeiba": {
+            "enabled": true,
+            "attempted": 51,
+            "filled": 51,
+            "errors": 0,
+            "skipped": 0,
+            "jra_status": "unavailable_no_local_provider"
+          },
+          "mean_coverage_before": 0.201,
+          "mean_coverage_after": 0.747
+        },
+        "_outputs": {
+          "completion": "/home/ubuntu/KEIBA-Single-AI/docs/research/v16-metadata-completion.md",
+          "coverage": "/home/ubuntu/KEIBA-Single-AI/docs/research/v16-coverage-improvement.md",
+          "delta": "/home/ubuntu/KEIBA-Single-AI/docs/research/v16-weakness-delta.md",
+          "json": "/home/ubuntu/KEIBA-Single-AI/evidence/research/reports/v16-metadata-completion.json",
+          "atlas_json": "/home/ubuntu/KEIBA-Single-AI/evidence/research/reports/v16-weakness-atlas.json"
+        }
+      },
+      "weakness_atlas": {
+        "ok": true,
+        "sample": {
+          "prediction_corpus": 340,
+          "evaluable": 335,
+          "young_horse": 33,
+          "tie": 15,
+          "with_evidence": 55,
+          "with_shadow": 9,
+          "global_strict_rate": 0.2,
+          "global_soft_rate": 0.21791044776119403,
+          "global_roi": -0.05253731343283582,
+          "exploratory": true
+        },
+        "_outputs": {
+          "atlas": "/home/ubuntu/KEIBA-Single-AI/docs/research/v15-weakness-atlas.md",
+          "priority": "/home/ubuntu/KEIBA-Single-AI/docs/research/v15-priority-map.md",
+          "roadmap": "/home/ubuntu/KEIBA-Single-AI/docs/research/v15-improvement-roadmap.md",
+          "json": "/home/ubuntu/KEIBA-Single-AI/evidence/research/reports/v15-weakness-atlas.json"
+        }
+      },
+      "evidence_discovery": {
+        "ok": true,
+        "sample": {
+          "unique_races": 335,
+          "with_evidence": 50,
+          "strict_hits": 67,
+          "soft_hits": 73,
+          "global_strict": 0.2,
+          "global_soft": 0.21791044776119403,
+          "by_category": {
+            "other": 197,
+            "stakes": 96,
+            "2yo_maiden": 6,
+            "2yo_newcomer": 7,
+            "3yo_maiden": 19,
+            "class_1win": 9,
+            "open": 1
+          },
+          "confident_min_n": 20,
+          "confidence_level": 0.95,
+          "exploratory": true
+        },
+        "_outputs": {
+          "feature_discovery": "/home/ubuntu/KEIBA-Single-AI/docs/research/v17-feature-discovery.md",
+          "interactions": "/home/ubuntu/KEIBA-Single-AI/docs/research/v17-feature-interactions.md",
+          "segments": "/home/ubuntu/KEIBA-Single-AI/docs/research/v17-segment-comparison.md",
+          "failures": "/home/ubuntu/KEIBA-Single-AI/docs/research/v17-failure-analysis.md",
+          "winners": "/home/ubuntu/KEIBA-Single-AI/docs/research/v17-winner-analysis.md",
+          "discovery": "/home/ubuntu/KEIBA-Single-AI/docs/research/v17-evidence-discovery.md",
+          "json": "/home/ubuntu/KEIBA-Single-AI/evidence/research/reports/v17-evidence-discovery.json"
+        }
+      },
+      "knowledge_base": {
+        "ok": true,
+        "summary": {
+          "week_id": "2026-W31",
+          "entry_count": 346,
+          "by_confidence": {
+            "Exploratory": 177,
+            "High": 79,
+            "Medium": 90
+          },
+          "by_action": {
+            "Research": 216,
+            "Candidate": 42,
+            "Watch": 47,
+            "Reject": 41
+          },
+          "by_type": {
+            "feature": 72,
+            "segment": 35,
+            "interaction": 168,
+            "failure": 39,
+            "winner": 32
+          },
+          "v17_generated_at": "2026-07-27T11:14:48+00:00"
+        },
+        "week_id": "2026-W31",
+        "sample": {
+          "unique_races": 335,
+          "with_evidence": 50,
+          "strict_hits": 67,
+          "soft_hits": 73,
+          "global_strict": 0.2,
+          "global_soft": 0.21791044776119403,
+          "by_category": {
+            "other": 197,
+            "stakes": 96,
+            "2yo_maiden": 6,
+            "2yo_newcomer": 7,
+            "3yo_maiden": 19,
+            "class_1win": 9,
+            "open": 1
+          },
+          "confident_min_n": 20,
+          "confidence_level": 0.95,
+          "exploratory": true
+        },
+        "_outputs": {
+          "knowledge_base": "/home/ubuntu/KEIBA-Single-AI/docs/research/v18-knowledge-base.md",
+          "graph": "/home/ubuntu/KEIBA-Single-AI/docs/research/v18-knowledge-graph.md",
+          "weekly": "/home/ubuntu/KEIBA-Single-AI/docs/research/v18-weekly-knowledge.md",
+          "json": "/home/ubuntu/KEIBA-Single-AI/evidence/research/reports/v18-knowledge-base.json",
+          "snapshot": "/home/ubuntu/KEIBA-Single-AI/evidence/research/knowledge/snapshots/2026-W31.json"
+        }
+      }
+    },
+    "errors": [],
+    "report_only": false
+  },
+  "before": {
+    "captured_at": "2026-07-27T11:14:11+00:00",
+    "prediction": 340,
+    "evidence": 55,
+    "knowledge": 346,
+    "tie": 15,
+    "young_horse": 33,
+    "coverage": {
+      "with_prediction_bundle": 340,
+      "with_race_result": 335,
+      "with_evidence_snapshot": 55,
+      "with_shadow_result": 9,
+      "mean_metadata_before": 0.201,
+      "mean_metadata_after": 0.747
+    },
+    "confidence": {
+      "High": 79,
+      "Medium": 90,
+      "Low": 0,
+      "Exploratory": 177
+    },
+    "targets": {
+      "prediction": 3000,
+      "tie": 300,
+      "young_horse": 300
+    },
+    "gap": {
+      "prediction": 2660,
+      "tie": 285,
+      "young_horse": 267
+    },
+    "segments": {
+      "young_horse": 33,
+      "maiden": 25,
+      "stakes": 65,
+      "turf": 67,
+      "dirt": 36,
+      "distance": {
+        "middle": 23,
+        "mile": 46,
+        "unknown": 237,
+        "sprint": 30,
+        "long": 4
+      },
+      "going": {
+        "良": 268,
+        "稍重": 36,
+        "重": 25,
+        "unknown": 6,
+        "稍": 5
+      },
+      "pop_band": {
+        "unknown": 246,
+        "pop_4-6": 28,
+        "pop_2-3": 32,
+        "pop_1": 26,
+        "pop_7+": 8
+      },
+      "by_age": {
+        "unknown": 295,
+        "older": 12,
+        "2yo_maiden": 6,
+        "2yo_newcomer": 7,
+        "3yo_maiden": 19,
+        "2yo_other": 1
+      },
+      "by_class_family": {
+        "unknown": 230,
+        "stakes": 65,
+        "maiden": 25,
+        "young_other": 13,
+        "newcomer": 7
+      },
+      "by_surface": {
+        "turf": 67,
+        "dirt": 36,
+        "unknown": 237
+      }
+    },
+    "atlas_sample": {
+      "prediction_corpus": 340,
+      "evaluable": 335,
+      "young_horse": 33,
+      "tie": 15,
+      "with_evidence": 55,
+      "with_shadow": 9,
+      "global_strict_rate": 0.2,
+      "global_soft_rate": 0.21791044776119403,
+      "global_roi": -0.05253731343283582,
+      "exploratory": true
+    },
+    "v17_sample": {
+      "unique_races": 335,
+      "with_evidence": 50,
+      "strict_hits": 67,
+      "soft_hits": 73,
+      "global_strict": 0.2,
+      "global_soft": 0.21791044776119403,
+      "by_category": {
+        "other": 197,
+        "stakes": 96,
+        "2yo_maiden": 6,
+        "2yo_newcomer": 7,
+        "3yo_maiden": 19,
+        "class_1win": 9,
+        "open": 1
+      },
+      "confident_min_n": 20,
+      "confidence_level": 0.95,
+      "exploratory": true
+    }
+  },
+  "after": {
+    "captured_at": "2026-07-27T11:14:48+00:00",
+    "prediction": 340,
+    "evidence": 55,
+    "knowledge": 346,
+    "tie": 15,
+    "young_horse": 33,
+    "coverage": {
+      "with_prediction_bundle": 340,
+      "with_race_result": 335,
+      "with_evidence_snapshot": 55,
+      "with_shadow_result": 9,
+      "mean_metadata_before": 0.201,
+      "mean_metadata_after": 0.747
+    },
+    "confidence": {
+      "High": 79,
+      "Medium": 90,
+      "Low": 0,
+      "Exploratory": 177
+    },
+    "targets": {
+      "prediction": 3000,
+      "tie": 300,
+      "young_horse": 300
+    },
+    "gap": {
+      "prediction": 2660,
+      "tie": 285,
+      "young_horse": 267
+    },
+    "segments": {
+      "young_horse": 33,
+      "maiden": 25,
+      "stakes": 65,
+      "turf": 67,
+      "dirt": 36,
+      "distance": {
+        "middle": 23,
+        "mile": 46,
+        "unknown": 237,
+        "sprint": 30,
+        "long": 4
+      },
+      "going": {
+        "良": 268,
+        "稍重": 36,
+        "重": 25,
+        "unknown": 6,
+        "稍": 5
+      },
+      "pop_band": {
+        "unknown": 246,
+        "pop_4-6": 28,
+        "pop_2-3": 32,
+        "pop_1": 26,
+        "pop_7+": 8
+      },
+      "by_age": {
+        "unknown": 295,
+        "older": 12,
+        "2yo_maiden": 6,
+        "2yo_newcomer": 7,
+        "3yo_maiden": 19,
+        "2yo_other": 1
+      },
+      "by_class_family": {
+        "unknown": 230,
+        "stakes": 65,
+        "maiden": 25,
+        "young_other": 13,
+        "newcomer": 7
+      },
+      "by_surface": {
+        "turf": 67,
+        "dirt": 36,
+        "unknown": 237
+      }
+    },
+    "atlas_sample": {
+      "prediction_corpus": 340,
+      "evaluable": 335,
+      "young_horse": 33,
+      "tie": 15,
+      "with_evidence": 55,
+      "with_shadow": 9,
+      "global_strict_rate": 0.2,
+      "global_soft_rate": 0.21791044776119403,
+      "global_roi": -0.05253731343283582,
+      "exploratory": true
+    },
+    "v17_sample": {
+      "unique_races": 335,
+      "with_evidence": 50,
+      "strict_hits": 67,
+      "soft_hits": 73,
+      "global_strict": 0.2,
+      "global_soft": 0.21791044776119403,
+      "by_category": {
+        "other": 197,
+        "stakes": 96,
+        "2yo_maiden": 6,
+        "2yo_newcomer": 7,
+        "3yo_maiden": 19,
+        "class_1win": 9,
+        "open": 1
+      },
+      "confident_min_n": 20,
+      "confidence_level": 0.95,
+      "exploratory": true
+    }
+  },
+  "cycle_diff": {
+    "scalar": {
+      "prediction": 0,
+      "evidence": 0,
+      "knowledge": 0,
+      "tie": 0,
+      "young_horse": 0
+    },
+    "confidence": {
+      "High": 0,
+      "Medium": 0,
+      "Low": 0,
+      "Exploratory": 0
+    },
+    "coverage": {
+      "with_prediction_bundle": 0,
+      "with_race_result": 0,
+      "with_evidence_snapshot": 0,
+      "with_shadow_result": 0,
+      "mean_metadata_after": 0.0
+    },
+    "segments": {
+      "young_horse": 0,
+      "maiden": 0,
+      "stakes": 0,
+      "turf": 0,
+      "dirt": 0,
+      "distance": {
+        "long": 0,
+        "middle": 0,
+        "mile": 0,
+        "sprint": 0,
+        "unknown": 0
+      },
+      "going": {
+        "unknown": 0,
+        "稍": 0,
+        "稍重": 0,
+        "良": 0,
+        "重": 0
+      },
+      "pop_band": {
+        "pop_1": 0,
+        "pop_2-3": 0,
+        "pop_4-6": 0,
+        "pop_7+": 0,
+        "unknown": 0
+      }
+    }
+  },
+  "wow_diff": {
+    "scalar": {
+      "prediction": 0,
+      "evidence": 0,
+      "knowledge": 0,
+      "tie": 0,
+      "young_horse": 0
+    },
+    "confidence": {
+      "High": 0,
+      "Medium": 0,
+      "Low": 0,
+      "Exploratory": 0
+    },
+    "coverage": {
+      "with_prediction_bundle": 0,
+      "with_race_result": 0,
+      "with_evidence_snapshot": 0,
+      "with_shadow_result": 0,
+      "mean_metadata_after": 0.0
+    },
+    "segments": {
+      "young_horse": 0,
+      "maiden": 0,
+      "stakes": 0,
+      "turf": 0,
+      "dirt": 0,
+      "distance": {
+        "long": 0,
+        "middle": 0,
+        "mile": 0,
+        "sprint": 0,
+        "unknown": 0
+      },
+      "going": {
+        "unknown": 0,
+        "稍": 0,
+        "稍重": 0,
+        "良": 0,
+        "重": 0
+      },
+      "pop_band": {
+        "pop_1": 0,
+        "pop_2-3": 0,
+        "pop_4-6": 0,
+        "pop_7+": 0,
+        "unknown": 0
+      }
+    }
+  },
+  "weekly_kpis": {
+    "Prediction": 340,
+    "Evidence": 55,
+    "Knowledge": 346,
+    "Coverage": {
+      "with_prediction_bundle": 340,
+      "with_race_result": 335,
+      "with_evidence_snapshot": 55,
+      "with_shadow_result": 9,
+      "mean_metadata_before": 0.201,
+      "mean_metadata_after": 0.747
+    },
+    "Confidence": {
+      "High": 79,
+      "Medium": 90,
+      "Low": 0,
+      "Exploratory": 177
+    }
+  },
+  "segment_focus": [
+    "young_horse",
+    "maiden",
+    "stakes",
+    "turf",
+    "dirt",
+    "distance",
+    "going",
+    "pop_band"
+  ],
+  "targets": {
+    "prediction": 3000,
+    "tie": 300,
+    "young_horse": 300
+  }
+}

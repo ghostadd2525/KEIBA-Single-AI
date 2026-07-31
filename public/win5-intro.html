@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Expect ～ KEIBA AI ～ · WIN5紹介</title>
+  <link rel="stylesheet" href="assets/styles.css?v=22" />
+  <link rel="stylesheet" href="assets/screens.css?v=37" />
+  <script src="assets/auth.js?v=6"></script>
+  <script>ExpectAuth.requireAuth();</script>
+</head>
+<body class="page-screen page-tab" data-nav="home">
+  <div class="app">
+    <header class="topbar"><div class="topbar-inner"><div class="topbar-left">
+      <a class="back-btn" href="index.html" aria-label="戻る">‹</a>
+      <div class="brand-block topbar-text topbar-title-only"><p class="brand-name">WIN5紹介</p></div>
+    </div></div></header>
+    <div class="screen">
+      <section class="chart-card">
+        <h3>WIN5とは</h3>
+        <p>5レースの1着を当てる JRA の馬券です。本ページは閲覧のみ（Lv20〜）。予想機能は Lv100 で解放されます。</p>
+        <ul>
+          <li>対象は指定された5レース</li>
+          <li>すべて1着正解が必要</li>
+          <li>配当は変動し、高額になることがあります</li>
+        </ul>
+        <p class="muted">ルールの詳細は主催者発表をご確認ください。</p>
+      </section>
+    </div>
+    <div data-expect-nav></div>
+  </div>
+  <script src="assets/api/user.js"></script>
+  <script src="assets/api/user-progress.js?v=1"></script>
+  <script src="assets/partials-nav.js"></script>
+  <script>
+    ExpectUserProgress.guardPage("win5_intro", "index.html");
+  </script>
+</body>
+</html>

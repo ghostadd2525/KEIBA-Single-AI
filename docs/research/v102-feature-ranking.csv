@@ -1,0 +1,10 @@
+rank,feature_id,coverage,missing_rate,tie_races,tie_races_eligible,tie_resolved,tie_resolution_rate,tie_correct,strict_hit_improve_rate,soft_to_strict_improve_rate,soft_to_strict_recovered,soft_not_strict,information_gain_mean,winner_rank_mean,within_tie_diversity_rate,rankable,cells_filled,cells_total,notes
+1,popularity,1.0,0.0,9,9,9,1.0,1,0.019608,0.2,1,5,2.061194,3.0784,1.0,True,630,630,
+2,win_odds,1.0,0.0,9,9,9,1.0,1,0.019608,0.2,1,5,2.061194,3.1176,1.0,True,630,630,
+3,expected_popularity,1.0,0.0,9,9,9,1.0,1,0.019608,0.2,1,5,2.061194,3.1176,1.0,True,630,630,
+4,trainer,1.0,0.0,9,0,0,,0,,,0,5,,,1.0,False,630,630,CATEGORICAL_NO_PRIOR — resolver metrics N/A without win-rate prior
+5,sire,0.0,1.0,9,0,0,,0,,,0,5,,,0.0,False,0,630,NOT_COLLECTED; CATEGORICAL_NO_PRIOR — resolver metrics N/A without win-rate prior
+6,damsire,0.0,1.0,9,0,0,,0,,,0,5,,,0.0,False,0,630,NOT_COLLECTED; CATEGORICAL_NO_PRIOR — resolver metrics N/A without win-rate prior
+7,breeder,0.0,1.0,9,0,0,,0,,,0,5,,,0.0,False,0,630,NOT_COLLECTED; CATEGORICAL_NO_PRIOR — resolver metrics N/A without win-rate prior
+8,oikiri_time,0.0,1.0,9,0,0,,0,0.0,0.0,0,5,,,0.0,True,0,630,NOT_COLLECTED
+9,oikiri_rating,0.0,1.0,9,0,0,,0,0.0,0.0,0,5,,,0.0,True,0,630,NOT_COLLECTED

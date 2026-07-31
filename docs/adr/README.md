@@ -9,6 +9,7 @@
 | [ADR-005](./ADR-005-conversation-layer-contract.md) | Conversation Layer Contract | Accepted · Freeze |
 | [ADR-006](./ADR-006-memory-layer-contract.md) | Memory Layer Contract（V6 Phase 2） | Accepted |
 | [ADR-007](./ADR-007-abilityscores-overlay.md) | AbilityScores CE Overlay Passthrough（Hard Lock Exception） | Accepted · Version8.5.1 |
+| [ADR-008](./ADR-008-decision-layer.md) | Decision Layer（World 専属） | Accepted · Frozen · M1 Shadow (V91) · Prod not authorized |
 
 **Freeze Report:** [`../releases/v4-conversation-platform-freeze.md`](../releases/v4-conversation-platform-freeze.md)  
 **Migration Notes:** [`../releases/v4-conversation-migration-notes.md`](../releases/v4-conversation-migration-notes.md)  

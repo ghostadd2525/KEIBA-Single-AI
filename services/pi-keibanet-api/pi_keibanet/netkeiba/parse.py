@@ -42,6 +42,19 @@ def _normalize(text: str) -> str:
     return re.sub(r"\s+", " ", s).strip()
 
 
+def _clean_horse_name(text: str) -> str:
+    """Keep formal horse name only (strip SP shutuba trailing sex/DB/jockey noise)."""
+    s = _normalize(text)
+    if not s:
+        return s
+    m = re.match(r"^(.+?)\s+[牡牝セ]\d+", s)
+    if m:
+        return m.group(1).strip()
+    if "のデータベース" in s:
+        return s.split("のデータベース", 1)[0].strip()
+    return s
+
+
 def _compact(text: str) -> str:
     return _normalize(text).replace(" ", "")
 
@@ -359,7 +372,23 @@ def parse_race_meta_from_shutuba(
     return payload
 
 
-def _parse_horse_list_row(tr_html: str, *, fallback_number: int) -> dict[str, Any] | None:
+def _entry_sort_key(row: dict[str, Any]) -> tuple[int, int, str]:
+    """Order by formal umaban when present; otherwise display_order / horse_id."""
+    hn = row.get("horse_number")
+    if hn is not None and str(hn) != "":
+        try:
+            return (0, int(hn), str(row.get("horse_id") or ""))
+        except (TypeError, ValueError):
+            pass
+    display = row.get("display_order")
+    try:
+        display_i = int(display) if display is not None and str(display) != "" else 10_000
+    except (TypeError, ValueError):
+        display_i = 10_000
+    return (1, display_i, str(row.get("horse_id") or ""))
+
+
+def _parse_horse_list_row(tr_html: str, *, display_order: int) -> dict[str, Any] | None:
     m_horse = re.search(
         r'class="HorseName"[^>]*>[\s\S]*?(?:title="([^"]+)"|>([^<]+))[\s\S]*?(?:db\.netkeiba\.com/horse/|/horse/)(\d+)',
         tr_html,
@@ -375,11 +404,11 @@ def _parse_horse_list_row(tr_html: str, *, fallback_number: int) -> dict[str, An
         return None
 
     if m_horse.lastindex and m_horse.lastindex >= 3:
-        horse_name = _normalize(m_horse.group(1) or m_horse.group(2) or "")
+        horse_name = _clean_horse_name(m_horse.group(1) or m_horse.group(2) or "")
         horse_id = m_horse.group(3)
     else:
         horse_id = m_horse.group(1)
-        horse_name = _normalize(m_horse.group(2))
+        horse_name = _clean_horse_name(m_horse.group(2))
 
     if not horse_name or "HorseName" not in tr_html:
         return None
@@ -392,13 +421,10 @@ def _parse_horse_list_row(tr_html: str, *, fallback_number: int) -> dict[str, An
     m_waku = re.search(r'class="Waku[^"]*"[^>]*>[\s\S]*?<span[^>]*>(\d+)</span>', tr_html, re.I)
     frame = _to_int(m_waku.group(1)) if m_waku else 0
 
+    # Formal umaban only. Never use tr_N or HTML sequence as horse_number.
     m_umaban = re.search(r'class="Umaban[^"]*"[^>]*>\s*(\d+)\s*<', tr_html, re.I)
     horse_number = _to_int(m_umaban.group(1)) if m_umaban else None
-    if horse_number is None:
-        m_tr = re.search(r'\bid="tr_(\d+)"', tr_html, re.I)
-        horse_number = _to_int(m_tr.group(1)) if m_tr else None
-    if horse_number is None:
-        horse_number = fallback_number
+    horse_number_source = "umaban" if horse_number is not None else None
 
     # 性齢 (e.g. "牡3", "牝4", "セ5")
     m_barei = re.search(r'class="Barei[^"]*"[^>]*>([\s\S]*?)</td>', tr_html, re.I)
@@ -434,6 +460,8 @@ def _parse_horse_list_row(tr_html: str, *, fallback_number: int) -> dict[str, An
 
     row: dict[str, Any] = {
         "horse_number": horse_number,
+        "horse_number_source": horse_number_source,
+        "display_order": display_order,
         "frame": frame or 0,
         "horse_name": horse_name,
         "jockey": jockey,
@@ -469,7 +497,7 @@ def _dedupe_entries_by_horse_id(rows: list[dict[str, Any]]) -> list[dict[str, An
         if new_score > prev_score:
             by_id[hid] = row
     out = [by_id[hid] for hid in order]
-    out.sort(key=lambda r: int(r.get("horse_number") or 999))
+    out.sort(key=_entry_sort_key)
     return out
 
 
@@ -482,7 +510,7 @@ def parse_entries_from_shutuba(html: str) -> list[dict[str, Any]]:
             if "HorseName" not in tr_html and "/horse/" not in tr_html and "db.netkeiba.com/horse/" not in tr_html:
                 continue
             seq += 1
-            row = _parse_horse_list_row(tr_html, fallback_number=seq)
+            row = _parse_horse_list_row(tr_html, display_order=seq)
             if row and row.get("horse_name"):
                 rows.append(row)
         if rows:
@@ -541,23 +569,25 @@ def parse_entries_from_shutuba(html: str) -> list[dict[str, Any]]:
                 )
                 if m_anchor:
                     horse_id = horse_id or m_anchor.group(1)
-                    horse_name = _normalize(m_anchor.group(2))
+                    horse_name = _clean_horse_name(m_anchor.group(2))
 
+            # Formal 馬番 column only — never invent sequential horse_number.
             horse_number = _to_int(cell(i_num))
+            horse_number_source = "umaban" if horse_number is not None else None
             frame = _to_int(cell(i_frame))
             weight = _to_float(cell(i_weight))
             odds = _to_float(cell(i_odds))
             popularity = _to_int(cell(i_pop))
+            seq += 1
 
-            if horse_number is None:
-                seq += 1
-                horse_number = seq
-
+            horse_name = _clean_horse_name(horse_name)
             if not horse_name:
                 continue
 
             row = {
                 "horse_number": horse_number,
+                "horse_number_source": horse_number_source,
+                "display_order": seq,
                 "frame": frame or 0,
                 "horse_name": horse_name,
                 "jockey": cell(i_jockey),
@@ -591,9 +621,10 @@ def parse_odds_from_entries(entries: list[dict[str, Any]]) -> list[dict[str, Any
     odds: list[dict[str, Any]] = []
     for e in entries:
         win = e.get("_odds")
-        if win is None:
+        hn = e.get("horse_number")
+        if win is None or hn is None:
             continue
-        odds.append({"horse_number": e["horse_number"], "win": float(win)})
+        odds.append({"horse_number": hn, "win": float(win)})
     return odds
 
 

@@ -1,0 +1,113 @@
+{
+  "race_id": "2026-07-25-03-10",
+  "race_date": "2026-07-25",
+  "course": "札幌",
+  "venue": "札幌",
+  "race_number": 10,
+  "race_no": 10,
+  "race_name": "ライラック賞",
+  "race_label": "札幌10R",
+  "status": "published",
+  "prediction_available": true,
+  "prediction": {
+    "race_id": "2026-07-25-03-10",
+    "candidates": [
+      {
+        "CandidateID": "ウェイクフィールド",
+        "Rank": 1,
+        "Confidence": 0.13062841129255787,
+        "HorseNumber": 3,
+        "WorldMeta": "midupper_world",
+        "SubWorldMeta": "midupper_route"
+      },
+      {
+        "CandidateID": "ライフセービング",
+        "Rank": 2,
+        "Confidence": 0.1029884940484884,
+        "HorseNumber": 8,
+        "WorldMeta": "midupper_world",
+        "SubWorldMeta": "midupper_route"
+      },
+      {
+        "CandidateID": "バースライト",
+        "Rank": 3,
+        "Confidence": 0.0887422334939313,
+        "HorseNumber": 6,
+        "WorldMeta": "midupper_world",
+        "SubWorldMeta": "midupper_route"
+      },
+      {
+        "CandidateID": "アスクデッドヒート",
+        "Rank": 4,
+        "Confidence": 0.08793982785472136,
+        "HorseNumber": 1,
+        "WorldMeta": "midupper_world",
+        "SubWorldMeta": "midupper_route"
+      },
+      {
+        "CandidateID": "ジュンツバメガエシ",
+        "Rank": 5,
+        "Confidence": 0.08728590214967173,
+        "HorseNumber": 4,
+        "WorldMeta": "midupper_world",
+        "SubWorldMeta": "midupper_route"
+      },
+      {
+        "CandidateID": "リギーロ",
+        "Rank": 6,
+        "Confidence": 0.08485935668894888,
+        "HorseNumber": 9,
+        "WorldMeta": "midupper_world",
+        "SubWorldMeta": "midupper_route"
+      },
+      {
+        "CandidateID": "レイデラルース",
+        "Rank": 7,
+        "Confidence": 0.08483016510158009,
+        "HorseNumber": 10,
+        "WorldMeta": "midupper_world",
+        "SubWorldMeta": "midupper_route"
+      },
+      {
+        "CandidateID": "ボンドロア",
+        "Rank": 8,
+        "Confidence": 0.08405705747792508,
+        "HorseNumber": 7,
+        "WorldMeta": "midupper_world",
+        "SubWorldMeta": "midupper_route"
+      },
+      {
+        "CandidateID": "ヴァイザーバルコ",
+        "Rank": 9,
+        "Confidence": 0.08299728897661157,
+        "HorseNumber": 2,
+        "WorldMeta": "midupper_world",
+        "SubWorldMeta": "midupper_route"
+      },
+      {
+        "CandidateID": "ドッビアーコ",
+        "Rank": 10,
+        "Confidence": 0.0828821602648862,
+        "HorseNumber": 5,
+        "WorldMeta": "midupper_world",
+        "SubWorldMeta": "midupper_route"
+      },
+      {
+        "CandidateID": "レイヤードレッド",
+        "Rank": 11,
+        "Confidence": 0.08278910265067746,
+        "HorseNumber": 11,
+        "WorldMeta": "midupper_world",
+        "SubWorldMeta": "midupper_route"
+      }
+    ],
+    "world": "midupper_world",
+    "sub_world": "midupper_route",
+    "overall_confidence": 0.07886807977348456,
+    "core_version": "ai-core-migrated/1.0-phase1",
+    "meta": {
+      "generated_at": "2026-07-25T15:53:10.922224+09:00",
+      "source": "local_core_pipeline"
+    }
+  }
+}

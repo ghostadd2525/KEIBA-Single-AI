@@ -54,52 +54,6 @@
     return n;
   }
 
-  /**
-   * 誤年 race_id を今週末（または今日）の年に補正。
-   * 例: 2024-07-25-01-07 → 2026-07-25-01-07（MD が今週末に含まれるとき）
-   * @returns {string|null} 補正後 ID。補正不要なら null
-   */
-  function correctRaceIdYear(raceId, instant) {
-    var id = String(raceId || "").trim();
-    var m = id.match(/^(\d{4})-(\d{2}-\d{2})-(.+)$/);
-    if (!m) return null;
-    var candidates = [];
-    var seen = {};
-    function pushDate(iso) {
-      if (!iso || !/^\d{4}-\d{2}-\d{2}$/.test(iso) || seen[iso]) return;
-      seen[iso] = true;
-      candidates.push(iso);
-    }
-    if (global.ExpectWeekendCalendar) {
-      if (typeof ExpectWeekendCalendar.jstParts === "function") {
-        var parts = ExpectWeekendCalendar.jstParts(instant || new Date());
-        if (parts && parts.date_jst) pushDate(parts.date_jst);
-      }
-      if (typeof ExpectWeekendCalendar.weekendRaceDates === "function") {
-        (ExpectWeekendCalendar.weekendRaceDates(instant || new Date()) || []).forEach(pushDate);
-      }
-      if (typeof ExpectWeekendCalendar.decide === "function") {
-        var cal = ExpectWeekendCalendar.decide(instant || new Date());
-        if (cal) {
-          if (cal.date_jst) pushDate(cal.date_jst);
-          if (cal.next_open_date_jst) pushDate(cal.next_open_date_jst);
-        }
-      }
-    }
-    for (var i = 0; i < candidates.length; i++) {
-      var d = candidates[i];
-      if (m[2] === d.slice(5) && m[1] !== d.slice(0, 4)) {
-        return d.slice(0, 4) + "-" + m[2] + "-" + m[3];
-      }
-    }
-    return null;
-  }
-
-  /** 補正が必要なら補正後 ID、不要なら元の ID */
-  function normalizeRaceIdYear(raceId, instant) {
-    return correctRaceIdYear(raceId, instant) || String(raceId || "").trim();
-  }
-
   /** 内部診断タグを一般 UI から除外 */
   function publicConfidenceFactors(factors) {
     if (!Array.isArray(factors)) return [];
@@ -117,8 +71,6 @@
     parseRaceIdMeta: parseRaceIdMeta,
     displayPlace: displayPlace,
     displayHorseName: displayHorseName,
-    correctRaceIdYear: correctRaceIdYear,
-    normalizeRaceIdYear: normalizeRaceIdYear,
     publicConfidenceFactors: publicConfidenceFactors,
     VENUE_SLUG_JA: VENUE_SLUG_JA,
   };

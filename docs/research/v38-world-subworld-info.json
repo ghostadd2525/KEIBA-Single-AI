@@ -1,0 +1,533 @@
+{
+  "schema_version": "expect-world-subworld-info-audit/1.0",
+  "generated_at": "2026-07-27T23:35:41+00:00",
+  "shadow_only": true,
+  "product_mutation": false,
+  "new_worlds_forbidden": true,
+  "corpus": {
+    "n_evaluable": 335,
+    "n_labeled_canonical": 51,
+    "n_unlabeled_or_noncanonical": 284,
+    "world_counts": {
+      "midupper_world": 51
+    },
+    "subworld_counts_global": {
+      "midupper_route": 42,
+      "midupper_spread": 9
+    }
+  },
+  "design_subworld_inventory": {
+    "core_world": [
+      "core_top",
+      "core_under"
+    ],
+    "midupper_world": [
+      "midupper_route",
+      "midupper_spread",
+      "midupper_corelike"
+    ],
+    "midhole_world": [
+      "fallback_standard"
+    ],
+    "rank7_world": [
+      "rank7_transition",
+      "rank7_residual"
+    ],
+    "bug_world": [
+      "fallback_standard"
+    ],
+    "mixed_world": [
+      "fallback_standard"
+    ]
+  },
+  "existing_subworlds_catalog": [
+    "core_top",
+    "core_under",
+    "midupper_route",
+    "midupper_spread",
+    "midupper_corelike",
+    "rank7_transition",
+    "rank7_residual",
+    "fallback_standard"
+  ],
+  "world_information": {
+    "core_world": {
+      "n_races": 0,
+      "n_horses": 0,
+      "mean_field": null,
+      "n_subworlds_observed": 0,
+      "n_subworlds_design": 2,
+      "subworld_utilization": 0.0,
+      "subworld_counts": {},
+      "design_subworlds": [
+        "core_top",
+        "core_under"
+      ],
+      "present_design_subworlds": [],
+      "missing_design_subworlds": [
+        "core_top",
+        "core_under"
+      ],
+      "missing_rate": 1.0,
+      "hit": 0,
+      "hit_rate": null,
+      "entropy_subworld_bits": 0.0,
+      "entropy_max_design_bits": 1.0,
+      "entropy_max_observed_bits": 0.0,
+      "entropy_ratio_vs_design": 0.0,
+      "unused_design_bits": 1.0,
+      "role": "Ability-settlement default",
+      "design_route_text": "core_top / core_under; may promote to midupper_route under compression"
+    },
+    "midupper_world": {
+      "n_races": 51,
+      "n_horses": 630,
+      "mean_field": 12.352941176470589,
+      "n_subworlds_observed": 2,
+      "n_subworlds_design": 3,
+      "subworld_utilization": 0.6666666666666666,
+      "subworld_counts": {
+        "midupper_route": 42,
+        "midupper_spread": 9
+      },
+      "design_subworlds": [
+        "midupper_route",
+        "midupper_spread",
+        "midupper_corelike"
+      ],
+      "present_design_subworlds": [
+        "midupper_route",
+        "midupper_spread"
+      ],
+      "missing_design_subworlds": [
+        "midupper_corelike"
+      ],
+      "missing_rate": 0.3333333333333333,
+      "hit": 8,
+      "hit_rate": 0.1568627450980392,
+      "entropy_subworld_bits": 0.672294817075638,
+      "entropy_max_design_bits": 1.5849625007211563,
+      "entropy_max_observed_bits": 1.0,
+      "entropy_ratio_vs_design": 0.4241708032649003,
+      "unused_design_bits": 0.9126676836455183,
+      "role": "Short-field / difficulty mid-upper survival",
+      "design_route_text": "midupper_route | midupper_spread | midupper_corelike"
+    },
+    "midhole_world": {
+      "n_races": 0,
+      "n_horses": 0,
+      "mean_field": null,
+      "n_subworlds_observed": 0,
+      "n_subworlds_design": 1,
+      "subworld_utilization": 0.0,
+      "subworld_counts": {},
+      "design_subworlds": [
+        "fallback_standard"
+      ],
+      "present_design_subworlds": [],
+      "missing_design_subworlds": [
+        "fallback_standard"
+      ],
+      "missing_rate": 1.0,
+      "hit": 0,
+      "hit_rate": null,
+      "entropy_subworld_bits": 0.0,
+      "entropy_max_design_bits": 0.0,
+      "entropy_max_observed_bits": 0.0,
+      "entropy_ratio_vs_design": null,
+      "unused_design_bits": 0.0,
+      "role": "Late-stop × sustained mid-hole",
+      "design_route_text": "sustained / outside (via mixed/midhole sub rules)"
+    },
+    "rank7_world": {
+      "n_races": 0,
+      "n_horses": 0,
+      "mean_field": null,
+      "n_subworlds_observed": 0,
+      "n_subworlds_design": 2,
+      "subworld_utilization": 0.0,
+      "subworld_counts": {},
+      "design_subworlds": [
+        "rank7_transition",
+        "rank7_residual"
+      ],
+      "present_design_subworlds": [],
+      "missing_design_subworlds": [
+        "rank7_transition",
+        "rank7_residual"
+      ],
+      "missing_rate": 1.0,
+      "hit": 0,
+      "hit_rate": null,
+      "entropy_subworld_bits": 0.0,
+      "entropy_max_design_bits": 1.0,
+      "entropy_max_observed_bits": 0.0,
+      "entropy_ratio_vs_design": 0.0,
+      "unused_design_bits": 1.0,
+      "role": "Chaos × high-pace rank7 observation",
+      "design_route_text": "rank7_transition | rank7_residual"
+    },
+    "bug_world": {
+      "n_races": 0,
+      "n_horses": 0,
+      "mean_field": null,
+      "n_subworlds_observed": 0,
+      "n_subworlds_design": 1,
+      "subworld_utilization": 0.0,
+      "subworld_counts": {},
+      "design_subworlds": [
+        "fallback_standard"
+      ],
+      "present_design_subworlds": [],
+      "missing_design_subworlds": [
+        "fallback_standard"
+      ],
+      "missing_rate": 1.0,
+      "hit": 0,
+      "hit_rate": null,
+      "entropy_subworld_bits": 0.0,
+      "entropy_max_design_bits": 0.0,
+      "entropy_max_observed_bits": 0.0,
+      "entropy_ratio_vs_design": null,
+      "unused_design_bits": 0.0,
+      "role": "Extreme chaos × difficulty residual",
+      "design_route_text": "bug observation / deep residual"
+    },
+    "mixed_world": {
+      "n_races": 0,
+      "n_horses": 0,
+      "mean_field": null,
+      "n_subworlds_observed": 0,
+      "n_subworlds_design": 1,
+      "subworld_utilization": 0.0,
+      "subworld_counts": {},
+      "design_subworlds": [
+        "fallback_standard"
+      ],
+      "present_design_subworlds": [],
+      "missing_design_subworlds": [
+        "fallback_standard"
+      ],
+      "missing_rate": 1.0,
+      "hit": 0,
+      "hit_rate": null,
+      "entropy_subworld_bits": 0.0,
+      "entropy_max_design_bits": 0.0,
+      "entropy_max_observed_bits": 0.0,
+      "entropy_ratio_vs_design": null,
+      "unused_design_bits": 0.0,
+      "role": "Multi world-line coexistence",
+      "design_route_text": "route-forward + multi-survivor families"
+    }
+  },
+  "coverage": {
+    "core_world": {
+      "design": [
+        "core_top",
+        "core_under"
+      ],
+      "observed": [],
+      "observed_all_labels": [],
+      "missing": [
+        "core_top",
+        "core_under"
+      ],
+      "missing_rate": 1.0,
+      "utilization": 0.0
+    },
+    "midupper_world": {
+      "design": [
+        "midupper_route",
+        "midupper_spread",
+        "midupper_corelike"
+      ],
+      "observed": [
+        "midupper_route",
+        "midupper_spread"
+      ],
+      "observed_all_labels": [
+        "midupper_route",
+        "midupper_spread"
+      ],
+      "missing": [
+        "midupper_corelike"
+      ],
+      "missing_rate": 0.3333333333333333,
+      "utilization": 0.6666666666666666
+    },
+    "midhole_world": {
+      "design": [
+        "fallback_standard"
+      ],
+      "observed": [],
+      "observed_all_labels": [],
+      "missing": [
+        "fallback_standard"
+      ],
+      "missing_rate": 1.0,
+      "utilization": 0.0
+    },
+    "rank7_world": {
+      "design": [
+        "rank7_transition",
+        "rank7_residual"
+      ],
+      "observed": [],
+      "observed_all_labels": [],
+      "missing": [
+        "rank7_transition",
+        "rank7_residual"
+      ],
+      "missing_rate": 1.0,
+      "utilization": 0.0
+    },
+    "bug_world": {
+      "design": [
+        "fallback_standard"
+      ],
+      "observed": [],
+      "observed_all_labels": [],
+      "missing": [
+        "fallback_standard"
+      ],
+      "missing_rate": 1.0,
+      "utilization": 0.0
+    },
+    "mixed_world": {
+      "design": [
+        "fallback_standard"
+      ],
+      "observed": [],
+      "observed_all_labels": [],
+      "missing": [
+        "fallback_standard"
+      ],
+      "missing_rate": 1.0,
+      "utilization": 0.0
+    }
+  },
+  "information_density": {
+    "world_prior_entropy_bits": 0.0,
+    "world_prior_max_bits": 2.584962500721156,
+    "world_prior_entropy_ratio": 0.0,
+    "per_world": {
+      "core_world": {
+        "subworld_entropy_bits": 0.0,
+        "design_capacity_bits": 1.0,
+        "entropy_ratio_vs_design": 0.0,
+        "unused_design_bits": 1.0,
+        "information_gain_vs_flat_world": 0.0,
+        "n_races": 0
+      },
+      "midupper_world": {
+        "subworld_entropy_bits": 0.672294817075638,
+        "design_capacity_bits": 1.5849625007211563,
+        "entropy_ratio_vs_design": 0.4241708032649003,
+        "unused_design_bits": 0.9126676836455183,
+        "information_gain_vs_flat_world": 0.672294817075638,
+        "n_races": 51
+      },
+      "midhole_world": {
+        "subworld_entropy_bits": 0.0,
+        "design_capacity_bits": 0.0,
+        "entropy_ratio_vs_design": null,
+        "unused_design_bits": 0.0,
+        "information_gain_vs_flat_world": 0.0,
+        "n_races": 0
+      },
+      "rank7_world": {
+        "subworld_entropy_bits": 0.0,
+        "design_capacity_bits": 1.0,
+        "entropy_ratio_vs_design": 0.0,
+        "unused_design_bits": 1.0,
+        "information_gain_vs_flat_world": 0.0,
+        "n_races": 0
+      },
+      "bug_world": {
+        "subworld_entropy_bits": 0.0,
+        "design_capacity_bits": 0.0,
+        "entropy_ratio_vs_design": null,
+        "unused_design_bits": 0.0,
+        "information_gain_vs_flat_world": 0.0,
+        "n_races": 0
+      },
+      "mixed_world": {
+        "subworld_entropy_bits": 0.0,
+        "design_capacity_bits": 0.0,
+        "entropy_ratio_vs_design": null,
+        "unused_design_bits": 0.0,
+        "information_gain_vs_flat_world": 0.0,
+        "n_races": 0
+      }
+    }
+  },
+  "missing_classification": {
+    "within_subworld_heterogeneity": [
+      {
+        "world": "midupper_world",
+        "sub_world": "midupper_route",
+        "n": 42,
+        "joint_signal_entropy_bits": 2.0424077381014794,
+        "joint_unique_bins": 5,
+        "top_bins": [
+          [
+            "d<0.6|sf<0.5|fs<12",
+            15
+          ],
+          [
+            "d<0.6|sf<0.5|fs>=16",
+            11
+          ],
+          [
+            "d<0.6|sf<0.5|fs<16",
+            9
+          ],
+          [
+            "d<0.6|sf<0.5|fs<14",
+            6
+          ],
+          [
+            "dmissing|sfmissing|fs<12",
+            1
+          ]
+        ],
+        "chaos_bin_counts": {
+          "missing": 42
+        },
+        "phase_bin_counts": {
+          "missing": 1,
+          "<0.48": 41
+        },
+        "under_split_suspected": true,
+        "note": "Heterogeneous signal bins share one SubWorld label"
+      },
+      {
+        "world": "midupper_world",
+        "sub_world": "midupper_spread",
+        "n": 9,
+        "joint_signal_entropy_bits": 0.9864267287308424,
+        "joint_unique_bins": 3,
+        "top_bins": [
+          [
+            "d<0.6|sf<0.5|fs<12",
+            7
+          ],
+          [
+            "d<0.6|sf<0.5|fs<16",
+            1
+          ],
+          [
+            "d<0.6|sf<0.5|fs<14",
+            1
+          ]
+        ],
+        "chaos_bin_counts": {
+          "missing": 9
+        },
+        "phase_bin_counts": {
+          "<0.48": 9
+        },
+        "under_split_suspected": false,
+        "note": "Limited heterogeneity or small n"
+      }
+    ],
+    "midupper_absorption_of_other_triggers": {
+      "n_checked": 51,
+      "would_match_other_world": {},
+      "examples": [],
+      "note": "Read-only V24 threshold probe on stored signals; missing signals reduce detection (esp. chaos)."
+    }
+  },
+  "refinement_potential": {
+    "core_world": {
+      "level": "blocked_inactive",
+      "n_races": 0,
+      "observed_subworlds": 0,
+      "design_subworlds": 2,
+      "missing_rate": 1.0,
+      "unused_design_bits": 1.0,
+      "under_split_subworlds": [],
+      "rationale": "World never activated in labeled corpus; SubWorld refinement not observable"
+    },
+    "midupper_world": {
+      "level": "high",
+      "n_races": 51,
+      "observed_subworlds": 2,
+      "design_subworlds": 3,
+      "missing_rate": 0.3333333333333333,
+      "unused_design_bits": 0.9126676836455183,
+      "under_split_subworlds": [
+        "midupper_route"
+      ],
+      "rationale": "Design SubWorlds unused or entropy far below design capacity"
+    },
+    "midhole_world": {
+      "level": "blocked_inactive",
+      "n_races": 0,
+      "observed_subworlds": 0,
+      "design_subworlds": 1,
+      "missing_rate": 1.0,
+      "unused_design_bits": 0.0,
+      "under_split_subworlds": [],
+      "rationale": "World never activated in labeled corpus; SubWorld refinement not observable"
+    },
+    "rank7_world": {
+      "level": "blocked_inactive",
+      "n_races": 0,
+      "observed_subworlds": 0,
+      "design_subworlds": 2,
+      "missing_rate": 1.0,
+      "unused_design_bits": 1.0,
+      "under_split_subworlds": [],
+      "rationale": "World never activated in labeled corpus; SubWorld refinement not observable"
+    },
+    "bug_world": {
+      "level": "blocked_inactive",
+      "n_races": 0,
+      "observed_subworlds": 0,
+      "design_subworlds": 1,
+      "missing_rate": 1.0,
+      "unused_design_bits": 0.0,
+      "under_split_subworlds": [],
+      "rationale": "World never activated in labeled corpus; SubWorld refinement not observable"
+    },
+    "mixed_world": {
+      "level": "blocked_inactive",
+      "n_races": 0,
+      "observed_subworlds": 0,
+      "design_subworlds": 1,
+      "missing_rate": 1.0,
+      "unused_design_bits": 0.0,
+      "under_split_subworlds": [],
+      "rationale": "World never activated in labeled corpus; SubWorld refinement not observable"
+    }
+  },
+  "governance": {
+    "verdict": "C",
+    "labels": {
+      "A": "現在の SubWorld で十分",
+      "B": "既存 World の SubWorld が不足",
+      "C": "World 自体の情報量不足"
+    },
+    "primary_reason": "World-level information collapse (midupper saturation); SubWorld inventory also underused",
+    "metrics": {
+      "midupper_share": 1.0,
+      "world_prior_entropy_ratio": 0.0,
+      "active_worlds": 1,
+      "inactive_worlds": [
+        "core_world",
+        "midhole_world",
+        "rank7_world",
+        "bug_world",
+        "mixed_world"
+      ],
+      "high_refinement_worlds": [
+        "midupper_world"
+      ]
+    },
+    "secondary_findings": {
+      "subworld_insufficient_on_active": true,
+      "world_prior_starved": true
+    }
+  }
+}

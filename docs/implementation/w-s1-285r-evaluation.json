@@ -1,0 +1,556 @@
+{
+  "schema_version": "expect-w-s1-shadow-dual-eval/1.0",
+  "generated_at": "2026-07-28T04:57:41+00:00",
+  "stage": "W-S1",
+  "flags": {
+    "W_TRIGGER_SHADOW": true,
+    "W_TRIGGER_PATH": "legacy",
+    "W_DEFAULT_CORE": true,
+    "stage": "W-S1",
+    "decision_authority": "legacy",
+    "shadow_dual_eval_enabled": true
+  },
+  "flag_off_compat": {
+    "flags": {
+      "W_TRIGGER_SHADOW": false,
+      "W_TRIGGER_PATH": "legacy",
+      "W_DEFAULT_CORE": true,
+      "stage": "W-S0",
+      "decision_authority": "legacy",
+      "shadow_dual_eval_enabled": false
+    },
+    "production_path": "legacy",
+    "legacy_world": "core_world",
+    "classifier_world": "core_world",
+    "identical": true,
+    "shadow_disabled": true,
+    "decision_authority_legacy": true,
+    "ok": true
+  },
+  "before": {
+    "n": 285,
+    "hit": 218,
+    "purchase": 218,
+    "rank710": 14,
+    "other_1_3": 1,
+    "other_10_13": 13,
+    "rank46": 35,
+    "other": 4,
+    "other_miss": 18,
+    "buckets": {
+      "hit": 218,
+      "rank710": 14,
+      "rank46": 35,
+      "other_10_13": 13,
+      "other_1_3": 1,
+      "other": 4
+    },
+    "prediction_fingerprint": "d3c43162ebf143239c456521a745d4af12d9cd53c78c561d351d559d88f93f2a"
+  },
+  "after": {
+    "n": 285,
+    "hit": 218,
+    "purchase": 218,
+    "rank710": 14,
+    "other_1_3": 1,
+    "other_10_13": 13,
+    "rank46": 35,
+    "other": 4,
+    "other_miss": 18,
+    "buckets": {
+      "hit": 218,
+      "rank710": 14,
+      "rank46": 35,
+      "other_10_13": 13,
+      "other_1_3": 1,
+      "other": 4
+    },
+    "prediction_fingerprint": "d3c43162ebf143239c456521a745d4af12d9cd53c78c561d351d559d88f93f2a"
+  },
+  "dual_meta": {
+    "polarity_thresholds": {
+      "top_gap": 0.024933503251183126,
+      "ability_separation": 0.07197029287695846,
+      "upper_ability_band": 0.2964199217447646,
+      "mid_eval_band_open": 0.42425318716366545,
+      "top_monopoly": 0.1259969518064152,
+      "ability_subordinate": 0.8753324837440843,
+      "difficulty": 0.538612,
+      "chaos": 0.4491677466490955,
+      "high_pace": 0.566075,
+      "late_stop": 0.4759925,
+      "sustained": 0.5384135021823361,
+      "phase": 0.499575,
+      "short_field_pressure": 0.0,
+      "aptitude_fit": 0.64,
+      "development_pressure": 0.499575,
+      "field_size": 15.0,
+      "distance": 1700.0
+    },
+    "n_restored": 240
+  },
+  "shadow_kpi": {
+    "n": 285,
+    "legacy_distribution": {
+      "midupper_world": 110,
+      "core_world": 104,
+      "mixed_world": 56,
+      "midhole_world": 15
+    },
+    "v44_distribution": {
+      "unsatisfied": 176,
+      "midupper_world": 6,
+      "mixed_world": 6,
+      "midhole_world": 24,
+      "rank7_world": 65,
+      "core_world": 8
+    },
+    "legacy_entropy_bits": 1.7456583415302105,
+    "v44_entropy_bits": 1.5956162748311375,
+    "legacy_entropy_ratio": 0.6753128298933561,
+    "v44_entropy_ratio": 0.6172686351875474,
+    "positive_match_rate": 0.3824561403508772,
+    "unsatisfied_rate": 0.6175438596491228,
+    "positive_match_n": 109,
+    "unsatisfied_n": 176,
+    "transition_counts": {
+      "midupper_world->unsatisfied": 54,
+      "core_world->unsatisfied": 86,
+      "midupper_world->midupper_world": 6,
+      "mixed_world->unsatisfied": 26,
+      "midhole_world->mixed_world": 2,
+      "midupper_world->midhole_world": 11,
+      "midhole_world->unsatisfied": 10,
+      "midupper_world->rank7_world": 37,
+      "mixed_world->rank7_world": 24,
+      "core_world->rank7_world": 1,
+      "mixed_world->midhole_world": 4,
+      "core_world->midhole_world": 9,
+      "mixed_world->mixed_world": 2,
+      "midhole_world->rank7_world": 3,
+      "core_world->core_world": 8,
+      "midupper_world->mixed_world": 2
+    },
+    "transition_matrix": {
+      "midupper_world": {
+        "unsatisfied": 54,
+        "midupper_world": 6,
+        "midhole_world": 11,
+        "rank7_world": 37,
+        "mixed_world": 2
+      },
+      "core_world": {
+        "unsatisfied": 86,
+        "rank7_world": 1,
+        "midhole_world": 9,
+        "core_world": 8
+      },
+      "mixed_world": {
+        "unsatisfied": 26,
+        "rank7_world": 24,
+        "midhole_world": 4,
+        "mixed_world": 2
+      },
+      "midhole_world": {
+        "mixed_world": 2,
+        "unsatisfied": 10,
+        "rank7_world": 3
+      }
+    },
+    "world_coverage_v44": 5,
+    "world_coverage_max": 6,
+    "winner_alignment_legacy": {
+      "soft": 67,
+      "aligned": 167,
+      "misaligned": 51
+    },
+    "winner_alignment_v44": {
+      "unsatisfied": 176,
+      "soft": 20,
+      "aligned": 32,
+      "misaligned": 57
+    },
+    "semantic_compliance_n": 109,
+    "semantic_compliance_rate": 0.3824561403508772
+  },
+  "shadow_log": "C:\\win5-ai\\KEIBA-Single-AI\\var\\world_trigger_shadow\\ws1_shadow_dual_eval.jsonl",
+  "shadow_log_rows": 285,
+  "sample_rows": [
+    {
+      "race_id": "2024-01-06-京都-10",
+      "legacy_world": "midupper_world",
+      "v44_world": "unsatisfied",
+      "positive_match": false,
+      "unsatisfied": true,
+      "match_set": [],
+      "trigger_path": "v44_unsatisfied",
+      "decision_trace": {
+        "core_world": {
+          "must": true,
+          "must_gaps": [],
+          "exclude": true,
+          "match": false
+        },
+        "midupper_world": {
+          "must": true,
+          "must_gaps": [],
+          "exclude": true,
+          "match": false
+        },
+        "midhole_world": {
+          "must": false,
+          "must_gaps": [
+            "top_monopoly↓"
+          ],
+          "exclude": true,
+          "match": false
+        },
+        "rank7_world": {
+          "must": false,
+          "must_gaps": [
+            "chaos↑",
+            "ability_subordinate↑"
+          ],
+          "exclude": true,
+          "match": false
+        },
+        "bug_world": {
+          "must": false,
+          "must_gaps": [
+            "exception_flag↑"
+          ],
+          "exclude": false,
+          "match": false,
+          "exception_flag_present": false
+        },
+        "mixed_world": {
+          "must": false,
+          "must_gaps": [
+            "multi_path>=2 OR unexplained_single"
+          ],
+          "exclude": false,
+          "match": false,
+          "primary_match_count": 0
+        }
+      },
+      "world_transition": "midupper_world->unsatisfied",
+      "winner_model_rank": 1,
+      "hit_at_1": true,
+      "winner_alignment_legacy": "soft",
+      "winner_alignment_v44": "unsatisfied",
+      "restored_ok": true,
+      "decision_used": "midupper_world",
+      "decision_authority": "legacy"
+    },
+    {
+      "race_id": "2024-01-06-中山-11",
+      "legacy_world": "midupper_world",
+      "v44_world": "unsatisfied",
+      "positive_match": false,
+      "unsatisfied": true,
+      "match_set": [],
+      "trigger_path": "v44_unsatisfied",
+      "decision_trace": {
+        "core_world": {
+          "must": true,
+          "must_gaps": [],
+          "exclude": true,
+          "match": false
+        },
+        "midupper_world": {
+          "must": false,
+          "must_gaps": [
+            "upper_ability_band↑"
+          ],
+          "exclude": false,
+          "match": false
+        },
+        "midhole_world": {
+          "must": false,
+          "must_gaps": [
+            "mid_eval_band_open↑",
+            "top_monopoly↓"
+          ],
+          "exclude": true,
+          "match": false
+        },
+        "rank7_world": {
+          "must": false,
+          "must_gaps": [
+            "chaos↑",
+            "ability_subordinate↑"
+          ],
+          "exclude": true,
+          "match": false
+        },
+        "bug_world": {
+          "must": false,
+          "must_gaps": [
+            "exception_flag↑"
+          ],
+          "exclude": false,
+          "match": false,
+          "exception_flag_present": false
+        },
+        "mixed_world": {
+          "must": false,
+          "must_gaps": [
+            "multi_path>=2 OR unexplained_single"
+          ],
+          "exclude": false,
+          "match": false,
+          "primary_match_count": 0
+        }
+      },
+      "world_transition": "midupper_world->unsatisfied",
+      "winner_model_rank": 1,
+      "hit_at_1": true,
+      "winner_alignment_legacy": "soft",
+      "winner_alignment_v44": "unsatisfied",
+      "restored_ok": true,
+      "decision_used": "midupper_world",
+      "decision_authority": "legacy"
+    },
+    {
+      "race_id": "2024-01-06-京都-11",
+      "legacy_world": "midupper_world",
+      "v44_world": "unsatisfied",
+      "positive_match": false,
+      "unsatisfied": true,
+      "match_set": [],
+      "trigger_path": "v44_unsatisfied",
+      "decision_trace": {
+        "core_world": {
+          "must": true,
+          "must_gaps": [],
+          "exclude": true,
+          "match": false
+        },
+        "midupper_world": {
+          "must": false,
+          "must_gaps": [
+            "upper_ability_band↑"
+          ],
+          "exclude": true,
+          "match": false
+        },
+        "midhole_world": {
+          "must": false,
+          "must_gaps": [
+            "mid_eval_band_open↑",
+            "top_monopoly↓"
+          ],
+          "exclude": true,
+          "match": false
+        },
+        "rank7_world": {
+          "must": false,
+          "must_gaps": [
+            "ability_subordinate↑"
+          ],
+          "exclude": true,
+          "match": false
+        },
+        "bug_world": {
+          "must": false,
+          "must_gaps": [
+            "exception_flag↑"
+          ],
+          "exclude": true,
+          "match": false,
+          "exception_flag_present": false
+        },
+        "mixed_world": {
+          "must": false,
+          "must_gaps": [
+            "multi_path>=2 OR unexplained_single"
+          ],
+          "exclude": false,
+          "match": false,
+          "primary_match_count": 0
+        }
+      },
+      "world_transition": "midupper_world->unsatisfied",
+      "winner_model_rank": 1,
+      "hit_at_1": true,
+      "winner_alignment_legacy": "soft",
+      "winner_alignment_v44": "unsatisfied",
+      "restored_ok": true,
+      "decision_used": "midupper_world",
+      "decision_authority": "legacy"
+    },
+    {
+      "race_id": "2024-01-06-中山-09",
+      "legacy_world": "core_world",
+      "v44_world": "unsatisfied",
+      "positive_match": false,
+      "unsatisfied": true,
+      "match_set": [],
+      "trigger_path": "v44_unsatisfied",
+      "decision_trace": {
+        "core_world": {
+          "must": false,
+          "must_gaps": [
+            "top_gap↑"
+          ],
+          "exclude": true,
+          "match": false
+        },
+        "midupper_world": {
+          "must": false,
+          "must_gaps": [
+            "aptitude_fit↑"
+          ],
+          "exclude": true,
+          "match": false
+        },
+        "midhole_world": {
+          "must": false,
+          "must_gaps": [
+            "top_monopoly↓"
+          ],
+          "exclude": false,
+          "match": false
+        },
+        "rank7_world": {
+          "must": false,
+          "must_gaps": [
+            "chaos↑"
+          ],
+          "exclude": false,
+          "match": false
+        },
+        "bug_world": {
+          "must": false,
+          "must_gaps": [
+            "exception_flag↑"
+          ],
+          "exclude": false,
+          "match": false,
+          "exception_flag_present": false
+        },
+        "mixed_world": {
+          "must": false,
+          "must_gaps": [
+            "multi_path>=2 OR unexplained_single"
+          ],
+          "exclude": false,
+          "match": false,
+          "primary_match_count": 0
+        }
+      },
+      "world_transition": "core_world->unsatisfied",
+      "winner_model_rank": 1,
+      "hit_at_1": true,
+      "winner_alignment_legacy": "aligned",
+      "winner_alignment_v44": "unsatisfied",
+      "restored_ok": true,
+      "decision_used": "core_world",
+      "decision_authority": "legacy"
+    },
+    {
+      "race_id": "2024-01-06-中山-10",
+      "legacy_world": "core_world",
+      "v44_world": "unsatisfied",
+      "positive_match": false,
+      "unsatisfied": true,
+      "match_set": [],
+      "trigger_path": "v44_unsatisfied",
+      "decision_trace": {
+        "core_world": {
+          "must": true,
+          "must_gaps": [],
+          "exclude": true,
+          "match": false
+        },
+        "midupper_world": {
+          "must": false,
+          "must_gaps": [
+            "aptitude_fit↑"
+          ],
+          "exclude": true,
+          "match": false
+        },
+        "midhole_world": {
+          "must": false,
+          "must_gaps": [
+            "top_monopoly↓"
+          ],
+          "exclude": true,
+          "match": false
+        },
+        "rank7_world": {
+          "must": false,
+          "must_gaps": [
+            "chaos↑",
+            "ability_subordinate↑"
+          ],
+          "exclude": true,
+          "match": false
+        },
+        "bug_world": {
+          "must": false,
+          "must_gaps": [
+            "exception_flag↑"
+          ],
+          "exclude": false,
+          "match": false,
+          "exception_flag_present": false
+        },
+        "mixed_world": {
+          "must": false,
+          "must_gaps": [
+            "multi_path>=2 OR unexplained_single"
+          ],
+          "exclude": false,
+          "match": false,
+          "primary_match_count": 0
+        }
+      },
+      "world_transition": "core_world->unsatisfied",
+      "winner_model_rank": 1,
+      "hit_at_1": true,
+      "winner_alignment_legacy": "aligned",
+      "winner_alignment_v44": "unsatisfied",
+      "restored_ok": true,
+      "decision_used": "core_world",
+      "decision_authority": "legacy"
+    }
+  ],
+  "gate": {
+    "stage": "W-S1",
+    "pass": true,
+    "checks": {
+      "production_prediction_identical": true,
+      "prediction_changes": 0,
+      "hit_delta": 0,
+      "purchase_delta": 0,
+      "rank710_delta": 0,
+      "other_1_3_delta": 0,
+      "other_10_13_delta": 0,
+      "rank46_delta": 0,
+      "other_miss_delta": 0,
+      "world_compare_log_ok": true,
+      "transition_matrix_ok": true,
+      "positive_match_ok": true,
+      "unsatisfied_ok": true,
+      "entropy_ok": true,
+      "flag_off_compatible": true
+    },
+    "rollback_required": false,
+    "next_stage_allowed": "W-S2"
+  },
+  "locks": {
+    "production_decision": "legacy",
+    "prediction": "unchanged",
+    "pe_score_rank_confidence_ce_pool": "unchanged",
+    "v44": "shadow_only"
+  },
+  "method": {
+    "v44_polarity": "batch_median_within_285R",
+    "legacy": "classify_world_line_type on same signal meta",
+    "restore": true,
+    "aptitude_fit": "distance/field_size observational proxy (documented)",
+    "exception_flag": "absent in corpus → bug Must fails"
+  }
+}

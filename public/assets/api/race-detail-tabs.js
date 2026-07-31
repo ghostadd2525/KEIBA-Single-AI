@@ -1,5 +1,6 @@
 /**
  * Race detail tabs — AI予想 / 出馬表 / オッズ / データ
+ * Version7.2: Board / Odds / History を完全分離
  */
 (function (global) {
   "use strict";
@@ -364,6 +365,7 @@
     var cache = {
       board: null,
       history: null,
+      oddsView: null,
       loadingBoard: null,
       loadingHistory: null,
       activeTab: "ai",
@@ -389,17 +391,86 @@
       else stopOddsRefresh();
     }
 
+    function persistBoardHistory(board, history) {
+      if (!global.ExpectRaceDetailCache || !ExpectRaceDetailCache.putIfReady) return;
+      try {
+        // READY + 馬番確定 + Prediction 整合が揃うまで永続化しない
+        ExpectRaceDetailCache.putIfReady(raceId, {
+          board: board || null,
+          history: history != null ? history : (board && board.history) || null,
+          post_time: board && board.post_time,
+          date: board && board.date,
+        }).catch(function () { /* ignore */ });
+      } catch (e) { /* ignore */ }
+    }
+
+    function hydrateFromDurableCache() {
+      if (!global.ExpectRaceDetailCache || !ExpectRaceDetailCache.get) {
+        return Promise.resolve(null);
+      }
+      return ExpectRaceDetailCache.get(raceId).then(function (row) {
+        if (!row) return null;
+        if (row.board) cache.board = row.board;
+        if (row.history) cache.history = row.history;
+        else if (row.board && Array.isArray(row.board.history)) {
+          cache.history = row.board.history;
+        }
+        return row;
+      });
+    }
+
+    /** 一覧 Visible Prefetch の session キャッシュ */
+    function hydrateFromSoftPrefetch() {
+      if (!global.ExpectRacePrefetch || !ExpectRacePrefetch.getBoard) return null;
+      var soft = ExpectRacePrefetch.getBoard(raceId);
+      if (!soft || !soft.board) return null;
+      cache.board = soft.board;
+      cache.history =
+        soft.history != null
+          ? soft.history
+          : Array.isArray(soft.board.history)
+            ? soft.board.history
+            : cache.history || [];
+      return soft;
+    }
+
     function ensureBoard(force) {
+      // force=true でも Board 再取得はしない（メモリキャッシュ優先）
       if (!force && cache.board) return Promise.resolve(cache.board);
-      if (!force && cache.loadingBoard) return cache.loadingBoard;
-      cache.loadingBoard = ExpectApi.RaceBoard.getBoard(raceId, {
-        includeHistory: false,
-        fresh: !!force,
-      })
-        .then(function (data) {
-          cache.board = data;
-          cache.loadingBoard = null;
-          return data;
+      if (force && cache.board) return Promise.resolve(cache.board);
+      if (cache.loadingBoard) return cache.loadingBoard;
+
+      if (hydrateFromSoftPrefetch() && cache.board) {
+        return Promise.resolve(cache.board);
+      }
+
+      cache.loadingBoard = hydrateFromDurableCache()
+        .then(function (row) {
+          if (row && row.board) {
+            cache.loadingBoard = null;
+            return cache.board;
+          }
+          if (hydrateFromSoftPrefetch() && cache.board) {
+            cache.loadingBoard = null;
+            return cache.board;
+          }
+          // Version7.2: board は history なし
+          return ExpectApi.RaceBoard.getBoard(raceId, {
+            fresh: false,
+            timeoutMs: 20000,
+          }).then(function (data) {
+            cache.board = data;
+            if (global.ExpectRacePrefetch && ExpectRacePrefetch.putBoard) {
+              ExpectRacePrefetch.putBoard(
+                raceId,
+                cache.board,
+                cache.history || null
+              );
+            }
+            persistBoardHistory(cache.board, cache.history || null);
+            cache.loadingBoard = null;
+            return data;
+          });
         })
         .catch(function (err) {
           cache.loadingBoard = null;
@@ -409,20 +480,115 @@
     }
 
     function ensureHistory() {
-      if (cache.history) return Promise.resolve(cache.history);
+      if (cache.history && cache.historyLoaded) {
+        return Promise.resolve(cache.history);
+      }
       if (cache.loadingHistory) return cache.loadingHistory;
-      cache.loadingHistory = ExpectApi.RaceBoard.getBoard(raceId, { includeHistory: true })
-        .then(function (data) {
-          cache.board = data;
-          cache.history = data.history || [];
-          cache.loadingHistory = null;
-          return cache.history;
+
+      cache.loadingHistory = hydrateFromDurableCache()
+        .then(function (row) {
+          if (row && Array.isArray(row.history) && row.history.length) {
+            cache.history = row.history;
+            cache.historyLoaded = true;
+            cache.loadingHistory = null;
+            return cache.history;
+          }
+          var getter =
+            global.ExpectApi &&
+            ExpectApi.RaceHistory &&
+            typeof ExpectApi.RaceHistory.getHistory === "function"
+              ? ExpectApi.RaceHistory.getHistory(raceId, { timeoutMs: 60000 })
+              : Promise.reject(new Error("RaceHistory unavailable"));
+          return getter.then(function (data) {
+            var hist =
+              (data && Array.isArray(data.history) && data.history) ||
+              (Array.isArray(data) ? data : []) ||
+              [];
+            cache.history = hist;
+            cache.historyLoaded = true;
+            if (global.ExpectRacePrefetch && ExpectRacePrefetch.putBoard && cache.board) {
+              ExpectRacePrefetch.putBoard(raceId, cache.board, cache.history);
+            }
+            persistBoardHistory(cache.board, cache.history);
+            cache.loadingHistory = null;
+            return cache.history;
+          });
         })
         .catch(function (err) {
           cache.loadingHistory = null;
           throw err;
         });
       return cache.loadingHistory;
+    }
+
+    function mergeOddsSeriesIntoBoard(board, seriesData) {
+      if (!board || !Array.isArray(board.entries)) return board;
+      var map = Object.create(null);
+      var pop = Object.create(null);
+      (seriesData && seriesData.series ? seriesData.series : []).forEach(function (s, idx) {
+        var n = s.umaban != null ? s.umaban : s.horse_number;
+        if (n == null) return;
+        if (s.latest_odds != null && Number.isFinite(Number(s.latest_odds))) {
+          map[String(n)] = Number(s.latest_odds);
+        }
+        if (s.popularity != null) pop[String(n)] = s.popularity;
+        else if (map[String(n)] != null) pop[String(n)] = idx + 1;
+      });
+      if (!Object.keys(map).length) return board;
+      var merged = {
+        schema_version: board.schema_version,
+        race_id: board.race_id,
+        race_label: board.race_label,
+        race_name: board.race_name,
+        date: board.date,
+        venue: board.venue,
+        race_no: board.race_no,
+        post_time: board.post_time,
+        numeric_race_id: board.numeric_race_id,
+        odds_status: (seriesData && seriesData.odds_status) || board.odds_status,
+        odds_cache_ttl_sec: board.odds_cache_ttl_sec,
+        count: board.count,
+        entries: board.entries.map(function (e) {
+          var copy = {};
+          for (var k in e) {
+            if (Object.prototype.hasOwnProperty.call(e, k)) copy[k] = e[k];
+          }
+          var key = String(e.horse_number != null ? e.horse_number : "");
+          if (key && map[key] != null) copy.odds = map[key];
+          if (key && pop[key] != null) copy.popularity = pop[key];
+          return copy;
+        }),
+      };
+      return merged;
+    }
+
+    /** Odds / Odds Series のみ最新取得。Board 本体は再取得しない */
+    function refreshOddsOnly(opts) {
+      opts = opts || {};
+      var silent = !!opts.silent;
+      var el = document.getElementById("tabOddsBody");
+      if (!cache.board) {
+        return ensureBoard().then(function () {
+          return refreshOddsOnly(opts);
+        });
+      }
+      if (!global.ExpectApi || !ExpectApi.OddsSeries || !ExpectApi.OddsSeries.getSeries) {
+        if (el && cache.board) paintOddsFromBoard(cache.board, { silent: silent });
+        return Promise.resolve(cache.board);
+      }
+      return ExpectApi.OddsSeries.getSeries(raceId, { fresh: true })
+        .then(function (seriesData) {
+          var merged = mergeOddsSeriesIntoBoard(cache.board, seriesData);
+          cache.oddsView = merged;
+          paintOddsFromBoard(merged, { silent: silent || !!cache.paintedOdds });
+          return merged;
+        })
+        .catch(function () {
+          if (el && cache.board && !cache.paintedOdds) {
+            paintOddsFromBoard(cache.board, { silent: silent });
+          }
+          return cache.board;
+        });
     }
 
     function paintShutubaFromBoard(data) {
@@ -468,7 +634,6 @@
       ensureBoard()
         .then(function (data) {
           paintShutubaFromBoard(data);
-          if (!cache.paintedOdds) paintOddsFromBoard(data);
         })
         .catch(function () {
           hideTabLoading(el);
@@ -480,9 +645,10 @@
       opts = opts || {};
       var el = document.getElementById("tabOddsBody");
       if (!el) return;
-      var silent = !!opts.silent && !!cache.board;
-      if (cache.paintedOdds && cache.board && !opts.force) {
-        paintOddsFromBoard(cache.board, { silent: true });
+      var silent = !!opts.silent && !!(cache.board || cache.oddsView);
+      if (cache.paintedOdds && (cache.oddsView || cache.board) && !opts.force) {
+        paintOddsFromBoard(cache.oddsView || cache.board, { silent: true });
+        if (opts.refresh !== false) refreshOddsOnly({ silent: true });
         return;
       }
       if (!silent && !el.querySelector(".skel-stack")) {
@@ -491,10 +657,11 @@
           message: "単勝オッズを取得しています。",
         });
       }
-      ensureBoard(!!opts.force)
+      // Version7.2: Board で即描画 → odds-series を非同期反映
+      ensureBoard()
         .then(function (data) {
           paintOddsFromBoard(data, { silent: silent });
-          if (!cache.paintedShutuba) paintShutubaFromBoard(data);
+          return refreshOddsOnly({ silent: true });
         })
         .catch(function () {
           if (!silent) {
@@ -507,7 +674,7 @@
     function paintData() {
       var el = document.getElementById("tabDataBody");
       if (!el) return;
-      if (cache.paintedData) return;
+      if (cache.paintedData && cache.historyLoaded) return;
       if (!el.querySelector(".skel-stack")) {
         showTabLoading(el, {
           title: "近走データを準備中...",
@@ -515,25 +682,22 @@
         });
       }
 
+      // Board はブロックしない（名前表示用に裏で取得）
+      ensureBoard().catch(function () { return null; });
+
       ensureHistory()
         .then(function (history) {
           var entries = (cache.board && cache.board.entries) || [];
           paintDataFromHistory(history || [], entries);
         })
         .catch(function () {
-          return ensureBoard()
-            .then(function (data) {
-              paintDataFromHistory([], (data && data.entries) || []);
-            })
-            .catch(function () {
-              hideTabLoading(el);
-              el.innerHTML =
-                '<p class="muted">近走データの取得に失敗しました。</p>';
-            });
+          hideTabLoading(el);
+          el.innerHTML =
+            '<p class="muted">近走データの取得に失敗しました。出馬表・オッズは利用できます。</p>';
         });
     }
 
-    /** 詳細入場直後に board / history を並列開始し、到着順に描画 */
+    /** Version7.2: Board-only warm。History はデータタブ表示時のみ */
     function warm() {
       if (cache.warmed) return;
       cache.warmed = true;
@@ -542,12 +706,38 @@
       var data = document.getElementById("tabDataBody");
       if (shutuba) shutuba.innerHTML = skeletonHtml(8);
       if (odds) odds.innerHTML = skeletonHtml(8);
-      if (data) data.innerHTML = skeletonHtml(6);
+      if (data) {
+        data.innerHTML =
+          '<p class="muted">近走は「データ」タブを開くと読み込みます。</p>';
+      }
 
-      ensureBoard()
-        .then(function (board) {
-          paintShutubaFromBoard(board);
-          paintOddsFromBoard(board);
+      hydrateFromDurableCache()
+        .then(function (row) {
+          if (row && row.board) {
+            paintShutubaFromBoard(cache.board);
+            paintOddsFromBoard(cache.board);
+            refreshOddsOnly({ silent: true });
+            return;
+          }
+          if (hydrateFromSoftPrefetch() && cache.board) {
+            paintShutubaFromBoard(cache.board);
+            paintOddsFromBoard(cache.board);
+            refreshOddsOnly({ silent: true });
+            return;
+          }
+
+          return ExpectApi.RaceBoard.getBoard(raceId, { timeoutMs: 20000 }).then(
+            function (board) {
+              cache.board = board;
+              if (global.ExpectRacePrefetch && ExpectRacePrefetch.putBoard) {
+                ExpectRacePrefetch.putBoard(raceId, cache.board, null);
+              }
+              persistBoardHistory(cache.board, null);
+              paintShutubaFromBoard(board);
+              paintOddsFromBoard(board);
+              refreshOddsOnly({ silent: true });
+            }
+          );
         })
         .catch(function () {
           if (shutuba && !cache.paintedShutuba) {
@@ -555,20 +745,6 @@
           }
           if (odds && !cache.paintedOdds) {
             odds.innerHTML = '<p class="muted">オッズの取得に失敗しました。</p>';
-          }
-        });
-
-      ensureHistory()
-        .then(function (history) {
-          var entries = (cache.board && cache.board.entries) || [];
-          paintDataFromHistory(history || [], entries);
-        })
-        .catch(function () {
-          if (cache.board && cache.board.entries) {
-            paintDataFromHistory([], cache.board.entries);
-          } else if (data && !cache.paintedData) {
-            data.innerHTML =
-              '<p class="muted">近走データの取得に失敗しました。</p>';
           }
         });
     }
@@ -582,12 +758,10 @@
 
     function startOddsRefresh() {
       stopOddsRefresh();
-      // サーバー側 TTL と揃えて 5 分。クライアント連打でも PI キャッシュで netkeiba を叩かない
+      // Odds Series のみ定期更新（Board は再取得しない）
       cache.oddsTimer = setInterval(function () {
         if (cache.activeTab !== "odds") return;
-        cache.board = null;
-        cache.paintedOdds = false;
-        paintOdds({ force: true, silent: true });
+        refreshOddsOnly({ silent: true });
       }, ODDS_REFRESH_MS);
     }
 
@@ -601,7 +775,30 @@
       if (tab === "shutuba") paintShutuba();
       else if (tab === "odds") paintOdds();
       else if (tab === "data") paintData();
+      else if (tab === "result") paintResult();
     });
+
+    function paintResult() {
+      var body = document.getElementById("tabResultBody");
+      if (!body) return;
+      if (global.ExpectUserRaceResults && ExpectUserRaceResults.loadAndPaintResult) {
+        ExpectUserRaceResults.loadAndPaintResult(raceId, body);
+      } else {
+        body.innerHTML = '<p class="muted">結果モジュールを読み込めませんでした。</p>';
+      }
+    }
+
+    // Deep-link: ?tab=result
+    try {
+      var initTab = new URLSearchParams(location.search).get("tab");
+      if (initTab && ["ai", "shutuba", "odds", "data", "result"].indexOf(initTab) >= 0) {
+        setActive(initTab);
+        if (initTab === "shutuba") paintShutuba();
+        else if (initTab === "odds") paintOdds();
+        else if (initTab === "data") paintData();
+        else if (initTab === "result") paintResult();
+      }
+    } catch (e) { /* ignore */ }
 
     global.addEventListener("pagehide", stopOddsRefresh);
 

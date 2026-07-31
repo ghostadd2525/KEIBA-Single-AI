@@ -47,12 +47,17 @@ async function main() {
       { ui_features: { v11_auto_maintenance: true } },
       { now: jstWeekdayInstant(1) }
     );
-    ok("Flag ON Mon = CLOSED", mon.ops_mode === OpsMode.CLOSED && mon.reason === "auto_calendar");
+    ok("Flag ON Mon = CLOSED", mon.ops_mode === OpsMode.CLOSED && mon.reason === "research_week_maintenance");
     const sat = await resolveOpsModeDetailed(
       { ui_features: { v11_auto_maintenance: true } },
       { now: jstWeekdayInstant(6) }
     );
-    ok("Flag ON Sat = PUBLIC", sat.ops_mode === OpsMode.PUBLIC);
+    ok("Flag ON Sat = PUBLIC", sat.ops_mode === OpsMode.PUBLIC && sat.reason === "research_week_open");
+    const fri = await resolveOpsModeDetailed(
+      { ui_features: { v11_auto_maintenance: true } },
+      { now: jstWeekdayInstant(5) }
+    );
+    ok("Flag ON Fri = CLOSED (until Sat 00:00)", fri.ops_mode === OpsMode.CLOSED);
   }
 
   // Manual priority
@@ -115,17 +120,17 @@ async function main() {
     ok("ADMIN bypass when CLOSED", admin.allow === true);
   }
 
-  // Flag defaults in beta.json
+  // Flag defaults in beta.json (V7 Maintenance Mode: auto-maint ON)
   {
     const fs = await import("node:fs");
     const cfg = JSON.parse(fs.readFileSync(join(ROOT, "config/beta.json"), "utf8"));
     const pub = JSON.parse(fs.readFileSync(join(ROOT, "public/config/beta.json"), "utf8"));
     ok(
-      "Committed Flag default false",
-      cfg.ui_features.v11_auto_maintenance === false &&
-        pub.ui_features.v11_auto_maintenance === false
+      "Committed v11_auto_maintenance ON (V7 Research Week)",
+      cfg.ui_features.v11_auto_maintenance === true &&
+        pub.ui_features.v11_auto_maintenance === true
     );
-    const uiFlags = [
+    const uiFlagsOff = [
       "v11_mobile",
       "v11_home",
       "v11_races",
@@ -134,11 +139,15 @@ async function main() {
       "v11_confidence",
       "v11_collector_status",
       "v11_system_health",
-      "v11_ops_dashboard",
-      "v11_auto_maintenance",
     ];
-    const allOff = uiFlags.every((k) => cfg.ui_features[k] === false);
-    ok("Canary target Flags default false (except loading)", allOff && cfg.ui_features.v11_loading_errors === true);
+    const experimentalOff = uiFlagsOff.every((k) => cfg.ui_features[k] === false);
+    ok(
+      "Canary UI flags default false (except loading/ops/auto-maint)",
+      experimentalOff &&
+        cfg.ui_features.v11_loading_errors === true &&
+        cfg.ui_features.v11_ops_dashboard === true &&
+        cfg.ui_features.v11_auto_maintenance === true
+    );
   }
 
   const failed = results.filter((r) => !r.pass);

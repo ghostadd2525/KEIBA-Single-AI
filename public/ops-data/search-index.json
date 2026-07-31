@@ -1,0 +1,105 @@
+{
+  "schema_version": "expect-v89-search-index/1.0",
+  "published_at": "2026-07-27T00:18:38.114Z",
+  "docs": [
+    {
+      "type": "pattern",
+      "id": "accepted_patterns.json",
+      "week_id": null,
+      "version": "Version8.5",
+      "status": null,
+      "decision": null,
+      "proposal": null,
+      "pattern": "accepted_patterns",
+      "path": "/ops-data/artifacts/knowledge/accepted_patterns.json"
+    },
+    {
+      "type": "pattern",
+      "id": "rejected_patterns.json",
+      "week_id": null,
+      "version": "Version8.5",
+      "status": null,
+      "decision": null,
+      "proposal": null,
+      "pattern": "rejected_patterns",
+      "path": "/ops-data/artifacts/knowledge/rejected_patterns.json"
+    },
+    {
+      "type": "pattern",
+      "id": "proposals.json",
+      "week_id": null,
+      "version": "Version8.5",
+      "status": null,
+      "decision": null,
+      "proposal": null,
+      "pattern": "proposals",
+      "path": "/ops-data/artifacts/knowledge/proposals.json"
+    },
+    {
+      "type": "pattern",
+      "id": "root_causes.json",
+      "week_id": null,
+      "version": "Version8.5",
+      "status": null,
+      "decision": null,
+      "proposal": null,
+      "pattern": "root_causes",
+      "path": "/ops-data/artifacts/knowledge/root_causes.json"
+    },
+    {
+      "type": "pattern",
+      "id": "canary_results.json",
+      "week_id": null,
+      "version": "Version8.5",
+      "status": null,
+      "decision": null,
+      "proposal": null,
+      "pattern": "canary_results",
+      "path": "/ops-data/artifacts/knowledge/canary_results.json"
+    },
+    {
+      "type": "week",
+      "id": "2026-W30",
+      "week_id": "2026-W30",
+      "version": "Version8.5",
+      "status": "no_improvement",
+      "decision": "no_improvement",
+      "proposal": null,
+      "pattern": null,
+      "path": "/ops-data/artifacts/2026-W30/"
+    },
+    {
+      "type": "decision",
+      "id": "2026-W30:decision",
+      "week_id": "2026-W30",
+      "version": "Version8.5",
+      "status": "no_improvement",
+      "decision": "no_improvement",
+      "proposal": null,
+      "pattern": null,
+      "path": "/ops-data/artifacts/2026-W30/decision.json"
+    },
+    {
+      "type": "week",
+      "id": "2026-W31",
+      "week_id": "2026-W31",
+      "version": "Version8.5",
+      "status": "no_improvement",
+      "decision": "no_improvement",
+      "proposal": null,
+      "pattern": null,
+      "path": "/ops-data/artifacts/2026-W31/"
+    },
+    {
+      "type": "decision",
+      "id": "2026-W31:decision",
+      "week_id": "2026-W31",
+      "version": "Version8.5",
+      "status": "no_improvement",
+      "decision": "no_improvement",
+      "proposal": null,
+      "pattern": null,
+      "path": "/ops-data/artifacts/2026-W31/decision.json"
+    }
+  ]
+}

@@ -1,0 +1,31 @@
+{
+  "issues_id": "v3-accuracy-remaining-issues/phase2-close",
+  "close_id": "v3-accuracy-phase2-close/1.0",
+  "close_date": "2026-07-24",
+  "baseline_id": "v3-lab-baseline-v3-a01-a03-a04",
+  "stack_hit": 279,
+  "miss_total": 6,
+  "in_research_scope": [],
+  "out_of_research_scope": [
+    {
+      "layer": "Delete",
+      "n": 6,
+      "race_ids": [
+        "a03-285-280",
+        "a03-285-281",
+        "a03-285-282",
+        "a03-285-283",
+        "a03-285-284",
+        "a03-285-285"
+      ],
+      "reason": "Purchase / Delete Boundary — Accuracy research excluded by product policy",
+      "stage": "Delete",
+      "action": "none"
+    }
+  ],
+  "notes": [
+    "Eval / Boundary / Reorder / Pool residuals are recovered under Baseline v3",
+    "Phase 3 research not started",
+    "Production wiring remains False"
+  ]
+}

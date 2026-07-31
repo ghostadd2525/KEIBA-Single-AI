@@ -1,0 +1,12 @@
+rank,tier,feature_id,composite_score,coverage,missing_rate,tie_races,tie_eligible,tie_resolved,tie_resolution_rate,tie_correct,strict_hit,soft_hit,soft_hit_rate,soft_to_strict_improve_rate,soft_to_strict_recovered,information_gain_mean,mutual_information,permutation_importance,lift,winner_rank_mean,within_tie_diversity_rate,notes
+1,S,trainer,0.478926,1.0,0.0,9,9,6,0.666667,2,2,5,0.5555555555555556,0.4,2,1.551754,0.534944,0.162963,1.254355,4.4444,1.0,ranked_by_loo_empirical_win_prior
+2,S,owner,0.383592,1.0,0.0,9,9,8,0.888889,1,1,5,0.5555555555555556,0.2,1,1.950083,0.534944,0.044444,0.470383,6.2222,1.0,ranked_by_loo_empirical_win_prior
+3,S,win_odds,0.315682,1.0,0.0,9,9,9,1.0,1,1,5,0.5555555555555556,0.2,1,2.061194,0.091216,-0.003704,0.418118,3.4444,1.0,
+4,S,popularity,0.315441,1.0,0.0,9,9,9,1.0,1,1,5,0.5555555555555556,0.2,1,2.061194,0.086008,0.003704,0.418118,3.4444,1.0,
+5,S,expected_popularity,0.314848,1.0,0.0,9,9,9,1.0,1,1,5,0.5555555555555556,0.2,1,2.061194,0.086008,-0.02963,0.418118,3.4444,1.0,
+6,A,damsire,0.273702,1.0,0.0,9,9,8,0.888889,0,0,5,0.5555555555555556,0.0,0,1.950083,0.418971,-0.074074,0.0,5.4444,1.0,ranked_by_loo_empirical_win_prior
+7,A,sire,0.268174,1.0,0.0,9,9,7,0.777778,0,0,5,0.5555555555555556,0.0,0,1.838972,0.467751,-0.081481,0.0,5.7778,0.888889,ranked_by_loo_empirical_win_prior
+8,A,breeder,0.24126,1.0,0.0,9,9,7,0.777778,0,0,5,0.5555555555555556,0.0,0,1.838972,0.299542,-0.092593,0.0,4.8889,0.888889,ranked_by_loo_empirical_win_prior
+9,B,sale_price,0.21517,0.319871,0.680129,9,1,1,1.0,0,0,5,0.5555555555555556,0.0,0,1.0,0.394895,,0.0,,0.111111,
+10,C,oikiri_time,0.017124,0.171244,0.828756,9,0,0,,0,0,5,0.5555555555555556,0.0,0,,,,,,0.0,no_tie_eligible
+11,C,oikiri_rating,0.017124,0.171244,0.828756,9,0,0,,0,0,5,0.5555555555555556,0.0,0,,,,,,0.0,no_tie_eligible

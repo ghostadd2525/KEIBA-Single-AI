@@ -1,0 +1,107 @@
+{
+  "inventory_id": "v3-feature-flag-inventory/phase1-close",
+  "flags": [
+    {
+      "flag": "F_V3_REPRESENTATION",
+      "default": false,
+      "role": "canonical_stage",
+      "phase": "P2",
+      "status": "frozen"
+    },
+    {
+      "flag": "F_V3_ADMISSION",
+      "default": false,
+      "role": "canonical_stage",
+      "phase": "P3",
+      "status": "frozen"
+    },
+    {
+      "flag": "F_V3_SELECTION",
+      "default": false,
+      "role": "canonical_stage",
+      "phase": "P4",
+      "status": "frozen"
+    },
+    {
+      "flag": "F_V3_REPRESENTATION_ENABLED",
+      "default": false,
+      "role": "alias",
+      "phase": "P2",
+      "status": "frozen"
+    },
+    {
+      "flag": "F_V3_ADMISSION_ENABLED",
+      "default": false,
+      "role": "alias",
+      "phase": "P3",
+      "status": "frozen"
+    },
+    {
+      "flag": "F_V3_SELECTION_ENABLED",
+      "default": false,
+      "role": "alias",
+      "phase": "P4",
+      "status": "frozen"
+    },
+    {
+      "flag": "F_V3_LAB_ENABLED",
+      "default": false,
+      "role": "legacy_reserved",
+      "phase": "P1",
+      "status": "reserved"
+    },
+    {
+      "flag": "F_V3_EVALUATION_ENABLED",
+      "default": false,
+      "role": "legacy_alias",
+      "phase": "A-01",
+      "status": "alias_to_d1_path"
+    },
+    {
+      "flag": "F_V3_PURCHASE_ENABLED",
+      "default": false,
+      "role": "reserved",
+      "phase": "P1",
+      "status": "reserved"
+    },
+    {
+      "flag": "F_V3_RANK_D1_ENABLED",
+      "default": false,
+      "role": "accuracy_primary_candidate",
+      "phase": "A-01",
+      "status": "lab_primary_candidate",
+      "env_alias": "WIN5_V3_RANK_D1_ENABLED",
+      "production_wiring": false
+    },
+    {
+      "flag": "F_V3_RANK_D2_ENABLED",
+      "default": false,
+      "role": "accuracy_secondary_candidate",
+      "phase": "A-02",
+      "status": "lab_secondary_candidate",
+      "env_alias": "WIN5_V3_RANK_D2_ENABLED",
+      "production_wiring": false
+    },
+    {
+      "flag": "F_V3_AP_BANDED_ENABLED",
+      "default": false,
+      "role": "reserved",
+      "phase": "P3",
+      "status": "reserved"
+    },
+    {
+      "flag": "F_V3_AP_COVERAGE_ENABLED",
+      "default": false,
+      "role": "reserved",
+      "phase": "P3",
+      "status": "reserved"
+    },
+    {
+      "flag": "F_V3_SEL_REORDER_ENABLED",
+      "default": false,
+      "role": "reserved",
+      "phase": "P4",
+      "status": "reserved"
+    }
+  ]
+}

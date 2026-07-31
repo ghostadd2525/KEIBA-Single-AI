@@ -13,38 +13,50 @@
   }
 
   function apiGet(path, query) {
-    var url = path;
-    if (query && typeof query === "object") {
-      var qs = new URLSearchParams();
-      Object.keys(query).forEach(function (k) {
-        if (query[k] != null && query[k] !== "") qs.set(k, query[k]);
-      });
-      var q = qs.toString();
-      if (q) url += "?" + q;
-    }
-    var headers = { Accept: "application/json" };
-    var token = getToken();
-    if (token) headers.Authorization = "Bearer " + token;
+    function doFetch() {
+      var url = path;
+      if (query && typeof query === "object") {
+        var qs = new URLSearchParams();
+        Object.keys(query).forEach(function (k) {
+          if (query[k] != null && query[k] !== "") qs.set(k, query[k]);
+        });
+        var q = qs.toString();
+        if (q) url += "?" + q;
+      }
+      var headers = { Accept: "application/json" };
+      var token = getToken();
+      if (token) headers.Authorization = "Bearer " + token;
 
-    return fetch(url, { method: "GET", headers: headers }).then(function (res) {
-      return res.text().then(function (text) {
-        var payload = null;
-        try {
-          payload = text ? JSON.parse(text) : null;
-        } catch (e) {
-          payload = null;
-        }
-        if (!res.ok || (payload && payload.ok === false)) {
-          throw new Error(
-            (payload && payload.error && payload.error.message) || "Stats API error " + res.status
-          );
-        }
-        return {
-          data: payload && payload.data != null ? payload.data : payload,
-          meta: (payload && payload.meta) || {},
-        };
+      return fetch(url, { method: "GET", headers: headers }).then(function (res) {
+        return res.text().then(function (text) {
+          var payload = null;
+          try {
+            payload = text ? JSON.parse(text) : null;
+          } catch (e) {
+            payload = null;
+          }
+          if (!res.ok || (payload && payload.ok === false)) {
+            throw new Error(
+              (payload && payload.error && payload.error.message) || "Stats API error " + res.status
+            );
+          }
+          return {
+            data: payload && payload.data != null ? payload.data : payload,
+            meta: (payload && payload.meta) || {},
+          };
+        });
       });
-    });
+    }
+
+    if (global.ExpectHttpCache) {
+      var ttl =
+        String(path || "").indexOf("heatmap") >= 0
+          ? ExpectHttpCache.TTL.heatmap
+          : ExpectHttpCache.TTL.summary;
+      var key = ExpectHttpCache.buildKey(path, query);
+      return ExpectHttpCache.cachedGet(key, ttl, doFetch);
+    }
+    return doFetch();
   }
 
   function heatmap(opts) {
@@ -56,8 +68,18 @@
     });
   }
 
+  function summary(opts) {
+    opts = opts || {};
+    return apiGet("/api/v1/stats/summary", {
+      period: opts.period || "overall",
+    }).then(function (r) {
+      return r.data;
+    });
+  }
+
   global.ExpectApi = global.ExpectApi || {};
   global.ExpectApi.Stats = {
     heatmap: heatmap,
+    summary: summary,
   };
 })(window);

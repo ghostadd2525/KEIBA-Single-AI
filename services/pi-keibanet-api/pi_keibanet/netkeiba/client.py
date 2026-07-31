@@ -44,17 +44,32 @@ class NetkeibaClient:
         self._last_fetch = 0.0
         self._opener = opener or urllib.request.urlopen
 
-    def fetch(self, url: str, *, label: str = "netkeiba") -> str:
+    def fetch(self, url: str, *, label: str = "netkeiba", accept: str | None = None) -> str:
         elapsed = time.monotonic() - self._last_fetch
         if elapsed < self.min_interval:
             time.sleep(self.min_interval - elapsed)
+        is_db_pc = "db.netkeiba.com" in url and "db.sp.netkeiba.com" not in url
+        is_db_sp = "db.sp.netkeiba.com" in url
+        if accept:
+            accept_header = accept
+        elif is_db_pc:
+            accept_header = "application/json, text/javascript, */*;q=0.01"
+        else:
+            accept_header = "text/html,application/xhtml+xml"
+        if is_db_pc:
+            referer = "https://db.netkeiba.com/"
+        elif is_db_sp:
+            referer = "https://db.sp.netkeiba.com/"
+        else:
+            referer = "https://race.netkeiba.com/"
         req = urllib.request.Request(
             url,
             headers={
                 "User-Agent": self.user_agent,
                 "Accept-Language": "ja,en-US;q=0.9,en;q=0.8",
-                "Accept": "text/html,application/xhtml+xml",
-                "Referer": "https://race.netkeiba.com/",
+                "Accept": accept_header,
+                "Referer": referer,
+                "X-Requested-With": "XMLHttpRequest" if is_db_pc else "fetch",
             },
             method="GET",
         )

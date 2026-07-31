@@ -15,6 +15,13 @@ from zoneinfo import ZoneInfo
 import pandas as pd
 
 from .features import build_features
+from .horse_number_integrity import (
+    REASON_HORSE_NUMBER_NOT_READY,
+    REASON_INCOMPLETE,
+    purge_feature_race_ids,
+    validate_runners_horse_number_integrity,
+    write_integrity_report,
+)
 from .netkeiba.client import NetkeibaClient, NetkeibaFetchError
 from .netkeiba.horse_history import OUT_COLUMNS as HISTORY_COLUMNS, build_history_rows, fetch_horse_history
 from .netkeiba.parse import (
@@ -40,6 +47,9 @@ class RefreshConfig:
     window_start_hour: int = 8
     window_end_hour: int = 20
     tz: ZoneInfo = JST
+    # When set, features are written under this data root (demo_daily_outputs/...)
+    # while merge baseline is still read from data_root.
+    features_shadow_dir: Path | None = None
 
     @classmethod
     def from_env(cls) -> RefreshConfig:
@@ -49,12 +59,15 @@ class RefreshConfig:
         min_interval = float(os.environ.get("PI_NETKEIBA_MIN_INTERVAL_SEC", "1.0"))
         start_h = int(os.environ.get("PI_RACE_REFRESH_START_HOUR", "8"))
         end_h = int(os.environ.get("PI_RACE_REFRESH_END_HOUR", "20"))
+        shadow_raw = (os.environ.get("PI_FEATURES_SHADOW_DIR") or "").strip()
+        shadow_dir = Path(shadow_raw) if shadow_raw else None
         return cls(
             data_root=data_root,
             state_root=state_root,
             min_interval_sec=min_interval,
             window_start_hour=start_h,
             window_end_hour=end_h,
+            features_shadow_dir=shadow_dir,
         )
 
 
@@ -85,10 +98,14 @@ class RefreshReport:
     skipped_unchanged: int = 0
     updated_count: int = 0
     features_generated: int = 0
+    features_skipped_horse_number: int = 0
     error_count: int = 0
     errors: list[str] = field(default_factory=list)
     processed_race_ids: list[str] = field(default_factory=list)
+    feature_ready_race_ids: list[str] = field(default_factory=list)
+    feature_blocked_race_ids: list[str] = field(default_factory=list)
     daily_features_path: str = ""
+    horse_number_integrity_path: str = ""
 
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)
@@ -98,6 +115,7 @@ class RefreshReport:
             f"[race-refresh] date={self.date}",
             f"[race-refresh] meetings={self.meeting_count} listed={self.listed_count} published={self.published_count}",
             f"[race-refresh] updated={self.updated_count} features_generated={self.features_generated}",
+            f"[race-refresh] features_skipped_horse_number={self.features_skipped_horse_number}",
             f"[race-refresh] skipped_unpublished={self.skipped_unpublished} skipped_unchanged={self.skipped_unchanged}",
             f"[race-refresh] errors={self.error_count}",
         ]
@@ -111,9 +129,24 @@ def in_refresh_window(now: datetime, *, start_hour: int, end_hour: int) -> bool:
     return start_hour <= now.hour < end_hour
 
 
+def _fingerprint_sort_key(entry: dict[str, Any]) -> tuple[int, int, str]:
+    hn = entry.get("horse_number")
+    if hn is not None and str(hn) != "":
+        try:
+            return (0, int(hn), str(entry.get("horse_id") or ""))
+        except (TypeError, ValueError):
+            pass
+    display = entry.get("display_order")
+    try:
+        display_i = int(display) if display is not None and str(display) != "" else 10_000
+    except (TypeError, ValueError):
+        display_i = 10_000
+    return (1, display_i, str(entry.get("horse_id") or ""))
+
+
 def compute_entries_fingerprint(entries: list[dict[str, Any]]) -> str:
     parts: list[str] = []
-    for row in sorted(entries, key=lambda e: int(e.get("horse_number") or 0)):
+    for row in sorted(entries, key=_fingerprint_sort_key):
         parts.append(
             "|".join(
                 [
@@ -260,6 +293,8 @@ def _runners_from_entries(
                 "track_condition": meta.get("track_condition", "unknown"),
                 "frame_number": entry.get("frame", 0),
                 "horse_number": entry.get("horse_number"),
+                "horse_number_source": entry.get("horse_number_source"),
+                "display_order": entry.get("display_order"),
                 "horse_name": entry.get("horse_name", ""),
                 "horse_url": entry.get("_horse_url", f"https://db.netkeiba.com/horse/{hid}/"),
                 "horse_id": hid,
@@ -278,7 +313,16 @@ def process_race_pipeline(
     client: NetkeibaClient,
     race: dict[str, Any],
     date: str,
+    *,
+    fetch_history: bool | None = None,
 ) -> tuple[list[dict[str, Any]], list[dict[str, Any]], dict[str, Any]]:
+    """
+    Build runners (+ optional horse history).
+
+    Version7.4: 土日は DYNAMIC（runners/odds）のみ。近走は平日 STATIC CSV を保持。
+    """
+    from .history_store import is_weekend_jst
+
     html = race["shutuba_html"]
     meta = parse_race_meta_from_shutuba(
         html,
@@ -289,11 +333,23 @@ def process_race_pipeline(
     )
     runners = _runners_from_entries(race, date, meta)
     history_rows: list[dict[str, Any]] = []
+    do_history = fetch_history if fetch_history is not None else (not is_weekend_jst(date))
+    if not do_history:
+        print(
+            f"[pi-keibanet] race_refresh skip history (STATIC hold) "
+            f"race_id={race.get('race_id')} date={date}"
+        )
+        return runners, history_rows, meta
+
     for row in runners:
         hid = str(row.get("horse_id") or "").strip()
         if not hid:
             continue
-        parsed = fetch_horse_history(client, hid)
+        try:
+            parsed = fetch_horse_history(client, hid)
+        except NetkeibaFetchError:
+            # Shutuba umaban/frame must still be persisted; history is best-effort.
+            continue
         if not parsed:
             continue
         history_rows.extend(build_history_rows(row, parsed))
@@ -323,8 +379,17 @@ def merge_day_frames(
 
     if not runners_df.empty and "race_id" in runners_df.columns and race_ids_to_replace:
         runners_df = runners_df[~runners_df["race_id"].astype(str).isin(race_ids_to_replace)]
-    if not history_df.empty and "race_id" in history_df.columns and race_ids_to_replace:
-        history_df = history_df[~history_df["race_id"].astype(str).isin(race_ids_to_replace)]
+    # Only drop prior history for races that actually produced new history rows.
+    # Keeps last-known history when db.netkeiba history fetch fails.
+    history_replace: set[str] = set()
+    if new_history:
+        history_replace = {
+            str(r.get("race_id") or "").strip()
+            for r in new_history
+            if str(r.get("race_id") or "").strip()
+        }
+    if not history_df.empty and "race_id" in history_df.columns and history_replace:
+        history_df = history_df[~history_df["race_id"].astype(str).isin(history_replace)]
 
     if new_runners:
         runners_df = pd.concat([runners_df, pd.DataFrame(new_runners)], ignore_index=True)
@@ -336,24 +401,134 @@ def merge_day_frames(
     return runners_df, history_df
 
 
+def features_output_path(config: RefreshConfig, date: str) -> Path:
+    """Write target for daily features (shadow root when configured)."""
+    root = config.features_shadow_dir or config.data_root
+    return root / "demo_daily_outputs" / date / DAILY_FEATURES_NAME
+
+
+def merge_daily_features(
+    existing: pd.DataFrame | None,
+    new_features: pd.DataFrame,
+    updated_race_ids: set[str] | None,
+) -> pd.DataFrame:
+    """Replace only updated race_id rows; keep other races from existing CSV."""
+    if updated_race_ids is None or existing is None or existing.empty:
+        return new_features.copy()
+    if "race_id" not in new_features.columns:
+        return new_features.copy()
+    if "race_id" not in existing.columns:
+        return new_features.copy()
+
+    updated = {str(x) for x in updated_race_ids}
+    if not updated:
+        return new_features.copy()
+
+    keep = existing[~existing["race_id"].astype(str).isin(updated)].copy()
+    fresh = new_features[new_features["race_id"].astype(str).isin(updated)].copy()
+    if keep.empty:
+        return fresh.reset_index(drop=True)
+    if fresh.empty:
+        return keep.reset_index(drop=True)
+    return pd.concat([keep, fresh], ignore_index=True)
+
+
+def invalidate_daily_feature_races(
+    config: RefreshConfig,
+    date: str,
+    race_ids: set[str],
+) -> Path:
+    """Remove Feature CSV rows for races that failed horse_number integrity."""
+    out_path = features_output_path(config, date)
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    baseline_path = daily_features_path(config, date)
+    source = out_path if out_path.is_file() else baseline_path
+    if source.is_file():
+        existing = pd.read_csv(source, encoding="utf-8-sig", low_memory=False)
+        merged = purge_feature_race_ids(existing, set(race_ids or set()))
+    else:
+        merged = pd.DataFrame(columns=["race_id", "horse_id", "horse_number", "horse_name"])
+    merged.to_csv(out_path, index=False, encoding="utf-8-sig")
+    return out_path
+
+
 def write_daily_features(
     config: RefreshConfig,
     date: str,
     runners_df: pd.DataFrame,
     history_df: pd.DataFrame,
+    *,
+    updated_race_ids: set[str] | None = None,
+    invalidate_race_ids: set[str] | None = None,
+    require_horse_number_integrity: bool = True,
 ) -> Path:
-    races_df = None
-    if not runners_df.empty:
-        meta_cols = ["race_id", "race_name", "target_surface", "target_distance", "turn", "weather", "track_condition"]
-        present = [c for c in meta_cols if c in runners_df.columns]
-        if present:
-            races_df = runners_df[present].drop_duplicates(subset=["race_id"], keep="last")
+    """Build/merge daily features. Formal horse_number required when integrity gate is on."""
+    work = runners_df.copy() if runners_df is not None else pd.DataFrame()
+    target_ids = {str(x) for x in (updated_race_ids or [])} if updated_race_ids is not None else None
+    blocked: set[str] = set()
 
-    features_df = build_features(runners_df, history_df, races_df)
-    out_path = daily_features_path(config, date)
+    if require_horse_number_integrity and not work.empty:
+        integrity = validate_runners_horse_number_integrity(
+            work,
+            date=date,
+            race_ids=target_ids,
+        )
+        blocked = set(integrity.blocked_race_ids)
+        if blocked:
+            if "race_id" in work.columns:
+                work = work[~work["race_id"].astype(str).isin(blocked)].copy()
+            if target_ids is not None:
+                target_ids = {rid for rid in target_ids if rid not in blocked}
+            invalidate_race_ids = set(invalidate_race_ids or set()) | blocked
+
+        if work.empty or (target_ids is not None and not target_ids):
+            out_path = invalidate_daily_feature_races(
+                config, date, set(invalidate_race_ids or set()) | blocked
+            )
+            raise HorseNumberNotReadyError(
+                f"{REASON_HORSE_NUMBER_NOT_READY}: no races eligible for Feature CSV",
+                blocked_race_ids=sorted(blocked),
+                integrity=integrity,
+                out_path=out_path,
+            )
+
+    races_df = None
+    if not work.empty:
+        meta_cols = ["race_id", "race_name", "target_surface", "target_distance", "turn", "weather", "track_condition"]
+        present = [c for c in meta_cols if c in work.columns]
+        if present:
+            races_df = work[present].drop_duplicates(subset=["race_id"], keep="last")
+
+    features_df = build_features(work, history_df, races_df)
+
+    baseline_path = daily_features_path(config, date)
+    existing = None
+    if target_ids is not None and baseline_path.is_file():
+        existing = pd.read_csv(baseline_path, encoding="utf-8-sig", low_memory=False)
+
+    merged = merge_daily_features(existing, features_df, target_ids)
+    if invalidate_race_ids:
+        merged = purge_feature_race_ids(merged, set(invalidate_race_ids))
+
+    out_path = features_output_path(config, date)
     out_path.parent.mkdir(parents=True, exist_ok=True)
-    features_df.to_csv(out_path, index=False, encoding="utf-8-sig")
+    merged.to_csv(out_path, index=False, encoding="utf-8-sig")
     return out_path
+
+
+class HorseNumberNotReadyError(RuntimeError):
+    def __init__(
+        self,
+        message: str,
+        *,
+        blocked_race_ids: list[str] | None = None,
+        integrity: Any = None,
+        out_path: Path | None = None,
+    ) -> None:
+        super().__init__(message)
+        self.blocked_race_ids = list(blocked_race_ids or [])
+        self.integrity = integrity
+        self.out_path = out_path
 
 
 def verify_feature_loader(race_ids: list[str], config: RefreshConfig) -> list[str]:
@@ -369,7 +544,8 @@ def verify_feature_loader(race_ids: list[str], config: RefreshConfig) -> list[st
     except Exception as exc:
         return [f"FeatureLoader import failed: {exc}"]
 
-    loader = FeatureLoader(data_root=config.data_root)
+    loader_root = config.features_shadow_dir or config.data_root
+    loader = FeatureLoader(data_root=loader_root)
     for race_id in race_ids:
         result = loader.load(race_id)
         if result is None or result.frame.empty:
@@ -473,21 +649,73 @@ def run_refresh(
     runners_df.to_csv(_runners_path(cfg, date), index=False, encoding="utf-8-sig")
     history_df.to_csv(_history_path(cfg, date), index=False, encoding="utf-8-sig")
 
+    integrity = validate_runners_horse_number_integrity(
+        runners_df,
+        date=date,
+        race_ids=set(report.processed_race_ids),
+    )
+    integrity_path = write_integrity_report(
+        integrity,
+        _day_dir(cfg, date) / "logs" / f"horse_number_integrity_{date}.json",
+    )
+    report.horse_number_integrity_path = str(integrity_path)
+    report.feature_ready_race_ids = list(integrity.ready_race_ids)
+    report.feature_blocked_race_ids = list(integrity.blocked_race_ids)
+    report.features_skipped_horse_number = len(integrity.blocked_race_ids)
+    for line in integrity.log_lines:
+        log(line)
+        report.errors.append(line.replace("[race-refresh] ", "", 1))
+    if integrity.blocked_race_ids:
+        report.error_count += len(integrity.blocked_race_ids)
+        log(
+            f"[race-refresh] {REASON_INCOMPLETE}: "
+            f"blocked={len(integrity.blocked_race_ids)} ready={len(integrity.ready_race_ids)}"
+        )
+
     try:
-        out_path = write_daily_features(cfg, date, runners_df, history_df)
-        report.daily_features_path = str(out_path)
-        report.features_generated = len(report.processed_race_ids)
-        loader_errors = verify_feature_loader(report.processed_race_ids, cfg)
-        if loader_errors:
-            report.error_count += len(loader_errors)
-            report.errors.extend(loader_errors)
-            for race_id in report.processed_race_ids:
-                if race_id in snapshot and race_id not in {e.split(":", 1)[0] for e in loader_errors}:
-                    snapshot[race_id].features_ok = True
+        if integrity.ready_race_ids:
+            out_path = write_daily_features(
+                cfg,
+                date,
+                runners_df,
+                history_df,
+                updated_race_ids=set(integrity.ready_race_ids),
+                invalidate_race_ids=set(integrity.blocked_race_ids),
+                require_horse_number_integrity=True,
+            )
+            report.daily_features_path = str(out_path)
+            report.features_generated = len(integrity.ready_race_ids)
+            loader_errors = verify_feature_loader(integrity.ready_race_ids, cfg)
+            if loader_errors:
+                report.error_count += len(loader_errors)
+                report.errors.extend(loader_errors)
+                bad = {e.split(":", 1)[0] for e in loader_errors}
+                for race_id in integrity.ready_race_ids:
+                    if race_id in snapshot and race_id not in bad:
+                        snapshot[race_id].features_ok = True
+            else:
+                for race_id in integrity.ready_race_ids:
+                    if race_id in snapshot:
+                        snapshot[race_id].features_ok = True
         else:
-            for race_id in report.processed_race_ids:
-                if race_id in snapshot:
-                    snapshot[race_id].features_ok = True
+            # No formal horse_number races → do not generate Feature CSV rows for them.
+            out_path = invalidate_daily_feature_races(
+                cfg, date, set(integrity.blocked_race_ids)
+            )
+            report.daily_features_path = str(out_path)
+            report.features_generated = 0
+            log(f"[race-refresh] {REASON_HORSE_NUMBER_NOT_READY}: Feature CSV generation skipped")
+        for race_id in integrity.blocked_race_ids:
+            if race_id in snapshot:
+                snapshot[race_id].features_ok = False
+    except HorseNumberNotReadyError as exc:
+        report.error_count += 1
+        report.errors.append(f"features_write: {exc}")
+        report.daily_features_path = str(exc.out_path or "")
+        log(f"[race-refresh] {REASON_HORSE_NUMBER_NOT_READY}: {exc}")
+        for race_id in integrity.blocked_race_ids:
+            if race_id in snapshot:
+                snapshot[race_id].features_ok = False
     except Exception as exc:
         report.error_count += 1
         report.errors.append(f"features_write: {type(exc).__name__}: {exc}")
@@ -516,16 +744,21 @@ def write_report_json(report: RefreshReport, config: RefreshConfig) -> Path:
 
 
 __all__ = [
+    "HorseNumberNotReadyError",
     "RefreshConfig",
     "RefreshReport",
     "RaceSnapshotEntry",
     "compute_entries_fingerprint",
     "daily_features_path",
     "discover_published_races",
+    "features_output_path",
     "in_refresh_window",
+    "invalidate_daily_feature_races",
     "load_snapshot",
+    "merge_daily_features",
     "merge_day_frames",
     "run_refresh",
     "select_races_for_update",
+    "write_daily_features",
     "write_report_json",
 ]

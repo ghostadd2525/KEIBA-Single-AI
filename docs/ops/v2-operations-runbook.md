@@ -2,7 +2,8 @@
 
 **Status:** Phase 3 確定  
 **正本設計:** `docs/releases/v2-operations-monitoring-inventory.md` §2.5 / §2.6  
-**Dashboard:** Flag `v2_ops_dashboard` ON 時に Runbook パスを表示
+**Dashboard:** Flag `v2_ops_dashboard` ON 時に Runbook パスを表示  
+**Addendum（Race Refresh / Shadow）:** [`v2-operations-race-refresh-addendum.md`](./v2-operations-race-refresh-addendum.md)
 
 ---
 
@@ -14,6 +15,7 @@
 | Flag OFF ≡ v1.1 | UI / Dashboard API は `v2_ops_dashboard` 配下 |
 | Webhook 任意 | 未設定時 Slack は **no-op**（probe / metrics は継続） |
 | 抑制 | 同一 Alert ID × severity で **15 分** |
+| Features 正本 | **現行 shutuba**（詳細は Race Refresh Addendum） |
 
 ---
 
@@ -42,7 +44,8 @@
 
 1. 開催日か確認（非開催はスキップ可）  
 2. `GET /v1/predictions`（PI）と BFF `/api/predictions`  
-3. FeatureLoader / features_unavailable は Warning 系（ALT-E07 は後続）
+3. FeatureLoader / features_unavailable は Warning 系（ALT-E07 は後続）  
+4. daily features / Shadow 切替が絡む場合は [`v2-operations-race-refresh-addendum.md`](./v2-operations-race-refresh-addendum.md) のゲート（頭数減少で切替禁止）を確認
 
 ### ALT-E05 — PI systemd down {#alt-e05}
 

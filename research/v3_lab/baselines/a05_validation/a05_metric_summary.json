@@ -1,0 +1,87 @@
+{
+  "validation_id": "v3-a05-validation/1.0",
+  "decision": "PASS",
+  "offline": {
+    "control": {
+      "n": 285,
+      "hit": 59,
+      "miss": 226,
+      "purchase": 59,
+      "rank710": 37,
+      "rank46": 101,
+      "other": 88,
+      "roi": 0.0246,
+      "stake_total": 28500.0,
+      "return_total": 29200.0
+    },
+    "treatment": {
+      "n": 285,
+      "hit": 66,
+      "miss": 219,
+      "purchase": 66,
+      "rank710": 32,
+      "rank46": 101,
+      "other": 86,
+      "roi": 0.5235,
+      "stake_total": 28500.0,
+      "return_total": 43420.0
+    },
+    "delta": {
+      "hit": 7,
+      "purchase": 7,
+      "rank710": -5,
+      "rank46": 0,
+      "other": -2,
+      "roi": 0.4989
+    },
+    "churn_hit": 0,
+    "pick_churn": 46,
+    "worsened_winner_rank1": 0
+  },
+  "lab": {
+    "control": {
+      "n": 285,
+      "hit": 218,
+      "miss": 67,
+      "purchase": 218,
+      "rank710": 9,
+      "rank46": 6,
+      "other": 52,
+      "roi": 1.1418,
+      "stake_total": 28500.0,
+      "return_total": 61040.0
+    },
+    "treatment": {
+      "n": 285,
+      "hit": 218,
+      "miss": 67,
+      "purchase": 218,
+      "rank710": 9,
+      "rank46": 6,
+      "other": 52,
+      "roi": 1.1418,
+      "stake_total": 28500.0,
+      "return_total": 61040.0
+    },
+    "delta": {
+      "hit": 0,
+      "purchase": 0,
+      "rank710": 0,
+      "rank46": 0,
+      "other": 0,
+      "roi": 0.0
+    },
+    "churn_hit": 0
+  },
+  "hard_gate": {
+    "worsened_winner_rank1_0": true,
+    "delta_hit_gt_0": true,
+    "churn_hit": 0,
+    "pick_churn": 46,
+    "pass": true
+  },
+  "reproducibility_pass": true,
+  "sha_pass": true,
+  "input_identity_pass": true,
+  "corpus_fingerprint": "c9ae4f172c5565cd0674c37b"
+}

@@ -1,0 +1,19 @@
+{
+  "schema_version": "expect-v8-analyzer-day/1.0",
+  "week_id": "2026-W31",
+  "taxonomy_schema": "expect-root-cause-taxonomy/1.0",
+  "family_ids": [
+    "candidate_pool",
+    "repick",
+    "delete",
+    "purchase",
+    "confidence",
+    "world",
+    "subworld",
+    "ranking",
+    "features",
+    "ops_data",
+    "unknown"
+  ],
+  "note": "V8.1 multi Root Cause + scores. Production miss_category unchanged."
+}

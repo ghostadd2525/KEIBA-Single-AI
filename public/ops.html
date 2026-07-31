@@ -1,661 +1,223 @@
 <!DOCTYPE html>
-<html lang="ja">
+<html lang="ja" data-skip-auto-maintenance>
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>Expect ～ KEIBA AI ～ · Ops</title>
+  <title>Expect ～ KEIBA AI ～ · Operations Console</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Noto+Sans+JP:wght@400;500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="assets/styles.css?v=17" />
-  <link rel="stylesheet" href="assets/screens.css" />
+  <link rel="stylesheet" href="assets/styles.css?v=23" />
+  <link rel="stylesheet" href="assets/screens.css?v=38" />
   <link rel="stylesheet" href="assets/ux.css?v=15" />
-  <link rel="stylesheet" href="assets/v11.css?v=11" />
-  <script src="assets/auth.js?v=4"></script>
+  <link rel="stylesheet" href="assets/v11.css?v=14" />
+  <link rel="stylesheet" href="assets/ops-console.css?v=1" />
+  <script src="assets/auth.js?v=6"></script>
   <script>ExpectAuth.requireAuth();</script>
 </head>
-<body class="page-screen page-ops page-tab" data-nav="home">
+<body class="page-screen page-ops page-ops-console page-tab" data-nav="home">
   <div class="app">
     <header class="topbar">
       <div class="topbar-inner">
         <div class="topbar-left">
-          <a class="back-btn" href="index.html" aria-label="戻る">‹</a>
+          <a class="back-btn" href="mypage.html" aria-label="マイページへ戻る">‹</a>
           <div class="brand-block topbar-text">
             <p class="brand-name">Expect</p>
             <p class="brand-sub">～ KEIBA AI ～</p>
-            <h1 class="page-title">運用ダッシュボード</h1>
+            <h1 class="page-title">Operations Console</h1>
           </div>
         </div>
       </div>
     </header>
 
     <div class="screen" id="opsScreen">
-      <p class="ops-note" id="opsGateNote">Feature Flag `v11_ops_dashboard` と管理者設定を確認しています…</p>
+      <p class="ops-note" id="opsGateNote">認証と権限を確認しています…</p>
+
       <div id="opsDenied" class="ops-denied" hidden>
         <div class="expect-state expect-state--empty" role="status">
-          <p class="expect-state__title">この画面は利用できません</p>
-          <p class="expect-state__msg">運用ダッシュボードは Flag OFF、または管理者以外は表示しません。一般 nav にも掲載しません。</p>
-          <div class="expect-state__actions"><a class="expect-btn" href="index.html">ホームへ</a></div>
+          <p class="expect-state__title">アクセス不可</p>
+          <p class="expect-state__msg">Operations Console は role=ADMIN のみ利用できます。</p>
+          <div class="expect-state__actions">
+            <a class="expect-btn" href="mypage.html">マイページへ</a>
+          </div>
         </div>
       </div>
+
       <div id="opsMain" hidden>
-        <p class="ops-note">Baseline: v1.0.0-stable Freeze 維持 · Prediction Core 非変更 · mock_fallback 高比率は KI-01（データ不足）</p>
-        <div class="ops-grid" id="opsGrid" aria-live="polite"></div>
-        <!-- v2_ops_dashboard 配下のみ（Flag OFF ≡ v1.1・セクション非表示） -->
-        <div id="opsV2Root" hidden>
-          <section id="opsConversationSection" class="ops-pi-section">
-            <div class="ops-section-head">
-              <h2 class="ops-section-title">Conversation Metrics</h2>
-              <button type="button" class="ops-refresh-btn" id="opsConvRefreshBtn">再取得</button>
-            </div>
-            <p class="ops-note">出典: GET /api/ops/conversation · Conversation / Ollama / Knowledge / Security</p>
-            <div class="ops-grid" id="opsConvHealthGrid" aria-live="polite"></div>
-            <div class="ops-grid" id="opsConvMetricsGrid" aria-live="polite"></div>
-            <div class="ops-table-wrap" id="opsConvAlertsTableWrap"></div>
-          </section>
-          <section id="opsOverviewSection" class="ops-pi-section">
-            <div class="ops-section-head">
-              <h2 class="ops-section-title">Overview</h2>
-              <button type="button" class="ops-refresh-btn" id="opsRefreshBtn">再取得</button>
-            </div>
-            <p class="ops-note" id="opsOverviewNote">出典: GET /api/ops/dashboard · Phase 3 最終統合</p>
-            <div class="ops-grid" id="opsOverviewGrid" aria-live="polite"></div>
-          </section>
-          <section id="opsPiSection" class="ops-pi-section">
-            <h2 class="ops-section-title">PI Health</h2>
-            <p class="ops-note">probe 単位の状態と latency</p>
-            <div class="ops-grid" id="opsPiGrid" aria-live="polite"></div>
-            <div class="ops-table-wrap" id="opsPiTableWrap"></div>
-          </section>
-          <section id="opsProbesSection" class="ops-pi-section">
-            <h2 class="ops-section-title">全 Probe 統合</h2>
-            <p class="ops-note">BFF / Tunnel / PI / Prediction / ETL / Result Automation</p>
-            <div class="ops-table-wrap" id="opsProbesTableWrap"></div>
-          </section>
-          <section id="opsMetricsSection" class="ops-pi-section">
-            <h2 class="ops-section-title">Metrics 集約</h2>
-            <p class="ops-note">expect-ops-metrics/1.0</p>
-            <div class="ops-grid" id="opsMetricsGrid" aria-live="polite"></div>
-            <div class="ops-table-wrap" id="opsMetricsTableWrap"></div>
-          </section>
-          <section id="opsAlertsSection" class="ops-pi-section">
-            <h2 class="ops-section-title">Alerts</h2>
-            <p class="ops-note">ALT-E* · Runbook リンク付き</p>
-            <div class="ops-grid" id="opsAlertsGrid" aria-live="polite"></div>
-            <div class="ops-table-wrap" id="opsAlertsTableWrap"></div>
-          </section>
-          <section id="opsIncidentsSection" class="ops-pi-section">
-            <h2 class="ops-section-title">Incidents</h2>
-            <p class="ops-note">失敗 probe スナップショット（expect-ops-incident/1.0）</p>
-            <div class="ops-table-wrap" id="opsIncidentsTableWrap"></div>
-          </section>
-          <section id="opsInventorySection" class="ops-pi-section">
-            <h2 class="ops-section-title">監視項目 Inventory</h2>
-            <p class="ops-note">設計書 P0 配線状況の最終統合ビュー</p>
-            <div class="ops-grid" id="opsInventoryGrid" aria-live="polite"></div>
-            <div class="ops-table-wrap" id="opsInventoryTableWrap"></div>
-          </section>
-          <section id="opsNotifySection" class="ops-pi-section">
-            <h2 class="ops-section-title">通知（Slack）</h2>
-            <p class="ops-note">SLK-N01 / N02 · Secrets 設定有無のみ表示（URL 非開示）</p>
-            <div class="ops-grid" id="opsNotifyGrid" aria-live="polite"></div>
-          </section>
+        <div class="ops-portal-head">
+          <p class="ops-note" id="opsPortalMeta">Version8.9 · Operations Console</p>
+          <div class="ops-portal-actions">
+            <span class="ops-note" id="opsLoadStatus"></span>
+            <button type="button" class="ops-refresh-btn" id="opsPortalRefreshBtn">更新</button>
+          </div>
         </div>
-        <p class="ops-note" id="opsLatencyNote"></p>
+        <p class="ops-readonly-banner">
+          Boundary: Research → Approval → Deploy Note → Human Deploy。Approve は Deploy Note のみ。Production 自動適用禁止。
+        </p>
+
+        <form class="ops-search-bar" id="opsSearchForm" autocomplete="off">
+          <input type="search" name="q" id="opsSearchQ" placeholder="Search" aria-label="Search" />
+          <input type="text" name="version" id="opsSearchVersion" placeholder="Version" />
+          <input type="text" name="week" id="opsSearchWeek" placeholder="Week" />
+          <input type="text" name="proposal" id="opsSearchProposal" placeholder="Proposal" />
+          <input type="text" name="pattern" id="opsSearchPattern" placeholder="Pattern" />
+          <input type="text" name="decision" id="opsSearchDecision" placeholder="Decision" />
+          <input type="text" name="status" id="opsSearchStatus" placeholder="Status" />
+          <button type="submit" class="ops-refresh-btn">Search</button>
+        </form>
+        <div id="opsSearchResults" class="ops-search-results" hidden></div>
+
+        <nav class="ops-portal-nav" id="opsPortalNav" aria-label="Operations Console sections">
+          <button type="button" class="ops-portal-tab is-active" data-ops-section="approval" aria-selected="true">Approval</button>
+          <button type="button" class="ops-portal-tab" data-ops-section="monitor" aria-selected="false">Live Monitor</button>
+          <button type="button" class="ops-portal-tab" data-ops-section="timeline" aria-selected="false">Timeline</button>
+          <button type="button" class="ops-portal-tab" data-ops-section="research" aria-selected="false">Research</button>
+          <button type="button" class="ops-portal-tab" data-ops-section="knowledge" aria-selected="false">Knowledge</button>
+          <button type="button" class="ops-portal-tab" data-ops-section="deploy" aria-selected="false">Deploy</button>
+          <button type="button" class="ops-portal-tab" data-ops-section="reports" aria-selected="false">Reports</button>
+          <button type="button" class="ops-portal-tab" data-ops-section="history" aria-selected="false">History</button>
+          <button type="button" class="ops-portal-tab" data-ops-section="evidence" aria-selected="false">Evidence</button>
+          <button type="button" class="ops-portal-tab" data-ops-section="download" aria-selected="false">Download</button>
+          <button type="button" class="ops-portal-tab" data-ops-section="audit" aria-selected="false">Audit</button>
+          <button type="button" class="ops-portal-tab" data-ops-section="system" aria-selected="false">System</button>
+        </nav>
+
+        <section id="opsPane-approval" class="ops-pi-section" data-ops-pane="approval">
+          <h2 class="ops-section-title">Approval Center</h2>
+          <p class="ops-note" id="opsNote-approval"></p>
+          <div class="ops-grid" id="opsGrid-approval" aria-live="polite"></div>
+          <div id="opsApprovalList" class="ops-approval-list" aria-live="polite"></div>
+          <div class="ops-table-wrap">
+            <table class="ops-table" id="opsApprovalTable">
+              <thead>
+                <tr>
+                  <th>Proposal</th>
+                  <th>Version</th>
+                  <th>Week</th>
+                  <th>Decision</th>
+                  <th>Created</th>
+                  <th>Expire</th>
+                  <th>Remaining</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="opsApprovalTbody"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section id="opsPane-monitor" class="ops-pi-section" data-ops-pane="monitor" hidden>
+          <h2 class="ops-section-title">Live Monitor</h2>
+          <div class="ops-grid" id="opsGrid-monitor" aria-live="polite"></div>
+        </section>
+
+        <section id="opsPane-timeline" class="ops-pi-section" data-ops-pane="timeline" hidden>
+          <h2 class="ops-section-title">Runner Timeline</h2>
+          <p class="ops-note" id="opsNote-timeline" hidden></p>
+          <ol class="ops-timeline" id="opsTimeline" aria-live="polite"></ol>
+        </section>
+
+        <section id="opsPane-research" class="ops-pi-section" data-ops-pane="research" hidden>
+          <h2 class="ops-section-title">Research</h2>
+          <div class="ops-grid" id="opsGrid-research" aria-live="polite"></div>
+        </section>
+
+        <section id="opsPane-knowledge" class="ops-pi-section" data-ops-pane="knowledge" hidden>
+          <h2 class="ops-section-title">Knowledge</h2>
+          <div class="ops-grid" id="opsGrid-knowledge" aria-live="polite"></div>
+        </section>
+
+        <section id="opsPane-deploy" class="ops-pi-section" data-ops-pane="deploy" hidden>
+          <h2 class="ops-section-title">Deploy</h2>
+          <p class="ops-note">Human Deploy only. production_auto_apply = false</p>
+          <div class="ops-grid" id="opsGrid-deploy" aria-live="polite"></div>
+        </section>
+
+        <section id="opsPane-reports" class="ops-pi-section" data-ops-pane="reports" hidden>
+          <h2 class="ops-section-title">Reports</h2>
+          <div class="ops-grid" id="opsGrid-reports" aria-live="polite"></div>
+        </section>
+
+        <section id="opsPane-history" class="ops-pi-section" data-ops-pane="history" hidden>
+          <h2 class="ops-section-title">History Center</h2>
+          <div class="ops-history-filters">
+            <select id="opsHistoryKind" aria-label="History kind">
+              <option value="approval">Approval History</option>
+              <option value="deploy">Deploy History</option>
+              <option value="research">Research History</option>
+              <option value="weekly_report">Weekly Report History</option>
+              <option value="boundary_audit">Boundary Audit History</option>
+              <option value="incident">Incident History</option>
+            </select>
+            <input type="text" id="opsHistoryWeek" placeholder="Week" />
+            <input type="text" id="opsHistoryVersion" placeholder="Version" />
+            <input type="text" id="opsHistoryStatus" placeholder="Status" />
+            <button type="button" class="ops-refresh-btn" id="opsHistoryApply">Apply</button>
+          </div>
+          <div class="ops-table-wrap">
+            <table class="ops-table" id="opsHistoryTable">
+              <thead id="opsHistoryThead"></thead>
+              <tbody id="opsHistoryTbody"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section id="opsPane-evidence" class="ops-pi-section" data-ops-pane="evidence" hidden>
+          <h2 class="ops-section-title">Evidence Viewer</h2>
+          <p class="ops-note">各カードの根拠ファイル（Publish artifacts）</p>
+          <div id="opsEvidenceList" class="ops-evidence-list" aria-live="polite"></div>
+        </section>
+
+        <section id="opsPane-download" class="ops-pi-section" data-ops-pane="download" hidden>
+          <h2 class="ops-section-title">Download</h2>
+          <ul class="ops-download-list" id="opsDownloadList"></ul>
+        </section>
+
+        <section id="opsPane-audit" class="ops-pi-section" data-ops-pane="audit" hidden>
+          <h2 class="ops-section-title">Audit Trail</h2>
+          <p class="ops-note">表示 → API → Publish → Runner → Source</p>
+          <div class="ops-table-wrap">
+            <table class="ops-table" id="opsAuditTable">
+              <thead>
+                <tr>
+                  <th>Card</th>
+                  <th>Display</th>
+                  <th>API</th>
+                  <th>Publish</th>
+                  <th>Runner</th>
+                  <th>Source</th>
+                </tr>
+              </thead>
+              <tbody id="opsAuditTbody"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section id="opsPane-system" class="ops-pi-section" data-ops-pane="system" hidden>
+          <h2 class="ops-section-title">System Overview</h2>
+          <div class="ops-grid" id="opsGrid-system" aria-live="polite"></div>
+        </section>
       </div>
     </div>
     <div data-expect-nav></div>
   </div>
 
+  <dialog class="ops-dialog" id="opsDialog">
+    <form method="dialog" class="ops-dialog-inner">
+      <header class="ops-dialog-head">
+        <h2 id="opsDialogTitle">Detail</h2>
+        <button type="submit" class="ops-refresh-btn" value="close">Close</button>
+      </header>
+      <pre class="ops-json" id="opsDialogBody"></pre>
+      <div class="ops-dialog-actions" id="opsDialogActions"></div>
+    </form>
+  </dialog>
+
   <script src="assets/api/auth.js"></script>
-  <script src="assets/api/ui-features.js?v=11"></script>
-  <script src="assets/api/prediction.js"></script>
-  <script src="assets/ux.js?v=15"></script>
+  <script src="assets/api/user.js"></script>
+  <script src="assets/roles.js?v=1"></script>
   <script src="assets/partials-nav.js"></script>
-  <script>
-    (function () {
-      function esc(s) {
-        return String(s == null ? "" : s)
-          .replace(/&/g, "&amp;")
-          .replace(/</g, "&lt;")
-          .replace(/>/g, "&gt;")
-          .replace(/"/g, "&quot;");
-      }
-
-      function card(title, value, tone) {
-        var toneClass = tone ? " ops-card--" + tone : "";
-        return (
-          '<article class="ops-card' +
-          toneClass +
-          '"><h3>' +
-          esc(title) +
-          '</h3><p class="ops-value">' +
-          esc(value) +
-          "</p></article>"
-        );
-      }
-
-      function isAdmin(cfg, me) {
-        var ids = (cfg && cfg.admin_user_ids) || [];
-        if (!ids.length) {
-          return true;
-        }
-        var uid = me && (me.user_id || me.id || me.login_id);
-        return !!(uid && ids.indexOf(uid) >= 0);
-      }
-
-      function statusTone(ok, skipped) {
-        if (skipped) return "muted";
-        return ok ? "ok" : "bad";
-      }
-
-      function renderProbeTable(checks) {
-        var rows = (checks || [])
-          .map(function (c) {
-            var st = c.skipped ? "skipped" : c.ok ? "OK" : "NG";
-            return (
-              "<tr><td>" +
-              esc(c.name) +
-              "</td><td class=\"ops-tone-" +
-              statusTone(c.ok, c.skipped) +
-              '">' +
-              esc(st) +
-              "</td><td>" +
-              esc(c.latency_ms != null ? c.latency_ms + " ms" : "—") +
-              "</td><td>" +
-              esc(c.alert_id || "—") +
-              "</td><td>" +
-              esc(c.error || "") +
-              "</td></tr>"
-            );
-          })
-          .join("");
-        return (
-          '<table class="ops-table"><thead><tr><th>Probe</th><th>Status</th><th>Latency</th><th>Alert</th><th>Error</th></tr></thead><tbody>' +
-          (rows || '<tr><td colspan="5">probe なし</td></tr>') +
-          "</tbody></table>"
-        );
-      }
-
-      function renderMetricsTable(rows) {
-        var list = (rows || []).slice(0, 12);
-        var body = list
-          .map(function (r) {
-            return (
-              "<tr><td>" +
-              esc(r.metric) +
-              "</td><td>" +
-              esc(r.value) +
-              "</td><td>" +
-              esc(r.unit || "") +
-              '</td><td class="ops-tone-' +
-              (r.status === "error" ? "bad" : "ok") +
-              '">' +
-              esc(r.status) +
-              "</td></tr>"
-            );
-          })
-          .join("");
-        return (
-          '<table class="ops-table"><thead><tr><th>Metric</th><th>Value</th><th>Unit</th><th>Status</th></tr></thead><tbody>' +
-          (body || '<tr><td colspan="4">metrics なし</td></tr>') +
-          "</tbody></table>"
-        );
-      }
-
-      function renderAlertsTable(alerts) {
-        var body = (alerts || [])
-          .map(function (a) {
-            return (
-              "<tr><td>" +
-              esc(a.alert_id) +
-              '</td><td class="ops-tone-' +
-              (a.severity === "critical" ? "bad" : "warn") +
-              '">' +
-              esc(a.severity) +
-              "</td><td>" +
-              esc(a.service) +
-              "</td><td>" +
-              esc(a.summary) +
-              '</td><td class="ops-runbook">' +
-              esc(a.runbook || "—") +
-              "</td></tr>"
-            );
-          })
-          .join("");
-        return (
-          '<table class="ops-table"><thead><tr><th>Alert ID</th><th>Severity</th><th>Service</th><th>Summary</th><th>Runbook</th></tr></thead><tbody>' +
-          (body || '<tr><td colspan="5">アクティブな Alert なし</td></tr>') +
-          "</tbody></table>"
-        );
-      }
-
-      function renderInventoryTable(rows) {
-        var body = (rows || [])
-          .map(function (r) {
-            return (
-              "<tr><td>" +
-              esc(r.id) +
-              "</td><td>" +
-              esc(r.layer) +
-              '</td><td class="ops-tone-' +
-              (r.status === "wired" ? "ok" : "muted") +
-              '">' +
-              esc(r.status) +
-              "</td><td>" +
-              esc(r.via) +
-              "</td></tr>"
-            );
-          })
-          .join("");
-        return (
-          '<table class="ops-table"><thead><tr><th>ID</th><th>Layer</th><th>Status</th><th>Via</th></tr></thead><tbody>' +
-          (body || '<tr><td colspan="4">inventory なし</td></tr>') +
-          "</tbody></table>"
-        );
-      }
-
-      function renderIncidentsTable(incidents) {
-        var body = (incidents || [])
-          .map(function (i) {
-            return (
-              "<tr><td>" +
-              esc(i.occurred_at || "") +
-              "</td><td>" +
-              esc(i.service) +
-              "</td><td>" +
-              esc(i.alert_id || "—") +
-              "</td><td>" +
-              esc(i.error) +
-              "</td></tr>"
-            );
-          })
-          .join("");
-        return (
-          '<table class="ops-table"><thead><tr><th>Occurred</th><th>Service</th><th>Alert</th><th>Error</th></tr></thead><tbody>' +
-          (body || '<tr><td colspan="4">Incident なし</td></tr>') +
-          "</tbody></table>"
-        );
-      }
-
-      var _opsFeatures = null;
-
-      ExpectUiFeatures.ready(function (features) {
-        _opsFeatures = features;
-        var note = document.getElementById("opsGateNote");
-        var denied = document.getElementById("opsDenied");
-        var main = document.getElementById("opsMain");
-        if (!features.v11_ops_dashboard) {
-          if (note) note.hidden = true;
-          if (denied) denied.hidden = false;
-          return;
-        }
-
-        Promise.all([
-          fetch("/config/beta.json", { cache: "no-store" }).then(function (r) {
-            return r.json();
-          }),
-          window.ExpectApi && ExpectApi.Auth && ExpectApi.Auth.me
-            ? ExpectApi.Auth.me().catch(function () {
-                return null;
-              })
-            : Promise.resolve(null),
-        ]).then(function (parts) {
-          var cfg = parts[0] || {};
-          var me = parts[1] && (parts[1].data || parts[1]);
-          if (!isAdmin(cfg, me)) {
-            if (note) note.hidden = true;
-            if (denied) denied.hidden = false;
-            return;
-          }
-          if (note) note.hidden = true;
-          if (main) main.hidden = false;
-          runMetrics(features);
-          var refreshBtn = document.getElementById("opsRefreshBtn");
-          if (refreshBtn && features.v2_ops_dashboard) {
-            refreshBtn.onclick = function () {
-              runMetrics(_opsFeatures || features);
-            };
-          }
-          var convRefresh = document.getElementById("opsConvRefreshBtn");
-          if (convRefresh && features.v2_ops_dashboard) {
-            convRefresh.onclick = function () {
-              runMetrics(_opsFeatures || features);
-            };
-          }
-        });
-      });
-
-      function runMetrics(features) {
-        var grid = document.getElementById("opsGrid");
-        var latNote = document.getElementById("opsLatencyNote");
-        var v2Root = document.getElementById("opsV2Root");
-        var t0 = performance.now();
-        var healthMs = null;
-        var predMs = null;
-        var healthOk = false;
-        var total = 0;
-        var real = 0;
-        var fallback = 0;
-        var predErr = false;
-
-        var healthP = fetch("/api/health", { cache: "no-store" })
-          .then(function (res) {
-            healthMs = Math.round(performance.now() - t0);
-            return res.json().then(function (body) {
-              var healthData = body && body.data ? body.data : body;
-              healthOk = !!(res.ok && body && (body.ok || (healthData && healthData.status === "ok")));
-            });
-          })
-          .catch(function () {
-            healthMs = Math.round(performance.now() - t0);
-            healthOk = false;
-          });
-
-        var t1 = performance.now();
-        var predP =
-          window.ExpectApi && ExpectApi.Prediction
-            ? ExpectApi.Prediction.list({})
-                .then(function (bundles) {
-                  predMs = Math.round(performance.now() - t1);
-                  var list = bundles || [];
-                  total = list.length;
-                  list.forEach(function (b) {
-                    var eng = (b && b.__meta && b.__meta.engine_source) || "";
-                    if (eng === "real_ai") real += 1;
-                    else if (eng === "mock_fallback") fallback += 1;
-                  });
-                })
-                .catch(function () {
-                  predMs = Math.round(performance.now() - t1);
-                  predErr = true;
-                })
-            : Promise.resolve();
-
-        var dashP = Promise.resolve(null);
-        var convP = Promise.resolve(null);
-        if (features && features.v2_ops_dashboard) {
-          var token =
-            window.ExpectAuth && ExpectAuth.getAccessToken
-              ? ExpectAuth.getAccessToken()
-              : "";
-          var headers = { Accept: "application/json", cache: "no-store" };
-          if (token) headers.Authorization = "Bearer " + token;
-          dashP = fetch("/api/ops/dashboard", { headers: headers, cache: "no-store" })
-            .then(function (res) {
-              return res.json().then(function (body) {
-                if (!res.ok || !body || !body.ok) return null;
-                return body.data || null;
-              });
-            })
-            .catch(function () {
-              return null;
-            });
-          convP = fetch("/api/ops/conversation", { headers: headers, cache: "no-store" })
-            .then(function (res) {
-              return res.json().then(function (body) {
-                if (!res.ok || !body || !body.ok) return null;
-                return body.data || null;
-              });
-            })
-            .catch(function () {
-              return null;
-            });
-        }
-
-        Promise.all([healthP, predP, dashP, convP]).then(function (parts) {
-          var dash = parts[2];
-          var conv = parts[3];
-          var fbRate = total ? Math.round((fallback / total) * 1000) / 10 : 0;
-          var aiRate = total ? Math.round((real / total) * 1000) / 10 : 0;
-          if (grid) {
-            grid.innerHTML = [
-              card("Health", healthOk ? "OK" : "NG"),
-              card("API応答 (health)", (healthMs != null ? healthMs : "—") + " ms"),
-              card("API応答 (predictions)", (predMs != null ? predMs : "—") + " ms"),
-              card("Prediction件数", String(total)),
-              card("mock_fallback率", fbRate + "%"),
-              card("AI成功率 (real_ai)", aiRate + "%"),
-              card("Collector", "HOLD"),
-              card("Predictions取得", predErr ? "エラー" : "OK"),
-            ].join("");
-          }
-
-          if (!(features && features.v2_ops_dashboard)) {
-            if (v2Root) v2Root.hidden = true;
-            if (latNote) {
-              latNote.textContent =
-                "Latency / Errors はクライアント計測。サーバ新規メトリクス API は追加していません。";
-            }
-            return;
-          }
-
-          if (v2Root) v2Root.hidden = false;
-          renderV2(dash);
-          renderConversationObs(conv);
-          if (latNote) {
-            latNote.textContent =
-              "v2 Ops + Conversation Observability: GET /api/ops/dashboard · /api/ops/conversation";
-          }
-        });
-      }
-
-      function renderConversationObs(data) {
-        var healthGrid = document.getElementById("opsConvHealthGrid");
-        var metricsGrid = document.getElementById("opsConvMetricsGrid");
-        var alertsWrap = document.getElementById("opsConvAlertsTableWrap");
-        if (!healthGrid || !metricsGrid) return;
-        if (!data) {
-          healthGrid.innerHTML = card("Conversation Observability", "取得失敗", "bad");
-          metricsGrid.innerHTML = "";
-          if (alertsWrap) alertsWrap.innerHTML = "";
-          return;
-        }
-        var comps = (data.health && data.health.components) || {};
-        var cat = data.categories || {};
-        var conv = cat.conversation || {};
-        var ollama = cat.ollama || {};
-        var knowledge = cat.knowledge || {};
-        var security = cat.security || {};
-        var lat = conv.latency_ms || {};
-        var oLat = ollama.response_time_ms || {};
-
-        function compTone(c) {
-          if (!c) return "muted";
-          if (c.skipped) return "muted";
-          return c.ok ? "ok" : "bad";
-        }
-        function compLabel(c) {
-          if (!c) return "—";
-          if (c.skipped) return "skipped";
-          return c.ok ? "OK" : "NG";
-        }
-
-        healthGrid.innerHTML = [
-          card("Overall", data.health && data.health.overall_ok ? "OK" : "NG", data.health && data.health.overall_ok ? "ok" : "bad"),
-          card("Conversation API", compLabel(comps.conversation_api), compTone(comps.conversation_api)),
-          card("Ollama", compLabel(comps.ollama), compTone(comps.ollama)),
-          card("Knowledge Runtime", compLabel(comps.knowledge_runtime), compTone(comps.knowledge_runtime)),
-          card("Tool Manager", compLabel(comps.tool_manager), compTone(comps.tool_manager)),
-          card("Prediction Connector", compLabel(comps.prediction_connector), compTone(comps.prediction_connector)),
-        ].join("");
-
-        metricsGrid.innerHTML = [
-          card("Requests", String(conv.request_count || 0)),
-          card("Error rate", String(conv.error_rate != null ? conv.error_rate : "—")),
-          card("Latency p50", (lat.p50 != null ? lat.p50 : "—") + " ms"),
-          card("Latency p95", (lat.p95 != null ? lat.p95 : "—") + " ms"),
-          card("Latency p99", (lat.p99 != null ? lat.p99 : "—") + " ms"),
-          card("Chat / Review / Explain", (conv.chat_count || 0) + " / " + (conv.review_count || 0) + " / " + (conv.explain_count || 0)),
-          card("Ollama model", ollama.model_name || "—"),
-          card("Ollama p95", (oLat.p95 != null ? oLat.p95 : "—") + " ms"),
-          card("Ollama timeouts", String(ollama.timeout_count || 0)),
-          card("Knowledge searches", String(knowledge.search_count || 0)),
-          card("Knowledge hit/miss", (knowledge.retrieval_hit || 0) + " / " + (knowledge.retrieval_miss || 0)),
-          card("Security block/allow", (security.block_count || 0) + " / " + (security.allow_count || 0)),
-        ].join("");
-
-        var alerts = data.alerts || [];
-        if (alertsWrap) {
-          var rows = alerts
-            .map(function (a) {
-              return (
-                "<tr><td>" +
-                esc(a.id) +
-                "</td><td>" +
-                esc(a.severity) +
-                "</td><td>" +
-                esc(a.title) +
-                "</td><td>" +
-                esc(a.detail) +
-                "</td></tr>"
-              );
-            })
-            .join("");
-          alertsWrap.innerHTML =
-            '<table class="ops-table"><thead><tr><th>Alert</th><th>Severity</th><th>Title</th><th>Detail</th></tr></thead><tbody>' +
-            (rows || '<tr><td colspan="4">active alert なし</td></tr>') +
-            "</tbody></table>";
-        }
-      }
-
-      function renderV2(dash) {
-        var overviewGrid = document.getElementById("opsOverviewGrid");
-        var overviewNote = document.getElementById("opsOverviewNote");
-        var piGrid = document.getElementById("opsPiGrid");
-        var piTable = document.getElementById("opsPiTableWrap");
-        var probesTable = document.getElementById("opsProbesTableWrap");
-        var metricsGrid = document.getElementById("opsMetricsGrid");
-        var metricsTable = document.getElementById("opsMetricsTableWrap");
-        var alertsGrid = document.getElementById("opsAlertsGrid");
-        var alertsTable = document.getElementById("opsAlertsTableWrap");
-        var incidentsTable = document.getElementById("opsIncidentsTableWrap");
-        var inventoryGrid = document.getElementById("opsInventoryGrid");
-        var inventoryTable = document.getElementById("opsInventoryTableWrap");
-        var notifyGrid = document.getElementById("opsNotifyGrid");
-
-        if (!dash) {
-          if (overviewGrid) overviewGrid.innerHTML = card("Overview", "取得失敗", "bad");
-          if (piGrid) piGrid.innerHTML = card("Overall PI", "取得失敗", "bad");
-          if (piTable) piTable.innerHTML = "";
-          if (probesTable) probesTable.innerHTML = "";
-          if (metricsGrid) metricsGrid.innerHTML = card("Metrics", "取得失敗", "bad");
-          if (metricsTable) metricsTable.innerHTML = "";
-          if (alertsGrid) alertsGrid.innerHTML = card("Alerts", "取得失敗", "bad");
-          if (alertsTable) alertsTable.innerHTML = "";
-          if (incidentsTable) {
-            incidentsTable.innerHTML =
-              '<p class="ops-note">/api/ops/dashboard を取得できませんでした（Flag・権限・probe を確認）。</p>';
-          }
-          if (inventoryGrid) inventoryGrid.innerHTML = "";
-          if (inventoryTable) inventoryTable.innerHTML = "";
-          if (notifyGrid) notifyGrid.innerHTML = "";
-          return;
-        }
-
-        if (overviewNote) {
-          overviewNote.textContent =
-            "updated: " +
-            (dash.generated_at || "—") +
-            " · phase " +
-            (dash.phase || "—");
-        }
-        var ov = dash.overview || {};
-        var stTone = dash.status === "ok" ? "ok" : "bad";
-        if (overviewGrid) {
-          overviewGrid.innerHTML = [
-            card("Status", String(dash.status || "—").toUpperCase(), stTone),
-            card("Probes OK", String(ov.probes_ok != null ? ov.probes_ok : 0) + "/" + String(ov.probes_active != null ? ov.probes_active : 0), ov.probes_down ? "warn" : "ok"),
-            card("Down", String(ov.probes_down != null ? ov.probes_down : 0), ov.probes_down ? "bad" : "ok"),
-            card("Health %", ov.health_ratio != null ? ov.health_ratio + "%" : "—", ov.probes_down ? "warn" : "ok"),
-          ].join("");
-        }
-
-        var pi = dash.pi || {};
-        var piTone =
-          pi.overall === "ok" ? "ok" : pi.overall === "skipped" ? "muted" : "bad";
-        if (piGrid) {
-          piGrid.innerHTML = [
-            card("Overall PI", String(pi.overall || "—").toUpperCase(), piTone),
-            card("PI probes", String((pi.checks || []).length)),
-            card(
-              "PI latency",
-              (function () {
-                var h = (pi.checks || []).filter(function (c) {
-                  return c.name === "pi_health" && c.latency_ms != null;
-                })[0];
-                return h ? h.latency_ms + " ms" : "—";
-              })()
-            ),
-            card(
-              "PI alerts",
-              String(
-                (pi.checks || []).filter(function (c) {
-                  return !!c.alert_id;
-                }).length
-              )
-            ),
-          ].join("");
-        }
-        if (piTable) piTable.innerHTML = renderProbeTable(pi.checks || []);
-        if (probesTable) probesTable.innerHTML = renderProbeTable(dash.checks || []);
-
-        var ms = (dash.metrics && dash.metrics.summary) || {};
-        if (metricsGrid) {
-          metricsGrid.innerHTML = [
-            card("Metrics total", String(ms.total != null ? ms.total : 0)),
-            card("Metrics ok", String(ms.ok != null ? ms.ok : 0), "ok"),
-            card("Metrics error", String(ms.error != null ? ms.error : 0), ms.error ? "bad" : "ok"),
-            card("Dashboard status", String(dash.status || "—").toUpperCase(), dash.status === "ok" ? "ok" : "bad"),
-          ].join("");
-        }
-        if (metricsTable) {
-          metricsTable.innerHTML = renderMetricsTable(
-            (dash.metrics && dash.metrics.rows) || []
-          );
-        }
-
-        var as = dash.alert_summary || {};
-        if (alertsGrid) {
-          alertsGrid.innerHTML = [
-            card("Active", String(as.active != null ? as.active : 0), as.active ? "bad" : "ok"),
-            card("Critical", String(as.critical != null ? as.critical : 0), as.critical ? "bad" : "ok"),
-            card("Warning", String(as.warning != null ? as.warning : 0), as.warning ? "warn" : "ok"),
-          ].join("");
-        }
-        if (alertsTable) alertsTable.innerHTML = renderAlertsTable(dash.alerts || []);
-
-        if (incidentsTable) {
-          var ic = (dash.incident_summary && dash.incident_summary.count) || 0;
-          incidentsTable.innerHTML =
-            '<p class="ops-note">件数: ' +
-            esc(String(ic)) +
-            "</p>" +
-            renderIncidentsTable(dash.incidents || []);
-        }
-
-        var isum = dash.inventory_summary || {};
-        if (inventoryGrid) {
-          inventoryGrid.innerHTML = [
-            card("Wired", String(isum.wired != null ? isum.wired : 0), "ok"),
-            card("Prepared", String(isum.prepared != null ? isum.prepared : 0), "muted"),
-            card("Total", String(isum.total != null ? isum.total : 0)),
-          ].join("");
-        }
-        if (inventoryTable) inventoryTable.innerHTML = renderInventoryTable(dash.inventory || []);
-
-        var n = dash.notifications || {};
-        var sc = (n.slack_critical && n.slack_critical.configured) || false;
-        var sw = (n.slack_warning && n.slack_warning.configured) || false;
-        if (notifyGrid) {
-          notifyGrid.innerHTML = [
-            card("SLK-N01 Critical", sc ? "configured" : "unset", sc ? "ok" : "muted"),
-            card("SLK-N02 Warning", sw ? "configured" : "unset", sw ? "ok" : "muted"),
-            card("Suppress", "15 min", "muted"),
-          ].join("");
-        }
-      }
-    })();
-  </script>
+  <script src="assets/ops-console-v89.js?v=4"></script>
 </body>
 </html>

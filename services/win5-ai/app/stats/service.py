@@ -231,6 +231,27 @@ class StatsService:
             )
 
     def get_summary(self, *, period: str = "overall") -> dict[str, Any]:
+        # Prefer live all-time evaluations (foundation for AI challenge / trust)
+        if period in ("overall", "all", "all_time", ""):
+            live = self.get_ai_overall_hit_stats()
+            if int(live.get("races_evaluated") or 0) > 0:
+                return {
+                    "schema_version": self.SCHEMA,
+                    "run_id": None,
+                    "period": "overall",
+                    "races_evaluated": live["races_evaluated"],
+                    "prediction_count": live["races_evaluated"],
+                    "hit_rate": live["hit_rate"],
+                    "top3_rate": None,
+                    "hit_at_5_rate": None,
+                    "roi": None,
+                    "updated_at": live.get("updated_at"),
+                    "hits": live.get("hits"),
+                    "scope": "all_time_cumulative",
+                    "formula": live.get("formula"),
+                    "label": "AI総合実績",
+                }
+
         run = self.repo.latest_run()
         if not run:
             return self._empty_summary()
@@ -280,29 +301,38 @@ class StatsService:
         }
 
     def get_trust_display(self, *, venue: str | None = None) -> dict[str, Any]:
-        """Home 信頼度ゲージ用 — stats DB の hit_rate から生成。"""
-        summary = self.get_summary(period="month")
+        """Home 信頼度ゲージ用 — AI総合実績（全期間◎Hit）から生成。"""
+        summary = self.get_summary(period="overall")
         venue_rate = None
         venue_n = 0
+        live = self.get_ai_overall_hit_stats()
         if venue:
-            breakdown = self.get_breakdown("venue")
-            for item in breakdown.get("items") or []:
-                if item.get("key") == venue:
-                    venue_rate = float(item.get("hit_rate") or 0)
-                    venue_n = int(item.get("races_evaluated") or 0)
-                    break
+            rows = self.repo.list_evaluations_with_results()
+            hits = 0
+            n = 0
+            for row in rows:
+                if str(row.get("venue") or "").strip() != venue:
+                    continue
+                if row.get("hit_at_1") is None:
+                    continue
+                n += 1
+                if row.get("hit_at_1"):
+                    hits += 1
+            if n >= 3:
+                venue_rate = _pct(hits, n)
+                venue_n = n
 
         if venue_rate is not None and venue_n >= 3:
             trust_rate = venue_rate
             scope = "venue"
         else:
-            trust_rate = float(summary.get("hit_rate") or 0)
-            scope = "overall"
+            trust_rate = float(summary.get("hit_rate") or live.get("hit_rate") or 0)
+            scope = "all_time_cumulative"
 
         return {
             "schema_version": "expect-stats-trust/1.0",
             "trust_score": round(trust_rate * 100, 1),
-            "hit_rate": summary.get("hit_rate"),
+            "hit_rate": summary.get("hit_rate") or live.get("hit_rate"),
             "top3_rate": summary.get("top3_rate"),
             "hit_at_5_rate": summary.get("hit_at_5_rate"),
             "roi": summary.get("roi"),
@@ -310,10 +340,12 @@ class StatsService:
             "venue": venue,
             "venue_hit_rate": venue_rate,
             "venue_races_evaluated": venue_n,
-            "races_evaluated": summary.get("races_evaluated") or 0,
-            "source": "stats_db",
-            "label": "実績ベース信頼度",
-            "updated_at": summary.get("updated_at"),
+            "races_evaluated": summary.get("races_evaluated") or live.get("races_evaluated") or 0,
+            "hits": summary.get("hits") or live.get("hits"),
+            "formula": live.get("formula"),
+            "source": "stats_db_all_time",
+            "label": "AI総合実績ベース信頼度",
+            "updated_at": summary.get("updated_at") or live.get("updated_at"),
         }
 
     def _empty_summary(self, run_id: int | None = None) -> dict[str, Any]:
@@ -356,6 +388,7 @@ class StatsService:
         }
 
     def _segment_tables_from_rows(self, rows: list[dict[str, Any]]) -> dict[str, Any]:
+        """All-time ◎ hit tables. Hit率 = ◎1着レース数 / AI評価総レース数."""
         segments: dict[str, dict[str, Any]] = {}
         segments_going: dict[str, dict[str, Any]] = {}
         hits = 0
@@ -388,12 +421,32 @@ class StatsService:
         for table in (segments, segments_going):
             for key, val in table.items():
                 n = int(val["n"])
-                val["hit_rate"] = _pct(val["hits"], n) if n else 0.0
+                h = int(val["hits"])
+                val["hit_rate"] = _pct(h, n) if n else 0.0
+        overall_rate = _pct(hits, total) if total else 0.0
         return {
-            "overall_hit_rate": _pct(hits, total) if total else 218 / 285,
+            "overall_hit_rate": overall_rate,
+            "overall_hits": hits,
             "races_evaluated": total,
             "segments": segments,
             "segments_going": segments_going,
+            "formula": "hit_at_1_count / ai_evaluated_race_count",
+            "scope": "all_time_cumulative",
+        }
+
+    def get_ai_overall_hit_stats(self) -> dict[str, Any]:
+        """Foundation for AI challenge / trust / KAOBA — all-time ◎ hit."""
+        rows = self.repo.list_evaluations_with_results()
+        tables = self._segment_tables_from_rows(rows)
+        return {
+            "schema_version": "expect-ai-overall-hit/1.0",
+            "scope": "all_time_cumulative",
+            "resets": False,
+            "races_evaluated": tables["races_evaluated"],
+            "hits": tables["overall_hits"],
+            "hit_rate": tables["overall_hit_rate"],
+            "formula": tables["formula"],
+            "updated_at": _now(),
         }
 
     def get_heatmap_stats(self, *, venues: list[str] | None = None) -> dict[str, Any]:
@@ -403,17 +456,30 @@ class StatsService:
         updated_at = None
         if run and run.get("finished_at"):
             updated_at = run["finished_at"]
+        # Prefer latest evaluation time as "live accumulate" clock
+        if rows:
+            for r in rows:
+                ea = r.get("evaluated_at")
+                if ea:
+                    updated_at = ea
+                    break
         payload = {
             "schema_version": "expect-segment-hit-rates/1.0",
-            "corpus": "stats_db",
+            "corpus": "research_baseline_plus_production",
             "generated_at": updated_at or _now(),
             "updated_at": updated_at,
             "overall_hit_rate": tables["overall_hit_rate"],
-            "min_samples": 3,
+            "overall_hits": tables["overall_hits"],
+            "min_samples": 1,
             "races_evaluated": tables["races_evaluated"],
             "segments": tables["segments"],
             "segments_going": tables["segments_going"],
             "source": "stats_db",
+            "scope": "all_time_cumulative",
+            "resets": False,
+            "formula": tables["formula"],
+            "label": "AI総合実績",
+            "includes_research_baseline": True,
         }
         if venues:
             allow = {v.strip() for v in venues if v and str(v).strip()}

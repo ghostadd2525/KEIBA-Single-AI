@@ -1,0 +1,18 @@
+{
+  "close_id": "v3-close/1.0",
+  "date": "2026-07-24",
+  "invariant": "F_V3_A03_POOL_ADMIT_ENABLED AND F_V3_A05_ADM_FAVSAFE_ENABLED must never both be ON",
+  "flags": [
+    {"name": "F_V3_REPRESENTATION", "default": false, "disposition": "foundation_off"},
+    {"name": "F_V3_ADMISSION", "default": false, "disposition": "foundation_off"},
+    {"name": "F_V3_SELECTION", "default": false, "disposition": "foundation_off"},
+    {"name": "F_V3_RANK_D1_ENABLED", "default": false, "disposition": "stack_component_off"},
+    {"name": "F_V3_RANK_D2_ENABLED", "default": false, "disposition": "secondary_off"},
+    {"name": "F_V3_A03_POOL_ADMIT_ENABLED", "default": false, "disposition": "Deprecated_prod_forbidden"},
+    {"name": "F_V3_A05_ADM_FAVSAFE_ENABLED", "default": false, "disposition": "Official_candidate_default_off"},
+    {"name": "F_V3_A04_SEL_HISTORY_ENABLED", "default": false, "disposition": "stack_component_off"},
+    {"name": "F_V3_PURCHASE_ENABLED", "default": false, "disposition": "unused"},
+    {"name": "F_V3_LAB_ENABLED", "default": false, "disposition": "foundation_off"},
+    {"name": "WIN5_V3_A05_SHADOW_RUNTIME_ENABLED", "default": false, "disposition": "lab_shadow_only"}
+  ]
+}

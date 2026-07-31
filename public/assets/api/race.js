@@ -134,28 +134,36 @@
   }
 
   function apiGet(path, query) {
-    var headers = { Accept: "application/json" };
-    var token = getToken();
-    if (token) headers.Authorization = "Bearer " + token;
+    function doFetch() {
+      var headers = { Accept: "application/json" };
+      var token = getToken();
+      if (token) headers.Authorization = "Bearer " + token;
 
-    return fetch(buildUrl(path, query), { method: "GET", headers: headers }).then(function (res) {
-      return res.text().then(function (text) {
-        var payload = null;
-        try {
-          payload = text ? JSON.parse(text) : null;
-        } catch (e) {
-          payload = null;
-        }
-        if (!res.ok || (payload && payload.ok === false)) {
-          var err = new Error(
-            (payload && payload.error && payload.error.message) || "API error " + res.status
-          );
-          err.status = res.status;
-          throw err;
-        }
-        return payload && payload.data != null ? payload.data : payload;
+      return fetch(buildUrl(path, query), { method: "GET", headers: headers }).then(function (res) {
+        return res.text().then(function (text) {
+          var payload = null;
+          try {
+            payload = text ? JSON.parse(text) : null;
+          } catch (e) {
+            payload = null;
+          }
+          if (!res.ok || (payload && payload.ok === false)) {
+            var err = new Error(
+              (payload && payload.error && payload.error.message) || "API error " + res.status
+            );
+            err.status = res.status;
+            throw err;
+          }
+          return payload && payload.data != null ? payload.data : payload;
+        });
       });
-    });
+    }
+
+    if (global.ExpectHttpCache) {
+      var key = ExpectHttpCache.buildKey(path, query);
+      return ExpectHttpCache.cachedGet(key, ExpectHttpCache.TTL.races, doFetch);
+    }
+    return doFetch();
   }
 
   var Race = {

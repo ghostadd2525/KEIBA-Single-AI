@@ -96,6 +96,7 @@ class RaceCatalogUnitTest(unittest.TestCase):
         self.assertTrue(any(r.race_no == 6 and r.venue == "新潟" for r in races))
         hit = next(r for r in races if r.venue == "新潟" and r.race_no == 6)
         self.assertTrue(hit.race_name)
+        self.assertEqual(hit.post_time, "15:10")
 
 
 class WebApiHttpTest(unittest.TestCase):

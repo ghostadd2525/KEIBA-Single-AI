@@ -1,0 +1,699 @@
+{
+  "schema_version": "expect-shadow-tie-resolver/1.0",
+  "generated_at": "2026-07-27T06:41:11+00:00",
+  "shadow_only": true,
+  "production_applied": false,
+  "hard_lock": {
+    "prediction": "unchanged",
+    "pe": "unchanged",
+    "ce": "unchanged",
+    "ai": "unchanged",
+    "challenge": "unchanged",
+    "result_automation": "unchanged"
+  },
+  "corpus": {
+    "n_races_all": 50,
+    "n_tie_races": 9
+  },
+  "summary": {
+    "n_tie_races": 9,
+    "baseline_strict_hits": 0,
+    "shadow_strict_hits": 2,
+    "strict_delta": 2,
+    "resolver_win": 2,
+    "resolver_lose": 0,
+    "resolver_draw": 7,
+    "baseline_strict_rate": 0.0,
+    "shadow_strict_rate": 0.222222
+  },
+  "v104_input": {
+    "evidence_priority": [
+      "trainer",
+      "owner",
+      "win_odds",
+      "popularity",
+      "expected_popularity",
+      "damsire",
+      "sire",
+      "breeder",
+      "sale_price",
+      "oikiri_time",
+      "oikiri_rating"
+    ],
+    "tiers": {
+      "S": [
+        "trainer",
+        "owner",
+        "win_odds",
+        "popularity",
+        "expected_popularity"
+      ],
+      "A": [
+        "damsire",
+        "sire",
+        "breeder"
+      ],
+      "B": [
+        "sale_price"
+      ],
+      "C": [
+        "oikiri_time",
+        "oikiri_rating"
+      ]
+    }
+  },
+  "resolver_records": [
+    {
+      "race_id": "2026-07-26-01-02",
+      "race_date": "2026-07-26",
+      "prediction_id": 9,
+      "tie_size": 5,
+      "winner": 6,
+      "prediction_pick": 5,
+      "shadow_pick": 6,
+      "outcome": "win",
+      "status": "resolved",
+      "used_feature": "trainer",
+      "used_tier": "S",
+      "cascade_stop": "trainer",
+      "prediction_winner_rank": 2,
+      "shadow_winner_rank": 1,
+      "tie_horse_numbers": [
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "shadow_top3": [
+        6,
+        5,
+        7
+      ]
+    },
+    {
+      "race_id": "2026-07-26-02-01",
+      "race_date": "2026-07-26",
+      "prediction_id": 11,
+      "tie_size": 5,
+      "winner": 8,
+      "prediction_pick": 5,
+      "shadow_pick": 5,
+      "outcome": "draw",
+      "status": "resolved",
+      "used_feature": "trainer",
+      "used_tier": "S",
+      "cascade_stop": "trainer",
+      "prediction_winner_rank": 4,
+      "shadow_winner_rank": 4,
+      "tie_horse_numbers": [
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "shadow_top3": [
+        5,
+        6,
+        7
+      ]
+    },
+    {
+      "race_id": "2026-07-26-02-02",
+      "race_date": "2026-07-26",
+      "prediction_id": 12,
+      "tie_size": 2,
+      "winner": 3,
+      "prediction_pick": 5,
+      "shadow_pick": 6,
+      "outcome": "draw",
+      "status": "resolved",
+      "used_feature": "trainer",
+      "used_tier": "S",
+      "cascade_stop": "trainer",
+      "prediction_winner_rank": null,
+      "shadow_winner_rank": null,
+      "tie_horse_numbers": [
+        5,
+        6
+      ],
+      "shadow_top3": [
+        6,
+        5
+      ]
+    },
+    {
+      "race_id": "2026-07-25-01-02",
+      "race_date": "2026-07-25",
+      "prediction_id": 20,
+      "tie_size": 4,
+      "winner": 12,
+      "prediction_pick": 11,
+      "shadow_pick": 14,
+      "outcome": "draw",
+      "status": "resolved",
+      "used_feature": "owner",
+      "used_tier": "S",
+      "cascade_stop": "owner",
+      "prediction_winner_rank": 2,
+      "shadow_winner_rank": 3,
+      "tie_horse_numbers": [
+        11,
+        12,
+        13,
+        14
+      ],
+      "shadow_top3": [
+        14,
+        11,
+        12
+      ]
+    },
+    {
+      "race_id": "2026-07-25-01-03",
+      "race_date": "2026-07-25",
+      "prediction_id": 21,
+      "tie_size": 4,
+      "winner": 4,
+      "prediction_pick": 5,
+      "shadow_pick": 5,
+      "outcome": "draw",
+      "status": "resolved",
+      "used_feature": "trainer",
+      "used_tier": "S",
+      "cascade_stop": "trainer",
+      "prediction_winner_rank": null,
+      "shadow_winner_rank": null,
+      "tie_horse_numbers": [
+        5,
+        6,
+        7,
+        8
+      ],
+      "shadow_top3": [
+        5,
+        6,
+        7
+      ]
+    },
+    {
+      "race_id": "2026-07-25-02-01",
+      "race_date": "2026-07-25",
+      "prediction_id": 31,
+      "tie_size": 5,
+      "winner": 1,
+      "prediction_pick": 5,
+      "shadow_pick": 7,
+      "outcome": "draw",
+      "status": "resolved",
+      "used_feature": "owner",
+      "used_tier": "S",
+      "cascade_stop": "owner",
+      "prediction_winner_rank": null,
+      "shadow_winner_rank": null,
+      "tie_horse_numbers": [
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "shadow_top3": [
+        7,
+        5,
+        6
+      ]
+    },
+    {
+      "race_id": "2026-07-25-02-02",
+      "race_date": "2026-07-25",
+      "prediction_id": 32,
+      "tie_size": 8,
+      "winner": 11,
+      "prediction_pick": 6,
+      "shadow_pick": 7,
+      "outcome": "draw",
+      "status": "resolved",
+      "used_feature": "owner",
+      "used_tier": "S",
+      "cascade_stop": "owner",
+      "prediction_winner_rank": 6,
+      "shadow_winner_rank": 6,
+      "tie_horse_numbers": [
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13
+      ],
+      "shadow_top3": [
+        7,
+        6,
+        8
+      ]
+    },
+    {
+      "race_id": "2026-07-25-03-05",
+      "race_date": "2026-07-25",
+      "prediction_id": 47,
+      "tie_size": 2,
+      "winner": 1,
+      "prediction_pick": 5,
+      "shadow_pick": 6,
+      "outcome": "draw",
+      "status": "resolved",
+      "used_feature": "trainer",
+      "used_tier": "S",
+      "cascade_stop": "trainer",
+      "prediction_winner_rank": null,
+      "shadow_winner_rank": null,
+      "tie_horse_numbers": [
+        5,
+        6
+      ],
+      "shadow_top3": [
+        6,
+        5
+      ]
+    },
+    {
+      "race_id": "2026-07-26-03-05",
+      "race_date": "2026-07-26",
+      "prediction_id": 58,
+      "tie_size": 6,
+      "winner": 9,
+      "prediction_pick": 5,
+      "shadow_pick": 9,
+      "outcome": "win",
+      "status": "resolved",
+      "used_feature": "trainer",
+      "used_tier": "S",
+      "cascade_stop": "trainer",
+      "prediction_winner_rank": 5,
+      "shadow_winner_rank": 1,
+      "tie_horse_numbers": [
+        5,
+        6,
+        7,
+        8,
+        9,
+        10
+      ],
+      "shadow_top3": [
+        9,
+        5,
+        6
+      ]
+    }
+  ],
+  "feature_usage": [
+    {
+      "feature_id": "trainer",
+      "tier": "S",
+      "used_count": 6
+    },
+    {
+      "feature_id": "owner",
+      "tier": "S",
+      "used_count": 3
+    }
+  ],
+  "tier_usage": {
+    "S": 9
+  },
+  "cascade_stop_usage": {
+    "owner": 3,
+    "trainer": 6
+  },
+  "weekly": [
+    {
+      "week_id": "2026-W30",
+      "tie_races": 9,
+      "baseline_strict": 0,
+      "shadow_strict": 2,
+      "resolver_win": 2,
+      "resolver_lose": 0,
+      "resolver_draw": 7,
+      "baseline_strict_rate": 0.0,
+      "shadow_strict_rate": 0.222222
+    }
+  ],
+  "dashboard": {
+    "schema_version": "expect-shadow-resolver-dashboard/1.0",
+    "generated_at": "2026-07-27T06:41:11+00:00",
+    "shadow_only": true,
+    "production_applied": false,
+    "summary": {
+      "n_tie_races": 9,
+      "baseline_strict_hits": 0,
+      "shadow_strict_hits": 2,
+      "strict_delta": 2,
+      "resolver_win": 2,
+      "resolver_lose": 0,
+      "resolver_draw": 7,
+      "baseline_strict_rate": 0.0,
+      "shadow_strict_rate": 0.222222
+    },
+    "evidence_priority": [
+      {
+        "priority_rank": 1,
+        "feature_id": "trainer",
+        "tier": "S"
+      },
+      {
+        "priority_rank": 2,
+        "feature_id": "owner",
+        "tier": "S"
+      },
+      {
+        "priority_rank": 3,
+        "feature_id": "win_odds",
+        "tier": "S"
+      },
+      {
+        "priority_rank": 4,
+        "feature_id": "popularity",
+        "tier": "S"
+      },
+      {
+        "priority_rank": 5,
+        "feature_id": "expected_popularity",
+        "tier": "S"
+      },
+      {
+        "priority_rank": 6,
+        "feature_id": "damsire",
+        "tier": "A"
+      },
+      {
+        "priority_rank": 7,
+        "feature_id": "sire",
+        "tier": "A"
+      },
+      {
+        "priority_rank": 8,
+        "feature_id": "breeder",
+        "tier": "A"
+      },
+      {
+        "priority_rank": 9,
+        "feature_id": "sale_price",
+        "tier": "B"
+      },
+      {
+        "priority_rank": 10,
+        "feature_id": "oikiri_time",
+        "tier": "C"
+      },
+      {
+        "priority_rank": 11,
+        "feature_id": "oikiri_rating",
+        "tier": "C"
+      }
+    ],
+    "feature_usage": [
+      {
+        "feature_id": "trainer",
+        "tier": "S",
+        "used_count": 6
+      },
+      {
+        "feature_id": "owner",
+        "tier": "S",
+        "used_count": 3
+      }
+    ],
+    "tier_usage": {
+      "S": 9
+    },
+    "cascade_stop_usage": {
+      "owner": 3,
+      "trainer": 6
+    },
+    "weekly": [
+      {
+        "week_id": "2026-W30",
+        "tie_races": 9,
+        "baseline_strict": 0,
+        "shadow_strict": 2,
+        "resolver_win": 2,
+        "resolver_lose": 0,
+        "resolver_draw": 7,
+        "baseline_strict_rate": 0.0,
+        "shadow_strict_rate": 0.222222
+      }
+    ],
+    "recent_races": [
+      {
+        "race_id": "2026-07-26-01-02",
+        "race_date": "2026-07-26",
+        "prediction_id": 9,
+        "tie_size": 5,
+        "winner": 6,
+        "prediction_pick": 5,
+        "shadow_pick": 6,
+        "outcome": "win",
+        "status": "resolved",
+        "used_feature": "trainer",
+        "used_tier": "S",
+        "cascade_stop": "trainer",
+        "prediction_winner_rank": 2,
+        "shadow_winner_rank": 1,
+        "tie_horse_numbers": [
+          5,
+          6,
+          7,
+          8,
+          9
+        ],
+        "shadow_top3": [
+          6,
+          5,
+          7
+        ]
+      },
+      {
+        "race_id": "2026-07-26-02-01",
+        "race_date": "2026-07-26",
+        "prediction_id": 11,
+        "tie_size": 5,
+        "winner": 8,
+        "prediction_pick": 5,
+        "shadow_pick": 5,
+        "outcome": "draw",
+        "status": "resolved",
+        "used_feature": "trainer",
+        "used_tier": "S",
+        "cascade_stop": "trainer",
+        "prediction_winner_rank": 4,
+        "shadow_winner_rank": 4,
+        "tie_horse_numbers": [
+          5,
+          6,
+          7,
+          8,
+          9
+        ],
+        "shadow_top3": [
+          5,
+          6,
+          7
+        ]
+      },
+      {
+        "race_id": "2026-07-26-02-02",
+        "race_date": "2026-07-26",
+        "prediction_id": 12,
+        "tie_size": 2,
+        "winner": 3,
+        "prediction_pick": 5,
+        "shadow_pick": 6,
+        "outcome": "draw",
+        "status": "resolved",
+        "used_feature": "trainer",
+        "used_tier": "S",
+        "cascade_stop": "trainer",
+        "prediction_winner_rank": null,
+        "shadow_winner_rank": null,
+        "tie_horse_numbers": [
+          5,
+          6
+        ],
+        "shadow_top3": [
+          6,
+          5
+        ]
+      },
+      {
+        "race_id": "2026-07-25-01-02",
+        "race_date": "2026-07-25",
+        "prediction_id": 20,
+        "tie_size": 4,
+        "winner": 12,
+        "prediction_pick": 11,
+        "shadow_pick": 14,
+        "outcome": "draw",
+        "status": "resolved",
+        "used_feature": "owner",
+        "used_tier": "S",
+        "cascade_stop": "owner",
+        "prediction_winner_rank": 2,
+        "shadow_winner_rank": 3,
+        "tie_horse_numbers": [
+          11,
+          12,
+          13,
+          14
+        ],
+        "shadow_top3": [
+          14,
+          11,
+          12
+        ]
+      },
+      {
+        "race_id": "2026-07-25-01-03",
+        "race_date": "2026-07-25",
+        "prediction_id": 21,
+        "tie_size": 4,
+        "winner": 4,
+        "prediction_pick": 5,
+        "shadow_pick": 5,
+        "outcome": "draw",
+        "status": "resolved",
+        "used_feature": "trainer",
+        "used_tier": "S",
+        "cascade_stop": "trainer",
+        "prediction_winner_rank": null,
+        "shadow_winner_rank": null,
+        "tie_horse_numbers": [
+          5,
+          6,
+          7,
+          8
+        ],
+        "shadow_top3": [
+          5,
+          6,
+          7
+        ]
+      },
+      {
+        "race_id": "2026-07-25-02-01",
+        "race_date": "2026-07-25",
+        "prediction_id": 31,
+        "tie_size": 5,
+        "winner": 1,
+        "prediction_pick": 5,
+        "shadow_pick": 7,
+        "outcome": "draw",
+        "status": "resolved",
+        "used_feature": "owner",
+        "used_tier": "S",
+        "cascade_stop": "owner",
+        "prediction_winner_rank": null,
+        "shadow_winner_rank": null,
+        "tie_horse_numbers": [
+          5,
+          6,
+          7,
+          8,
+          9
+        ],
+        "shadow_top3": [
+          7,
+          5,
+          6
+        ]
+      },
+      {
+        "race_id": "2026-07-25-02-02",
+        "race_date": "2026-07-25",
+        "prediction_id": 32,
+        "tie_size": 8,
+        "winner": 11,
+        "prediction_pick": 6,
+        "shadow_pick": 7,
+        "outcome": "draw",
+        "status": "resolved",
+        "used_feature": "owner",
+        "used_tier": "S",
+        "cascade_stop": "owner",
+        "prediction_winner_rank": 6,
+        "shadow_winner_rank": 6,
+        "tie_horse_numbers": [
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13
+        ],
+        "shadow_top3": [
+          7,
+          6,
+          8
+        ]
+      },
+      {
+        "race_id": "2026-07-25-03-05",
+        "race_date": "2026-07-25",
+        "prediction_id": 47,
+        "tie_size": 2,
+        "winner": 1,
+        "prediction_pick": 5,
+        "shadow_pick": 6,
+        "outcome": "draw",
+        "status": "resolved",
+        "used_feature": "trainer",
+        "used_tier": "S",
+        "cascade_stop": "trainer",
+        "prediction_winner_rank": null,
+        "shadow_winner_rank": null,
+        "tie_horse_numbers": [
+          5,
+          6
+        ],
+        "shadow_top3": [
+          6,
+          5
+        ]
+      },
+      {
+        "race_id": "2026-07-26-03-05",
+        "race_date": "2026-07-26",
+        "prediction_id": 58,
+        "tie_size": 6,
+        "winner": 9,
+        "prediction_pick": 5,
+        "shadow_pick": 9,
+        "outcome": "win",
+        "status": "resolved",
+        "used_feature": "trainer",
+        "used_tier": "S",
+        "cascade_stop": "trainer",
+        "prediction_winner_rank": 5,
+        "shadow_winner_rank": 1,
+        "tie_horse_numbers": [
+          5,
+          6,
+          7,
+          8,
+          9,
+          10
+        ],
+        "shadow_top3": [
+          9,
+          5,
+          6
+        ]
+      }
+    ]
+  }
+}

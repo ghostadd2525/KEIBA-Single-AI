@@ -2,7 +2,7 @@
   "schema_version": "expect-beta-config/1.0",
   "beta_name": "Expect KEIBA AI — Invitation Beta",
   "maintenance_mode": false,
-  "maintenance_message": "ただいまメンテナンス中です。しばらくしてから再度お試しください。",
+  "maintenance_message": "ただいまメンテナンス中です（Research Week）。日曜 21:00 〜 土曜 0:00（JST）はご利用いただけません。公開再開後に再ログインしてください。",
   "ops_mode": null,
   "admin_user_ids": ["admin-20260721", "admin-smoke"],
   "terms_version": "2026-07-19",
@@ -27,7 +27,14 @@
     "v2_race_cards": true,
     "v2_race_list_ui": true,
     "v2_explain": true,
-    "v2_ops_dashboard": true
+    "v2_ops_dashboard": true,
+    "v8_research_enabled": true,
+    "v8_canary_candidate_pool": false,
+    "v8_canary_repick": false,
+    "v8_canary_delete": false,
+    "v8_canary_confidence": false,
+    "v8_production_canary": false,
+    "single_ai_detail": false
   },
-  "notes": "Version 2 Production Release 2026-07-22。v2_* および Ops Dashboard を ON。Accuracy PE は EC2 env。"
+  "notes": "Version8 Research flags reserved OFF for PE. v8_research_enabled gates weekly tooling only. single_ai_detail is detail-only (I3); list LOCK."
 }

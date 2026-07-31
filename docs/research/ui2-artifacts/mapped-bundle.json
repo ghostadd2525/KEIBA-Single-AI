@@ -1,0 +1,107 @@
+{
+  "schema_version": "single-prediction-bundle/2.0",
+  "race_id": "2026-07-19-hanshin-11",
+  "race_info": {
+    "race_id": "2026-07-19-hanshin-11",
+    "date": "2026-07-19",
+    "venue": "阪神",
+    "race_no": 11,
+    "post_time": "15:40",
+    "distance": null,
+    "surface": null,
+    "course": null,
+    "class_label": null,
+    "grade": "G2",
+    "field_size": 4,
+    "race_status": null,
+    "race_name": "UI2検証ステークス"
+  },
+  "evaluation": {
+    "status": "ok",
+    "world": null,
+    "sub_world": null,
+    "runners": [
+      {
+        "candidate_id": "c05",
+        "horse_number": 5,
+        "horse_name": "シャドウホース",
+        "model_rank": 1,
+        "win_prob": 0.32,
+        "mark": "honmei",
+        "mark_rank": 1,
+        "ability_scores": {
+          "history_score": 0.82,
+          "distance_score": 0.71,
+          "style_distance_fit_weight": 0.66,
+          "front_rate": 0.55,
+          "pace_collapse_risk_v2": 0.4
+        }
+      },
+      {
+        "candidate_id": "c03",
+        "horse_number": 3,
+        "horse_name": "対抗ホース",
+        "model_rank": 2,
+        "win_prob": 0.22,
+        "mark": "taikou",
+        "mark_rank": 1
+      },
+      {
+        "candidate_id": "c08",
+        "horse_number": 8,
+        "horse_name": "穴ホース",
+        "model_rank": 3,
+        "win_prob": 0.15,
+        "mark": "ana",
+        "mark_rank": 1
+      },
+      {
+        "candidate_id": "c02",
+        "horse_number": 2,
+        "horse_name": "中穴ホース",
+        "model_rank": 4,
+        "win_prob": 0.1,
+        "mark": "chuuken",
+        "mark_rank": 1
+      }
+    ]
+  },
+  "ai_confidence": {
+    "schema_version": "ai-confidence/1.0",
+    "status": "ok",
+    "score": 0.72,
+    "score_unit": "normalized",
+    "band": "medium",
+    "component_scores": {
+      "model_score": 0.74,
+      "segment_hit_rate": 0.61,
+      "segment_scope": "venue",
+      "segment_key": "阪神"
+    },
+    "factors": [],
+    "notes": null,
+    "computed_at": null
+  },
+  "explain": {
+    "meta": {
+      "world": null,
+      "sub_world": null
+    },
+    "reasons": [
+      {
+        "horse_number": 5,
+        "bullets": [
+          "脚質が条件に合う",
+          "距離実績が安定"
+        ]
+      }
+    ]
+  },
+  "betting_recommendations": {
+    "schema_version": "betting-recommendations/1.0",
+    "items": []
+  },
+  "warnings": [],
+  "model_version": null,
+  "generated_at": null
+}

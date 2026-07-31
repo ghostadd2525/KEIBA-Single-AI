@@ -1,0 +1,192 @@
+{
+  "title": "Version 1.1 Auto Maintenance 平日動作確認",
+  "at": "2026-07-21T04:52:29.259059+00:00",
+  "base": "http://127.0.0.1:8788",
+  "flag": {
+    "v11_auto_maintenance": true
+  },
+  "date_jst": "2026-07-21 (Mon)",
+  "public_status": {
+    "http": 200,
+    "ops_mode": "CLOSED",
+    "reason": "auto_calendar"
+  },
+  "cases": [
+    {
+      "id": "1",
+      "name": "ADMIN",
+      "verdict": "PASS",
+      "items": [
+        {
+          "check": "login",
+          "http": 200,
+          "url": "/api/auth/login",
+          "ok": true
+        },
+        {
+          "check": "top",
+          "url": "http://127.0.0.1:8788/",
+          "note": "maintenance に遷移しない",
+          "screenshot": "screenshots/verify-admin-home.png",
+          "ok": true
+        },
+        {
+          "check": "Race",
+          "url": "http://127.0.0.1:8788/race",
+          "screenshot": "screenshots/verify-admin-race.png",
+          "ok": true
+        },
+        {
+          "check": "Chat",
+          "url": "http://127.0.0.1:8788/chat",
+          "screenshot": "screenshots/verify-admin-chat.png",
+          "ok": true
+        },
+        {
+          "check": "Analysis",
+          "url": "http://127.0.0.1:8788/analysis",
+          "screenshot": "screenshots/verify-admin-analysis.png",
+          "ok": true
+        },
+        {
+          "check": "Prediction API",
+          "http": 200,
+          "url": "/api/predictions",
+          "ok": true
+        },
+        {
+          "check": "Conversation API",
+          "http": 200,
+          "url": "/api/conversation/chat",
+          "note": "OPS_CLOSED ではない",
+          "ok": true
+        }
+      ]
+    },
+    {
+      "id": "2",
+      "name": "一時ID",
+      "verdict": "PASS",
+      "items": [
+        {
+          "check": "invite/start",
+          "http": 200,
+          "url": "/api/auth/invite/start",
+          "ok": true
+        },
+        {
+          "check": "一時ID UI → setup",
+          "from": "/login",
+          "to": "/setup",
+          "screenshot": "screenshots/verify-invite-login-form.png",
+          "ok": true
+        },
+        {
+          "check": "setup 完了後遷移",
+          "to": "http://127.0.0.1:8788/maintenance",
+          "screenshot": "screenshots/verify-invite-after-setup-maintenance.png",
+          "ok": true
+        },
+        {
+          "check": "Race 直接",
+          "from": "/race",
+          "to": "http://127.0.0.1:8788/maintenance",
+          "ok": true
+        },
+        {
+          "check": "Prediction API",
+          "http": 503,
+          "code": "OPS_CLOSED",
+          "ok": true
+        },
+        {
+          "check": "Conversation API",
+          "http": 503,
+          "code": "OPS_CLOSED",
+          "ok": true
+        }
+      ]
+    },
+    {
+      "id": "3",
+      "name": "USER",
+      "verdict": "PASS",
+      "items": [
+        {
+          "check": "login",
+          "http": 200,
+          "url": "/api/auth/login",
+          "ok": true
+        },
+        {
+          "check": "ログイン後遷移",
+          "to": "http://127.0.0.1:8788/maintenance",
+          "screenshot": "screenshots/verify-user-maintenance.png",
+          "ok": true
+        },
+        {
+          "check": "Race 直接",
+          "from": "/race",
+          "to": "http://127.0.0.1:8788/maintenance",
+          "screenshot": "screenshots/verify-user-race-redirect.png",
+          "ok": true
+        },
+        {
+          "check": "Prediction API",
+          "http": 503,
+          "code": "OPS_CLOSED",
+          "ok": true
+        },
+        {
+          "check": "Conversation API",
+          "http": 503,
+          "code": "OPS_CLOSED",
+          "ok": true
+        }
+      ]
+    },
+    {
+      "id": "4",
+      "name": "手動優先",
+      "verdict": "PASS",
+      "items": [
+        {
+          "check": "maintenance_mode=true",
+          "ops_mode": "CLOSED",
+          "reason": "manual_maintenance_mode",
+          "pred_http": 503,
+          "code": "OPS_CLOSED",
+          "ok": true
+        },
+        {
+          "check": "ops_mode=CLOSED",
+          "ops_mode": "CLOSED",
+          "reason": "manual_ops_mode",
+          "pred_http": 503,
+          "code": "OPS_CLOSED",
+          "ok": true
+        },
+        {
+          "check": "ops_mode=PUBLIC",
+          "ops_mode": "PUBLIC",
+          "reason": "manual_ops_mode",
+          "pred_http": 200,
+          "note": "平日でも手動 PUBLIC が勝つ",
+          "ok": true
+        },
+        {
+          "check": "restore auto",
+          "ops_mode": "CLOSED",
+          "reason": "auto_calendar",
+          "pred_http": 503,
+          "ok": true
+        }
+      ]
+    }
+  ],
+  "overall": "PASS",
+  "notes": [
+    "検証中に ADMIN UI bypass（auto-maintenance.js）と SKIP_RE（pretty URL）を修正して再確認済み",
+    "ローカル beta.json は v11_auto_maintenance=true のまま（本番デフォルトは false）"
+  ]
+}

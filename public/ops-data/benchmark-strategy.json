@@ -1,0 +1,13 @@
+{
+  "current_strategy": "◎単勝1点",
+  "version": "9.0",
+  "since": "2026-07",
+  "last_updated": "2026-07-27",
+  "bet_types": ["単勝"],
+  "unit_stake": 100,
+  "feature_flag": "V9_BENCHMARK_LAYER",
+  "enabled": true,
+  "status": "Production Standard",
+  "purpose": "ai_prediction_performance",
+  "note": "Official Challenge AI KPI (Prediction performance). Purchase Lab is research-only."
+}

@@ -1,0 +1,108 @@
+{
+  "schema_version": "expect-v881-scheduler-publish/1.0",
+  "published_at": "2026-07-26T23:56:20.302Z",
+  "source": "development/scheduler",
+  "available": true,
+  "baseline_lock": "Version8.5",
+  "week_id": "2026-W31",
+  "current_phase": null,
+  "last_run_at": "2026-07-26T23:56:20.550Z",
+  "next_run": "2026-07-28T03:00:00+09:00",
+  "next_run_jst": "2026-07-28T03:00:00+09:00",
+  "recovery_active": false,
+  "recovery": "idle",
+  "success_count": 1,
+  "failure_count": 0,
+  "skip_count": 0,
+  "last_skip_reason": null,
+  "production_auto_apply": false,
+  "deploy_policy": null,
+  "phases": {
+    "analyzer": {
+      "status": "completed",
+      "started_at": "2026-07-26T23:56:20.318Z",
+      "ended_at": "2026-07-26T23:56:20.550Z",
+      "duration_ms": 232,
+      "exit_reason": "success"
+    },
+    "proposal": {
+      "status": "pending",
+      "started_at": null,
+      "ended_at": null,
+      "duration_ms": null,
+      "exit_reason": null
+    },
+    "validation": {
+      "status": "pending",
+      "started_at": null,
+      "ended_at": null,
+      "duration_ms": null,
+      "exit_reason": null
+    },
+    "canary": {
+      "status": "pending",
+      "started_at": null,
+      "ended_at": null,
+      "duration_ms": null,
+      "exit_reason": null
+    },
+    "baseline": {
+      "status": "pending",
+      "started_at": null,
+      "ended_at": null,
+      "duration_ms": null,
+      "exit_reason": null
+    },
+    "decision": {
+      "status": "pending",
+      "started_at": null,
+      "ended_at": null,
+      "duration_ms": null,
+      "exit_reason": null
+    },
+    "knowledge": {
+      "status": "pending",
+      "started_at": null,
+      "ended_at": null,
+      "duration_ms": null,
+      "exit_reason": null
+    },
+    "governance": {
+      "status": "pending",
+      "started_at": null,
+      "ended_at": null,
+      "duration_ms": null,
+      "exit_reason": null
+    },
+    "report": {
+      "status": "pending",
+      "started_at": null,
+      "ended_at": null,
+      "duration_ms": null,
+      "exit_reason": null
+    }
+  },
+  "display": {
+    "current_phase": null,
+    "next_run": "2026-07-28T03:00:00+09:00",
+    "last_run": "2026-07-26T23:56:20.550Z",
+    "recovery": false,
+    "success": 1,
+    "failure": 0,
+    "skip_reason": null
+  },
+  "history_tail": [
+    {
+      "week_id": "2026-W31",
+      "phase": "analyzer",
+      "label": "Analyzer",
+      "started_at": "2026-07-26T23:56:20.318Z",
+      "ended_at": "2026-07-26T23:56:20.550Z",
+      "duration_ms": 232,
+      "exit_reason": "success",
+      "recovery": false,
+      "ok": true
+    }
+  ],
+  "raw_updated_at": "2026-07-26T23:56:20.317Z"
+}

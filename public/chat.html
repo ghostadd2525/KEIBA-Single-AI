@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ja">
 <head>
   <meta charset="UTF-8" />
@@ -9,11 +9,11 @@
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Noto+Sans+JP:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="assets/styles.css" />
   <link rel="stylesheet" href="assets/screens.css" />
-  <link rel="stylesheet" href="assets/ux.css?v=14" />
+  <link rel="stylesheet" href="assets/ux.css?v=15" />
   <link rel="stylesheet" href="assets/vqa.css" />
   <script src="assets/api/calendar-weekend.js?v=14"></script>
-  <script src="assets/auto-maintenance.js?v=11.3"></script>
-  <script src="assets/auth.js?v=4"></script>
+  <script src="assets/auto-maintenance.js?v=12.4"></script>
+  <script src="assets/auth.js?v=6"></script>
   <script>
     if (ExpectAuth.requireAuth() && window.ExpectAutoMaintenance) {
       ExpectAutoMaintenance.run();
@@ -29,7 +29,7 @@
       <div class="topbar-inner">
         <div class="topbar-left chat-head">
           <a class="back-btn" id="chatBack" href="mypage.html" aria-label="戻る">‹</a>
-          <img src="assets/images/mascot-ka0ba.png?v=10" alt="" />
+          <img src="assets/images/mascot-ka0ba.webp?v=10" alt="" />
           <div class="brand-block topbar-text topbar-title-only">
             <h1 class="brand-name">KAOBA</h1>
           </div>
@@ -40,15 +40,11 @@
 
     <div class="screen chat-shell">
       <div class="chat-live2d-slot is-compact" id="live2dSlot" aria-label="KAOBA">
-        <button type="button" class="chat-live2d-dismiss" id="live2dDismiss" aria-label="閉じる">×</button>
         <span><strong>KAOBA</strong> がチャットでサポートします</span>
       </div>
       <div class="chat-log" id="chatLog"></div>
 
       <div class="chat-composer">
-        <div class="chat-return-row" id="chatReturnRow" hidden>
-          <a class="chat-return-link" id="chatReturnStrategy" href="strategy.html">← 買い目戦略に戻る</a>
-        </div>
         <div class="chat-quick chip-row" id="quickChips">
           <button type="button" class="chip" data-q="展開予想を教えて">展開予想</button>
           <button type="button" class="chip" data-q="オッズの動きは？">オッズ変動</button>
@@ -68,7 +64,7 @@
   </div>
   <script src="assets/api/mock-gate.js"></script>
   <script src="assets/api/auth.js"></script>
-  <script src="assets/api/conversation.js?v=7"></script>
+  <script src="assets/api/conversation.js?v=8"></script>
   <script src="assets/api/conversation-ui.js?v=7"></script>
   <script src="assets/api/kaoba.js"></script>
   <script src="assets/ux.js?v=14"></script>
@@ -119,21 +115,31 @@
           }
           if (back) back.href = "mypage.html";
         } else if (isExplain()) {
-          if (brand) brand.textContent = "KAOBA · ◎の理由";
-          if (input) input.placeholder = "◎の理由について聞く…";
+          if (brand) brand.textContent = "KAOBA · 予想の説明";
+          document.title = "Expect ～ KEIBA AI ～ · KAOBA · 予想の説明";
+          if (input) input.placeholder = "◎や馬について聞く…";
+          if (liveSpan) {
+            liveSpan.innerHTML = "<strong>KAOBA</strong> · 予想の見方を説明します";
+          }
           if (chips) {
             chips.innerHTML =
-              '<button type="button" class="chip" data-q="なぜ本命なの？理由を教えて">本命の理由</button>' +
-              '<button type="button" class="chip" data-q="対抗との違いは？">対抗との差</button>';
+              '<button type="button" class="chip" data-q="なぜ本命なの？理由を教えて">なぜ本命？</button>' +
+              '<button type="button" class="chip" data-q="2番との差は？">2番との差</button>' +
+              '<button type="button" class="chip" data-q="不安材料は？">不安材料</button>' +
+              '<button type="button" class="chip" data-q="穴馬は？">穴馬</button>';
           }
         } else if (isReview()) {
-          if (brand) brand.textContent = "KAOBA · 相談";
-          if (input) input.placeholder = "予想について相談する…";
+          if (brand) brand.textContent = "相談AI";
+          document.title = "Expect ～ KEIBA AI ～ · 相談AI";
+          if (input) input.placeholder = "買い方や立ち回りを相談…";
+          if (liveSpan) {
+            liveSpan.innerHTML = "<strong>相談AI</strong> · レース全体・買い方を一緒に考える";
+          }
           if (chips) {
             chips.innerHTML =
-              '<button type="button" class="chip" data-q="この予想について相談したい">相談する</button>' +
-              '<button type="button" class="chip" data-q="リスクはどこ？">リスク</button>' +
-              '<button type="button" class="chip" data-q="展開の注目点は？">展開</button>';
+              '<button type="button" class="chip" data-q="この買い方どう？">この買い方どう？</button>' +
+              '<button type="button" class="chip" data-q="見送るべき？">見送るべき？</button>' +
+              '<button type="button" class="chip" data-q="初心者なら？">初心者なら？</button>';
           }
         }
       })();
@@ -143,7 +149,7 @@
         var row = document.createElement("div");
         row.className = "msg msg-" + who;
         if (who === "ai") {
-          row.innerHTML = '<img src="assets/images/mascot-ka0ba.png?v=10" alt="" /><div class="msg-bubble"></div>';
+          row.innerHTML = '<img src="assets/images/mascot-ka0ba.webp?v=10" alt="" /><div class="msg-bubble"></div>';
         } else {
           row.innerHTML = '<div class="msg-bubble"></div>';
         }
@@ -156,72 +162,58 @@
         return row;
       }
 
-      function buildStrategyReview(ctx) {
-        var ai = ctx.ai || {};
-        var axis = ctx.axis || {};
-        var overall = Number(ai.overall) || 0;
-        var grade =
-          overall >= 90 ? "かなり自信あり" : overall >= 80 ? "前向きに狙える" : overall >= 70 ? "様子見しつつ少点数" : "抑えめが安心";
-        var topTicket = (ctx.tickets && ctx.tickets[0]) || null;
-        var rival = (ctx.rivals && ctx.rivals[0]) || null;
-
-        var html =
-          "受け取ったよ！詳細戦略を評価するね。<br><br>" +
-          "<strong>" +
-          (ctx.place || "対象レース") +
-          (ctx.name ? " " + ctx.name : "") +
-          "</strong> の戦略、総合は <strong>" +
-          grade +
-          "</strong>（AI " +
-          (ai.overall || "—") +
-          "%）。<br><br>" +
-          "■ 評価ポイント<br>" +
-          "・軸の <strong>" +
-          (axis.num || "") +
-          " " +
-          (axis.name || "本命") +
-          "</strong> は明確で良いよ<br>" +
-          "・パラメータは近走" +
-          (ai.history || ai.pedigree || "—") +
-          " / 距離" +
-          (ai.distance || ai.pace || "—") +
-          " / 脚質×距離" +
-          (ai.style_fit || ai.style || ai.jockey || "—") +
-          " が特に効いてる<br>";
-
-        if (rival) {
-          html +=
-            "・相手筆頭の <strong>" +
-            rival.num +
-            " " +
-            rival.name +
-            "</strong>（" +
-            rival.role +
-            "）も妥当<br>";
+      /** API不通時の短い会話フォールバック（レポート形式にしない） */
+      function buildStrategyChatFallback(ctx, question) {
+        var axis = (ctx && ctx.axis) || {};
+        var axisLabel =
+          (axis.num ? axis.num + "番" : "") + (axis.name || "中心の馬");
+        var q = String(question || "");
+        if (/穴/.test(q)) {
+          return (
+            "穴は相手の端に1頭まで、がおすすめだよ。\n" +
+            "理由は、点数を守りつつ波乱にも少し触れるため。\n" +
+            "くわしい候補名は、予想画面の印もあわせて見てね。"
+          );
         }
-
-        html += "<br>■ 改善アドバイス<br>";
-        if (overall >= 85) {
-          html += "・主軸配分を少し厚めにして、三連単は今の点数のままでOK<br>";
-        } else {
-          html += "・三連単は抑えめにして、ワイド〜馬連中心に寄せると安定するよ<br>";
+        if (/少額|予算/.test(q)) {
+          return (
+            "少額なら、主軸（馬連・ワイド）だけに寄せるのがおすすめだよ。\n" +
+            "保険や一発は後回しにして、総額を普段どおりに抑えよう。\n" +
+            "軸の " +
+            axisLabel +
+            " 中心はそのままで大丈夫。"
+          );
         }
-        if (topTicket) {
-          html +=
-            "・いちばん優先すべきは <strong>" +
-            topTicket.type +
-            "</strong>（" +
-            topTicket.legs +
-            "）<br>";
+        if (/雨|馬場|重馬場|不良/.test(q)) {
+          return (
+            "雨なら、想定より前が残るか崩れやすいかが変わりやすいよ。\n" +
+            "軸は変えず、相手を1頭増やすか減らすかで調整するのが無難。\n" +
+            "馬場発表を見てから最終判断しよう。"
+          );
         }
-        html +=
-          "・波乱シナリオ用の穴は1頭までに限定して点数を守ろう<br><br>" +
-          "■ 最終おすすめ<br>" +
-          "このままの軸で進めて大丈夫。資金は合計 " +
-          ((ctx.bankroll && ctx.bankroll.total) || "推奨額") +
-          " を上限に、<strong>主軸 → 保険 → 一発</strong> の順で入れてね！";
-
-        return html;
+        if (/オッズ/.test(q)) {
+          return (
+            "オッズが動いても、軸をすぐ変えないのがおすすめだよ。\n" +
+            "人気が急上昇した相手は点数を少し抑え、穴側は増やしすぎない。\n" +
+            "総額の上限は戦略画面のまま守ろう。"
+          );
+        }
+        if (/◎|本命|詳しく/.test(q)) {
+          return (
+            "中心は " +
+            axisLabel +
+            " で見るのがよさそうだよ。\n" +
+            "戦略でも同じ軸を前提にしているから、まずはこの馬の形を確認しよう。\n" +
+            "差や不安材料も聞きたいときは、そのまま聞いてね。"
+          );
+        }
+        return (
+          "この買い方なら、軸の " +
+          axisLabel +
+          " を中心に進めて大丈夫だと思うよ。\n" +
+          "大きく崩すより、点数と総額を守るほうが安心。\n" +
+          "穴馬・少額・雨・オッズの話も、気になるところから聞いてね。"
+        );
       }
 
       function setBusy(on) {
@@ -325,19 +317,19 @@
             ExpectUx.scrollLogToBottom(log);
           }
 
-          if (options.strategyReply && strategyCtx && !window.ExpectApi) {
-            var html = buildStrategyReview(strategyCtx);
-            addMsg(html, "ai", true);
-            history.push({ role: "assistant", content: html.replace(/<[^>]+>/g, "") });
+          if (options.localFallback && strategyCtx && !window.ExpectApi) {
+            var plain = buildStrategyChatFallback(strategyCtx, text);
+            addMsg(plain.replace(/\n/g, "<br>"), "ai", true);
+            history.push({ role: "assistant", content: plain });
             setBusy(false);
             return;
           }
 
           if (!window.ExpectApi || (!ExpectApi.Conversation && !ExpectApi.Kaoba)) {
-            if (options.strategyReply && strategyCtx) {
-              var local = buildStrategyReview(strategyCtx);
-              addMsg(local, "ai", true);
-              history.push({ role: "assistant", content: local.replace(/<[^>]+>/g, "") });
+            if (strategyCtx) {
+              var local = buildStrategyChatFallback(strategyCtx, text);
+              addMsg(local.replace(/\n/g, "<br>"), "ai", true);
+              history.push({ role: "assistant", content: local });
             } else {
               addMsg("API クライアントが読み込めていないよ。", "ai");
             }
@@ -347,10 +339,10 @@
 
           dispatchChat(text)
             .catch(function () {
-              if (options.strategyReply && strategyCtx) {
-                var fallback = buildStrategyReview(strategyCtx);
-                addMsg(fallback, "ai", true);
-                history.push({ role: "assistant", content: fallback.replace(/<[^>]+>/g, "") });
+              if (strategyCtx) {
+                var fallback = buildStrategyChatFallback(strategyCtx, text);
+                addMsg(fallback.replace(/\n/g, "<br>"), "ai", true);
+                history.push({ role: "assistant", content: fallback });
               } else {
                 addMsg("いま通信が不安定みたい。少し待ってからもう一度ね。", "ai");
               }
@@ -375,51 +367,33 @@
       }
 
       var live2d = document.getElementById("live2dSlot");
-      var live2dDismiss = document.getElementById("live2dDismiss");
-      if (live2dDismiss && live2d) {
-        live2dDismiss.addEventListener("click", function () {
-          live2d.hidden = true;
-        });
-      }
 
       // 初期表示
       if (fromStrategy) {
         strategyCtx = readStrategyContext();
-        var returnRow = document.getElementById("chatReturnRow");
-        var returnLink = document.getElementById("chatReturnStrategy");
         if (back && raceId) {
           back.href = "strategy.html?race_id=" + encodeURIComponent(raceId);
         } else if (back) {
           back.href = "races.html";
         }
-        if (returnRow) returnRow.hidden = false;
-        if (returnLink && raceId) {
-          returnLink.href = "strategy.html?race_id=" + encodeURIComponent(raceId);
-        }
 
-        addMsg("買い目戦略を受け取ったよ。内容を確認して評価するね！", "ai");
-
-        if (strategyCtx && strategyCtx.summaryText) {
-          setTimeout(function () {
-            send(strategyCtx.summaryText, {
-              strategyReply: true,
-              delay: 700,
-              userDisplay: strategyCtx.displaySummary || "この戦略を評価して",
-            });
-          }, 350);
-        } else {
-          setTimeout(function () {
-            addMsg(
-              "戦略データの読み込みに失敗したみたい。戦略画面からもう一度「KAOBAに相談する」を押してみてね。",
-              "ai"
-            );
-          }, 400);
-        }
+        var openPlace =
+          (strategyCtx && (strategyCtx.place || strategyCtx.name)) || "";
+        var openAxis =
+          strategyCtx && strategyCtx.axis
+            ? (strategyCtx.axis.num ? strategyCtx.axis.num + "番" : "") +
+              (strategyCtx.axis.name || "")
+            : "";
+        var opening =
+          "買い目戦略を確認したよ。気になることがあれば一緒に見ていこう。" +
+          (openPlace ? "\n" + openPlace + "の買い方や立ち回り、何でも聞いてね。" : "") +
+          (openAxis ? "\nいまの軸は " + openAxis.trim() + " だよ。" : "");
+        addMsg(opening, "ai");
       } else if (isExplain()) {
         if (back && raceId) back.href = "race.html?race_id=" + encodeURIComponent(raceId);
-        addMsg("◎の理由について説明するよ。Prediction の結果は変えずに話すね。", "ai");
+        addMsg("こんにちは！◎の理由や馬の見方について、気になることがあれば聞いてね😊", "ai");
         setTimeout(function () {
-          var apiText = promptParam || "なぜ本命（◎）なの？理由を教えて。印や順位は変えなくていいよ。";
+          var apiText = promptParam || "なぜ本命（◎）なの？理由を教えて";
           send(apiText, {
             delay: 400,
             userDisplay: displayParam || "◎の理由を教えて",
@@ -427,7 +401,7 @@
         }, 350);
       } else if (isReview()) {
         if (back && raceId) back.href = "race.html?race_id=" + encodeURIComponent(raceId);
-        addMsg("この予想について相談できるよ。気になる点を聞いてね（印は変更しないよ）。", "ai");
+        addMsg("相談AIだよ。このレースの買い方や立ち回りを一緒に考えよう。", "ai");
         if (promptParam) {
           setTimeout(function () {
             send(promptParam, {
@@ -455,27 +429,15 @@
 
       form.addEventListener("submit", function (e) {
         e.preventDefault();
-        var text = input.value;
-        // 戦略相談の続きなら、評価トーンで返す
-        if (strategyCtx && /評価|買い目|戦略|どう思う|改善/.test(text)) {
-          send(text, { strategyReply: true });
-        } else {
-          send(text);
-        }
+        send(input.value);
       });
 
       document.getElementById("quickChips").addEventListener("click", function (e) {
         var chip = e.target.closest("[data-q]");
         if (!chip) return;
-        if (strategyCtx && chip.getAttribute("data-q") === "買い目を提案して") {
-          send("この戦略の買い目をもう少し最適化して", { strategyReply: true });
-        } else {
-          send(chip.getAttribute("data-q"));
-        }
+        send(chip.getAttribute("data-q"));
       });
     })();
   </script>
 </body>
 </html>
-
- -->

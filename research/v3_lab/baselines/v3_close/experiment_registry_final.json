@@ -1,0 +1,30 @@
+{
+  "close_id": "v3-close/1.0",
+  "date": "2026-07-24",
+  "status": "CLOSED",
+  "decisions": {
+    "prr": "HOLD",
+    "go_nogo": "NO-GO",
+    "production_integration": "Design Complete",
+    "a05": "Official Production Candidate",
+    "a03": "Deprecated"
+  },
+  "experiments": [
+    {"id": "v3-p1-lab-harness", "status": "complete"},
+    {"id": "v3-p2-representation", "status": "complete"},
+    {"id": "v3-p3-admission", "status": "complete"},
+    {"id": "v3-p4-selection", "status": "complete"},
+    {"id": "v3-p5-freeze", "status": "complete"},
+    {"id": "v3-a01-d1", "status": "PASS", "role": "stack_component"},
+    {"id": "v3-a02-d2", "status": "PASS", "role": "secondary"},
+    {"id": "v3-a03-pool-coverage", "status": "Deprecated", "offline": "FAIL"},
+    {"id": "v3-a04-sel-history", "status": "PASS", "role": "stack_component"},
+    {"id": "v3-lab-baseline-v3", "status": "archive", "production": "forbidden"},
+    {"id": "v3-a05-favorite-safe-coverage", "status": "PASS", "role": "Official Production Candidate"},
+    {"id": "v3-a05-shadow-s0", "status": "PASS"},
+    {"id": "v3-a05-shadow-s1", "status": "PASS"},
+    {"id": "v3-prr-final", "status": "HOLD"},
+    {"id": "v3-production-integration-design", "status": "PASS", "implemented": false},
+    {"id": "v3-close", "status": "CLOSED"}
+  ]
+}

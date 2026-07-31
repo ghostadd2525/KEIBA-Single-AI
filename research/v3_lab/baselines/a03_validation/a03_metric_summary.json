@@ -1,0 +1,74 @@
+{
+  "a03_solo": {
+    "control": {
+      "n": 285,
+      "hit": 218,
+      "miss": 67,
+      "purchase": 218,
+      "rank710": 9,
+      "rank46": 6,
+      "other": 52,
+      "roi": 1.1418,
+      "stake_total": 28500.0,
+      "return_total": 61040.0
+    },
+    "treatment": {
+      "n": 285,
+      "hit": 227,
+      "miss": 58,
+      "purchase": 227,
+      "rank710": 0,
+      "rank46": 6,
+      "other": 52,
+      "roi": 2.4049,
+      "stake_total": 28500.0,
+      "return_total": 97040.0
+    },
+    "delta": {
+      "hit": 9,
+      "purchase": 9,
+      "rank710": -9,
+      "rank46": 0,
+      "other": 0,
+      "roi": 1.2631
+    },
+    "churn_hit": 0,
+    "roi_def": "flat 100yen/race on top pick; ROI=(return-stake)/stake"
+  },
+  "a01_plus_a03": {
+    "control": {
+      "n": 285,
+      "hit": 246,
+      "miss": 39,
+      "purchase": 246,
+      "rank710": 9,
+      "rank46": 6,
+      "other": 24,
+      "roi": 1.4463,
+      "stake_total": 28500.0,
+      "return_total": 69720.0
+    },
+    "treatment": {
+      "n": 285,
+      "hit": 255,
+      "miss": 30,
+      "purchase": 255,
+      "rank710": 0,
+      "rank46": 6,
+      "other": 24,
+      "roi": 2.7095,
+      "stake_total": 28500.0,
+      "return_total": 105720.0
+    },
+    "delta": {
+      "hit": 9,
+      "purchase": 9,
+      "rank710": -9,
+      "rank46": 0,
+      "other": 0,
+      "roi": 1.2632
+    },
+    "churn_hit": 0,
+    "roi_def": "flat 100yen/race on top pick; ROI=(return-stake)/stake"
+  }
+}

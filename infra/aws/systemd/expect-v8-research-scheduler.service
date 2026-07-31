@@ -1,0 +1,18 @@
+[Unit]
+Description=Expect V8.6 Research Scheduler (daily orchestrator)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=expect
+Group=expect
+WorkingDirectory=/opt/expect-ai/current
+Environment=TZ=Asia/Tokyo
+EnvironmentFile=-/etc/expect-ai/v8-research-scheduler.env
+# Single runner — decides Mon–Fri phase or skip (Sat/Sun / Public window)
+ExecStart=/usr/bin/node /opt/expect-ai/current/scripts/ops/v8/runner.mjs
+Nice=10
+
+[Install]
+WantedBy=multi-user.target

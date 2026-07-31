@@ -1,0 +1,46 @@
+{
+  "http_ok": true,
+  "top_keys": [
+    "ok",
+    "data",
+    "meta"
+  ],
+  "data_keys": [
+    "ai",
+    "ai_book",
+    "ai_races",
+    "ai_summary",
+    "ai_weeks",
+    "benchmark_strategy",
+    "comparison",
+    "design_policy",
+    "feature_flags",
+    "month",
+    "progress",
+    "schema_version",
+    "user",
+    "user_races",
+    "user_summary",
+    "user_weeks",
+    "weeks_compare"
+  ],
+  "schema_version": "expect-challenge-compare/1.1",
+  "feature_flags": {
+    "v9_benchmark_layer": false
+  },
+  "comparison_source": "ai_legacy_book",
+  "ai_profit": -54380,
+  "ai_summary_profit": -54380,
+  "has_benchmark": false,
+  "has_purchase_lab": false,
+  "ai_book": {
+    "bet_types": [
+      "馬連",
+      "ワイド",
+      "三連複",
+      "三連単"
+    ],
+    "unit_stake": 100,
+    "label": null
+  }
+}

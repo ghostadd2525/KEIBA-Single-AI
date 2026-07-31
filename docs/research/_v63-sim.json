@@ -1,0 +1,1869 @@
+{
+  "schema": "v63-pe-integration-roi/1.0",
+  "primary_mode": "legacy",
+  "integration_point": {
+    "current_v35": "Feature→Scorer→Ranker→Prediction; World is post-label only",
+    "simulated": "Virtual PE Policy after frozen scores: (1-w)*norm(win_prob)+w*norm(WorldRankKernel)",
+    "design_ref": "docs/architecture/v36-world-pe-integration.md (Option C)",
+    "kernel_ref": "services/win5-ai/app/research/world_pe_policy_sim.py WORLD_RANK_KERNEL"
+  },
+  "metric_note": {
+    "pe_ranking_hit": "policy/base top1 horse_id == winner_id",
+    "fixture_hit_at_1": 218,
+    "predicted_top1_eq_winner": 59,
+    "note": "fixture hit_at_1 is NOT identical to top1 correctness; V63 ROI uses PE ranking Hit only (no speculation on fixture label).",
+    "purchase_proxy": "same as PE ranking hit (V34/V37)"
+  },
+  "modes": {
+    "legacy": {
+      "n": 285,
+      "skipped": {},
+      "world_dist": {
+        "midupper_world": 110,
+        "core_world": 104,
+        "mixed_world": 56,
+        "midhole_world": 15
+      },
+      "baseline_hit": 59,
+      "by_weight": {
+        "0.0": {
+          "weight": 0.0,
+          "baseline": {
+            "n": 285,
+            "hit": 59,
+            "hit_rate": 0.20701754385964913,
+            "purchase": 59,
+            "purchase_rate": 0.20701754385964913,
+            "rank46": 101,
+            "rank710": 37,
+            "other_1_3": 65,
+            "other_10_13": 18,
+            "other": 5,
+            "other_miss": 88
+          },
+          "policy": {
+            "n": 285,
+            "hit": 59,
+            "hit_rate": 0.20701754385964913,
+            "purchase": 59,
+            "purchase_rate": 0.20701754385964913,
+            "rank46": 101,
+            "rank710": 37,
+            "other_1_3": 65,
+            "other_10_13": 18,
+            "other": 5,
+            "other_miss": 88
+          },
+          "delta": {
+            "hit": 0,
+            "purchase": 0,
+            "rank46": 0,
+            "rank710": 0,
+            "other_1_3": 0,
+            "other_10_13": 0,
+            "other_miss": 0
+          },
+          "ranking_diff": {
+            "races_top1_changed": 0,
+            "races_top1_change_rate": 0.0,
+            "races_top3_changed": 0,
+            "races_top3_change_rate": 0.0,
+            "mean_horses_rank_changed_per_race": 0.0,
+            "mean_abs_candidate_rank_move": 0.0,
+            "prediction_rank_changed_races": 0
+          },
+          "world_influence": {
+            "core_world": {
+              "n": 104,
+              "top1_changed": 0,
+              "top1_change_rate": 0.0,
+              "base_hit": 22,
+              "policy_hit": 22,
+              "hit_delta": 0
+            },
+            "midhole_world": {
+              "n": 15,
+              "top1_changed": 0,
+              "top1_change_rate": 0.0,
+              "base_hit": 5,
+              "policy_hit": 5,
+              "hit_delta": 0
+            },
+            "midupper_world": {
+              "n": 110,
+              "top1_changed": 0,
+              "top1_change_rate": 0.0,
+              "base_hit": 25,
+              "policy_hit": 25,
+              "hit_delta": 0
+            },
+            "mixed_world": {
+              "n": 56,
+              "top1_changed": 0,
+              "top1_change_rate": 0.0,
+              "base_hit": 7,
+              "policy_hit": 7,
+              "hit_delta": 0
+            }
+          }
+        },
+        "0.25": {
+          "weight": 0.25,
+          "baseline": {
+            "n": 285,
+            "hit": 59,
+            "hit_rate": 0.20701754385964913,
+            "purchase": 59,
+            "purchase_rate": 0.20701754385964913,
+            "rank46": 101,
+            "rank710": 37,
+            "other_1_3": 65,
+            "other_10_13": 18,
+            "other": 5,
+            "other_miss": 88
+          },
+          "policy": {
+            "n": 285,
+            "hit": 54,
+            "hit_rate": 0.18947368421052632,
+            "purchase": 54,
+            "purchase_rate": 0.18947368421052632,
+            "rank46": 99,
+            "rank710": 39,
+            "other_1_3": 71,
+            "other_10_13": 18,
+            "other": 4,
+            "other_miss": 93
+          },
+          "delta": {
+            "hit": -5,
+            "purchase": -5,
+            "rank46": -2,
+            "rank710": 2,
+            "other_1_3": 6,
+            "other_10_13": 0,
+            "other_miss": 5
+          },
+          "ranking_diff": {
+            "races_top1_changed": 42,
+            "races_top1_change_rate": 0.14736842105263157,
+            "races_top3_changed": 23,
+            "races_top3_change_rate": 0.08070175438596491,
+            "mean_horses_rank_changed_per_race": 0.8666666666666667,
+            "mean_abs_candidate_rank_move": 0.12572115384615384,
+            "prediction_rank_changed_races": 69
+          },
+          "world_influence": {
+            "core_world": {
+              "n": 104,
+              "top1_changed": 0,
+              "top1_change_rate": 0.0,
+              "base_hit": 22,
+              "policy_hit": 22,
+              "hit_delta": 0
+            },
+            "midhole_world": {
+              "n": 15,
+              "top1_changed": 3,
+              "top1_change_rate": 0.2,
+              "base_hit": 5,
+              "policy_hit": 4,
+              "hit_delta": -1
+            },
+            "midupper_world": {
+              "n": 110,
+              "top1_changed": 27,
+              "top1_change_rate": 0.24545454545454545,
+              "base_hit": 25,
+              "policy_hit": 23,
+              "hit_delta": -2
+            },
+            "mixed_world": {
+              "n": 56,
+              "top1_changed": 12,
+              "top1_change_rate": 0.21428571428571427,
+              "base_hit": 7,
+              "policy_hit": 5,
+              "hit_delta": -2
+            }
+          }
+        },
+        "0.5": {
+          "weight": 0.5,
+          "baseline": {
+            "n": 285,
+            "hit": 59,
+            "hit_rate": 0.20701754385964913,
+            "purchase": 59,
+            "purchase_rate": 0.20701754385964913,
+            "rank46": 101,
+            "rank710": 37,
+            "other_1_3": 65,
+            "other_10_13": 18,
+            "other": 5,
+            "other_miss": 88
+          },
+          "policy": {
+            "n": 285,
+            "hit": 51,
+            "hit_rate": 0.17894736842105263,
+            "purchase": 51,
+            "purchase_rate": 0.17894736842105263,
+            "rank46": 103,
+            "rank710": 44,
+            "other_1_3": 65,
+            "other_10_13": 18,
+            "other": 4,
+            "other_miss": 87
+          },
+          "delta": {
+            "hit": -8,
+            "purchase": -8,
+            "rank46": 2,
+            "rank710": 7,
+            "other_1_3": 0,
+            "other_10_13": 0,
+            "other_miss": -1
+          },
+          "ranking_diff": {
+            "races_top1_changed": 123,
+            "races_top1_change_rate": 0.43157894736842106,
+            "races_top3_changed": 79,
+            "races_top3_change_rate": 0.2771929824561403,
+            "mean_horses_rank_changed_per_race": 2.221052631578947,
+            "mean_abs_candidate_rank_move": 0.34447115384615384,
+            "prediction_rank_changed_races": 139
+          },
+          "world_influence": {
+            "core_world": {
+              "n": 104,
+              "top1_changed": 0,
+              "top1_change_rate": 0.0,
+              "base_hit": 22,
+              "policy_hit": 22,
+              "hit_delta": 0
+            },
+            "midhole_world": {
+              "n": 15,
+              "top1_changed": 15,
+              "top1_change_rate": 1.0,
+              "base_hit": 5,
+              "policy_hit": 0,
+              "hit_delta": -5
+            },
+            "midupper_world": {
+              "n": 110,
+              "top1_changed": 69,
+              "top1_change_rate": 0.6272727272727273,
+              "base_hit": 25,
+              "policy_hit": 19,
+              "hit_delta": -6
+            },
+            "mixed_world": {
+              "n": 56,
+              "top1_changed": 39,
+              "top1_change_rate": 0.6964285714285714,
+              "base_hit": 7,
+              "policy_hit": 10,
+              "hit_delta": 3
+            }
+          }
+        },
+        "0.75": {
+          "weight": 0.75,
+          "baseline": {
+            "n": 285,
+            "hit": 59,
+            "hit_rate": 0.20701754385964913,
+            "purchase": 59,
+            "purchase_rate": 0.20701754385964913,
+            "rank46": 101,
+            "rank710": 37,
+            "other_1_3": 65,
+            "other_10_13": 18,
+            "other": 5,
+            "other_miss": 88
+          },
+          "policy": {
+            "n": 285,
+            "hit": 37,
+            "hit_rate": 0.12982456140350876,
+            "purchase": 37,
+            "purchase_rate": 0.12982456140350876,
+            "rank46": 108,
+            "rank710": 48,
+            "other_1_3": 69,
+            "other_10_13": 19,
+            "other": 4,
+            "other_miss": 92
+          },
+          "delta": {
+            "hit": -22,
+            "purchase": -22,
+            "rank46": 7,
+            "rank710": 11,
+            "other_1_3": 4,
+            "other_10_13": 1,
+            "other_miss": 4
+          },
+          "ranking_diff": {
+            "races_top1_changed": 180,
+            "races_top1_change_rate": 0.631578947368421,
+            "races_top3_changed": 178,
+            "races_top3_change_rate": 0.624561403508772,
+            "mean_horses_rank_changed_per_race": 3.9719298245614034,
+            "mean_abs_candidate_rank_move": 0.6228365384615384,
+            "prediction_rank_changed_races": 184
+          },
+          "world_influence": {
+            "core_world": {
+              "n": 104,
+              "top1_changed": 0,
+              "top1_change_rate": 0.0,
+              "base_hit": 22,
+              "policy_hit": 22,
+              "hit_delta": 0
+            },
+            "midhole_world": {
+              "n": 15,
+              "top1_changed": 15,
+              "top1_change_rate": 1.0,
+              "base_hit": 5,
+              "policy_hit": 0,
+              "hit_delta": -5
+            },
+            "midupper_world": {
+              "n": 110,
+              "top1_changed": 109,
+              "top1_change_rate": 0.990909090909091,
+              "base_hit": 25,
+              "policy_hit": 8,
+              "hit_delta": -17
+            },
+            "mixed_world": {
+              "n": 56,
+              "top1_changed": 56,
+              "top1_change_rate": 1.0,
+              "base_hit": 7,
+              "policy_hit": 7,
+              "hit_delta": 0
+            }
+          }
+        },
+        "1.0": {
+          "weight": 1.0,
+          "baseline": {
+            "n": 285,
+            "hit": 59,
+            "hit_rate": 0.20701754385964913,
+            "purchase": 59,
+            "purchase_rate": 0.20701754385964913,
+            "rank46": 101,
+            "rank710": 37,
+            "other_1_3": 65,
+            "other_10_13": 18,
+            "other": 5,
+            "other_miss": 88
+          },
+          "policy": {
+            "n": 285,
+            "hit": 104,
+            "hit_rate": 0.3649122807017544,
+            "purchase": 104,
+            "purchase_rate": 0.3649122807017544,
+            "rank46": 92,
+            "rank710": 40,
+            "other_1_3": 22,
+            "other_10_13": 23,
+            "other": 4,
+            "other_miss": 49
+          },
+          "delta": {
+            "hit": 45,
+            "purchase": 45,
+            "rank46": -9,
+            "rank710": 3,
+            "other_1_3": -43,
+            "other_10_13": 5,
+            "other_miss": -39
+          },
+          "ranking_diff": {
+            "races_top1_changed": 227,
+            "races_top1_change_rate": 0.7964912280701755,
+            "races_top3_changed": 181,
+            "races_top3_change_rate": 0.6350877192982456,
+            "mean_horses_rank_changed_per_race": 4.312280701754386,
+            "mean_abs_candidate_rank_move": 0.8161057692307693,
+            "prediction_rank_changed_races": 231
+          },
+          "world_influence": {
+            "core_world": {
+              "n": 104,
+              "top1_changed": 46,
+              "top1_change_rate": 0.4423076923076923,
+              "base_hit": 22,
+              "policy_hit": 25,
+              "hit_delta": 3
+            },
+            "midhole_world": {
+              "n": 15,
+              "top1_changed": 15,
+              "top1_change_rate": 1.0,
+              "base_hit": 5,
+              "policy_hit": 2,
+              "hit_delta": -3
+            },
+            "midupper_world": {
+              "n": 110,
+              "top1_changed": 110,
+              "top1_change_rate": 1.0,
+              "base_hit": 25,
+              "policy_hit": 50,
+              "hit_delta": 25
+            },
+            "mixed_world": {
+              "n": 56,
+              "top1_changed": 56,
+              "top1_change_rate": 1.0,
+              "base_hit": 7,
+              "policy_hit": 27,
+              "hit_delta": 20
+            }
+          }
+        }
+      },
+      "governance": {
+        "grade": "B",
+        "reason": "Hit↑ exists but NI violated (rank710/other_miss) — ROI limited/unsafe",
+        "final_pass_roi": false,
+        "any_ni": false,
+        "any_hit_up": true,
+        "max_hit_delta": 45,
+        "by_weight": {
+          "0.25": {
+            "hit_ge_baseline": false,
+            "rank710_not_worse": false,
+            "other_miss_not_worse": false,
+            "meaningful_pe_influence": true,
+            "hit_improved": false,
+            "ni_with_influence": false,
+            "delta": {
+              "hit": -5,
+              "purchase": -5,
+              "rank46": -2,
+              "rank710": 2,
+              "other_1_3": 6,
+              "other_10_13": 0,
+              "other_miss": 5
+            },
+            "top1_change_rate": 0.14736842105263157
+          },
+          "0.5": {
+            "hit_ge_baseline": false,
+            "rank710_not_worse": false,
+            "other_miss_not_worse": true,
+            "meaningful_pe_influence": true,
+            "hit_improved": false,
+            "ni_with_influence": false,
+            "delta": {
+              "hit": -8,
+              "purchase": -8,
+              "rank46": 2,
+              "rank710": 7,
+              "other_1_3": 0,
+              "other_10_13": 0,
+              "other_miss": -1
+            },
+            "top1_change_rate": 0.43157894736842106
+          },
+          "0.75": {
+            "hit_ge_baseline": false,
+            "rank710_not_worse": false,
+            "other_miss_not_worse": false,
+            "meaningful_pe_influence": true,
+            "hit_improved": false,
+            "ni_with_influence": false,
+            "delta": {
+              "hit": -22,
+              "purchase": -22,
+              "rank46": 7,
+              "rank710": 11,
+              "other_1_3": 4,
+              "other_10_13": 1,
+              "other_miss": 4
+            },
+            "top1_change_rate": 0.631578947368421
+          },
+          "1.0": {
+            "hit_ge_baseline": true,
+            "rank710_not_worse": false,
+            "other_miss_not_worse": true,
+            "meaningful_pe_influence": true,
+            "hit_improved": true,
+            "ni_with_influence": false,
+            "delta": {
+              "hit": 45,
+              "purchase": 45,
+              "rank46": -9,
+              "rank710": 3,
+              "other_1_3": -43,
+              "other_10_13": 5,
+              "other_miss": -39
+            },
+            "top1_change_rate": 0.7964912280701755
+          }
+        }
+      },
+      "sensitivity": [
+        {
+          "weight": 0.0,
+          "hit": 0,
+          "purchase": 0,
+          "rank46": 0,
+          "rank710": 0,
+          "other_1_3": 0,
+          "other_10_13": 0,
+          "other_miss": 0,
+          "top1_change_rate": 0.0,
+          "mean_abs_rank_move": 0.0
+        },
+        {
+          "weight": 0.25,
+          "hit": -5,
+          "purchase": -5,
+          "rank46": -2,
+          "rank710": 2,
+          "other_1_3": 6,
+          "other_10_13": 0,
+          "other_miss": 5,
+          "top1_change_rate": 0.14736842105263157,
+          "mean_abs_rank_move": 0.12572115384615384
+        },
+        {
+          "weight": 0.5,
+          "hit": -8,
+          "purchase": -8,
+          "rank46": 2,
+          "rank710": 7,
+          "other_1_3": 0,
+          "other_10_13": 0,
+          "other_miss": -1,
+          "top1_change_rate": 0.43157894736842106,
+          "mean_abs_rank_move": 0.34447115384615384
+        },
+        {
+          "weight": 0.75,
+          "hit": -22,
+          "purchase": -22,
+          "rank46": 7,
+          "rank710": 11,
+          "other_1_3": 4,
+          "other_10_13": 1,
+          "other_miss": 4,
+          "top1_change_rate": 0.631578947368421,
+          "mean_abs_rank_move": 0.6228365384615384
+        },
+        {
+          "weight": 1.0,
+          "hit": 45,
+          "purchase": 45,
+          "rank46": -9,
+          "rank710": 3,
+          "other_1_3": -43,
+          "other_10_13": 5,
+          "other_miss": -39,
+          "top1_change_rate": 0.7964912280701755,
+          "mean_abs_rank_move": 0.8161057692307693
+        }
+      ]
+    },
+    "v44": {
+      "n": 285,
+      "skipped": {},
+      "world_dist": {
+        "unsatisfied_identity": 176,
+        "midupper_world": 6,
+        "mixed_world": 6,
+        "midhole_world": 24,
+        "rank7_world": 65,
+        "core_world": 8
+      },
+      "baseline_hit": 59,
+      "by_weight": {
+        "0.0": {
+          "weight": 0.0,
+          "baseline": {
+            "n": 285,
+            "hit": 59,
+            "hit_rate": 0.20701754385964913,
+            "purchase": 59,
+            "purchase_rate": 0.20701754385964913,
+            "rank46": 101,
+            "rank710": 37,
+            "other_1_3": 65,
+            "other_10_13": 18,
+            "other": 5,
+            "other_miss": 88
+          },
+          "policy": {
+            "n": 285,
+            "hit": 59,
+            "hit_rate": 0.20701754385964913,
+            "purchase": 59,
+            "purchase_rate": 0.20701754385964913,
+            "rank46": 101,
+            "rank710": 37,
+            "other_1_3": 65,
+            "other_10_13": 18,
+            "other": 5,
+            "other_miss": 88
+          },
+          "delta": {
+            "hit": 0,
+            "purchase": 0,
+            "rank46": 0,
+            "rank710": 0,
+            "other_1_3": 0,
+            "other_10_13": 0,
+            "other_miss": 0
+          },
+          "ranking_diff": {
+            "races_top1_changed": 0,
+            "races_top1_change_rate": 0.0,
+            "races_top3_changed": 0,
+            "races_top3_change_rate": 0.0,
+            "mean_horses_rank_changed_per_race": 0.0,
+            "mean_abs_candidate_rank_move": 0.0,
+            "prediction_rank_changed_races": 0
+          },
+          "world_influence": {
+            "core_world": {
+              "n": 8,
+              "top1_changed": 0,
+              "top1_change_rate": 0.0,
+              "base_hit": 2,
+              "policy_hit": 2,
+              "hit_delta": 0
+            },
+            "midhole_world": {
+              "n": 24,
+              "top1_changed": 0,
+              "top1_change_rate": 0.0,
+              "base_hit": 2,
+              "policy_hit": 2,
+              "hit_delta": 0
+            },
+            "midupper_world": {
+              "n": 6,
+              "top1_changed": 0,
+              "top1_change_rate": 0.0,
+              "base_hit": 2,
+              "policy_hit": 2,
+              "hit_delta": 0
+            },
+            "mixed_world": {
+              "n": 6,
+              "top1_changed": 0,
+              "top1_change_rate": 0.0,
+              "base_hit": 3,
+              "policy_hit": 3,
+              "hit_delta": 0
+            },
+            "rank7_world": {
+              "n": 65,
+              "top1_changed": 0,
+              "top1_change_rate": 0.0,
+              "base_hit": 10,
+              "policy_hit": 10,
+              "hit_delta": 0
+            },
+            "unsatisfied_identity": {
+              "n": 176,
+              "top1_changed": 0,
+              "top1_change_rate": 0.0,
+              "base_hit": 40,
+              "policy_hit": 40,
+              "hit_delta": 0
+            }
+          }
+        },
+        "0.25": {
+          "weight": 0.25,
+          "baseline": {
+            "n": 285,
+            "hit": 59,
+            "hit_rate": 0.20701754385964913,
+            "purchase": 59,
+            "purchase_rate": 0.20701754385964913,
+            "rank46": 101,
+            "rank710": 37,
+            "other_1_3": 65,
+            "other_10_13": 18,
+            "other": 5,
+            "other_miss": 88
+          },
+          "policy": {
+            "n": 285,
+            "hit": 59,
+            "hit_rate": 0.20701754385964913,
+            "purchase": 59,
+            "purchase_rate": 0.20701754385964913,
+            "rank46": 92,
+            "rank710": 56,
+            "other_1_3": 54,
+            "other_10_13": 19,
+            "other": 5,
+            "other_miss": 78
+          },
+          "delta": {
+            "hit": 0,
+            "purchase": 0,
+            "rank46": -9,
+            "rank710": 19,
+            "other_1_3": -11,
+            "other_10_13": 1,
+            "other_miss": -10
+          },
+          "ranking_diff": {
+            "races_top1_changed": 64,
+            "races_top1_change_rate": 0.22456140350877193,
+            "races_top3_changed": 89,
+            "races_top3_change_rate": 0.312280701754386,
+            "mean_horses_rank_changed_per_race": 2.8350877192982455,
+            "mean_abs_candidate_rank_move": 0.8139423076923077,
+            "prediction_rank_changed_races": 94
+          },
+          "world_influence": {
+            "core_world": {
+              "n": 8,
+              "top1_changed": 0,
+              "top1_change_rate": 0.0,
+              "base_hit": 2,
+              "policy_hit": 2,
+              "hit_delta": 0
+            },
+            "midhole_world": {
+              "n": 24,
+              "top1_changed": 22,
+              "top1_change_rate": 0.9166666666666666,
+              "base_hit": 2,
+              "policy_hit": 3,
+              "hit_delta": 1
+            },
+            "midupper_world": {
+              "n": 6,
+              "top1_changed": 3,
+              "top1_change_rate": 0.5,
+              "base_hit": 2,
+              "policy_hit": 0,
+              "hit_delta": -2
+            },
+            "mixed_world": {
+              "n": 6,
+              "top1_changed": 1,
+              "top1_change_rate": 0.16666666666666666,
+              "base_hit": 3,
+              "policy_hit": 3,
+              "hit_delta": 0
+            },
+            "rank7_world": {
+              "n": 65,
+              "top1_changed": 38,
+              "top1_change_rate": 0.5846153846153846,
+              "base_hit": 10,
+              "policy_hit": 11,
+              "hit_delta": 1
+            },
+            "unsatisfied_identity": {
+              "n": 176,
+              "top1_changed": 0,
+              "top1_change_rate": 0.0,
+              "base_hit": 40,
+              "policy_hit": 40,
+              "hit_delta": 0
+            }
+          }
+        },
+        "0.5": {
+          "weight": 0.5,
+          "baseline": {
+            "n": 285,
+            "hit": 59,
+            "hit_rate": 0.20701754385964913,
+            "purchase": 59,
+            "purchase_rate": 0.20701754385964913,
+            "rank46": 101,
+            "rank710": 37,
+            "other_1_3": 65,
+            "other_10_13": 18,
+            "other": 5,
+            "other_miss": 88
+          },
+          "policy": {
+            "n": 285,
+            "hit": 54,
+            "hit_rate": 0.18947368421052632,
+            "purchase": 54,
+            "purchase_rate": 0.18947368421052632,
+            "rank46": 85,
+            "rank710": 63,
+            "other_1_3": 53,
+            "other_10_13": 25,
+            "other": 5,
+            "other_miss": 83
+          },
+          "delta": {
+            "hit": -5,
+            "purchase": -5,
+            "rank46": -16,
+            "rank710": 26,
+            "other_1_3": -12,
+            "other_10_13": 7,
+            "other_miss": -5
+          },
+          "ranking_diff": {
+            "races_top1_changed": 100,
+            "races_top1_change_rate": 0.3508771929824561,
+            "races_top3_changed": 94,
+            "races_top3_change_rate": 0.3298245614035088,
+            "mean_horses_rank_changed_per_race": 3.2912280701754386,
+            "mean_abs_candidate_rank_move": 1.0802884615384616,
+            "prediction_rank_changed_races": 100
+          },
+          "world_influence": {
+            "core_world": {
+              "n": 8,
+              "top1_changed": 0,
+              "top1_change_rate": 0.0,
+              "base_hit": 2,
+              "policy_hit": 2,
+              "hit_delta": 0
+            },
+            "midhole_world": {
+              "n": 24,
+              "top1_changed": 24,
+              "top1_change_rate": 1.0,
+              "base_hit": 2,
+              "policy_hit": 3,
+              "hit_delta": 1
+            },
+            "midupper_world": {
+              "n": 6,
+              "top1_changed": 5,
+              "top1_change_rate": 0.8333333333333334,
+              "base_hit": 2,
+              "policy_hit": 0,
+              "hit_delta": -2
+            },
+            "mixed_world": {
+              "n": 6,
+              "top1_changed": 6,
+              "top1_change_rate": 1.0,
+              "base_hit": 3,
+              "policy_hit": 0,
+              "hit_delta": -3
+            },
+            "rank7_world": {
+              "n": 65,
+              "top1_changed": 65,
+              "top1_change_rate": 1.0,
+              "base_hit": 10,
+              "policy_hit": 9,
+              "hit_delta": -1
+            },
+            "unsatisfied_identity": {
+              "n": 176,
+              "top1_changed": 0,
+              "top1_change_rate": 0.0,
+              "base_hit": 40,
+              "policy_hit": 40,
+              "hit_delta": 0
+            }
+          }
+        },
+        "0.75": {
+          "weight": 0.75,
+          "baseline": {
+            "n": 285,
+            "hit": 59,
+            "hit_rate": 0.20701754385964913,
+            "purchase": 59,
+            "purchase_rate": 0.20701754385964913,
+            "rank46": 101,
+            "rank710": 37,
+            "other_1_3": 65,
+            "other_10_13": 18,
+            "other": 5,
+            "other_miss": 88
+          },
+          "policy": {
+            "n": 285,
+            "hit": 54,
+            "hit_rate": 0.18947368421052632,
+            "purchase": 54,
+            "purchase_rate": 0.18947368421052632,
+            "rank46": 86,
+            "rank710": 63,
+            "other_1_3": 51,
+            "other_10_13": 26,
+            "other": 5,
+            "other_miss": 82
+          },
+          "delta": {
+            "hit": -5,
+            "purchase": -5,
+            "rank46": -15,
+            "rank710": 26,
+            "other_1_3": -14,
+            "other_10_13": 8,
+            "other_miss": -6
+          },
+          "ranking_diff": {
+            "races_top1_changed": 101,
+            "races_top1_change_rate": 0.3543859649122807,
+            "races_top3_changed": 101,
+            "races_top3_change_rate": 0.3543859649122807,
+            "mean_horses_rank_changed_per_race": 3.592982456140351,
+            "mean_abs_candidate_rank_move": 1.16875,
+            "prediction_rank_changed_races": 101
+          },
+          "world_influence": {
+            "core_world": {
+              "n": 8,
+              "top1_changed": 0,
+              "top1_change_rate": 0.0,
+              "base_hit": 2,
+              "policy_hit": 2,
+              "hit_delta": 0
+            },
+            "midhole_world": {
+              "n": 24,
+              "top1_changed": 24,
+              "top1_change_rate": 1.0,
+              "base_hit": 2,
+              "policy_hit": 3,
+              "hit_delta": 1
+            },
+            "midupper_world": {
+              "n": 6,
+              "top1_changed": 6,
+              "top1_change_rate": 1.0,
+              "base_hit": 2,
+              "policy_hit": 0,
+              "hit_delta": -2
+            },
+            "mixed_world": {
+              "n": 6,
+              "top1_changed": 6,
+              "top1_change_rate": 1.0,
+              "base_hit": 3,
+              "policy_hit": 0,
+              "hit_delta": -3
+            },
+            "rank7_world": {
+              "n": 65,
+              "top1_changed": 65,
+              "top1_change_rate": 1.0,
+              "base_hit": 10,
+              "policy_hit": 9,
+              "hit_delta": -1
+            },
+            "unsatisfied_identity": {
+              "n": 176,
+              "top1_changed": 0,
+              "top1_change_rate": 0.0,
+              "base_hit": 40,
+              "policy_hit": 40,
+              "hit_delta": 0
+            }
+          }
+        },
+        "1.0": {
+          "weight": 1.0,
+          "baseline": {
+            "n": 285,
+            "hit": 59,
+            "hit_rate": 0.20701754385964913,
+            "purchase": 59,
+            "purchase_rate": 0.20701754385964913,
+            "rank46": 101,
+            "rank710": 37,
+            "other_1_3": 65,
+            "other_10_13": 18,
+            "other": 5,
+            "other_miss": 88
+          },
+          "policy": {
+            "n": 285,
+            "hit": 70,
+            "hit_rate": 0.24561403508771928,
+            "purchase": 70,
+            "purchase_rate": 0.24561403508771928,
+            "rank46": 82,
+            "rank710": 54,
+            "other_1_3": 40,
+            "other_10_13": 34,
+            "other": 5,
+            "other_miss": 79
+          },
+          "delta": {
+            "hit": 11,
+            "purchase": 11,
+            "rank46": -19,
+            "rank710": 17,
+            "other_1_3": -25,
+            "other_10_13": 16,
+            "other_miss": -9
+          },
+          "ranking_diff": {
+            "races_top1_changed": 106,
+            "races_top1_change_rate": 0.3719298245614035,
+            "races_top3_changed": 101,
+            "races_top3_change_rate": 0.3543859649122807,
+            "mean_horses_rank_changed_per_race": 4.136842105263158,
+            "mean_abs_candidate_rank_move": 1.3048076923076923,
+            "prediction_rank_changed_races": 106
+          },
+          "world_influence": {
+            "core_world": {
+              "n": 8,
+              "top1_changed": 5,
+              "top1_change_rate": 0.625,
+              "base_hit": 2,
+              "policy_hit": 1,
+              "hit_delta": -1
+            },
+            "midhole_world": {
+              "n": 24,
+              "top1_changed": 24,
+              "top1_change_rate": 1.0,
+              "base_hit": 2,
+              "policy_hit": 8,
+              "hit_delta": 6
+            },
+            "midupper_world": {
+              "n": 6,
+              "top1_changed": 6,
+              "top1_change_rate": 1.0,
+              "base_hit": 2,
+              "policy_hit": 3,
+              "hit_delta": 1
+            },
+            "mixed_world": {
+              "n": 6,
+              "top1_changed": 6,
+              "top1_change_rate": 1.0,
+              "base_hit": 3,
+              "policy_hit": 1,
+              "hit_delta": -2
+            },
+            "rank7_world": {
+              "n": 65,
+              "top1_changed": 65,
+              "top1_change_rate": 1.0,
+              "base_hit": 10,
+              "policy_hit": 17,
+              "hit_delta": 7
+            },
+            "unsatisfied_identity": {
+              "n": 176,
+              "top1_changed": 0,
+              "top1_change_rate": 0.0,
+              "base_hit": 40,
+              "policy_hit": 40,
+              "hit_delta": 0
+            }
+          }
+        }
+      },
+      "governance": {
+        "grade": "B",
+        "reason": "Hit↑ exists but NI violated (rank710/other_miss) — ROI limited/unsafe",
+        "final_pass_roi": false,
+        "any_ni": false,
+        "any_hit_up": true,
+        "max_hit_delta": 11,
+        "by_weight": {
+          "0.25": {
+            "hit_ge_baseline": true,
+            "rank710_not_worse": false,
+            "other_miss_not_worse": true,
+            "meaningful_pe_influence": true,
+            "hit_improved": false,
+            "ni_with_influence": false,
+            "delta": {
+              "hit": 0,
+              "purchase": 0,
+              "rank46": -9,
+              "rank710": 19,
+              "other_1_3": -11,
+              "other_10_13": 1,
+              "other_miss": -10
+            },
+            "top1_change_rate": 0.22456140350877193
+          },
+          "0.5": {
+            "hit_ge_baseline": false,
+            "rank710_not_worse": false,
+            "other_miss_not_worse": true,
+            "meaningful_pe_influence": true,
+            "hit_improved": false,
+            "ni_with_influence": false,
+            "delta": {
+              "hit": -5,
+              "purchase": -5,
+              "rank46": -16,
+              "rank710": 26,
+              "other_1_3": -12,
+              "other_10_13": 7,
+              "other_miss": -5
+            },
+            "top1_change_rate": 0.3508771929824561
+          },
+          "0.75": {
+            "hit_ge_baseline": false,
+            "rank710_not_worse": false,
+            "other_miss_not_worse": true,
+            "meaningful_pe_influence": true,
+            "hit_improved": false,
+            "ni_with_influence": false,
+            "delta": {
+              "hit": -5,
+              "purchase": -5,
+              "rank46": -15,
+              "rank710": 26,
+              "other_1_3": -14,
+              "other_10_13": 8,
+              "other_miss": -6
+            },
+            "top1_change_rate": 0.3543859649122807
+          },
+          "1.0": {
+            "hit_ge_baseline": true,
+            "rank710_not_worse": false,
+            "other_miss_not_worse": true,
+            "meaningful_pe_influence": true,
+            "hit_improved": true,
+            "ni_with_influence": false,
+            "delta": {
+              "hit": 11,
+              "purchase": 11,
+              "rank46": -19,
+              "rank710": 17,
+              "other_1_3": -25,
+              "other_10_13": 16,
+              "other_miss": -9
+            },
+            "top1_change_rate": 0.3719298245614035
+          }
+        }
+      },
+      "sensitivity": [
+        {
+          "weight": 0.0,
+          "hit": 0,
+          "purchase": 0,
+          "rank46": 0,
+          "rank710": 0,
+          "other_1_3": 0,
+          "other_10_13": 0,
+          "other_miss": 0,
+          "top1_change_rate": 0.0,
+          "mean_abs_rank_move": 0.0
+        },
+        {
+          "weight": 0.25,
+          "hit": 0,
+          "purchase": 0,
+          "rank46": -9,
+          "rank710": 19,
+          "other_1_3": -11,
+          "other_10_13": 1,
+          "other_miss": -10,
+          "top1_change_rate": 0.22456140350877193,
+          "mean_abs_rank_move": 0.8139423076923077
+        },
+        {
+          "weight": 0.5,
+          "hit": -5,
+          "purchase": -5,
+          "rank46": -16,
+          "rank710": 26,
+          "other_1_3": -12,
+          "other_10_13": 7,
+          "other_miss": -5,
+          "top1_change_rate": 0.3508771929824561,
+          "mean_abs_rank_move": 1.0802884615384616
+        },
+        {
+          "weight": 0.75,
+          "hit": -5,
+          "purchase": -5,
+          "rank46": -15,
+          "rank710": 26,
+          "other_1_3": -14,
+          "other_10_13": 8,
+          "other_miss": -6,
+          "top1_change_rate": 0.3543859649122807,
+          "mean_abs_rank_move": 1.16875
+        },
+        {
+          "weight": 1.0,
+          "hit": 11,
+          "purchase": 11,
+          "rank46": -19,
+          "rank710": 17,
+          "other_1_3": -25,
+          "other_10_13": 16,
+          "other_miss": -9,
+          "top1_change_rate": 0.3719298245614035,
+          "mean_abs_rank_move": 1.3048076923076923
+        }
+      ]
+    },
+    "v44_false_release": {
+      "n": 285,
+      "skipped": {},
+      "world_dist": {
+        "core_world": 45,
+        "unsatisfied_identity": 125,
+        "midupper_world": 14,
+        "mixed_world": 6,
+        "midhole_world": 30,
+        "rank7_world": 65
+      },
+      "baseline_hit": 59,
+      "by_weight": {
+        "0.0": {
+          "weight": 0.0,
+          "baseline": {
+            "n": 285,
+            "hit": 59,
+            "hit_rate": 0.20701754385964913,
+            "purchase": 59,
+            "purchase_rate": 0.20701754385964913,
+            "rank46": 101,
+            "rank710": 37,
+            "other_1_3": 65,
+            "other_10_13": 18,
+            "other": 5,
+            "other_miss": 88
+          },
+          "policy": {
+            "n": 285,
+            "hit": 59,
+            "hit_rate": 0.20701754385964913,
+            "purchase": 59,
+            "purchase_rate": 0.20701754385964913,
+            "rank46": 101,
+            "rank710": 37,
+            "other_1_3": 65,
+            "other_10_13": 18,
+            "other": 5,
+            "other_miss": 88
+          },
+          "delta": {
+            "hit": 0,
+            "purchase": 0,
+            "rank46": 0,
+            "rank710": 0,
+            "other_1_3": 0,
+            "other_10_13": 0,
+            "other_miss": 0
+          },
+          "ranking_diff": {
+            "races_top1_changed": 0,
+            "races_top1_change_rate": 0.0,
+            "races_top3_changed": 0,
+            "races_top3_change_rate": 0.0,
+            "mean_horses_rank_changed_per_race": 0.0,
+            "mean_abs_candidate_rank_move": 0.0,
+            "prediction_rank_changed_races": 0
+          },
+          "world_influence": {
+            "core_world": {
+              "n": 45,
+              "top1_changed": 0,
+              "top1_change_rate": 0.0,
+              "base_hit": 27,
+              "policy_hit": 27,
+              "hit_delta": 0
+            },
+            "midhole_world": {
+              "n": 30,
+              "top1_changed": 0,
+              "top1_change_rate": 0.0,
+              "base_hit": 2,
+              "policy_hit": 2,
+              "hit_delta": 0
+            },
+            "midupper_world": {
+              "n": 14,
+              "top1_changed": 0,
+              "top1_change_rate": 0.0,
+              "base_hit": 2,
+              "policy_hit": 2,
+              "hit_delta": 0
+            },
+            "mixed_world": {
+              "n": 6,
+              "top1_changed": 0,
+              "top1_change_rate": 0.0,
+              "base_hit": 3,
+              "policy_hit": 3,
+              "hit_delta": 0
+            },
+            "rank7_world": {
+              "n": 65,
+              "top1_changed": 0,
+              "top1_change_rate": 0.0,
+              "base_hit": 10,
+              "policy_hit": 10,
+              "hit_delta": 0
+            },
+            "unsatisfied_identity": {
+              "n": 125,
+              "top1_changed": 0,
+              "top1_change_rate": 0.0,
+              "base_hit": 15,
+              "policy_hit": 15,
+              "hit_delta": 0
+            }
+          }
+        },
+        "0.25": {
+          "weight": 0.25,
+          "baseline": {
+            "n": 285,
+            "hit": 59,
+            "hit_rate": 0.20701754385964913,
+            "purchase": 59,
+            "purchase_rate": 0.20701754385964913,
+            "rank46": 101,
+            "rank710": 37,
+            "other_1_3": 65,
+            "other_10_13": 18,
+            "other": 5,
+            "other_miss": 88
+          },
+          "policy": {
+            "n": 285,
+            "hit": 60,
+            "hit_rate": 0.21052631578947367,
+            "purchase": 60,
+            "purchase_rate": 0.21052631578947367,
+            "rank46": 88,
+            "rank710": 56,
+            "other_1_3": 57,
+            "other_10_13": 19,
+            "other": 5,
+            "other_miss": 81
+          },
+          "delta": {
+            "hit": 1,
+            "purchase": 1,
+            "rank46": -13,
+            "rank710": 19,
+            "other_1_3": -8,
+            "other_10_13": 1,
+            "other_miss": -7
+          },
+          "ranking_diff": {
+            "races_top1_changed": 68,
+            "races_top1_change_rate": 0.23859649122807017,
+            "races_top3_changed": 95,
+            "races_top3_change_rate": 0.3333333333333333,
+            "mean_horses_rank_changed_per_race": 3.0280701754385966,
+            "mean_abs_candidate_rank_move": 0.8574519230769231,
+            "prediction_rank_changed_races": 103
+          },
+          "world_influence": {
+            "core_world": {
+              "n": 45,
+              "top1_changed": 0,
+              "top1_change_rate": 0.0,
+              "base_hit": 27,
+              "policy_hit": 27,
+              "hit_delta": 0
+            },
+            "midhole_world": {
+              "n": 30,
+              "top1_changed": 24,
+              "top1_change_rate": 0.8,
+              "base_hit": 2,
+              "policy_hit": 4,
+              "hit_delta": 2
+            },
+            "midupper_world": {
+              "n": 14,
+              "top1_changed": 5,
+              "top1_change_rate": 0.35714285714285715,
+              "base_hit": 2,
+              "policy_hit": 0,
+              "hit_delta": -2
+            },
+            "mixed_world": {
+              "n": 6,
+              "top1_changed": 1,
+              "top1_change_rate": 0.16666666666666666,
+              "base_hit": 3,
+              "policy_hit": 3,
+              "hit_delta": 0
+            },
+            "rank7_world": {
+              "n": 65,
+              "top1_changed": 38,
+              "top1_change_rate": 0.5846153846153846,
+              "base_hit": 10,
+              "policy_hit": 11,
+              "hit_delta": 1
+            },
+            "unsatisfied_identity": {
+              "n": 125,
+              "top1_changed": 0,
+              "top1_change_rate": 0.0,
+              "base_hit": 15,
+              "policy_hit": 15,
+              "hit_delta": 0
+            }
+          }
+        },
+        "0.5": {
+          "weight": 0.5,
+          "baseline": {
+            "n": 285,
+            "hit": 59,
+            "hit_rate": 0.20701754385964913,
+            "purchase": 59,
+            "purchase_rate": 0.20701754385964913,
+            "rank46": 101,
+            "rank710": 37,
+            "other_1_3": 65,
+            "other_10_13": 18,
+            "other": 5,
+            "other_miss": 88
+          },
+          "policy": {
+            "n": 285,
+            "hit": 57,
+            "hit_rate": 0.2,
+            "purchase": 57,
+            "purchase_rate": 0.2,
+            "rank46": 80,
+            "rank710": 63,
+            "other_1_3": 55,
+            "other_10_13": 25,
+            "other": 5,
+            "other_miss": 85
+          },
+          "delta": {
+            "hit": -2,
+            "purchase": -2,
+            "rank46": -21,
+            "rank710": 26,
+            "other_1_3": -10,
+            "other_10_13": 7,
+            "other_miss": -3
+          },
+          "ranking_diff": {
+            "races_top1_changed": 111,
+            "races_top1_change_rate": 0.3894736842105263,
+            "races_top3_changed": 101,
+            "races_top3_change_rate": 0.3543859649122807,
+            "mean_horses_rank_changed_per_race": 3.5473684210526315,
+            "mean_abs_candidate_rank_move": 1.1435096153846154,
+            "prediction_rank_changed_races": 111
+          },
+          "world_influence": {
+            "core_world": {
+              "n": 45,
+              "top1_changed": 0,
+              "top1_change_rate": 0.0,
+              "base_hit": 27,
+              "policy_hit": 27,
+              "hit_delta": 0
+            },
+            "midhole_world": {
+              "n": 30,
+              "top1_changed": 30,
+              "top1_change_rate": 1.0,
+              "base_hit": 2,
+              "policy_hit": 5,
+              "hit_delta": 3
+            },
+            "midupper_world": {
+              "n": 14,
+              "top1_changed": 10,
+              "top1_change_rate": 0.7142857142857143,
+              "base_hit": 2,
+              "policy_hit": 1,
+              "hit_delta": -1
+            },
+            "mixed_world": {
+              "n": 6,
+              "top1_changed": 6,
+              "top1_change_rate": 1.0,
+              "base_hit": 3,
+              "policy_hit": 0,
+              "hit_delta": -3
+            },
+            "rank7_world": {
+              "n": 65,
+              "top1_changed": 65,
+              "top1_change_rate": 1.0,
+              "base_hit": 10,
+              "policy_hit": 9,
+              "hit_delta": -1
+            },
+            "unsatisfied_identity": {
+              "n": 125,
+              "top1_changed": 0,
+              "top1_change_rate": 0.0,
+              "base_hit": 15,
+              "policy_hit": 15,
+              "hit_delta": 0
+            }
+          }
+        },
+        "0.75": {
+          "weight": 0.75,
+          "baseline": {
+            "n": 285,
+            "hit": 59,
+            "hit_rate": 0.20701754385964913,
+            "purchase": 59,
+            "purchase_rate": 0.20701754385964913,
+            "rank46": 101,
+            "rank710": 37,
+            "other_1_3": 65,
+            "other_10_13": 18,
+            "other": 5,
+            "other_miss": 88
+          },
+          "policy": {
+            "n": 285,
+            "hit": 57,
+            "hit_rate": 0.2,
+            "purchase": 57,
+            "purchase_rate": 0.2,
+            "rank46": 80,
+            "rank710": 63,
+            "other_1_3": 54,
+            "other_10_13": 26,
+            "other": 5,
+            "other_miss": 85
+          },
+          "delta": {
+            "hit": -2,
+            "purchase": -2,
+            "rank46": -21,
+            "rank710": 26,
+            "other_1_3": -11,
+            "other_10_13": 8,
+            "other_miss": -3
+          },
+          "ranking_diff": {
+            "races_top1_changed": 115,
+            "races_top1_change_rate": 0.40350877192982454,
+            "races_top3_changed": 115,
+            "races_top3_change_rate": 0.40350877192982454,
+            "mean_horses_rank_changed_per_race": 3.950877192982456,
+            "mean_abs_candidate_rank_move": 1.246875,
+            "prediction_rank_changed_races": 115
+          },
+          "world_influence": {
+            "core_world": {
+              "n": 45,
+              "top1_changed": 0,
+              "top1_change_rate": 0.0,
+              "base_hit": 27,
+              "policy_hit": 27,
+              "hit_delta": 0
+            },
+            "midhole_world": {
+              "n": 30,
+              "top1_changed": 30,
+              "top1_change_rate": 1.0,
+              "base_hit": 2,
+              "policy_hit": 5,
+              "hit_delta": 3
+            },
+            "midupper_world": {
+              "n": 14,
+              "top1_changed": 14,
+              "top1_change_rate": 1.0,
+              "base_hit": 2,
+              "policy_hit": 1,
+              "hit_delta": -1
+            },
+            "mixed_world": {
+              "n": 6,
+              "top1_changed": 6,
+              "top1_change_rate": 1.0,
+              "base_hit": 3,
+              "policy_hit": 0,
+              "hit_delta": -3
+            },
+            "rank7_world": {
+              "n": 65,
+              "top1_changed": 65,
+              "top1_change_rate": 1.0,
+              "base_hit": 10,
+              "policy_hit": 9,
+              "hit_delta": -1
+            },
+            "unsatisfied_identity": {
+              "n": 125,
+              "top1_changed": 0,
+              "top1_change_rate": 0.0,
+              "base_hit": 15,
+              "policy_hit": 15,
+              "hit_delta": 0
+            }
+          }
+        },
+        "1.0": {
+          "weight": 1.0,
+          "baseline": {
+            "n": 285,
+            "hit": 59,
+            "hit_rate": 0.20701754385964913,
+            "purchase": 59,
+            "purchase_rate": 0.20701754385964913,
+            "rank46": 101,
+            "rank710": 37,
+            "other_1_3": 65,
+            "other_10_13": 18,
+            "other": 5,
+            "other_miss": 88
+          },
+          "policy": {
+            "n": 285,
+            "hit": 86,
+            "hit_rate": 0.3017543859649123,
+            "purchase": 86,
+            "purchase_rate": 0.3017543859649123,
+            "rank46": 74,
+            "rank710": 54,
+            "other_1_3": 32,
+            "other_10_13": 34,
+            "other": 5,
+            "other_miss": 71
+          },
+          "delta": {
+            "hit": 27,
+            "purchase": 27,
+            "rank46": -27,
+            "rank710": 17,
+            "other_1_3": -33,
+            "other_10_13": 16,
+            "other_miss": -17
+          },
+          "ranking_diff": {
+            "races_top1_changed": 129,
+            "races_top1_change_rate": 0.45263157894736844,
+            "races_top3_changed": 115,
+            "races_top3_change_rate": 0.40350877192982454,
+            "mean_horses_rank_changed_per_race": 4.564912280701755,
+            "mean_abs_candidate_rank_move": 1.3983173076923077,
+            "prediction_rank_changed_races": 129
+          },
+          "world_influence": {
+            "core_world": {
+              "n": 45,
+              "top1_changed": 14,
+              "top1_change_rate": 0.3111111111111111,
+              "base_hit": 27,
+              "policy_hit": 31,
+              "hit_delta": 4
+            },
+            "midhole_world": {
+              "n": 30,
+              "top1_changed": 30,
+              "top1_change_rate": 1.0,
+              "base_hit": 2,
+              "policy_hit": 13,
+              "hit_delta": 11
+            },
+            "midupper_world": {
+              "n": 14,
+              "top1_changed": 14,
+              "top1_change_rate": 1.0,
+              "base_hit": 2,
+              "policy_hit": 9,
+              "hit_delta": 7
+            },
+            "mixed_world": {
+              "n": 6,
+              "top1_changed": 6,
+              "top1_change_rate": 1.0,
+              "base_hit": 3,
+              "policy_hit": 1,
+              "hit_delta": -2
+            },
+            "rank7_world": {
+              "n": 65,
+              "top1_changed": 65,
+              "top1_change_rate": 1.0,
+              "base_hit": 10,
+              "policy_hit": 17,
+              "hit_delta": 7
+            },
+            "unsatisfied_identity": {
+              "n": 125,
+              "top1_changed": 0,
+              "top1_change_rate": 0.0,
+              "base_hit": 15,
+              "policy_hit": 15,
+              "hit_delta": 0
+            }
+          }
+        }
+      },
+      "governance": {
+        "grade": "B",
+        "reason": "Hit↑ exists but NI violated (rank710/other_miss) — ROI limited/unsafe",
+        "final_pass_roi": false,
+        "any_ni": false,
+        "any_hit_up": true,
+        "max_hit_delta": 27,
+        "by_weight": {
+          "0.25": {
+            "hit_ge_baseline": true,
+            "rank710_not_worse": false,
+            "other_miss_not_worse": true,
+            "meaningful_pe_influence": true,
+            "hit_improved": true,
+            "ni_with_influence": false,
+            "delta": {
+              "hit": 1,
+              "purchase": 1,
+              "rank46": -13,
+              "rank710": 19,
+              "other_1_3": -8,
+              "other_10_13": 1,
+              "other_miss": -7
+            },
+            "top1_change_rate": 0.23859649122807017
+          },
+          "0.5": {
+            "hit_ge_baseline": false,
+            "rank710_not_worse": false,
+            "other_miss_not_worse": true,
+            "meaningful_pe_influence": true,
+            "hit_improved": false,
+            "ni_with_influence": false,
+            "delta": {
+              "hit": -2,
+              "purchase": -2,
+              "rank46": -21,
+              "rank710": 26,
+              "other_1_3": -10,
+              "other_10_13": 7,
+              "other_miss": -3
+            },
+            "top1_change_rate": 0.3894736842105263
+          },
+          "0.75": {
+            "hit_ge_baseline": false,
+            "rank710_not_worse": false,
+            "other_miss_not_worse": true,
+            "meaningful_pe_influence": true,
+            "hit_improved": false,
+            "ni_with_influence": false,
+            "delta": {
+              "hit": -2,
+              "purchase": -2,
+              "rank46": -21,
+              "rank710": 26,
+              "other_1_3": -11,
+              "other_10_13": 8,
+              "other_miss": -3
+            },
+            "top1_change_rate": 0.40350877192982454
+          },
+          "1.0": {
+            "hit_ge_baseline": true,
+            "rank710_not_worse": false,
+            "other_miss_not_worse": true,
+            "meaningful_pe_influence": true,
+            "hit_improved": true,
+            "ni_with_influence": false,
+            "delta": {
+              "hit": 27,
+              "purchase": 27,
+              "rank46": -27,
+              "rank710": 17,
+              "other_1_3": -33,
+              "other_10_13": 16,
+              "other_miss": -17
+            },
+            "top1_change_rate": 0.45263157894736844
+          }
+        }
+      },
+      "sensitivity": [
+        {
+          "weight": 0.0,
+          "hit": 0,
+          "purchase": 0,
+          "rank46": 0,
+          "rank710": 0,
+          "other_1_3": 0,
+          "other_10_13": 0,
+          "other_miss": 0,
+          "top1_change_rate": 0.0,
+          "mean_abs_rank_move": 0.0
+        },
+        {
+          "weight": 0.25,
+          "hit": 1,
+          "purchase": 1,
+          "rank46": -13,
+          "rank710": 19,
+          "other_1_3": -8,
+          "other_10_13": 1,
+          "other_miss": -7,
+          "top1_change_rate": 0.23859649122807017,
+          "mean_abs_rank_move": 0.8574519230769231
+        },
+        {
+          "weight": 0.5,
+          "hit": -2,
+          "purchase": -2,
+          "rank46": -21,
+          "rank710": 26,
+          "other_1_3": -10,
+          "other_10_13": 7,
+          "other_miss": -3,
+          "top1_change_rate": 0.3894736842105263,
+          "mean_abs_rank_move": 1.1435096153846154
+        },
+        {
+          "weight": 0.75,
+          "hit": -2,
+          "purchase": -2,
+          "rank46": -21,
+          "rank710": 26,
+          "other_1_3": -11,
+          "other_10_13": 8,
+          "other_miss": -3,
+          "top1_change_rate": 0.40350877192982454,
+          "mean_abs_rank_move": 1.246875
+        },
+        {
+          "weight": 1.0,
+          "hit": 27,
+          "purchase": 27,
+          "rank46": -27,
+          "rank710": 17,
+          "other_1_3": -33,
+          "other_10_13": 16,
+          "other_miss": -17,
+          "top1_change_rate": 0.45263157894736844,
+          "mean_abs_rank_move": 1.3983173076923077
+        }
+      ]
+    }
+  }
+}
