@@ -26,6 +26,7 @@ from .netkeiba.parse import (
 )
 from .race_catalog import assign_venue_label_nos, make_win5_race_id
 from .service import _resolve_ai_platform_root, _resolve_prediction_data_root
+from .race_identity import catalog_identity_metadata
 
 
 JST = ZoneInfo("Asia/Tokyo")
@@ -205,6 +206,13 @@ def discover_published_races(
             skipped += 1
             continue
         win5_id = make_win5_race_id(date, race.venue, race.race_no, venue_labels)
+        ident = catalog_identity_metadata(
+            date=date,
+            catalog_race_id=win5_id,
+            numeric_race_id=str(race.race_id or ""),
+            course=race.venue,
+            race_number=race.race_no,
+        )
         published.append(
             {
                 "race_id": win5_id,
@@ -212,6 +220,10 @@ def discover_published_races(
                 "course": race.venue,
                 "race_number": race.race_no,
                 "race_name": getattr(race, "race_name", "") or "",
+                "catalog_race_id": ident["catalog_race_id"],
+                "feature_lookup_key": ident["feature_lookup_key"],
+                "core_race_id": ident["core_race_id"],
+                "jra_venue_code": ident["jra_venue_code"],
                 "entries": entries,
                 "shutuba_html": html,
             }
@@ -249,6 +261,10 @@ def _runners_from_entries(
             {
                 "race_id": race["race_id"],
                 "numeric_race_id": race["numeric_race_id"],
+                "catalog_race_id": race.get("catalog_race_id") or race["race_id"],
+                "feature_lookup_key": race.get("feature_lookup_key") or race["race_id"],
+                "core_race_id": race.get("core_race_id") or "",
+                "jra_venue_code": race.get("jra_venue_code") or "",
                 "date": date,
                 "course": race["course"],
                 "race_number": race["race_number"],

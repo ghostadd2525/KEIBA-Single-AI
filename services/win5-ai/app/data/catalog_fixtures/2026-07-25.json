@@ -1,0 +1,15 @@
+{
+  "namespace": "catalog",
+  "date": "2026-07-25",
+  "note": "Golden control fixture. Catalog 2026-07-25-01-05 is 新潟5R. Feature lookup stays Catalog ID, not JRA Core 2026-07-25-04-05.",
+  "races": [
+    {
+      "catalog_id": "2026-07-25-01-05",
+      "date": "2026-07-25",
+      "course": "新潟",
+      "race_no": 5,
+      "numeric_race_id": "202604070105",
+      "race_name": "control-normal"
+    }
+  ]
+}
