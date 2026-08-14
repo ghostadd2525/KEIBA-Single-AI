@@ -93,10 +93,10 @@ log "PREDEPLOY runtime"
 hostname
 pwd
 git rev-parse --short HEAD || true
-git status --porcelain | head || true
+git status --porcelain | sed -n '1,40p' || true
 systemctl is-active expect-ai || true
 systemctl is-active cloudflared-expect-ai || true
-curl -sS --max-time 8 "${LOCALHOST}/health" | head -c 400 || true
+curl -sS --max-time 8 "${LOCALHOST}/health" || true
 echo
 
 log "PREDEPLOY hashes"
@@ -274,9 +274,6 @@ if len(set(ids)) != 36:
     raise SystemExit("source ids not unique")
 if len(set(cores)) != 36:
     raise SystemExit("core ids not unique")
-# contamination: catalog course vs resolved venue
-cont = sum(1 for (cid,d), (course,_,_) in zip(rows, [(c,l,j) for c,l,j in meetings for _ in range(12)]) if d.get("venue") != course)
-# zip above is wrong length alignment — recompute simply
 cont = 0
 i = 0
 for course, label, jra in meetings:
