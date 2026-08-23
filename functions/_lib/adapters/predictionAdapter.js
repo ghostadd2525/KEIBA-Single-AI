@@ -6,16 +6,25 @@
  * 開発のみ: PI/AI 未設定時は ASSETS mock（bff_mock）。
  */
 import { aiFetch, loadAssetJson } from "../aiProxy.js";
+import { resolveCanonicalRaceRef } from "../canonicalRaceId.js";
 import { catalogToPredictionBundle, normalizePredictionBundle } from "../domain.js";
 import { getEnv, useAiProxy } from "../env.js";
 import { mapPiPredictionToBundle, piProvenanceItem } from "../piPredictionMapper.js";
 import { piFetch, usePiProxy } from "../piProxy.js";
 import {
   isReadyPredictionBundle,
+  isTerminalUnavailable,
+  isRetryableUnavailableReason,
   warnProjectionSuppressed,
 } from "../predictionReady.js";
 import { findPiRaceInCatalog } from "../raceIdResolve.js";
 import { normalizeRaceIdYear } from "../raceIdYear.js";
+
+/** Public prediction timeout (restored V2 cold ~12–17s). */
+function predictionTimeoutMs(env) {
+  const n = Number(env?.PUBLIC_PREDICTION_TIMEOUT_MS || 30000);
+  return Number.isFinite(n) && n >= 30000 ? n : 30000;
+}
 
 /** 空 Projection を pending として返す（成功 Bundle にはしない） */
 function pendingPredictionResult({
@@ -52,11 +61,44 @@ function pendingPredictionResult({
   };
 }
 
-/** 成功応答のガード: 空 runners / projection は pending に落とす */
+/** 恒久 unavailable — 202 pending にせず Bundle をそのまま返す */
+function terminalUnavailableResult(result, raceId) {
+  const meta = result.provenanceMeta || {};
+  const reason = meta.fallback_reason || "prediction_unavailable";
+  warnProjectionSuppressed({
+    race_id: raceId,
+    numeric_race_id: meta.numeric_race_id || null,
+    reason: `terminal:${reason}`,
+  });
+  return {
+    ok: true,
+    bundle: result.bundle,
+    source: result.source,
+    provider: result.provider,
+    terminalUnavailable: true,
+    provenanceMeta: {
+      ...meta,
+      prediction_status: "unavailable",
+      prediction_available: false,
+      reason,
+    },
+  };
+}
+
+/** 成功応答のガード: 空 runners / projection は pending に落とす（terminal は除外） */
 function guardReadyOrPending(result, raceId) {
   if (!result || !result.ok) return result;
   const meta = result.provenanceMeta || {};
   if (isReadyPredictionBundle(result.bundle, meta)) return result;
+  if (isTerminalUnavailable(result.bundle, meta)) {
+    return terminalUnavailableResult(result, raceId);
+  }
+  const retryReason =
+    meta.fallback_reason ||
+    (bundleRunnersLen(result.bundle) === 0 ? "empty_runners" : "not_ready_prediction");
+  if (!isRetryableUnavailableReason(retryReason)) {
+    return terminalUnavailableResult(result, raceId);
+  }
   return pendingPredictionResult({
     raceId: raceId || (result.bundle && result.bundle.race_id) || meta.race_id,
     numericRaceId: meta.numeric_race_id || null,
@@ -105,12 +147,24 @@ export function mergeGetProvenanceMeta(base, provenanceMeta = {}) {
     model_version: provenanceMeta.model_version ?? null,
     inference_generated_at: provenanceMeta.inference_generated_at ?? null,
   };
-  if (provenanceMeta.race_id) next.race_id = provenanceMeta.race_id;
-  if (provenanceMeta.core_race_id) next.core_race_id = provenanceMeta.core_race_id;
-  if (provenanceMeta.numeric_race_id) next.numeric_race_id = provenanceMeta.numeric_race_id;
-  if (provenanceMeta.feature_source) next.feature_source = provenanceMeta.feature_source;
-  if (provenanceMeta.fallback_reason) next.fallback_reason = provenanceMeta.fallback_reason;
-  if (provenanceMeta.detail) next.detail = provenanceMeta.detail;
+  for (const key of [
+    "race_id",
+    "core_race_id",
+    "numeric_race_id",
+    "feature_source",
+    "fallback_reason",
+    "detail",
+    "reason",
+    "decision_authority",
+    "canonical_race_id",
+    "source_race_id",
+    "race_type",
+    "fallback_state",
+    "prediction_available",
+    "feature_lookup_key",
+  ]) {
+    if (provenanceMeta[key] != null) next[key] = provenanceMeta[key];
+  }
   return next;
 }
 
@@ -335,9 +389,14 @@ async function fetchFromMockList(context, query) {
   };
 }
 
-async function fetchFromPythonGet(context, raceId) {
+async function fetchFromPythonGet(context, raceId, opts = {}) {
+  const env = getEnv(context);
+  const timeoutMs =
+    typeof opts.timeoutMs === "number" && opts.timeoutMs > 0
+      ? opts.timeoutMs
+      : predictionTimeoutMs(env);
   const proxied = await aiFetch(context, `/v1/predictions/${encodeURIComponent(raceId)}`, {
-    timeoutMs: 10000,
+    timeoutMs,
   });
   if (proxied && proxied instanceof Response) {
     return { ok: false, errorResponse: proxied };
@@ -345,6 +404,11 @@ async function fetchFromPythonGet(context, raceId) {
   if (!proxied || !proxied.ok) return null;
   const data = proxied.payload.data != null ? proxied.payload.data : proxied.payload;
   const meta = proxied.payload.meta || {};
+  const explainMeta = (data && data.explain && data.explain.meta) || {};
+  const decision_authority =
+    data?.decision_authority || meta.decision_authority || explainMeta.decision_authority || null;
+  const fallback_reason =
+    data?.fallback_reason || meta.fallback_reason || explainMeta.fallback_reason || null;
   return {
     ok: true,
     bundle: normalizePredictionBundle(data, raceId),
@@ -353,7 +417,23 @@ async function fetchFromPythonGet(context, raceId) {
     provenanceMeta: {
       ...meta,
       engine: meta.engine || "real",
-      engine_source: normalizeEngineSource(meta.engine_source || "real"),
+      engine_source: normalizeEngineSource(meta.engine_source || "real_ai"),
+      decision_authority,
+      fallback_reason,
+      fallback_state:
+        meta.fallback_state ||
+        (fallback_reason
+          ? `fallback:${fallback_reason}`
+          : decision_authority === "RESTORED_V2"
+            ? "restored_v2"
+            : decision_authority === "CURRENT_PATH"
+              ? "current_path"
+              : null),
+      model_version: meta.model_version || data?.model_version || null,
+      race_type: meta.race_type || null,
+      canonical_race_id: meta.canonical_race_id || opts.canonical_race_id || null,
+      source_race_id: meta.source_race_id || opts.source_race_id || raceId,
+      core_race_id: meta.core_race_id || explainMeta.core_race_id || null,
     },
   };
 }
@@ -390,97 +470,120 @@ async function fetchFromMockGet(context, raceId) {
   };
 }
 
-/** 一覧: PI →（未設定時）Python AI →（未設定時）bff_mock */
+/** 一覧: AI Bundle 優先 →（AI 未設定時のみ）PI → mock */
 export async function adaptPredictionList(context, query = {}) {
   const env = getEnv(context);
-  if (usePiProxy(env)) {
-    return fetchFromPiList(context, query);
-  }
   if (useAiProxy(env)) {
     const fromPy = await fetchFromPythonList(context, query);
     if (fromPy && fromPy.ok) return fromPy;
     if (fromPy && fromPy.errorResponse) return fromPy;
     return { ok: false, error: "Prediction list unavailable", status: 502 };
   }
+  if (usePiProxy(env)) {
+    return fetchFromPiList(context, query);
+  }
   return fetchFromMockList(context, query);
 }
 
-/** 1件: PI →（失敗/タイムアウト時）Python AI → カタログ投影 →（未設定時）bff_mock */
+/**
+ * 1件: canonicalize → :8000 Bundle（primary）.
+ * PI prediction is NOT silent fallback. Optional only when PREDICTION_ALLOW_PI_FALLBACK=1.
+ */
 export async function adaptPredictionGet(context, raceId) {
   const env = getEnv(context);
   const normalizedId = normalizeRaceIdYear(raceId);
   const idChanged = normalizedId && normalizedId !== String(raceId || "").trim();
+  const sourceId = normalizedId || String(raceId || "").trim();
 
+  if (useAiProxy(env)) {
+    const ref = await resolveCanonicalRaceRef(aiFetch, context, sourceId);
+    const predictId =
+      ref.canonical_race_id ||
+      ref.core_race_id ||
+      sourceId;
+    const fromPy = await fetchFromPythonGet(context, predictId, {
+      timeoutMs: predictionTimeoutMs(env),
+      canonical_race_id: ref.canonical_race_id,
+      source_race_id: sourceId,
+    });
+    if (fromPy && fromPy.ok) {
+      if (fromPy.provenanceMeta) {
+        fromPy.provenanceMeta.canonical_race_id =
+          fromPy.provenanceMeta.canonical_race_id || ref.canonical_race_id;
+        fromPy.provenanceMeta.source_race_id =
+          fromPy.provenanceMeta.source_race_id || sourceId;
+        fromPy.provenanceMeta.core_race_id =
+          fromPy.provenanceMeta.core_race_id || ref.core_race_id;
+        if (idChanged) {
+          fromPy.provenanceMeta.requested_race_id = raceId;
+          fromPy.provenanceMeta.year_corrected = true;
+        }
+        // Infer race_type from authority when server omitted it
+        if (!fromPy.provenanceMeta.race_type && fromPy.provenanceMeta.decision_authority) {
+          fromPy.provenanceMeta.race_type =
+            fromPy.provenanceMeta.decision_authority === "RESTORED_V2"
+              ? "NORMAL"
+              : fromPy.provenanceMeta.decision_authority === "CURRENT_PATH"
+                ? "UNKNOWN_OR_MAIDEN"
+                : null;
+        }
+      }
+      return guardReadyOrPending(fromPy, predictId);
+    }
+    if (fromPy && fromPy.errorResponse) return fromPy;
+
+    // Explicit diagnostic PI fallback only (never silent authority)
+    if (env.PREDICTION_ALLOW_PI_FALLBACK && usePiProxy(env)) {
+      const fromPi = await fetchFromPiGet(context, sourceId, null, {
+        timeoutMs: predictionTimeoutMs(env),
+      });
+      if (fromPi && fromPi.ok) {
+        if (fromPi.provenanceMeta) {
+          fromPi.provenanceMeta.fallback_state = "explicit_pi_prediction_fallback";
+          fromPi.provenanceMeta.fallback_reason = "ai_unavailable_pi_fallback";
+          fromPi.provenanceMeta.decision_authority =
+            fromPi.provenanceMeta.decision_authority || "CURRENT_PATH";
+          fromPi.provenanceMeta.source_race_id = sourceId;
+          fromPi.provenanceMeta.canonical_race_id = ref.canonical_race_id || null;
+        }
+        return guardReadyOrPending(fromPi, sourceId);
+      }
+    }
+
+    return {
+      ok: false,
+      error: "Prediction unavailable from :8000 Bundle authority",
+      status: 502,
+      provenanceMeta: {
+        engine: "n/a",
+        engine_source: "real_ai",
+        fallback_state: "ai_prediction_unavailable",
+        canonical_race_id: ref.canonical_race_id || null,
+        source_race_id: sourceId,
+      },
+    };
+  }
+
+  // AI not configured — legacy PI / mock for local-only
   if (usePiProxy(env)) {
-    const fromPi = await fetchFromPiGet(context, normalizedId);
+    const fromPi = await fetchFromPiGet(context, sourceId);
     if (fromPi && fromPi.ok) {
-      if (idChanged && fromPi.provenanceMeta) {
-        fromPi.provenanceMeta.requested_race_id = raceId;
-        fromPi.provenanceMeta.race_id = normalizedId;
-        fromPi.provenanceMeta.year_corrected = true;
+      if (fromPi.provenanceMeta) {
+        fromPi.provenanceMeta.fallback_state = "pi_only_no_ai_base_url";
+        fromPi.provenanceMeta.decision_authority =
+          fromPi.provenanceMeta.decision_authority || "CURRENT_PATH";
       }
-      return guardReadyOrPending(fromPi, normalizedId);
+      return guardReadyOrPending(fromPi, sourceId);
     }
-
-    // PI 不通・タイムアウト時のみ AI へフェイルオーバー（同一オリジンならスキップ）
-    const sameOriginFailover =
-      env.AI_BASE_URL &&
-      env.PI_BASE_URL &&
-      String(env.AI_BASE_URL).replace(/\/$/, "") === String(env.PI_BASE_URL).replace(/\/$/, "");
-    if (useAiProxy(env) && !sameOriginFailover) {
-      const fromPy = await fetchFromPythonGet(context, normalizedId);
-      if (fromPy && fromPy.ok) {
-        if (fromPy.provenanceMeta) {
-          fromPy.provenanceMeta.fallback_reason = "pi_unavailable_ai_failover";
-          fromPy.provenanceMeta.pi_error = fromPi?.error || "pi_failed";
-          if (idChanged) {
-            fromPy.provenanceMeta.requested_race_id = raceId;
-            fromPy.provenanceMeta.year_corrected = true;
-          }
-        }
-        return guardReadyOrPending(fromPy, normalizedId);
-      }
-    }
-
-    // 旧: カタログ空 Projection を HTTP200 成功で返していた → pending に変更
-    // （ヘッダー用メタはクライアントの race_list_cache / prefetch meta が担う）
-    let numericFromCatalog = null;
-    const m = String(normalizedId || "").match(/^(\d{4}-\d{2}-\d{2})/);
-    if (m) {
-      try {
-        const catalogProxied = await piFetch(
-          context,
-          `/v1/races?date=${encodeURIComponent(m[1])}`,
-          { timeoutMs: 6000 }
-        );
-        if (catalogProxied && !(catalogProxied instanceof Response) && catalogProxied.ok) {
-          const races = Array.isArray(catalogProxied.payload.races)
-            ? catalogProxied.payload.races
-            : [];
-          const row = races.find((r) => String(r.race_id || "") === String(normalizedId));
-          if (row && row.numeric_race_id) numericFromCatalog = row.numeric_race_id;
-        }
-      } catch {
-        /* ignore catalog lookup */
-      }
-    }
-
     return pendingPredictionResult({
-      raceId: normalizedId,
-      numericRaceId: numericFromCatalog,
+      raceId: sourceId,
       reason: fromPi?.error || "pi_prediction_unavailable",
       requestedRaceId: idChanged ? raceId : undefined,
       yearCorrected: idChanged || undefined,
       piError: fromPi?.error || "pi_failed",
     });
   }
-  if (useAiProxy(env)) {
-    const fromPy = await fetchFromPythonGet(context, normalizedId);
-    if (fromPy && fromPy.ok) return guardReadyOrPending(fromPy, normalizedId);
-    if (fromPy && fromPy.errorResponse) return fromPy;
-    return { ok: false, error: "Prediction unavailable", status: 502 };
-  }
-  return guardReadyOrPending(await fetchFromMockGet(context, normalizedId), normalizedId);
+  return guardReadyOrPending(await fetchFromMockGet(context, sourceId), sourceId);
 }
 
 export const PredictionAdapter = {

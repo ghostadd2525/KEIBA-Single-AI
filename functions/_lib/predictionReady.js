@@ -21,14 +21,68 @@ export function isCatalogProjectionMeta(meta = {}) {
   return false;
 }
 
+/** Polling しても解決しない恒久 unavailable（202 pending にしない） */
+export function isTerminalUnavailableReason(reason) {
+  const r = String(reason || "").trim().toLowerCase();
+  if (!r) return false;
+  if (r === "race_not_resolved" || r === "race_not_found" || r === "missing_race_id") {
+    return true;
+  }
+  if (r === "input_not_ready" || r === "platform_missing") return true;
+  return false;
+}
+
+export function isTerminalUnavailable(bundle, meta = {}) {
+  const m = meta && typeof meta === "object" ? meta : {};
+  const b = bundle && typeof bundle === "object" ? bundle : {};
+  const reason = m.fallback_reason || b.fallback_reason || "";
+  if (isTerminalUnavailableReason(reason)) return true;
+  const state = String(m.fallback_state || "").toLowerCase();
+  if (state.includes("race_not_resolved") || state.includes("race_not_found")) return true;
+  const eng = String(m.engine_source || "");
+  if (eng === "prediction_unavailable" && isTerminalUnavailableReason(reason)) return true;
+  return false;
+}
+
+/** 一時的未準備 — 202 pending 継続可 */
+export function isRetryableUnavailableReason(reason) {
+  const r = String(reason || "").trim().toLowerCase();
+  if (!r) return true;
+  if (isTerminalUnavailableReason(r)) return false;
+  if (
+    r === "feature_not_ready" ||
+    r === "feature_csv_missing" ||
+    r === "feature_missing" ||
+    r.startsWith("feature_") ||
+    r === "pi_prediction_unavailable_pending" ||
+    r === "empty_runners" ||
+    r === "not_ready_prediction"
+  ) {
+    return true;
+  }
+  return false;
+}
+
 /**
  * Ready Prediction Bundle かどうか。
  * - runners が1頭以上
- * - catalog projection / pending ではない
+ * - catalog projection / pending / mock / unavailable ではない
  */
 export function isReadyPredictionBundle(bundle, meta = {}) {
   if (!bundle || typeof bundle !== "object") return false;
   if (isCatalogProjectionMeta(meta)) return false;
+  if (meta.prediction_available === false) return false;
+  if (bundle.prediction_available === false) return false;
+  const eng = String(meta.engine_source || "");
+  if (eng === "prediction_unavailable" || eng === "mock_fallback" || eng === "bff_mock" || eng === "mock") {
+    return false;
+  }
+  const fb = String(meta.fallback_state || meta.fallback_reason || "").toLowerCase();
+  if (fb.includes("mock_fallback") || fb.includes("prediction_unavailable")) {
+    return false;
+  }
+  const mv = String(meta.model_version || bundle.model_version || "").toLowerCase();
+  if (mv.includes("dummy-model")) return false;
   if (bundle.model_version === "list-projection" && bundleRunners(bundle).length === 0) {
     return false;
   }

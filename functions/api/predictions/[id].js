@@ -12,7 +12,10 @@ import {
 } from "../../_lib/adapters/predictionAdapter.js";
 import { jsonError, jsonOk } from "../../_lib/errors.js";
 import {
+  bundleRunners,
   isReadyPredictionBundle,
+  isTerminalUnavailable,
+  isRetryableUnavailableReason,
   warnProjectionSuppressed,
 } from "../../_lib/predictionReady.js";
 import { applyBundleValidation } from "../../_lib/validateBundle.js";
@@ -85,8 +88,31 @@ export async function onRequestGet(context) {
 
   const mergedMeta = mergeGetProvenanceMeta(base, result.provenanceMeta || {});
 
-  // 二重ガード: 空 Bundle / Projection は絶対に 200 成功にしない
+  // Terminal unavailable: HTTP 200 + prediction_available=false（202 pending 禁止）
+  if (result.terminalUnavailable || isTerminalUnavailable(result.bundle, mergedMeta)) {
+    const checked = applyBundleValidation(context, result.bundle, {
+      ...mergedMeta,
+      prediction_status: "unavailable",
+      prediction_available: false,
+    });
+    if (checked.errorResponse) return checked.errorResponse;
+    return jsonOk(checked.data, checked.meta, { cacheControl: "no-store" });
+  }
+
+  // 二重ガード: 空 Bundle / Projection は retryable のみ 202 pending
   if (!isReadyPredictionBundle(result.bundle, mergedMeta)) {
+    const retryReason =
+      mergedMeta.fallback_reason ||
+      (bundleRunners(result.bundle).length === 0 ? "empty_runners" : "not_ready_prediction");
+    if (!isRetryableUnavailableReason(retryReason)) {
+      const checked = applyBundleValidation(context, result.bundle, {
+        ...mergedMeta,
+        prediction_status: "unavailable",
+        prediction_available: false,
+      });
+      if (checked.errorResponse) return checked.errorResponse;
+      return jsonOk(checked.data, checked.meta, { cacheControl: "no-store" });
+    }
     warnProjectionSuppressed({
       race_id: id,
       numeric_race_id: mergedMeta.numeric_race_id || null,
@@ -95,7 +121,7 @@ export async function onRequestGet(context) {
     return jsonPredictionPending(
       {
         ...mergedMeta,
-        reason: "empty_or_projection_rejected",
+        reason: retryReason || "empty_or_projection_rejected",
       },
       "Prediction pending (empty or projection)"
     );

@@ -33,15 +33,7 @@
           </div>
         </div>
         <div class="topbar-tools">
-          <button type="button" class="fav-btn fav-btn--icon" id="raceFavBtn" data-fav-toggle="" aria-label="お気に入りに追加">
-            <span class="fav-star" aria-hidden="true">★</span>
-          </button>
-          <button type="button" class="icon-btn" aria-label="カレンダー">
-            <svg class="nav-ico" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-              <rect x="4" y="5" width="16" height="15" rx="2" stroke="currentColor" stroke-width="1.6"/>
-              <path d="M8 3v4M16 3v4M4 10h16" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
-            </svg>
-          </button>
+          <!-- 通知ベル / ハンバーガーは shell.js が注入。★・カレンダーはレース詳細では非表示 -->
         </div>
       </div>
     </header>
@@ -152,15 +144,18 @@
   <script src="assets/api/auth.js"></script>
   <script src="assets/api/contract-guard.js"></script>
   <script src="assets/api/http-cache.js?v=1"></script>
+  <script src="assets/api/race.js?v=16"></script>
+  <script src="assets/api/catalog-identity.js?v=2"></script>
   <script src="assets/api/prediction.js?v=16"></script>
   <script src="assets/api/explain-ux.js?v=3"></script>
-  <script src="assets/api/prediction-bind.js?v=52"></script>
+  <script src="assets/api/prediction-bind.js?v=54"></script>
   <script src="assets/api/single-detail.js?v=2"></script>
   <script src="assets/api/race-prefetch.js?v=1"></script>
   <script src="assets/api/race-board.js?v=10"></script>
-  <script src="assets/api/race-detail-tabs.js?v=16"></script>
+  <script src="assets/api/race-history.js?v=1"></script>
+  <script src="assets/api/race-detail-tabs.js?v=17"></script>
   <script src="assets/api/analysis.js?v=10"></script>
-  <script src="assets/api/analysis-bind.js?v=30"></script>
+  <script src="assets/api/analysis-bind.js?v=31"></script>
   <script src="assets/ux.js?v=20"></script>
   <script src="assets/api/conversation.js?v=6"></script>
   <script src="assets/api/conversation-ui.js?v=7"></script>
@@ -173,7 +168,7 @@
   <script>
     ExpectShell.initMascotTalk([
       "逃げ・先行が厚いから<br>差し有利の展開に<br>なりそう！",
-      "★ でお気に入り登録すると<br>ホームに最大3件まで<br>表示されるよ！"
+      "気になるレースは<br>保存しておくと便利だよ！"
     ]);
 
     var id = new URLSearchParams(location.search).get("race_id") || "";
@@ -217,6 +212,95 @@
 
     if (window.ExpectConversationUi) ExpectConversationUi.mountRaceCtas(id);
     if (window.ExpectRaceDetailTabs) ExpectRaceDetailTabs.bind(id);
+
+    /** Catalog seed for THIS race_id only — never reuse another race's name. */
+    function applyCatalogSeed(raceInfo) {
+      if (!raceInfo || String(raceInfo.race_id || "") !== id) return;
+      if (window.ExpectPredictionBind && ExpectPredictionBind.setCatalogRaceInfo) {
+        ExpectPredictionBind.setCatalogRaceInfo(id, raceInfo);
+      }
+      if (window.ExpectPredictionBind && ExpectPredictionBind.paintRaceDetailHeader) {
+        ExpectPredictionBind.paintRaceDetailHeader(raceInfo, id);
+      }
+    }
+
+    (function loadCatalogHeader() {
+      var dateMatch = String(id).match(/^(\d{4}-\d{2}-\d{2})/);
+      var date = dateMatch ? dateMatch[1] : "";
+      if (!date) return;
+
+      function pickHit(items) {
+        var i;
+        for (i = 0; i < items.length; i++) {
+          if (items[i] && items[i].race_id === id) return items[i];
+        }
+        return null;
+      }
+
+      function applyFromMapped(catalogOrItems) {
+        var items = Array.isArray(catalogOrItems)
+          ? catalogOrItems
+          : (catalogOrItems && catalogOrItems.items) || [];
+        var hit = pickHit(items);
+        if (hit && hit.race_info) applyCatalogSeed(hit.race_info);
+      }
+
+      // Catalog header must not depend on Bearer token — expired auth was blocking race_name.
+      fetch("/api/races?date=" + encodeURIComponent(date), {
+        method: "GET",
+        headers: { Accept: "application/json" },
+        credentials: "same-origin",
+      })
+        .then(function (res) {
+          return res.text().then(function (text) {
+            var payload = null;
+            try {
+              payload = text ? JSON.parse(text) : null;
+            } catch (e) {
+              payload = null;
+            }
+            if (!res.ok || (payload && payload.ok === false)) {
+              throw new Error("catalog http " + res.status);
+            }
+            return payload && payload.data != null ? payload.data : payload;
+          });
+        })
+        .then(function (catalog) {
+          if (window.ExpectApi && ExpectApi.Race && ExpectApi.Race.mapCatalogItems) {
+            applyFromMapped({ items: ExpectApi.Race.mapCatalogItems(catalog || {}) });
+            return;
+          }
+          var races = (catalog && catalog.races) || [];
+          var row = null;
+          var j;
+          for (j = 0; j < races.length; j++) {
+            if (races[j] && races[j].race_id === id) {
+              row = races[j];
+              break;
+            }
+          }
+          if (!row) return;
+          applyCatalogSeed({
+            race_id: String(row.race_id),
+            venue: row.venue || row.course || "",
+            course: row.course || row.venue || "",
+            race_no: row.race_no != null ? row.race_no : row.race_number,
+            race_number: row.race_number != null ? row.race_number : row.race_no,
+            race_name: row.race_name || "",
+            race_label: row.race_label || "",
+            date: row.date || row.race_date || date,
+            date_label: "",
+            post_time: row.post_time != null ? String(row.post_time) : "",
+          });
+        })
+        .catch(function () {
+          if (!window.ExpectApi || !ExpectApi.Race || !ExpectApi.Race.list) return;
+          ExpectApi.Race.list({ date: date })
+            .then(applyFromMapped)
+            .catch(function () {});
+        });
+    })();
+
     var prefMeta =
       window.ExpectRacePrefetch && typeof ExpectRacePrefetch.getMeta === "function"
         ? ExpectRacePrefetch.getMeta(id)
@@ -234,78 +318,17 @@
         postTime: prefMeta.postTime || meta.postTime || "",
       };
     }
+    // Early placeholder: do not strip "nR"; Catalog fetch / Prediction will refine.
     var titleEl = document.getElementById("raceTitle");
     var subEl = document.getElementById("raceSub") || document.querySelector(".brand-sub");
-    var placeHint =
-      (window.ExpectRaceIdMeta && ExpectRaceIdMeta.displayPlace(id, meta.place)) ||
-      meta.place ||
-      "レース";
-    placeHint = String(placeHint)
-      .replace(/\s*\d{1,2}\s*R\s*$/u, "")
-      .replace(/(\d{1,2})R\s*$/u, "")
-      .trim() || String(placeHint);
-    if (titleEl) titleEl.textContent = placeHint;
-    if (subEl) {
-      var subBits = [];
-      if (meta.name) {
-        var shortName = String(meta.name)
-          .replace(/\s+\d{1,2}:\d{2}(?:芝|ダート|ダ|障)?\d*m?\d*頭?\s*$/u, "")
-          .replace(/\s+\d{1,2}:\d{2}\S*\s*$/u, "")
-          .trim();
-        subBits.push(shortName || meta.name);
-      }
-      if (meta.postTime) {
-        var pt = String(meta.postTime).trim();
-        var m = pt.match(/^(\d{1,2}):(\d{2})/);
-        subBits.push(
-          m
-            ? String(Number(m[1])).padStart(2, "0") + ":" + m[2] + "出走"
-            : pt.indexOf("出走") >= 0
-              ? pt
-              : pt + "出走"
-        );
-      } else {
-        var nameForPost = String(meta.name || "");
-        var pm = nameForPost.match(/(\d{1,2}):(\d{2})/);
-        if (pm) {
-          subBits.push(
-            String(Number(pm[1])).padStart(2, "0") + ":" + pm[2] + "出走"
-          );
-        } else if (meta.badge && !/芝|ダート|\d+m|\d+頭/.test(String(meta.badge))) {
-          subBits.push(meta.badge);
-        }
-      }
-      subEl.textContent = subBits.length ? subBits.join(" ") : "読み込み中…";
-    }
+    if (titleEl && meta.place) titleEl.textContent = meta.place;
+    if (subEl && meta.name) subEl.textContent = meta.name;
+
     var metaNameEl = document.getElementById("raceMetaName");
     var metaLineEl = document.getElementById("raceMetaLine");
-    if (metaNameEl) {
-      var cardName = String(meta.name || "")
-        .replace(/\s+\d{1,2}:\d{2}(?:芝|ダート|ダ|障)?\d*m?\d*頭?\s*$/u, "")
-        .replace(/\s+\d{1,2}:\d{2}\S*\s*$/u, "")
-        .trim();
-      metaNameEl.textContent = cardName || placeHint || "—";
-    }
-    if (metaLineEl) {
-      var lineBits = [];
-      if (meta.dateLabel) lineBits.push(meta.dateLabel);
-      var postForLine = meta.postTime || "";
-      if (!postForLine) {
-        var pm2 = String(meta.name || "").match(/(\d{1,2}):(\d{2})/);
-        if (pm2) postForLine = pm2[1] + ":" + pm2[2];
-      }
-      if (postForLine) {
-        var pt2 = String(postForLine).trim();
-        var m2 = pt2.match(/^(\d{1,2}):(\d{2})/);
-        lineBits.push(
-          m2
-            ? String(Number(m2[1])).padStart(2, "0") + ":" + m2[2] + "出走"
-            : pt2.indexOf("出走") >= 0
-              ? pt2
-              : pt2 + "出走"
-        );
-      }
-      metaLineEl.textContent = lineBits.length ? lineBits.join("・") : "読み込み中…";
+    if (metaNameEl && meta.name) metaNameEl.textContent = meta.name;
+    if (metaLineEl && meta.dateLabel) {
+      metaLineEl.textContent = meta.dateLabel;
     }
 
     var favBtn = document.getElementById("raceFavBtn");
@@ -363,19 +386,48 @@
       });
     }
 
+    /** 予測由来 DOM のみ消去（Ready キャッシュ読取前に使う。dropBundle しない） */
+    function clearPredictionDom() {
+      aiApplied = false;
+      if (
+        window.ExpectPredictionBind &&
+        typeof ExpectPredictionBind.clearPredictionDerivedUi === "function"
+      ) {
+        ExpectPredictionBind.clearPredictionDerivedUi();
+      }
+    }
+
+    /** pending / unavailable 受信時: DOM + prefetch + HTTP cache を破棄 */
+    function clearStalePredictionUi() {
+      clearPredictionDom();
+      if (window.ExpectRacePrefetch && ExpectRacePrefetch.dropBundle) {
+        ExpectRacePrefetch.dropBundle(id);
+      }
+      if (window.ExpectHttpCache && ExpectHttpCache.clear) {
+        try {
+          ExpectHttpCache.clear("/api/predictions/" + id);
+        } catch (e) {
+          /* ignore */
+        }
+      }
+    }
+
     function showAiSkeleton() {
       var marks = document.getElementById("marksSectionBody");
       var picks = document.getElementById("pickCardsBody");
       var conf = document.getElementById("raceConfidenceDetail");
       var reasons = document.getElementById("reasonsSectionBody");
+      var uxBody = document.getElementById("explainUxBody");
       var sk =
         window.ExpectRaceDetailTabs && ExpectRaceDetailTabs.skeletonHtml
           ? ExpectRaceDetailTabs.skeletonHtml(4)
-          : '<p class="muted">読み込み中…</p>';
-      if (marks && !aiApplied) marks.innerHTML = sk;
-      if (picks && !aiApplied) picks.innerHTML = sk;
-      if (conf && !aiApplied) conf.innerHTML = sk;
-      if (reasons && !aiApplied) reasons.innerHTML = sk;
+          : '<p class="muted">AI予想を生成しています</p>';
+      // pending / 生成中は過去印・対抗穴・AIコメントを残さない（aiApplied でも上書き）
+      if (marks) marks.innerHTML = sk;
+      if (picks) picks.innerHTML = sk;
+      if (conf) conf.innerHTML = sk;
+      if (reasons) reasons.innerHTML = sk;
+      if (uxBody) uxBody.innerHTML = sk;
       if (honmeiCard) honmeiCard.classList.add("is-loading");
       if (chartCard) chartCard.classList.add("is-loading");
     }
@@ -391,6 +443,18 @@
       var bundle = hasBundleKey ? result.bundle : result;
       var envelopeMeta = hasBundleKey ? result.meta || {} : {};
       if (!bundle || typeof bundle !== "object") return false;
+      // Ready のみ描画（mock / unavailable / runners=[] はキャッシュ経由でも拒否）
+      if (
+        window.ExpectApi &&
+        ExpectApi.Prediction &&
+        typeof ExpectApi.Prediction.isReady === "function" &&
+        !ExpectApi.Prediction.isReady(bundle, envelopeMeta)
+      ) {
+        if (window.ExpectRacePrefetch && ExpectRacePrefetch.dropBundle) {
+          ExpectRacePrefetch.dropBundle(id);
+        }
+        return false;
+      }
       var pbCheck =
         bundle.__contract ||
         (window.ExpectContractGuard && ExpectContractGuard.validatePredictionBundle(bundle)) ||
@@ -517,6 +581,7 @@
       function showPendingState() {
         if (window.ExpectContractGuard) ExpectContractGuard.clearErrorCard(detailMount);
         clearPendingStateCard();
+        clearStalePredictionUi();
         showAiSkeleton();
         if (window.ExpectUx && detailMount) {
           var card = ExpectUx.stateCard({
@@ -644,6 +709,32 @@
           schedulePendingRetry();
           return;
         }
+        if (result && result.terminal) {
+          clearPendingRetry();
+          clearPendingStateCard();
+          markReady();
+          if (window.ExpectUx && detailMount) {
+            var termMsg =
+              (result.meta && result.meta.detail) ||
+              (result.meta && result.meta.fallback_reason) ||
+              "レース情報の準備が完了していません。";
+            detailMount.insertBefore(
+              ExpectUx.stateCard({
+                kind: "warn",
+                title: "AI予想を表示できません",
+                message: termMsg,
+                retryLabel: "再読み込み",
+                onRetry: function () {
+                  pendingAttempt = 0;
+                  fetchDetailOnce();
+                },
+              }),
+              detailMount.firstChild
+            );
+          }
+          ExpectFavorites.bindButtons();
+          return;
+        }
         clearPendingRetry();
         clearPendingStateCard();
         pendingAttempt = 0;
@@ -662,9 +753,11 @@
       }
 
       var startDetail = function () {
+        // race_id 切替 / 初回: 予測 DOM を即 clear。Ready キャッシュは getBundle 経由のみ許可
+        clearPredictionDom();
         showAiSkeleton();
 
-        // キャッシュ優先で即描画（一覧 prefetch / 直前訪問）
+        // Ready Bundle のみキャッシュ描画（getBundle が mock/unavailable を落とす）
         var cached =
           window.ExpectRacePrefetch && ExpectRacePrefetch.getBundle
             ? ExpectRacePrefetch.getBundle(id)

@@ -185,15 +185,50 @@
     return bundle;
   }
 
-  /** Ready Bundle 判定（空 Projection / runners=0 / pending は拒否） */
+  /** Terminal unavailable — polling しても解決しない（race_not_resolved 等） */
+  function isTerminalUnavailable(meta, bundle) {
+    meta = meta || {};
+    bundle = bundle || {};
+    var reason = String(meta.fallback_reason || bundle.fallback_reason || "");
+    if (reason === "race_not_resolved" || reason === "race_not_found") return true;
+    if (meta.prediction_status === "unavailable") return true;
+    var st = String(meta.fallback_state || "").toLowerCase();
+    if (st.indexOf("race_not_resolved") >= 0 || st.indexOf("race_not_found") >= 0) return true;
+    if (meta.engine_source === "prediction_unavailable" && reason === "race_not_resolved") {
+      return true;
+    }
+    return false;
+  }
+
+  /** Ready Bundle 判定（空 Projection / runners=0 / pending / mock / unavailable は拒否） */
   function isReadyPrediction(bundle, meta) {
     if (!bundle || typeof bundle !== "object") return false;
     meta = meta || bundle.__meta || {};
     if (meta.prediction_status === "pending") return false;
+    if (meta.prediction_available === false) return false;
+    if (bundle.prediction_available === false) return false;
     if (meta.engine_source === "pi_catalog_projection") return false;
+    if (meta.engine_source === "prediction_unavailable") return false;
+    if (
+      meta.engine_source === "mock_fallback" ||
+      meta.engine_source === "bff_mock" ||
+      meta.engine_source === "mock"
+    ) {
+      return false;
+    }
     if (
       meta.fallback_reason === "pi_prediction_unavailable_catalog_projection" ||
       meta.fallback_reason === "pi_prediction_unavailable_pending"
+    ) {
+      return false;
+    }
+    var fb = String(meta.fallback_state || meta.fallback_reason || "").toLowerCase();
+    if (fb.indexOf("mock_fallback") >= 0) return false;
+    if (fb.indexOf("prediction_unavailable") >= 0) return false;
+    if (
+      String(meta.model_version || bundle.model_version || "")
+        .toLowerCase()
+        .indexOf("dummy-model") >= 0
     ) {
       return false;
     }
@@ -337,6 +372,14 @@
             attachMeta(normalizeBundle(parsed.data, raceId), meta)
           );
           if (!isReadyPrediction(bundle, meta)) {
+            if (isTerminalUnavailable(meta, bundle)) {
+              return {
+                bundle: bundle,
+                meta: meta,
+                pending: false,
+                terminal: true,
+              };
+            }
             return {
               bundle: null,
               meta: Object.assign({}, meta, { prediction_status: "pending" }),
