@@ -5,6 +5,7 @@
   "use strict";
 
   var BRIGHTNESS_KEY = "expect_brightness_v1";
+  var MASCOT_ENABLED_KEY = "expect_mascot_enabled";
 
   var DEFAULT_LINES = [
     "今日のAI信頼度だよ！<br><strong>東京芝2000m</strong> は<br>とっても期待できそう！",
@@ -17,6 +18,116 @@
     document.querySelectorAll(".bottom-nav a[data-nav]").forEach(function (a) {
       a.classList.toggle("is-active", a.getAttribute("data-nav") === active);
     });
+  }
+
+  /**
+   * Floating KAOBA 表示許可 — メイン5タブのみ。
+   * pathname 末尾で判定（data-nav はサブページでも親タブを指すため使わない）。
+   */
+  var MASCOT_ALLOWED_FILES = {
+    "": true,
+    index: true,
+    "index.html": true,
+    races: true,
+    "races.html": true,
+    analysis: true,
+    "analysis.html": true,
+    saved: true,
+    "saved.html": true,
+    mypage: true,
+    "mypage.html": true
+  };
+
+  function getMascotPageFile() {
+    var path = String((global.location && location.pathname) || "/");
+    var parts = path.split("/");
+    return String(parts[parts.length - 1] || "").toLowerCase();
+  }
+
+  function isMascotPageAllowed() {
+    return !!MASCOT_ALLOWED_FILES[getMascotPageFile()];
+  }
+
+  /** localStorage: 未設定はデフォルト ON */
+  function isMascotUserEnabled() {
+    try {
+      var v = global.localStorage.getItem(MASCOT_ENABLED_KEY);
+      if (v == null || v === "") return true;
+      return v === "true" || v === "1" || v === "on";
+    } catch (e) {
+      return true;
+    }
+  }
+
+  function setMascotUserEnabled(enabled) {
+    var on = !!enabled;
+    try {
+      global.localStorage.setItem(MASCOT_ENABLED_KEY, on ? "true" : "false");
+    } catch (e) {}
+    applyMascotPagePolicy();
+    syncMascotToggleUI();
+    return on;
+  }
+
+  function isMascotVisibleNow() {
+    return (
+      isMascotPageAllowed() &&
+      isMascotUserEnabled() &&
+      !document.body.classList.contains("is-catalog-view")
+    );
+  }
+
+  /** ページ許可 × ユーザー設定 × カタログ非表示 */
+  function applyMascotPagePolicy() {
+    var root = document.getElementById("mascotKa0ba");
+    var pageOk = isMascotPageAllowed();
+    var userOk = isMascotUserEnabled();
+    var show = isMascotVisibleNow();
+
+    if (!root) return show;
+
+    root.setAttribute("data-mascot-page-allowed", pageOk ? "1" : "0");
+    root.setAttribute("data-mascot-user-enabled", userOk ? "1" : "0");
+
+    var talkBtn = document.getElementById("mascotTalkBtn");
+
+    if (!show) {
+      clearMascotTimers();
+      mascotBusy = false;
+      mascotQueue.length = 0;
+      root.classList.remove("is-speaking");
+      root.classList.add("is-mascot-suppressed");
+      root.hidden = true;
+      root.setAttribute("aria-hidden", "true");
+      root.style.setProperty("display", "none", "important");
+      if (talkBtn) {
+        talkBtn.setAttribute("tabindex", "-1");
+        talkBtn.setAttribute("aria-disabled", "true");
+        talkBtn.style.pointerEvents = "none";
+      }
+    } else {
+      root.classList.remove("is-mascot-suppressed");
+      root.style.removeProperty("display");
+      root.hidden = false;
+      root.removeAttribute("aria-hidden");
+      if (talkBtn) {
+        talkBtn.removeAttribute("tabindex");
+        talkBtn.removeAttribute("aria-disabled");
+        talkBtn.style.pointerEvents = "";
+      }
+    }
+    return show;
+  }
+
+  function syncMascotToggleUI(panel) {
+    var scope = panel || document;
+    var toggle = scope.querySelector("[data-mascot-toggle]");
+    if (!toggle) return;
+    var on = isMascotUserEnabled();
+    toggle.setAttribute("aria-checked", on ? "true" : "false");
+    toggle.classList.toggle("is-on", on);
+    var sw = toggle.querySelector("[data-mascot-switch]");
+    if (sw) sw.setAttribute("data-on", on ? "1" : "0");
   }
 
   var mascotHideTimer = null;
@@ -41,11 +152,12 @@
     }
   }
 
-  /** KAOBA吹き出し（リマインダー等からも利用） */
+  /** KAOBA吹き出し（リマインダー等からも利用）— 許可ページかつユーザーONのみ */
   function speakMascot(html, holdMs) {
+    if (!isMascotVisibleNow()) return false;
     var root = document.getElementById("mascotKa0ba");
     var bubble = document.getElementById("mascotBubble");
-    if (!root || !bubble || !html) return false;
+    if (!root || root.hidden || !bubble || !html) return false;
 
     if (mascotBusy) {
       mascotQueue.push({ html: html, holdMs: holdMs });
@@ -83,6 +195,8 @@
   }
 
   function initMascotTalk(lines) {
+    applyMascotPagePolicy();
+    if (!isMascotPageAllowed()) return;
     var btn = document.getElementById("mascotTalkBtn");
     if (!btn || btn.getAttribute("data-mascot-bound") === "1") return;
     btn.setAttribute("data-mascot-bound", "1");
@@ -90,7 +204,11 @@
     var talk = lines && lines.length ? lines : DEFAULT_LINES;
     var idx = 0;
 
-    btn.addEventListener("click", function () {
+    btn.addEventListener("click", function (e) {
+      if (!isMascotUserEnabled() || btn.getAttribute("aria-disabled") === "true") {
+        e.preventDefault();
+        return;
+      }
       speakMascot(talk[idx % talk.length], 4200);
       idx += 1;
     });
@@ -149,6 +267,11 @@
         "</a>"
       );
     }).join("") +
+    '<button type="button" class="global-menu-item global-menu-item--mascot" role="menuitemcheckbox" aria-checked="true" data-mascot-toggle>' +
+    '<img class="icon-kaoba" src="assets/images/mascot-kaoba-menu-icon.png?v=1" alt="" width="26" height="26" draggable="false" />' +
+    '<span class="global-menu-mascot-label">KAOBA表示</span>' +
+    '<span class="global-menu-switch" data-mascot-switch aria-hidden="true"><span class="global-menu-switch-knob"></span></span>' +
+    "</button>" +
     '<button type="button" class="global-menu-item global-menu-item--logout" role="menuitem" data-global-logout>ログアウト</button>' +
     "</div></div></div>";
 
@@ -162,6 +285,7 @@
     panel.querySelectorAll("[data-nav]").forEach(function (a) {
       a.classList.toggle("is-active", a.getAttribute("data-nav") === active);
     });
+    syncMascotToggleUI(panel);
 
     function closeMenu() {
       wrap.classList.remove("is-open");
@@ -173,6 +297,7 @@
       wrap.classList.add("is-open");
       panel.hidden = false;
       menuBtn.setAttribute("aria-expanded", "true");
+      syncMascotToggleUI(panel);
     }
 
     function toggleMenu(e) {
@@ -183,6 +308,15 @@
     }
 
     menuBtn.addEventListener("click", toggleMenu);
+
+    var mascotToggle = panel.querySelector("[data-mascot-toggle]");
+    if (mascotToggle) {
+      mascotToggle.addEventListener("click", function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        setMascotUserEnabled(!isMascotUserEnabled());
+      });
+    }
 
     var logoutBtn = panel.querySelector("[data-global-logout]");
     if (logoutBtn) {
@@ -239,6 +373,7 @@
     if (global.ExpectReminders && typeof ExpectReminders.bind === "function") {
       ExpectReminders.bind(slot);
     }
+    applyMascotPagePolicy();
   }
 
   function getBrightness() {
@@ -278,6 +413,10 @@
     initNav: initNav,
     initMascotTalk: initMascotTalk,
     speakMascot: speakMascot,
+    isMascotPageAllowed: isMascotPageAllowed,
+    isMascotUserEnabled: isMascotUserEnabled,
+    setMascotUserEnabled: setMascotUserEnabled,
+    applyMascotPagePolicy: applyMascotPagePolicy,
     initChips: initChips,
     mountGlobalTools: mountGlobalTools,
     getBrightness: getBrightness,
@@ -287,8 +426,12 @@
   };
 
   if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", mountGlobalTools);
+    document.addEventListener("DOMContentLoaded", function () {
+      mountGlobalTools();
+      applyMascotPagePolicy();
+    });
   } else {
     mountGlobalTools();
+    applyMascotPagePolicy();
   }
 })(window);
