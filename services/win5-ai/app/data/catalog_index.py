@@ -180,7 +180,7 @@ class CatalogIndex:
         return n
 
     def load_json(self, path: Path) -> int:
-        raw = json.loads(path.read_text(encoding="utf-8"))
+        raw = json.loads(path.read_text(encoding="utf-8-sig"))
         if isinstance(raw, dict):
             rows = raw.get("races") or raw.get("items") or []
         else:
@@ -243,12 +243,14 @@ class CatalogIndex:
 
     def ensure_date(self, date: str) -> None:
         d = str(date)[:10]
-        if not d or self.has_date(d) or d in self._pi_attempted:
+        if not d or self.has_date(d):
             return
-        self._pi_attempted.add(d)
+        if d in self._pi_attempted:
+            return
         rows = _fetch_pi_races(d)
         if rows:
             self.load_mapping(rows)
+            self._pi_attempted.add(d)
 
 
 _shared_index: CatalogIndex | None = None
@@ -265,7 +267,7 @@ def _pi_base_url() -> str:
         os.environ.get("PI_BASE_URL")
         or os.environ.get("EXPECT_PI_BASE_URL")
         or os.environ.get("EXPECT_PI_KEIBANET_URL")
-        or ""
+        or "http://127.0.0.1:8081"
     ).strip().rstrip("/")
 
 
@@ -276,7 +278,7 @@ def _fetch_pi_races(date: str) -> list[dict[str, Any]]:
     url = f"{base}/v1/races?date={date}"
     try:
         req = urllib.request.Request(url, headers={"Accept": "application/json"})
-        with urllib.request.urlopen(req, timeout=2.0) as resp:
+        with urllib.request.urlopen(req, timeout=10.0) as resp:
             payload = json.loads(resp.read().decode("utf-8"))
     except (urllib.error.URLError, TimeoutError, json.JSONDecodeError, OSError, ValueError):
         return []
@@ -284,6 +286,17 @@ def _fetch_pi_races(date: str) -> list[dict[str, Any]]:
         return []
     data = payload.get("data") if isinstance(payload.get("data"), dict) else payload
     races = (data or {}).get("races") if isinstance(data, dict) else None
+    if not isinstance(races, list) or not races:
+        venues = (data or {}).get("venues") if isinstance(data, dict) else None
+        if isinstance(venues, list):
+            flat: list[dict[str, Any]] = []
+            for block in venues:
+                if not isinstance(block, dict):
+                    continue
+                nested = block.get("races")
+                if isinstance(nested, list):
+                    flat.extend(r for r in nested if isinstance(r, dict))
+            races = flat
     if not isinstance(races, list):
         return []
     return [r for r in races if isinstance(r, dict)]
