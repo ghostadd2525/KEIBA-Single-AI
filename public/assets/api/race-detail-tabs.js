@@ -215,13 +215,96 @@
 
   function formatSurfaceDistance(r) {
     var surface = String((r && r.surface) || "").trim();
-    var dist = r && r.distance != null && r.distance !== "" ? Number(r.distance) : NaN;
+    var dist =
+      r && r.distance != null && r.distance !== "" ? Number(r.distance) : NaN;
     var distLabel = Number.isFinite(dist) ? String(dist) + "m" : "";
+    if (!surface && !distLabel) return "";
+    if (surface === "芝" || surface === "ダ" || surface === "障") {
+      return distLabel ? surface + distLabel : surface;
+    }
     if (surface && distLabel) {
-      if (/m$/i.test(surface) || surface.indexOf(String(dist)) >= 0) return surface;
+      if (/m$/i.test(surface) || surface.indexOf(String(dist)) >= 0) {
+        return surface;
+      }
       return surface + distLabel;
     }
     return surface || distLabel || "";
+  }
+
+  /** PI history `place` → venue label (domestic: 1札幌6 → 札幌; overseas: as-is). */
+  function venueFromPlace(place) {
+    var s = String(place == null ? "" : place).trim();
+    if (!s) return "";
+    var domestic = s.match(/^\d+(.+?)\d+$/);
+    if (domestic && domestic[1]) return domestic[1].trim();
+    return s;
+  }
+
+  /** Parenthetical suffix in PI race_name is grade/class (e.g. 函館スプリントS(GIII)). */
+  function splitRaceNameGrade(raceName) {
+    var raw = String(raceName == null ? "" : raceName).trim();
+    if (!raw) return { title: "", grade: "" };
+    var m = raw.match(/^(.+?)\(([^)]+)\)\s*$/);
+    if (!m) return { title: raw, grade: "" };
+    return { title: m[1].trim(), grade: m[2].trim() };
+  }
+
+  function recentRaceHtml(r) {
+    var date = formatHistoryDate(r && r.date);
+    var compactDate = date
+      ? date.replace(/^(\d{4})\/0?(\d+)\/0?(\d+)$/, function (_, y, m, d) {
+          return y + "/" + Number(m) + "/" + Number(d);
+        })
+      : "";
+    var venue = venueFromPlace(r && r.place);
+    var nameParts = splitRaceNameGrade(r && r.race_name);
+    var surfaceDistance = formatSurfaceDistance(r);
+    var finish = formatFinish(r && r.finish);
+    var title = nameParts.title || "—";
+
+    var subBits = [];
+    if (compactDate) {
+      subBits.push(
+        '<span class="board-acc-race-date">' + escapeHtml(compactDate) + "</span>"
+      );
+    }
+    if (venue) {
+      subBits.push(
+        '<span class="board-acc-race-venue">' + escapeHtml(venue) + "</span>"
+      );
+    }
+    if (surfaceDistance) {
+      subBits.push(
+        '<span class="board-acc-race-sd">' +
+          escapeHtml(surfaceDistance) +
+          "</span>"
+      );
+    }
+
+    return (
+      '<li class="board-acc-race">' +
+      '<div class="board-acc-race-main">' +
+      '<span class="board-acc-race-title">' +
+      escapeHtml(title) +
+      "</span>" +
+      (nameParts.grade
+        ? '<span class="board-acc-race-grade">' +
+          escapeHtml(nameParts.grade) +
+          "</span>"
+        : "") +
+      '<span class="board-acc-race-finish">' +
+      escapeHtml(finish) +
+      "</span>" +
+      "</div>" +
+      (subBits.length
+        ? '<div class="board-acc-race-sub">' +
+          subBits.join(
+            '<span class="board-acc-race-sep" aria-hidden="true">·</span>'
+          ) +
+          "</div>"
+        : "") +
+      "</li>"
+    );
   }
 
   function mergeHistoryRows(entries, history) {
@@ -248,23 +331,6 @@
         recent: Array.isArray(h.recent) ? h.recent : [],
       };
     });
-  }
-
-  function recentRaceHtml(r) {
-    var date = formatHistoryDate(r && r.date);
-    var compactDate = date
-      ? date.replace(/^(\d{4})\/0?(\d+)\/0?(\d+)$/, function (_, y, m, d) {
-          return y + "/" + Number(m) + "/" + Number(d);
-        })
-      : "";
-    var finish = formatFinish(r && r.finish);
-    var line = [compactDate, finish].filter(Boolean).join(" ");
-    return (
-      '<li class="board-acc-race">' +
-      '<div class="board-acc-line board-acc-line--compact">' +
-      escapeHtml(line || "—") +
-      "</div></li>"
-    );
   }
 
   function historyHtml(history, entries) {
