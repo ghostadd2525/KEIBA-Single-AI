@@ -820,9 +820,6 @@
         "</h4>" +
         '<p class="pick-card-meta">モデル評価順位 #' +
         escapeHtml(String(r.model_rank != null ? r.model_rank : "—")) +
-        (typeof r.win_prob === "number"
-          ? " · 1着確率　" + Math.round(r.win_prob * 1000) / 10 + "%"
-          : "") +
         "</p></article>";
     });
     return html || '<p class="muted">対抗・穴印なし</p>';
