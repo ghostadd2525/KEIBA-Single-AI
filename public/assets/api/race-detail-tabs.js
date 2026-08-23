@@ -284,6 +284,7 @@
     return (
       '<li class="board-acc-race">' +
       '<div class="board-acc-race-main">' +
+      '<div class="board-acc-race-head">' +
       '<span class="board-acc-race-title">' +
       escapeHtml(title) +
       "</span>" +
@@ -292,6 +293,7 @@
           escapeHtml(nameParts.grade) +
           "</span>"
         : "") +
+      "</div>" +
       '<span class="board-acc-race-finish">' +
       escapeHtml(finish) +
       "</span>" +

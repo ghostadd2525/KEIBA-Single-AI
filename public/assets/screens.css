@@ -1131,11 +1131,22 @@ body.v2-race-list-ui .race-conf {
   display: flex;
   flex-wrap: wrap;
   align-items: baseline;
-  gap: 6px 8px;
+  justify-content: space-between;
+  gap: 10px 12px;
+}
+
+.board-acc-race-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  column-gap: 0.65em;
+  row-gap: 0.25em;
+  flex: 1 1 auto;
+  min-width: 0;
 }
 
 .board-acc-race-title {
-  flex: 1 1 auto;
+  flex: 0 1 auto;
   min-width: 0;
   font-size: 14px;
   font-weight: 700;
@@ -1159,6 +1170,7 @@ body.v2-race-list-ui .race-conf {
 .board-acc-race-finish {
   flex: 0 0 auto;
   margin-left: auto;
+  padding-left: 0.85em;
   font-size: 14px;
   font-weight: 700;
   line-height: 1.2;
