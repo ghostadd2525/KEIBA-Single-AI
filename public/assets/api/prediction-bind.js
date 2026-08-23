@@ -457,9 +457,12 @@
       "</p>" +
       statusNote +
       '<div class="race-item-meta">' +
+      // 発走時間は prediction status に関係なく常時・同位置（基本情報レイヤ）
       (post
-        ? "<span>" + escapeHtml(normalizePostTime(post)) + "出走</span>"
-        : "") +
+        ? '<span class="race-item-time">' +
+          escapeHtml(normalizePostTime(post)) +
+          "出走</span>"
+        : '<span class="race-item-time race-item-time--empty" hidden></span>') +
       (band || confPct != null
         ? ""
         : '<span class="race-stars">' + stars + "</span>") +
@@ -817,6 +820,9 @@
         "</h4>" +
         '<p class="pick-card-meta">モデル評価順位 #' +
         escapeHtml(String(r.model_rank != null ? r.model_rank : "—")) +
+        (typeof r.win_prob === "number"
+          ? " · 1着確率　" + Math.round(r.win_prob * 1000) / 10 + "%"
+          : "") +
         "</p></article>";
     });
     return html || '<p class="muted">対抗・穴印なし</p>';
@@ -1007,6 +1013,11 @@
     }
   }
 
+  /**
+   * prediction_available=false / pending / race_id 切替時:
+   * 印・対抗穴・着順・explain・自信度・本命カードなど予測由来 DOM を全消去。
+   * 過去 Bundle / mock / 別レース残留を残さない。
+   */
   /** "15:10" → "15:10出走" */
   function formatPostTimeLabel(raw) {
     var t = normalizePostTime(raw);
@@ -1022,6 +1033,9 @@
   }
 
   function venueOnly(info) {
+    if (global.ExpectCatalogIdentity && ExpectCatalogIdentity.venueOnly) {
+      return ExpectCatalogIdentity.venueOnly(info) || "レース";
+    }
     info = info || {};
     var v = String(info.venue || info.course || "")
       .replace(/\s*\d{1,2}\s*R\s*$/u, "")
@@ -1033,9 +1047,68 @@
     return label.replace(/\s*\d{1,2}\s*R\s*$/u, "").trim() || "レース";
   }
 
-  function paintRaceMeta(info) {
+  /** Catalog race_id → seed race_info (same race only). */
+  var _catalogRaceInfoById = Object.create(null);
+
+  function setCatalogRaceInfo(raceId, info) {
+    var id = String(raceId || "").trim();
+    if (!id || !info || typeof info !== "object") return false;
+    if (info.race_id && String(info.race_id) !== id) return false;
+    _catalogRaceInfoById[id] = Object.assign({}, info, { race_id: id });
+    return true;
+  }
+
+  function getCatalogRaceInfo(raceId) {
+    var id = String(raceId || "").trim();
+    return id ? _catalogRaceInfoById[id] || null : null;
+  }
+
+  function clearCatalogRaceInfo(raceId) {
+    var id = String(raceId || "").trim();
+    if (id) delete _catalogRaceInfoById[id];
+  }
+
+  function formalNameFromInfo(info) {
+    if (global.ExpectCatalogIdentity && ExpectCatalogIdentity.formalRaceName) {
+      return shortRaceName(ExpectCatalogIdentity.formalRaceName(info));
+    }
+    return shortRaceName((info && info.race_name) || "");
+  }
+
+  function venueRaceHeading(info, raceId) {
+    if (global.ExpectCatalogIdentity && ExpectCatalogIdentity.venueRaceHeading) {
+      return ExpectCatalogIdentity.venueRaceHeading(info, raceId) || venueOnly(info);
+    }
+    var venue = venueOnly(info);
+    var rno =
+      info && (info.race_no != null ? info.race_no : info.race_number);
+    if (venue && rno != null && rno !== "") return venue + " " + Number(rno) + "R";
+    return venue;
+  }
+
+  function mergeDetailRaceInfo(bundleInfo, expectedRaceId) {
+    var seed = getCatalogRaceInfo(expectedRaceId);
+    if (global.ExpectCatalogIdentity && ExpectCatalogIdentity.mergeForRaceId) {
+      return ExpectCatalogIdentity.mergeForRaceId(seed, bundleInfo, expectedRaceId);
+    }
+    if (
+      seed &&
+      String(seed.race_id || "") === String(expectedRaceId || "")
+    ) {
+      var merged = Object.assign({}, seed, bundleInfo || {});
+      if (!merged.race_name) merged.race_name = seed.race_name || "";
+      if (merged.venue == null || merged.venue === "") {
+        merged.venue = seed.venue || seed.course || "";
+      }
+      if (merged.race_no == null) merged.race_no = seed.race_no;
+      return merged;
+    }
+    return Object.assign({}, bundleInfo || {});
+  }
+
+  function paintRaceMeta(info, expectedRaceId) {
     info = info || {};
-    var name = shortRaceName(info.race_name || info.class_label || "");
+    var name = formalNameFromInfo(info);
     var postLabel = formatPostTimeLabel(extractPostTime(info));
     var dateBit = "";
     if (info.date_label) dateBit = String(info.date_label);
@@ -1044,12 +1117,14 @@
       dateBit = String(Number(d.slice(5, 7))) + "/" + String(Number(d.slice(8, 10)));
     }
 
+    var heading = venueRaceHeading(info, expectedRaceId || info.race_id);
+    var titleEl = document.getElementById("raceTitle");
+    if (titleEl && heading) titleEl.textContent = heading;
+
     var subEl = document.getElementById("raceSub") || document.querySelector(".brand-sub");
     if (subEl) {
-      var subBits = [];
-      if (name) subBits.push(name);
-      if (postLabel) subBits.push(postLabel);
-      subEl.textContent = subBits.join(" ") || "—";
+      // brand-sub: formal race name only (post time lives in race-meta-line)
+      subEl.textContent = name || "読み込み中…";
     }
 
     var nameEl = document.getElementById("raceMetaName");
@@ -1061,6 +1136,14 @@
       if (postLabel) lineBits.push(postLabel);
       lineEl.textContent = lineBits.join("・") || "レース情報を取得中…";
     }
+  }
+
+  /** Catalog-only early header paint (before Prediction). Same race_id only. */
+  function paintRaceDetailHeader(info, expectedRaceId) {
+    if (!info) return;
+    var id = String(expectedRaceId || info.race_id || "").trim();
+    if (info.race_id && id && String(info.race_id) !== id) return;
+    paintRaceMeta(info, id);
   }
 
   /**
@@ -1075,17 +1158,14 @@
     meta = meta || bundle.__meta || {};
     applyProvenanceBar(meta, bundle);
     applyMarksAndPicks(bundle);
-    var info = bundle.race_info || {};
+    var expectId = String(expectedRaceId || bundle.race_id || "").trim();
+    var info = mergeDetailRaceInfo(bundle.race_info || {}, expectId);
     var conf = scorePercent(bundle);
     var honmei = honmeiRunner(bundle);
     var band = displayBandFromBundle(bundle);
     var bandLabel = BAND_LABEL[band] || BAND_LABEL.unknown;
 
-    var titleEl = document.getElementById("raceTitle");
-    if (titleEl) {
-      titleEl.textContent = venueOnly(info);
-    }
-    paintRaceMeta(info);
+    paintRaceMeta(info, expectId);
 
     var card = document.querySelector(".honmei-card");
     if (card && honmei) {
@@ -1167,11 +1247,11 @@
         "左端が1着予想、右へ行くほど着順が下がります。並んだ馬番は、AIが考えるゴールまでの着順です。";
     }
 
-    var place = venueOnly(info);
+    var place = venueRaceHeading(info, expectId) || venueOnly(info);
     return {
       raceId: bundle.race_id,
       place: place,
-      name: shortRaceName(info.race_name || info.class_label || ""),
+      name: formalNameFromInfo(info),
       badge: info.grade || "",
       postTime: extractPostTime(info) || "",
       dateLabel: dateFull(info),
@@ -1249,19 +1329,36 @@
     }
     var seedInfo = seedCard.race_info || {};
     var bundleInfo = bundle.race_info || {};
+    var ridForCatalog = bundle.race_id || seedCard.race_id || "";
+    var catalogInfo = getCatalogRaceInfo(ridForCatalog) || {};
     var mergedInfo = Object.assign({}, seedInfo, bundleInfo);
-    // Prediction 側の空文字で Catalog の venue/date を消さない
-    if (!mergedInfo.venue) mergedInfo.venue = seedInfo.venue || bundleInfo.venue || "";
+    // Prediction 側の空文字で Catalog の venue/date/name/post_time を消さない
+    if (!String(mergedInfo.venue || "").trim()) {
+      mergedInfo.venue =
+        seedInfo.venue || catalogInfo.venue || bundleInfo.venue || "";
+    }
     if (!mergedInfo.date) {
       mergedInfo.date =
         seedInfo.date ||
+        catalogInfo.date ||
         bundleInfo.date ||
         (String(bundle.race_id || seedCard.race_id || "").match(/^(\d{4}-\d{2}-\d{2})/) ||
           [])[1] ||
         "";
     }
-    if (!mergedInfo.race_name) {
-      mergedInfo.race_name = seedInfo.race_name || bundleInfo.race_name || "";
+    if (!String(mergedInfo.race_name || "").trim()) {
+      mergedInfo.race_name =
+        seedInfo.race_name || catalogInfo.race_name || bundleInfo.race_name || "";
+    }
+    // 一覧カード発走時間: Catalog 非空を authority。Prediction null/"" と空 seed でもレジストリから復元
+    if (!String(mergedInfo.post_time || "").trim()) {
+      if (String(seedInfo.post_time || "").trim()) {
+        mergedInfo.post_time = seedInfo.post_time;
+      } else if (String(catalogInfo.post_time || "").trim()) {
+        mergedInfo.post_time = catalogInfo.post_time;
+      } else if (String(bundleInfo.post_time || "").trim()) {
+        mergedInfo.post_time = bundleInfo.post_time;
+      }
     }
     var out = {
       schema_version: "expect-race-card-summary/1.0",
@@ -1315,6 +1412,10 @@
     readHomeHonmeiCache: readHomeHonmeiCache,
     homeHonmeiCacheDate: homeHonmeiCacheDate,
     applyRaceDetail: applyRaceDetail,
+    setCatalogRaceInfo: setCatalogRaceInfo,
+    getCatalogRaceInfo: getCatalogRaceInfo,
+    clearCatalogRaceInfo: clearCatalogRaceInfo,
+    paintRaceDetailHeader: paintRaceDetailHeader,
     pickTopByConfidence: pickTopByConfidence,
     pickHomeTodaysHonmei: pickHomeTodaysHonmei,
     honmeiRunner: honmeiRunner,

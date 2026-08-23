@@ -128,7 +128,8 @@
   <script src="assets/api/race-cards.js?v=16"></script>
   <script src="assets/api/prediction.js?v=16"></script>
   <script src="assets/api/race-id-meta.js?v=15"></script>
-  <script src="assets/api/prediction-bind.js?v=56"></script>
+  <script src="assets/api/catalog-identity.js?v=1"></script>
+  <script src="assets/api/prediction-bind.js?v=57"></script>
   <script src="assets/api/race-prefetch.js?v=1"></script>
   <script src="assets/api/real-data-bind.js?v=16"></script>
   <script src="assets/ux.js?v=22"></script>
@@ -543,10 +544,79 @@
       var list = document.getElementById("raceList");
       if (!list) return;
 
-      // v4: 日付フィルタ不整合キャッシュを破棄
-      var RACE_LIST_CACHE_KEY = "expect_race_list_cache_v4";
+      // v5: bust stale list cache missing catalog post_time authority
+      var RACE_LIST_CACHE_KEY = "expect_race_list_cache_v5";
       var RACE_CARDS_TIMEOUT_MS = 65000;
       var RACE_LIST_CACHE_TTL_MS = 5 * 60 * 1000;
+      var catalogAllowIds = null;
+      var catalogAllowDates = null;
+      /** Catalog authority: race_id → non-empty post_time */
+      var catalogPostTimeById = Object.create(null);
+
+      function rememberCatalogPostTimes(items) {
+        var built =
+          window.ExpectCatalogIdentity &&
+          ExpectCatalogIdentity.buildPostTimeByIdFromCatalogItems
+            ? ExpectCatalogIdentity.buildPostTimeByIdFromCatalogItems(items)
+            : null;
+        if (built) {
+          Object.keys(built).forEach(function (id) {
+            catalogPostTimeById[id] = built[id];
+          });
+        } else {
+          (items || []).forEach(function (item) {
+            if (!item || !item.race_id) return;
+            var info = item.race_info || {};
+            var pt = info.post_time || item.post_time;
+            if (pt != null && String(pt).trim()) {
+              catalogPostTimeById[String(item.race_id)] = String(pt).trim();
+            }
+          });
+        }
+        if (
+          window.ExpectPredictionBind &&
+          ExpectPredictionBind.setCatalogRaceInfo
+        ) {
+          (items || []).forEach(function (item) {
+            if (!item || !item.race_id) return;
+            var info = Object.assign({}, item.race_info || {});
+            var pt = catalogPostTimeById[String(item.race_id)];
+            if (pt) info.post_time = pt;
+            if (!info.race_id) info.race_id = item.race_id;
+            ExpectPredictionBind.setCatalogRaceInfo(item.race_id, info);
+          });
+        }
+      }
+
+      function applyPostTimeAuthorityToCards(cards) {
+        if (
+          window.ExpectCatalogIdentity &&
+          ExpectCatalogIdentity.applyCatalogPostTimeAuthority
+        ) {
+          return ExpectCatalogIdentity.applyCatalogPostTimeAuthority(
+            cards,
+            catalogPostTimeById
+          );
+        }
+        return (cards || []).map(function (card) {
+          if (!card) return card;
+          var id = String(card.race_id || "").trim();
+          var auth = id ? catalogPostTimeById[id] : "";
+          if (!auth) return card;
+          var info = card.race_info || {};
+          if (info.post_time != null && String(info.post_time).trim()) return card;
+          return Object.assign({}, card, {
+            race_info: Object.assign({}, info, { post_time: auth }),
+          });
+        });
+      }
+
+      function hydratePayloadPostTimes(payload) {
+        if (!payload || typeof payload !== "object") return payload;
+        return Object.assign({}, payload, {
+          race_cards: applyPostTimeAuthorityToCards(payload.race_cards || []),
+        });
+      }
 
       function resolveListDate(dateOpt) {
         if (window.ExpectApi && ExpectApi.RaceCards && ExpectApi.RaceCards.resolveDate) {
@@ -774,6 +844,7 @@
 
       function renderV2Cards(payload, opts) {
         opts = opts || {};
+        payload = hydratePayloadPostTimes(payload);
         if (window.ExpectUx && ExpectUx.hideLoading) ExpectUx.hideLoading(list);
         var cards = (payload && payload.race_cards) || [];
         var listDate = (payload && payload.date) || "";
@@ -1152,8 +1223,16 @@
 
         var cached = readRaceListCache("v2", cacheKey);
         if (cached && cached.payload && Array.isArray(cached.payload.race_cards)) {
-          renderV2Cards(cached.payload, { fromCache: true });
-          enrichDates(dates, cached.payload);
+          renderV2Cards(cached.payload, { fromCache: true, dates: dates });
+          loadCatalogsForDates(dates)
+            .then(function (cat) {
+              rememberCatalogPostTimes(cat.items);
+              renderV2Cards(hydratePayloadPostTimes(cached.payload), { dates: dates });
+              return enrichDates(dates, hydratePayloadPostTimes(cached.payload));
+            })
+            .catch(function () {
+              enrichDates(dates, cached.payload);
+            });
           return;
         }
 
@@ -1169,7 +1248,9 @@
 
         loadCatalogsForDates(dates)
           .then(function (cat) {
+            rememberCatalogPostTimes(cat.items);
             var cards = catalogItemsToRaceCards(cat.items, dates[0]);
+            cards = applyPostTimeAuthorityToCards(cards);
             var payload = {
               schema_version: "expect-race-cards/1.0",
               date: dates.length === 1 ? dates[0] : dates[0],
