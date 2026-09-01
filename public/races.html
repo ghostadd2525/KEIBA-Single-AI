@@ -7,8 +7,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Noto+Sans+JP:wght@400;500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="assets/styles.css?v=31" />
-  <link rel="stylesheet" href="assets/screens.css?v=53" />
+  <link rel="stylesheet" href="assets/styles.css?v=32" />
+  <link rel="stylesheet" href="assets/screens.css?v=56" />
   <link rel="stylesheet" href="assets/ux.css?v=16" />
   <link rel="stylesheet" href="assets/vqa.css?v=52" />
   <link rel="stylesheet" href="assets/v11.css?v=12" />
@@ -120,7 +120,7 @@
     <div data-expect-nav></div>
   </div>
   <script src="assets/api/mock-gate.js"></script>
-  <script src="assets/api/auth.js"></script>
+  <script src="assets/api/auth.js?v=10"></script>
   <script src="assets/api/contract-guard.js"></script>
   <script src="assets/api/http-cache.js?v=1"></script>
   <script src="assets/api/race-list-url.js?v=15"></script>
@@ -129,16 +129,20 @@
   <script src="assets/api/prediction.js?v=16"></script>
   <script src="assets/api/race-id-meta.js?v=15"></script>
   <script src="assets/api/catalog-identity.js?v=1"></script>
-  <script src="assets/api/prediction-bind.js?v=59"></script>
+  <script src="assets/api/prediction-bind.js?v=62"></script>
   <script src="assets/api/race-prefetch.js?v=1"></script>
   <script src="assets/api/real-data-bind.js?v=16"></script>
   <script src="assets/ux.js?v=22"></script>
-  <script src="assets/api/ui-features.js?v=15"></script>
-  <script src="assets/api/race-search.js?v=15"></script>
+  <script src="assets/api/ui-features.js?v=16"></script>
+  <script src="assets/api/ui-test-race.js?v=5"></script>
+  <script src="assets/api/race-search.js?v=16"></script>
   <script src="assets/v11.js?v=11"></script>
-  <script src="assets/favorites.js?v=8"></script>
+  <script src="assets/favorites.js?v=10"></script>
+  <script src="assets/api/user.js?v=8"></script>
+  <script src="assets/api/challenge-lifecycle.js?v=3"></script>
+  <script src="assets/api/challenge-notifications.js?v=1"></script>
   <script src="assets/shell.js?v=5"></script>
-  <script src="assets/reminders.js"></script>
+  <script src="assets/reminders.js?v=5"></script>
   <script src="assets/partials-nav.js"></script>
   <script>
     ExpectShell.initMascotTalk([
@@ -847,6 +851,14 @@
         payload = hydratePayloadPostTimes(payload);
         if (window.ExpectUx && ExpectUx.hideLoading) ExpectUx.hideLoading(list);
         var cards = (payload && payload.race_cards) || [];
+        if (window.ExpectUiTestRace && ExpectUiTestRace.injectCards) {
+          cards = ExpectUiTestRace.injectCards(cards);
+          if (payload) payload.race_cards = cards;
+        }
+        var filterCards =
+          window.ExpectUiTestRace && ExpectUiTestRace.withoutTestCards
+            ? ExpectUiTestRace.withoutTestCards(cards)
+            : cards;
         var listDate = (payload && payload.date) || "";
         // loadedDate: 複数日は all、単日はその ISO
         if (payload && payload.dates && payload.dates.length > 1) {
@@ -882,7 +894,7 @@
             e2.textContent = "レースがありません。";
           }
         }
-        var shapes = cardsToFilterShapes(cards, listDate);
+        var shapes = cardsToFilterShapes(filterCards, listDate);
         if (window.ExpectRealDataBind) {
           ExpectRealDataBind.cacheBundles(shapes);
           ExpectRealDataBind.applyRacesFilters(shapes);
@@ -891,7 +903,19 @@
           ExpectFavorites.cacheBundles(cards);
         }
         if (!opts.fromCache) {
-          writeRaceListCache("v2", listDate || resolveListDate(""), payload);
+          var cachePayload = payload;
+          if (
+            window.ExpectUiTestRace &&
+            ExpectUiTestRace.withoutTestCards &&
+            payload &&
+            Array.isArray(payload.race_cards)
+          ) {
+            cachePayload = Object.assign({}, payload, {
+              race_cards: ExpectUiTestRace.withoutTestCards(payload.race_cards),
+              count: ExpectUiTestRace.withoutTestCards(payload.race_cards).length,
+            });
+          }
+          writeRaceListCache("v2", listDate || resolveListDate(""), cachePayload);
         }
         bootRaceUi();
       }
@@ -1288,6 +1312,9 @@
       };
 
       function start() {
+        if (window.ExpectUiTestRace && ExpectUiTestRace.installHooks) {
+          ExpectUiTestRace.installHooks();
+        }
         var useV2 =
           window.ExpectUiFeatures &&
           typeof ExpectUiFeatures.enabled === "function" &&

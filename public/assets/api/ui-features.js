@@ -34,6 +34,12 @@
      * Must NEVER be consulted by races.html / list cache.
      */
     single_ai_detail: false,
+    /**
+     * Frontend-only UI test race (ui-test-race-001).
+     * Production beta.json may override. Default ON for UI-dev period.
+     * Does not touch Prediction/PI/DB.
+     */
+    enable_ui_test_race: true,
   };
 
   var cache = null;

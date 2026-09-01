@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Expect ～ KEIBA AI ～ · Challenge</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Noto+Sans+JP:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="assets/styles.css?v=32" />
+  <link rel="stylesheet" href="assets/screens.css?v=75" />
+  <link rel="stylesheet" href="assets/ux.css?v=16" />
+  <script src="assets/api/calendar-weekend.js?v=14"></script>
+  <script src="assets/auto-maintenance.js?v=12.4"></script>
+  <script src="assets/auth.js?v=6"></script>
+  <script>
+    if (ExpectAuth.requireAuth() && window.ExpectAutoMaintenance) {
+      ExpectAutoMaintenance.run();
+    }
+  </script>
+</head>
+<body class="page-screen page-challenge-purchase page-tab" data-nav="challenge">
+  <div class="app">
+    <header class="topbar">
+      <div class="topbar-inner">
+        <div class="topbar-left">
+          <a class="back-btn" id="challengePurchaseBack" href="race.html" aria-label="戻る">‹</a>
+          <div class="brand-block topbar-text topbar-title-only">
+            <p class="brand-name">Challenge</p>
+            <p class="brand-sub" id="challengePurchaseSub">登録</p>
+          </div>
+        </div>
+        <div class="topbar-tools" aria-hidden="true"></div>
+      </div>
+    </header>
+
+    <div class="screen" id="challengePurchaseScreen" aria-busy="true"></div>
+
+    <div data-expect-nav></div>
+  </div>
+
+  <script src="assets/api/mock-gate.js"></script>
+  <script src="assets/api/race-id-meta.js"></script>
+  <script src="assets/api/auth.js"></script>
+  <script src="assets/api/user.js?v=8"></script>
+  <script src="assets/api/http-cache.js?v=1"></script>
+  <script src="assets/api/prediction.js?v=16"></script>
+  <script src="assets/api/prediction-bind.js?v=60"></script>
+  <script src="assets/api/race-board.js?v=10"></script>
+  <script src="assets/api/strategy-stakes.js?v=2"></script>
+  <script src="assets/api/user-race-results.js?v=9"></script>
+  <script src="assets/api/ui-features.js?v=16"></script>
+  <script src="assets/api/ui-test-race.js?v=3"></script>
+  <script src="assets/api/challenge-lifecycle.js?v=3"></script>
+  <script src="assets/api/challenge-notifications.js?v=1"></script>
+  <script src="assets/api/ui-test-challenge-entry.js?v=15"></script>
+  <script src="assets/ux.js?v=15"></script>
+  <script src="assets/favorites.js?v=4"></script>
+  <script src="assets/shell.js?v=5"></script>
+  <script src="assets/reminders.js?v=5"></script>
+  <script src="assets/partials-nav.js"></script>
+  <script>
+    (function () {
+      var screen = document.getElementById("challengePurchaseScreen");
+      var id = new URLSearchParams(location.search).get("race_id") || "";
+      var back = document.getElementById("challengePurchaseBack");
+      var sub = document.getElementById("challengePurchaseSub");
+
+      if (window.ExpectUiTestRace && ExpectUiTestRace.installHooks) {
+        ExpectUiTestRace.installHooks();
+      }
+
+      if (back) {
+        back.href = id
+          ? "race.html?race_id=" + encodeURIComponent(id)
+          : "races.html";
+      }
+
+      if (!id) {
+        if (window.ExpectUx) ExpectUx.hideLoading(screen);
+        screen.innerHTML =
+          "<p class='muted' style='padding:16px'>race_id を指定してください。<a href='races.html'>レース一覧</a></p>";
+        return;
+      }
+
+      var isUiTest =
+        window.ExpectUiTestRace &&
+        ExpectUiTestRace.isUiTestRaceId &&
+        ExpectUiTestRace.isUiTestRaceId(id);
+
+      if (sub) {
+        sub.textContent = isUiTest ? "UIテスト · 実購入なし" : "買い目を登録して挑戦";
+      }
+
+      if (window.ExpectUx) {
+        ExpectUx.showLoading(screen, {
+          replace: true,
+          title: "Challengeを準備中...",
+          message: "レース情報を読み込んでいます。",
+          progress: true,
+        });
+      } else {
+        screen.innerHTML = "<p class='muted'>読み込み中…</p>";
+      }
+
+      function escapeHtml(s) {
+        return String(s == null ? "" : s)
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;");
+      }
+
+      function raceSummaryHtml(info, meta) {
+        var venue = (info && info.venue) || meta.venue || "";
+        var raceNo =
+          info && (info.race_no != null ? info.race_no : info.race_number);
+        var place =
+          meta.place ||
+          (venue ? venue + (raceNo != null ? " " + raceNo + "R" : "") : "レース");
+        var name =
+          (info && (info.race_name || info.class_label)) ||
+          meta.name ||
+          "—";
+        var post = (info && info.post_time) || meta.postTime || "—";
+        var badge = isUiTest
+          ? '<span class="race-item-test-badge" aria-label="UIテスト">UIテスト</span>'
+          : "";
+        return (
+          '<section class="chart-card challenge-purchase-hero" aria-label="レース概要">' +
+          '<p class="challenge-purchase-kicker">Challenge</p>' +
+          '<div class="challenge-purchase-place">' +
+          badge +
+          "<strong>" +
+          escapeHtml(place) +
+          "</strong></div>" +
+          "<h2>" +
+          escapeHtml(name) +
+          "</h2>" +
+          '<p class="muted">発走 ' +
+          escapeHtml(String(post)) +
+          (isUiTest ? " · status UI_TEST" : "") +
+          "</p>" +
+          (isUiTest
+            ? '<div class="ui-test-purchase-banner" data-ui-test-purchase-banner="1" role="status">' +
+              "<strong>UIテストレース</strong>" +
+              "<p>このレースはUIテスト用です。実際の購入・払戻は行われません。</p></div>"
+            : "") +
+          "</section>"
+        );
+      }
+
+      function runnersFromBundle(bundle) {
+        var list =
+          (bundle && bundle.evaluation && bundle.evaluation.runners) ||
+          (bundle && bundle.runners) ||
+          [];
+        return list
+          .map(function (r) {
+            return {
+              horse_number: Number(r.horse_number),
+              horse_name: String(r.horse_name || ""),
+            };
+          })
+          .filter(function (r) {
+            return Number.isFinite(r.horse_number) && r.horse_number >= 1;
+          });
+      }
+
+      function paint(bundle, meta) {
+        if (window.ExpectUx) ExpectUx.hideLoading(screen);
+        var info = (bundle && bundle.race_info) || {};
+        screen.setAttribute("aria-busy", "false");
+        screen.innerHTML =
+          raceSummaryHtml(info, meta) +
+          '<div id="challengePurchaseMount" aria-label="Challenge登録"></div>' +
+          '<div class="strategy-actions">' +
+          '<a class="strategy-btn strategy-btn--ghost" href="race.html?race_id=' +
+          encodeURIComponent(id) +
+          '">レース詳細へ戻る</a>' +
+          '<a class="strategy-btn strategy-btn--ghost" href="strategy.html?race_id=' +
+          encodeURIComponent(id) +
+          '">買い目攻略を見る</a>' +
+          "</div>";
+
+        var mount = document.getElementById("challengePurchaseMount");
+        var runners = runnersFromBundle(bundle);
+        if (
+          window.ExpectUserRaceResults &&
+          ExpectUserRaceResults.mountChallengeDynamicPurchaseForm &&
+          runners.length
+        ) {
+          ExpectUserRaceResults.mountChallengeDynamicPurchaseForm(mount, id, runners, {
+            raceDate: info.date || null,
+            raceLabel: [meta.place, info.race_name || info.class_label]
+              .filter(Boolean)
+              .join(" "),
+            place: meta.place || info.venue || null,
+            venue: info.venue || meta.venue || "",
+            raceNumber:
+              info.race_no != null
+                ? String(info.race_no) + "R"
+                : info.race_number != null
+                  ? String(info.race_number) + "R"
+                  : "",
+            raceName: info.race_name || info.class_label || meta.name || "",
+            postTime: info.post_time || meta.postTime || "",
+            predictionVersion: (bundle && bundle.prediction_version) || null,
+          });
+        } else if (mount) {
+          mount.innerHTML =
+            '<section class="chart-card"><p class="muted">出走馬が揃うとChallenge登録できます。</p></section>';
+        }
+      }
+
+      function boot() {
+        var favMeta =
+          window.ExpectFavorites && ExpectFavorites.getMeta
+            ? ExpectFavorites.getMeta(id)
+            : {};
+        var meta = {
+          place: favMeta.place || "",
+          name: favMeta.name || "",
+          postTime: favMeta.postTime || "",
+          venue: "",
+        };
+
+        function fail(msg) {
+          if (window.ExpectUx) ExpectUx.hideLoading(screen);
+          screen.setAttribute("aria-busy", "false");
+          screen.innerHTML =
+            '<p class="muted" style="padding:16px">' +
+            escapeHtml(msg || "読み込みに失敗しました。") +
+            ' <a href="race.html?race_id=' +
+            encodeURIComponent(id) +
+            '">レース詳細へ</a></p>';
+        }
+
+        if (!(window.ExpectApi && ExpectApi.Prediction && ExpectApi.Prediction.getWithMeta)) {
+          fail("Prediction API を利用できません。");
+          return;
+        }
+
+        ExpectApi.Prediction.getWithMeta(id)
+          .then(function (result) {
+            var bundle = result && result.bundle ? result.bundle : result;
+            if (!bundle) {
+              fail("予想データを取得できませんでした。");
+              return;
+            }
+            if (bundle.race_info) {
+              var info = bundle.race_info;
+              meta.place =
+                (info.venue || "") +
+                (info.race_no != null ? " " + info.race_no + "R" : "");
+              meta.name = info.race_name || info.class_label || meta.name;
+              meta.postTime = info.post_time || meta.postTime;
+              meta.venue = info.venue || "";
+            }
+            paint(bundle, meta);
+          })
+          .catch(function () {
+            fail("予想データの取得に失敗しました。");
+          });
+      }
+
+      if (window.ExpectUiFeatures && ExpectUiFeatures.ready) {
+        ExpectUiFeatures.ready(function () {
+          if (window.ExpectUiTestRace && ExpectUiTestRace.installHooks) {
+            ExpectUiTestRace.installHooks();
+          }
+          boot();
+        });
+      } else {
+        boot();
+      }
+    })();
+  </script>
+</body>
+</html>

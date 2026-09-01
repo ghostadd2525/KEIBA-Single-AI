@@ -131,12 +131,21 @@
     var place = String(fields.place || "").trim();
     var time = String(fields.time || "").trim();
     var wantVenue = String(state.venue || "").trim();
-    if (state.date && state.date !== "all" && !datesMatch(date, state.date)) return false;
+    var isUiTest =
+      date === "TEST" ||
+      (fields.place && String(fields.place).indexOf("UIテスト") >= 0) ||
+      (fields.name && String(fields.name).indexOf("Expect Challenge テスト") >= 0);
+    if (!isUiTest && state.date && state.date !== "all" && !datesMatch(date, state.date)) {
+      return false;
+    }
     if (wantVenue && wantVenue !== "all") {
       if (venue !== wantVenue && place.indexOf(wantVenue) < 0) return false;
     }
     // 出走後は一覧から除外（hideStarted !== false のとき）
-    if (state.hideStarted !== false && isPostTimePassed(date, time)) return false;
+    // UIテストレースは日付非ISOのため常に残す
+    if (!isUiTest && state.hideStarted !== false && isPostTimePassed(date, time)) {
+      return false;
+    }
     var q = (state.q || "").trim();
     if (!q) return true;
     var hay = buildSearchHaystack(fields);

@@ -49,17 +49,57 @@
     return Math.max(8, Math.round((v / maxAbs) * 100));
   }
 
+  function signedToneClass(n) {
+    var v = Number(n) || 0;
+    if (v > 0) return "is-plus";
+    if (v < 0) return "is-minus";
+    return "is-zero";
+  }
+
+  /**
+   * ExpectAuth.current().display_name authority (presentation only).
+   */
+  function resolveUserDisplayName() {
+    try {
+      if (
+        global.ExpectUiTestChallengeEntry &&
+        typeof ExpectUiTestChallengeEntry.resolveUserDisplayName === "function"
+      ) {
+        return ExpectUiTestChallengeEntry.resolveUserDisplayName();
+      }
+    } catch (e0) {
+      /* ignore */
+    }
+    try {
+      if (global.ExpectAuth && typeof ExpectAuth.current === "function") {
+        var u = ExpectAuth.current();
+        if (u && u.display_name != null && String(u.display_name).trim()) {
+          return String(u.display_name).trim();
+        }
+        if (u && u.id != null && String(u.id).trim()) {
+          return String(u.id).trim();
+        }
+      }
+    } catch (e) {
+      /* ignore */
+    }
+    return "User Challenge";
+  }
+
   function isV9(data) {
     return !!(data && data.feature_flags && data.feature_flags.v9_benchmark_layer);
   }
 
-  function paintBars(mount, aiProfit, userProfit, aiLabel) {
+  function paintBars(mount, aiProfit, userProfit, aiLabel, userLabel) {
     if (!mount) return;
     var maxAbs = Math.max(Math.abs(aiProfit), Math.abs(userProfit), 1);
-    var label = aiLabel || "AI";
+    var label = aiLabel || "Game Master";
+    var you = userLabel || resolveUserDisplayName();
     mount.innerHTML =
       '<div class="cmp-bar-row">' +
-      '<span class="cmp-bar-label">' +
+      '<span class="cmp-bar-label" title="' +
+      escapeHtml(label) +
+      '">' +
       escapeHtml(label) +
       "</span>" +
       '<div class="cmp-bar-track"><i class="cmp-bar cmp-bar--ai' +
@@ -67,25 +107,34 @@
       '" style="width:' +
       barWidth(aiProfit, maxAbs) +
       '%"></i></div>' +
-      "<b>" +
+      '<b class="' +
+      signedToneClass(aiProfit) +
+      '">' +
       fmtYen(aiProfit, true) +
       "</b></div>" +
       '<div class="cmp-bar-row">' +
-      '<span class="cmp-bar-label">あなた</span>' +
+      '<span class="cmp-bar-label" title="' +
+      escapeHtml(you) +
+      '">' +
+      escapeHtml(you) +
+      "</span>" +
       '<div class="cmp-bar-track"><i class="cmp-bar cmp-bar--you' +
       (userProfit < 0 ? " is-neg" : "") +
       '" style="width:' +
       barWidth(userProfit, maxAbs) +
       '%"></i></div>' +
-      "<b>" +
+      '<b class="' +
+      signedToneClass(userProfit) +
+      '">' +
       fmtYen(userProfit, true) +
       "</b></div>";
   }
 
-  function paintWeekBars(mount, weeks, aiLabel) {
+  function paintWeekBars(mount, weeks, aiLabel, userLabel) {
     if (!mount) return;
     weeks = weeks || [];
-    var label = aiLabel || "AI";
+    var label = aiLabel || "Game Master";
+    var you = userLabel || resolveUserDisplayName();
     var maxAbs = 1;
     weeks.forEach(function (w) {
       maxAbs = Math.max(maxAbs, Math.abs(w.ai_profit || 0), Math.abs(w.user_profit || 0));
@@ -97,22 +146,32 @@
           "<h4>第" +
           w.week +
           "週</h4>" +
-          '<div class="cmp-bar-row"><span class="cmp-bar-label">' +
+          '<div class="cmp-bar-row"><span class="cmp-bar-label" title="' +
+          escapeHtml(label) +
+          '">' +
           escapeHtml(label) +
           "</span>" +
           '<div class="cmp-bar-track"><i class="cmp-bar cmp-bar--ai' +
           ((w.ai_profit || 0) < 0 ? " is-neg" : "") +
           '" style="width:' +
           barWidth(w.ai_profit, maxAbs) +
-          '%"></i></div><b>' +
+          '%"></i></div><b class="' +
+          signedToneClass(w.ai_profit) +
+          '">' +
           (w.ai_races ? fmtYen(w.ai_profit, true) : "—") +
           "</b></div>" +
-          '<div class="cmp-bar-row"><span class="cmp-bar-label">あなた</span>' +
+          '<div class="cmp-bar-row"><span class="cmp-bar-label" title="' +
+          escapeHtml(you) +
+          '">' +
+          escapeHtml(you) +
+          "</span>" +
           '<div class="cmp-bar-track"><i class="cmp-bar cmp-bar--you' +
           ((w.user_profit || 0) < 0 ? " is-neg" : "") +
           '" style="width:' +
           barWidth(w.user_profit, maxAbs) +
-          '%"></i></div><b>' +
+          '%"></i></div><b class="' +
+          signedToneClass(w.user_profit) +
+          '">' +
           (w.user_races ? fmtYen(w.user_profit, true) : "—") +
           "</b></div></div>"
         );
@@ -120,12 +179,19 @@
       .join("");
   }
 
+  /** Presentation-only: API may still say "AI" for the Challenge opponent. */
+  function presentOpponentCopy(text) {
+    return String(text || "")
+      .replace(/円でAIを超えます/g, "円でGame Masterを超えます")
+      .replace(/AIを超えます/g, "Game Masterを超えます");
+  }
+
   function paintChallengeBanner(el, cmp, month, v9) {
     if (!el || !cmp) return;
     var status = cmp.status || "tied";
     var title =
-      status === "achieved" ? "🎉 今月のAIチャレンジ達成！" : "今月のAIチャレンジ";
-    var aiCaption = v9 ? "AI Benchmark（◎単勝）" : "AI利益（今月の目標）";
+      status === "achieved" ? "🎉 今月のチャレンジ達成！" : "今月のチャレンジ";
+    var aiCaption = v9 ? "Game Master（◎単勝）" : "Game Master（今月の目標）";
     el.className =
       "challenge-banner" +
       (status === "achieved" ? " is-achieved" : status === "behind" ? " is-behind" : " is-tied");
@@ -142,11 +208,13 @@
       "</span><b>" +
       fmtYen(cmp.ai_profit != null ? cmp.ai_profit : cmp.benchmark_profit, true) +
       "</b></div>" +
-      "<div><span>あなた</span><b>" +
+      "<div><span>" +
+      escapeHtml(resolveUserDisplayName()) +
+      "</span><b>" +
       fmtYen(cmp.user_profit, true) +
       "</b></div></div>" +
       '<p class="challenge-msg">' +
-      escapeHtml(cmp.challenge_message || "") +
+      escapeHtml(presentOpponentCopy(cmp.challenge_message || "")) +
       "</p>";
   }
 
@@ -171,9 +239,15 @@
         : progress.points_to_next != null
           ? progress.points_to_next
           : progress.next_level_points;
+    var atMax = progress.at_max === true || Number(level) >= 50;
     var parts = [];
     if (level != null) {
-      parts.push("<div><span>レベル</span><b>Lv." + escapeHtml(level) + "</b></div>");
+      parts.push(
+        "<div><span>レベル</span><b>Lv." +
+          escapeHtml(level) +
+          (atMax ? ' <span class="muted">MAX</span>' : "") +
+          "</b></div>"
+      );
     }
     if (points != null) {
       parts.push(
@@ -190,12 +264,14 @@
     if (title) {
       parts.push("<div><span>称号</span><b>" + escapeHtml(title) + "</b></div>");
     }
-    if (next != null) {
+    if (next != null && !atMax) {
       parts.push(
         "<div><span>次レベルまで</span><b>" +
           escapeHtml(Number(next).toLocaleString("ja-JP")) +
           " pt</b></div>"
       );
+    } else if (atMax) {
+      parts.push('<div><span>次レベルまで</span><b>—</b></div>');
     }
     if (!parts.length) {
       el.innerHTML = '<p class="muted">No Data</p>';
@@ -236,6 +312,19 @@
         "<div><span>的中数</span><b>" +
         (summary.hit_count != null ? summary.hit_count : "—") +
         "</b></div>";
+    } else if (kind === "user") {
+      grid +=
+        "<div><span>購入額</span><b>" +
+        fmtYen(summary.purchase_amount) +
+        "</b></div>" +
+        "<div><span>払戻額</span><b>" +
+        fmtYen(summary.payout_amount) +
+        "</b></div>" +
+        "<div><span>的中数</span><b>" +
+        (summary.hit_count != null
+          ? summary.hit_count + " / " + (summary.race_count || 0)
+          : "—") +
+        "</b></div>";
     } else {
       grid +=
         "<div><span>的中数</span><b>" +
@@ -243,9 +332,9 @@
           ? summary.hit_count + " / " + (summary.race_count || 0)
           : "—") +
         "</b></div>" +
-        (kind === "user"
-          ? "<div><span>購入</span><b>" + fmtYen(summary.purchase_amount) + "</b></div>"
-          : "<div><span>理論購入</span><b>" + fmtYen(summary.purchase_amount) + "</b></div>");
+        "<div><span>理論購入</span><b>" +
+        fmtYen(summary.purchase_amount) +
+        "</b></div>";
     }
 
     el.innerHTML =
@@ -335,44 +424,193 @@
       "</tbody></table></div></details>";
   }
 
+  function simulateProgressAward(baseProgress, awardPts) {
+    var base = baseProgress && typeof baseProgress === "object" ? baseProgress : {};
+    var pts = (Number(base.cumulative_points) || 0) + (Number(awardPts) || 0);
+    if (pts < 0) pts = 0;
+    var level = Math.min(50, Math.floor(pts / 100) + 1);
+    var atMax = level >= 50;
+    var next = atMax ? 0 : 100 - (pts % 100);
+    return {
+      cumulative_points: pts,
+      cumulative_profit:
+        base.cumulative_profit != null ? base.cumulative_profit : 0,
+      level: level,
+      points_to_next_level: next,
+      at_max: atMax,
+      level_min: 1,
+      level_max: 50,
+    };
+  }
+
+  function mergeUiTestProgressOverlay(data, overlay) {
+    if (!overlay || !overlay.applied) return data;
+    var profit = overlay.user ? Number(overlay.user.profit) : NaN;
+    var award =
+      overlay.progress_award != null
+        ? Number(overlay.progress_award)
+        : profit >= 1000
+          ? 100
+          : 0;
+    if (!Number.isFinite(award)) return data;
+    var out = data || {};
+    out.progress = simulateProgressAward(out.progress || {}, award);
+    out._ui_test_progress = {
+      award: award,
+      note: "UIテスト進捗（V7.5 +100 固定、実DB未書込）",
+    };
+    return out;
+  }
+
+  function mergeUiTestOverlay(data) {
+    if (!data || typeof data !== "object") return data;
+    var overlay = null;
+    try {
+      if (
+        global.ExpectUiTestChallengeEntry &&
+        typeof ExpectUiTestChallengeEntry.getAggregateOverlay === "function"
+      ) {
+        overlay = ExpectUiTestChallengeEntry.getAggregateOverlay();
+      }
+    } catch (e) {
+      overlay = null;
+    }
+    if (!overlay || !overlay.applied || !overlay.user) return data;
+    var out = JSON.parse(JSON.stringify(data));
+    var u = overlay.user;
+    var userSummary = out.user_summary || sideSummary(out.user) || {};
+    userSummary.purchase_amount =
+      (Number(userSummary.purchase_amount) || 0) + (Number(u.purchase_amount) || 0);
+    userSummary.payout_amount =
+      (Number(userSummary.payout_amount) || 0) + (Number(u.payout_amount) || 0);
+    userSummary.profit =
+      (Number(userSummary.profit) || 0) + (Number(u.profit) || 0);
+    userSummary.race_count =
+      (Number(userSummary.race_count) || 0) + (Number(u.race_count) || 0);
+    userSummary.hit_count =
+      (Number(userSummary.hit_count) || 0) + (Number(u.hit_count) || 0);
+    if (userSummary.purchase_amount > 0) {
+      userSummary.recovery_rate = Math.round(
+        (userSummary.payout_amount / userSummary.purchase_amount) * 100
+      );
+    }
+    if (userSummary.race_count > 0) {
+      userSummary.hit_rate = Math.round(
+        (userSummary.hit_count / userSummary.race_count) * 100
+      );
+    }
+    out.user_summary = userSummary;
+    if (out.user && out.user.summary) out.user.summary = userSummary;
+
+    var cmp = out.comparison || {};
+    var aiProfit =
+      cmp.ai_profit != null
+        ? Number(cmp.ai_profit)
+        : Number(cmp.benchmark_profit) || 0;
+    var userProfit = Number(userSummary.profit) || 0;
+    cmp.user_profit = userProfit;
+    cmp.ai_profit = aiProfit;
+    cmp.benchmark_profit = aiProfit;
+    cmp.profit_diff = userProfit - aiProfit;
+    if (cmp.profit_diff > 0) {
+      cmp.status = "achieved";
+      cmp.challenge_message = "今月のチャレンジ達成！（UIテスト反映含む）";
+    } else if (cmp.profit_diff < 0) {
+      cmp.status = "behind";
+      cmp.challenge_message =
+        "あと" +
+        Math.abs(cmp.profit_diff).toLocaleString("ja-JP") +
+        "円でGame Masterを超えます！（UIテスト反映含む）";
+    } else {
+      cmp.status = "tied";
+      cmp.challenge_message = "いい勝負だね！（UIテスト反映含む）";
+    }
+    out.comparison = cmp;
+
+    var week = Number(overlay.week) || 1;
+    var weeks = Array.isArray(out.weeks_compare) ? out.weeks_compare.slice() : [];
+    while (weeks.length < 5) {
+      weeks.push({
+        week: weeks.length + 1,
+        ai_profit: 0,
+        user_profit: 0,
+        ai_races: 0,
+        user_races: 0,
+      });
+    }
+    weeks = weeks.map(function (w) {
+      var row = Object.assign({}, w);
+      if (Number(row.week) === week) {
+        row.user_profit = (Number(row.user_profit) || 0) + (Number(u.profit) || 0);
+        row.user_races = (Number(row.user_races) || 0) + (Number(u.race_count) || 0);
+      }
+      return row;
+    });
+    out.weeks_compare = weeks;
+    out._ui_test_overlay = {
+      note: overlay.note || "UIテスト反映",
+      race_id: overlay.race_id,
+      gamemaster: overlay.gamemaster || null,
+      progress_award: overlay.progress_award,
+    };
+    return mergeUiTestProgressOverlay(out, overlay);
+  }
+
+  var _dashboardReload = null;
+
   function bindDashboard(root) {
     root = root || document;
     var state = { month: currentMonth() };
 
     function paint(data) {
       if (!data) return;
+      data = mergeUiTestOverlay(data);
       var v9 = isV9(data);
       var cmp = data.comparison || {};
       var aiSummary = v9
         ? sideSummary(data.benchmark) || data.ai_summary || sideSummary(data.ai)
         : data.ai_summary || sideSummary(data.ai);
       var userSummary = data.user_summary || sideSummary(data.user);
-      var aiLabel = v9 ? "BM" : "AI";
+      var aiLabel = "Game Master";
 
       paintChallengeBanner(root.querySelector("#challengeBanner"), cmp, state.month, v9);
       if (v9) {
         paintSideCard(
           root.querySelector("#aiScoreCard"),
-          "AI Benchmark（◎単勝1点）",
+          "Game Master（◎単勝1点）",
           aiSummary,
           "benchmark"
         );
       } else {
         paintSideCard(
           root.querySelector("#aiScoreCard"),
-          "AI成績（今月の目標）",
+          "Game Master（今月の目標）",
           aiSummary,
           "ai"
         );
       }
-      paintSideCard(root.querySelector("#userScoreCard"), "あなた（User Challenge）", userSummary, "user");
+      var userName = resolveUserDisplayName();
+      paintSideCard(
+        root.querySelector("#userScoreCard"),
+        data._ui_test_overlay
+          ? userName + "（User Challenge）· UIテスト反映"
+          : userName + "（User Challenge）",
+        userSummary,
+        "user"
+      );
       paintBars(
         root.querySelector("#profitCompareBars"),
         cmp.ai_profit != null ? cmp.ai_profit : cmp.benchmark_profit || 0,
         cmp.user_profit || 0,
-        aiLabel
+        aiLabel,
+        userName
       );
-      paintWeekBars(root.querySelector("#weekCompareBars"), data.weeks_compare || [], aiLabel);
+      paintWeekBars(
+        root.querySelector("#weekCompareBars"),
+        data.weeks_compare || [],
+        aiLabel,
+        userName
+      );
       paintProgress(root.querySelector("#challengeProgress"), data.progress);
       paintPurchaseLab(root.querySelector("#purchaseLabSection"), v9 ? data.purchase_lab : null);
 
@@ -385,6 +623,26 @@
           data.user_races ||
           (data.user && Array.isArray(data.user.races) ? data.user.races : []) ||
           [];
+        if (data._ui_test_overlay && data._ui_test_overlay.race_id) {
+          var ovProfit = 2400;
+          try {
+            var ov =
+              ExpectUiTestChallengeEntry.getAggregateOverlay &&
+              ExpectUiTestChallengeEntry.getAggregateOverlay();
+            if (ov && ov.user) ovProfit = Number(ov.user.profit) || 2400;
+          } catch (eOv) {
+            /* ignore */
+          }
+          races = [
+            {
+              race_id: data._ui_test_overlay.race_id,
+              race_date: currentMonth() + "-01",
+              race_label: "UIテスト · 東京 11R",
+              profit: ovProfit,
+              settled: true,
+            },
+          ].concat(races || []);
+        }
         if (!races.length) {
           raceList.innerHTML =
             '<li class="ledger-race-empty"><span>購入登録がありません</span>' +
@@ -416,6 +674,9 @@
       var lines = [];
       var kaoba = (cmp.kaoba_message || "").replace(/\n/g, "<br>");
       if (kaoba) lines.push(kaoba);
+      if (data._ui_test_overlay) {
+        lines.push("UIテスト結果を<br>月次・週次に仮反映中だよ");
+      }
       if (v9) {
         lines.push("公式は<strong>◎単勝</strong>だよ！<br>購入作戦は Lab で研究してね");
       } else {
@@ -466,7 +727,16 @@
         load();
       });
     }
+    _dashboardReload = load;
     load();
+  }
+
+  function refreshDashboard() {
+    if (typeof _dashboardReload === "function") {
+      _dashboardReload();
+      return true;
+    }
+    return false;
   }
 
   function paintHomeChallenge(el, data) {
@@ -474,7 +744,7 @@
     var cmp = (data && data.comparison) || {};
     var status = cmp.status || "tied";
     var v9 = isV9(data);
-    var kicker = v9 ? "AI Benchmark（◎単勝）" : "今月のAIチャレンジ";
+    var kicker = v9 ? "Game Master（◎単勝）" : "今月のチャレンジ";
     var aiProfit = cmp.ai_profit != null ? cmp.ai_profit : cmp.benchmark_profit;
     el.hidden = false;
     if (status === "achieved") {
@@ -484,9 +754,11 @@
         escapeHtml(kicker) +
         "</p>" +
         "<h3>🎉 達成！</h3>" +
-        "<p>AI " +
+        "<p>Game Master " +
         fmtYen(aiProfit, true) +
-        " · あなた " +
+        " · " +
+        escapeHtml(resolveUserDisplayName()) +
+        " " +
         fmtYen(cmp.user_profit, true) +
         "</p>" +
         '<p class="home-challenge-kaoba">KAOBA「' +
@@ -501,15 +773,17 @@
       escapeHtml(kicker) +
       "</p>" +
       '<div class="home-challenge-row"><span>' +
-      (v9 ? "Benchmark" : "AI利益") +
+      (v9 ? "Game Master" : "Game Master") +
       "</span><b>" +
       fmtYen(aiProfit, true) +
       "</b></div>" +
-      '<div class="home-challenge-row"><span>あなた</span><b>' +
+      '<div class="home-challenge-row"><span>' +
+      escapeHtml(resolveUserDisplayName()) +
+      "</span><b>" +
       fmtYen(cmp.user_profit, true) +
       "</b></div>" +
       '<p class="home-challenge-msg">' +
-      escapeHtml(cmp.challenge_message || "") +
+      escapeHtml(presentOpponentCopy(cmp.challenge_message || "")) +
       "</p>" +
       '<a class="home-challenge-link" href="saved.html">詳しく見る ›</a></div>';
   }
@@ -533,7 +807,9 @@
     bindDashboard: bindDashboard,
     bindHomeChallenge: bindHomeChallenge,
     paintHomeChallenge: paintHomeChallenge,
+    refresh: refreshDashboard,
     fmtYen: fmtYen,
     currentMonth: currentMonth,
+    resolveUserDisplayName: resolveUserDisplayName,
   };
 })(typeof window !== "undefined" ? window : globalThis);

@@ -71,6 +71,77 @@ export function mergeFavorites(serverFav, clientFav) {
   return normalizeFavorites({ items: merged, race_ids: merged.map((x) => x.race_id) });
 }
 
+/**
+ * Intent op をサーバー最新状態へ適用（フルリスト上書き禁止の正本経路）。
+ * op: "add" | "remove"
+ */
+export function applyFavoriteOp(userId, opInput) {
+  const op = opInput && typeof opInput === "object" ? opInput : {};
+  const kind = String(op.op || op.action || "")
+    .trim()
+    .toLowerCase();
+  const raceId = String(op.race_id || op.id || (op.item && (op.item.race_id || op.item.id)) || "").trim();
+  if (!raceId) {
+    throw new Error("race_id required");
+  }
+  if (kind !== "add" && kind !== "remove") {
+    throw new Error('op must be "add" or "remove"');
+  }
+
+  const current = normalizeFavorites(getUserState(userId).favorites);
+  let items = current.items.slice();
+
+  if (kind === "remove") {
+    items = items.filter((it) => it.race_id !== raceId);
+  } else {
+    const src = op.item && typeof op.item === "object" ? op.item : op;
+    const nextItem = {
+      race_id: raceId,
+      place: src.place != null ? String(src.place) : null,
+      name: src.name != null ? String(src.name) : null,
+      badge: src.badge != null ? String(src.badge) : null,
+      post_time:
+        src.post_time != null
+          ? String(src.post_time)
+          : src.postTime != null
+            ? String(src.postTime)
+            : null,
+      date_label:
+        src.date_label != null
+          ? String(src.date_label)
+          : src.dateLabel != null
+            ? String(src.dateLabel)
+            : null,
+      added_at:
+        typeof src.added_at === "number"
+          ? src.added_at
+          : typeof src.addedAt === "number"
+            ? src.addedAt
+            : Date.now(),
+    };
+    items = items.filter((it) => it.race_id !== raceId);
+    items.push(nextItem);
+    items = items
+      .sort((x, y) => (y.added_at || 0) - (x.added_at || 0))
+      .slice(0, 3);
+  }
+
+  return setFavorites(userId, {
+    items,
+    race_ids: items.map((x) => x.race_id),
+  });
+}
+
+/** 複数 intent を順にサーバー最新へ適用 */
+export function applyFavoriteOps(userId, ops) {
+  const list = Array.isArray(ops) ? ops : [];
+  let last = getUserState(userId).favorites;
+  for (const op of list) {
+    last = applyFavoriteOp(userId, op);
+  }
+  return normalizeFavorites(last);
+}
+
 export function getUserState(userId) {
   const id = String(userId || "");
   if (!id) return { favorites: emptyFavorites() };
@@ -85,6 +156,11 @@ export function setFavorites(userId, favorites) {
   state.favorites = normalizeFavorites(favorites);
   users.set(String(userId), state);
   return state.favorites;
+}
+
+/** テスト用: Isolate 内メモリを空にする */
+export function __resetUserStoreForTests() {
+  users.clear();
 }
 
 export function clearSessionSideEffects(/* userId */) {

@@ -7,6 +7,116 @@
 
   var BET_TYPES = ["単勝", "複勝", "馬連", "馬単", "ワイド", "三連複", "三連単"];
   var PRESETS = [100, 300, 500, 1000];
+  /** Official max from app_settings max_purchase_amount_per_race (migration 010). */
+  var OFFICIAL_MAX_PURCHASE_AMOUNT_PER_RACE = 50000;
+  var MIN_UNIT_STAKE = 100;
+  var UNIT_STAKE_STEP = 100;
+
+  /**
+   * Shared Challenge / purchase unit amount validator (FE + contract tests).
+   * @param {*} raw
+   * @param {number} [maxAmount]
+   * @returns {{ok:boolean, amount?:number, code?:string, message?:string}}
+   */
+  function validateChallengeUnitAmount(raw, maxAmount) {
+    var maxN = Number(maxAmount);
+    if (!Number.isFinite(maxN) || maxN < MIN_UNIT_STAKE) {
+      maxN = OFFICIAL_MAX_PURCHASE_AMOUNT_PER_RACE;
+    }
+    if (raw == null) {
+      return {
+        ok: false,
+        code: "empty",
+        message: "購入金額を入力してください",
+      };
+    }
+    if (typeof raw === "number") {
+      if (!Number.isFinite(raw)) {
+        return {
+          ok: false,
+          code: "non_numeric",
+          message: "購入金額は数字で入力してください",
+        };
+      }
+      if (!Number.isInteger(raw)) {
+        return {
+          ok: false,
+          code: "decimal",
+          message: "購入金額は整数で入力してください",
+        };
+      }
+      if (raw < 0) {
+        return {
+          ok: false,
+          code: "negative",
+          message: "購入金額は100円以上で入力してください",
+        };
+      }
+      if (raw === 0 || raw < MIN_UNIT_STAKE) {
+        return {
+          ok: false,
+          code: "below_min",
+          message: "購入金額は100円以上で入力してください",
+        };
+      }
+      if (raw % UNIT_STAKE_STEP !== 0) {
+        return {
+          ok: false,
+          code: "non_step",
+          message: "購入金額は100円単位で入力してください",
+        };
+      }
+      if (raw > maxN) {
+        return {
+          ok: false,
+          code: "over_max",
+          message:
+            "購入金額は" +
+            maxN.toLocaleString("ja-JP") +
+            "円以下で入力してください",
+        };
+      }
+      return { ok: true, amount: raw };
+    }
+    var s = String(raw).trim();
+    if (!s) {
+      return {
+        ok: false,
+        code: "empty",
+        message: "購入金額を入力してください",
+      };
+    }
+    if (/[.]/.test(s) || /[eE]/.test(s)) {
+      return {
+        ok: false,
+        code: "decimal",
+        message: "購入金額は整数で入力してください",
+      };
+    }
+    if (/^[-+]/.test(s) || /[^\d]/.test(s)) {
+      if (/[-]/.test(s)) {
+        return {
+          ok: false,
+          code: "negative",
+          message: "購入金額は100円以上で入力してください",
+        };
+      }
+      return {
+        ok: false,
+        code: "non_numeric",
+        message: "購入金額は数字で入力してください",
+      };
+    }
+    var n = Number(s);
+    if (!Number.isFinite(n) || !Number.isInteger(n)) {
+      return {
+        ok: false,
+        code: "non_numeric",
+        message: "購入金額は数字で入力してください",
+      };
+    }
+    return validateChallengeUnitAmount(n, maxN);
+  }
 
   function escapeHtml(s) {
     return String(s == null ? "" : s)
@@ -209,6 +319,23 @@
       }
 
       function doRegister(confirmDivergence) {
+        var msg = document.getElementById("purchaseMsg");
+        if (
+          global.ExpectUiTestRace &&
+          ExpectUiTestRace.isUiTestRaceId &&
+          ExpectUiTestRace.isUiTestRaceId(raceId)
+        ) {
+          if (msg) {
+            msg.textContent =
+              "UIテストレースのため実購入は登録されません（API未送信・DB未書込）。";
+          }
+          var btn = document.getElementById("purchaseSubmitBtn");
+          if (btn) {
+            btn.disabled = true;
+            btn.textContent = "テスト確認済み（未登録）";
+          }
+          return;
+        }
         if (msg) msg.textContent = "登録中…";
         if (!(global.ExpectApi && ExpectApi.User && ExpectApi.User.registerPurchase)) {
           if (msg) msg.textContent = "API を利用できません。";
@@ -254,6 +381,690 @@
     });
 
     refreshSummary();
+  }
+
+  /**
+   * Challenge専用: 式別1択 → 必要頭数の馬選択 → 金額 → 確認
+   * @param {HTMLElement} container
+   * @param {string} raceId
+   * @param {{horse_number:number, horse_name:string}[]} runners
+   * @param {object} [meta]
+   */
+  function mountChallengeDynamicPurchaseForm(container, raceId, runners, meta) {
+    if (!container) return;
+    meta = meta || {};
+    runners = Array.isArray(runners)
+      ? runners
+          .map(function (r) {
+            return {
+              horse_number: Number(r.horse_number),
+              horse_name: String(r.horse_name || ""),
+            };
+          })
+          .filter(function (r) {
+            return Number.isFinite(r.horse_number) && r.horse_number >= 1;
+          })
+          .sort(function (a, b) {
+            return a.horse_number - b.horse_number;
+          })
+      : [];
+
+    var BET_SPECS = {
+      単勝: { count: 1, labels: ["対象馬"], ordered: false },
+      複勝: { count: 1, labels: ["対象馬"], ordered: false },
+      馬連: { count: 2, labels: ["1頭目", "2頭目"], ordered: false },
+      ワイド: { count: 2, labels: ["1頭目", "2頭目"], ordered: false },
+      馬単: { count: 2, labels: ["1着", "2着"], ordered: true },
+      三連複: { count: 3, labels: ["1頭目", "2頭目", "3頭目"], ordered: false },
+      三連単: { count: 3, labels: ["1着", "2着", "3着"], ordered: true },
+    };
+
+    var isUiTest =
+      global.ExpectUiTestRace &&
+      ExpectUiTestRace.isUiTestRaceId &&
+      ExpectUiTestRace.isUiTestRaceId(raceId);
+
+    var state = {
+      betType: "",
+      picks: [],
+      unit: null,
+      other: false,
+      stock: [],
+      stockSeq: 0,
+    };
+
+    container.innerHTML =
+      '<section class="chart-card purchase-card challenge-dyn-purchase" id="purchaseCard">' +
+      "<h3>Challenge内容を登録</h3>" +
+      '<div class="challenge-dyn-jra-notice" role="note">' +
+      "<p>Challengeは予想した買い目と金額を登録して成績を競う機能です。実際の馬券購入は行われません。</p>" +
+      "<p>馬券を購入する場合は、JRA公式サイト等で別途購入してください。</p>" +
+      "</div>" +
+      '<p class="muted">' +
+      (isUiTest
+        ? "UIテスト用です。買い目追加・Challenge参加を押しても Production への登録・DB書き込みは行いません。"
+        : "式別・馬・金額を選んで買い目を追加し、Challengeに参加します。") +
+      "</p>" +
+      '<div class="challenge-dyn-step">' +
+      '<p class="challenge-dyn-step-title">① 式別を選択</p>' +
+      '<label class="challenge-dyn-field">' +
+      '<span class="visually-hidden">式別</span>' +
+      '<select id="challengeBetTypeSelect" class="challenge-dyn-select">' +
+      '<option value="">式別を選択してください</option>' +
+      BET_TYPES.map(function (bt) {
+        return '<option value="' + escapeHtml(bt) + '">' + escapeHtml(bt) + "</option>";
+      }).join("") +
+      "</select></label></div>" +
+      '<div class="challenge-dyn-step" id="challengeHorseStep" hidden>' +
+      '<p class="challenge-dyn-step-title">② 馬を選択</p>' +
+      '<div id="challengeHorseFields" class="challenge-dyn-horse-fields"></div></div>' +
+      '<div class="challenge-dyn-step">' +
+      '<p class="challenge-dyn-step-title">③ 金額を選択</p>' +
+      '<div class="purchase-presets" role="group" aria-label="登録金額">' +
+      PRESETS.map(function (n) {
+        return (
+          '<button type="button" class="purchase-preset" data-unit="' +
+          n +
+          '">' +
+          n +
+          "円</button>"
+        );
+      }).join("") +
+      '<button type="button" class="purchase-preset" data-unit="other">その他</button>' +
+      "</div>" +
+      '<label class="purchase-other challenge-dyn-other" id="challengeOtherAmount" hidden>' +
+      "<span>任意金額（円）</span>" +
+      '<input type="text" inputmode="numeric" pattern="[0-9]*" id="purchaseOtherInput" maxlength="6" autocomplete="off" /></label>' +
+      '<p class="challenge-dyn-amount-error" id="challengeAmountError" role="alert" hidden></p>' +
+      "</div>" +
+      '<button type="button" class="strategy-btn strategy-btn--ghost challenge-dyn-add" id="challengeAddBetBtn" disabled>買い目を追加</button>' +
+      '<div class="challenge-dyn-step" id="challengeStockStep">' +
+      '<p class="challenge-dyn-step-title">④ 登録する買い目</p>' +
+      '<div class="challenge-dyn-stock" id="challengeBetStock" aria-live="polite"></div>' +
+      '<p class="challenge-dyn-total" id="challengeStockTotal" hidden>合計登録金額 <strong></strong></p>' +
+      "</div>" +
+      '<p class="purchase-msg muted" id="purchaseMsg" role="status"></p>' +
+      '<button type="button" class="strategy-btn challenge-dyn-submit" id="purchaseSubmitBtn" disabled>' +
+      (isUiTest ? "Challengeに参加する（UIテスト）" : "Challengeに参加する") +
+      "</button>" +
+      '<div class="challenge-confirm-dialog" id="challengeConfirmDialog" hidden>' +
+      '<div class="challenge-confirm-dialog__backdrop" data-challenge-confirm-cancel></div>' +
+      '<div class="challenge-confirm-dialog__panel" role="dialog" aria-modal="true" aria-labelledby="challengeConfirmTitle">' +
+      '<h3 id="challengeConfirmTitle">確認</h3>' +
+      '<div class="challenge-confirm-dialog__body" id="challengeConfirmBody"></div>' +
+      '<div class="challenge-confirm-dialog__actions">' +
+      '<button type="button" class="strategy-btn strategy-btn--ghost" data-challenge-confirm-cancel>キャンセル</button>' +
+      '<button type="button" class="strategy-btn" id="challengeConfirmSubmit">この内容で参加する</button>' +
+      "</div></div></div>" +
+      "</section>";
+
+    var betSelect = container.querySelector("#challengeBetTypeSelect");
+    var horseStep = container.querySelector("#challengeHorseStep");
+    var horseFields = container.querySelector("#challengeHorseFields");
+    var stockEl = container.querySelector("#challengeBetStock");
+    var totalEl = container.querySelector("#challengeStockTotal");
+    var addBtn = container.querySelector("#challengeAddBetBtn");
+    var submitBtn = container.querySelector("#purchaseSubmitBtn");
+    var msgEl = container.querySelector("#purchaseMsg");
+    var otherLabel = container.querySelector("#challengeOtherAmount");
+    var otherInput = container.querySelector("#purchaseOtherInput");
+    var amountErrorEl = container.querySelector("#challengeAmountError");
+    var confirmDialog = container.querySelector("#challengeConfirmDialog");
+    var confirmBody = container.querySelector("#challengeConfirmBody");
+    var confirmSubmitBtn = container.querySelector("#challengeConfirmSubmit");
+    var maxUnitAmount = OFFICIAL_MAX_PURCHASE_AMOUNT_PER_RACE;
+    var submitting = false;
+
+    function runnerByNum(num) {
+      var n = Number(num);
+      for (var i = 0; i < runners.length; i++) {
+        if (runners[i].horse_number === n) return runners[i];
+      }
+      return null;
+    }
+
+    function formatHorseOption(r) {
+      return r.horse_number + "番 " + (r.horse_name || "");
+    }
+
+    function formatLegs(spec, picks) {
+      var nums = picks.map(Number);
+      if (spec.ordered) {
+        return nums.join(" → ");
+      }
+      var sorted = nums.slice().sort(function (a, b) {
+        return a - b;
+      });
+      if (sorted.length === 1) return String(sorted[0]);
+      return sorted.join(" - ");
+    }
+
+    function selectionKey(spec, picks) {
+      var nums = picks.map(Number);
+      if (spec.ordered) return nums.join(">");
+      return nums
+        .slice()
+        .sort(function (a, b) {
+          return a - b;
+        })
+        .join("-");
+    }
+
+    function currentUnit() {
+      if (state.other) {
+        var raw = otherInput ? otherInput.value : "";
+        var checked = validateChallengeUnitAmount(raw, maxUnitAmount);
+        return checked.ok ? checked.amount : 0;
+      }
+      if (state.unit == null) return 0;
+      return state.unit;
+    }
+
+    function amountValidation() {
+      if (!state.other) {
+        if (state.unit == null) {
+          return { ok: false, code: "unset", message: "" };
+        }
+        return validateChallengeUnitAmount(state.unit, maxUnitAmount);
+      }
+      return validateChallengeUnitAmount(
+        otherInput ? otherInput.value : "",
+        maxUnitAmount
+      );
+    }
+
+    function isAmountValid() {
+      return amountValidation().ok;
+    }
+
+    function setAmountError(message) {
+      if (!amountErrorEl) return;
+      if (message) {
+        amountErrorEl.hidden = false;
+        amountErrorEl.textContent = message;
+      } else {
+        amountErrorEl.hidden = true;
+        amountErrorEl.textContent = "";
+      }
+    }
+
+    function isBuilderComplete() {
+      var spec = BET_SPECS[state.betType];
+      if (!spec) return false;
+      if (state.picks.length !== spec.count) return false;
+      for (var i = 0; i < state.picks.length; i++) {
+        if (!state.picks[i]) return false;
+      }
+      var seen = {};
+      for (var j = 0; j < state.picks.length; j++) {
+        var key = String(state.picks[j]);
+        if (seen[key]) return false;
+        seen[key] = true;
+      }
+      return isAmountValid();
+    }
+
+    function buildDraftItem() {
+      var spec = BET_SPECS[state.betType];
+      if (!spec || !isBuilderComplete()) return null;
+      var picks = state.picks.map(Number);
+      var amtCheck = amountValidation();
+      if (!amtCheck.ok) return null;
+      var amount = amtCheck.amount;
+      if (stockTotal() + amount > maxUnitAmount) {
+        return null;
+      }
+      var lines = [];
+      if (spec.ordered && picks.length > 1) {
+        lines.push(formatLegs(spec, state.picks));
+      } else {
+        picks.forEach(function (n) {
+          var r = runnerByNum(n);
+          lines.push(r ? formatHorseOption(r) : n + "番");
+        });
+      }
+      return {
+        race_id: raceId,
+        bet_type: state.betType,
+        selection: picks,
+        selection_key: selectionKey(spec, state.picks),
+        selection_lines: lines,
+        legs_display: formatLegs(spec, state.picks),
+        amount: amount,
+        ordered: !!spec.ordered,
+      };
+    }
+
+    function isExactDuplicate(item) {
+      for (var i = 0; i < state.stock.length; i++) {
+        var s = state.stock[i];
+        if (
+          s.bet_type === item.bet_type &&
+          s.selection_key === item.selection_key &&
+          s.amount === item.amount
+        ) {
+          return true;
+        }
+      }
+      return false;
+    }
+
+    function stockTotal() {
+      var sum = 0;
+      for (var i = 0; i < state.stock.length; i++) sum += state.stock[i].amount;
+      return sum;
+    }
+
+    function setOtherVisible(show) {
+      if (!otherLabel) return;
+      otherLabel.hidden = !show;
+      if (!show && otherInput) otherInput.value = "";
+    }
+
+    function resetBuilder() {
+      state.betType = "";
+      state.picks = [];
+      state.unit = null;
+      state.other = false;
+      if (betSelect) betSelect.value = "";
+      container.querySelectorAll(".purchase-preset").forEach(function (b) {
+        b.classList.remove("is-active");
+      });
+      setOtherVisible(false);
+      renderHorseFields();
+    }
+
+    function renderStock() {
+      if (!stockEl) return;
+      if (!state.stock.length) {
+        stockEl.innerHTML =
+          '<p class="challenge-dyn-stock-empty muted">まだ買い目がありません。式別・馬・金額を選んで追加してください。</p>';
+        if (totalEl) totalEl.hidden = true;
+      } else {
+        stockEl.innerHTML = state.stock
+          .map(function (item, idx) {
+            var lines = (item.selection_lines || [])
+              .map(function (line) {
+                return "<div>" + escapeHtml(line) + "</div>";
+              })
+              .join("");
+            return (
+              '<article class="challenge-dyn-stock-item" data-stock-id="' +
+              escapeHtml(String(item.id)) +
+              '">' +
+              '<div class="challenge-dyn-stock-head">' +
+              "<strong>" +
+              escapeHtml(String(idx + 1)) +
+              "　" +
+              escapeHtml(item.bet_type) +
+              "</strong>" +
+              '<button type="button" class="challenge-dyn-stock-remove" data-stock-id="' +
+              escapeHtml(String(item.id)) +
+              '">削除</button></div>' +
+              '<div class="challenge-dyn-stock-body">' +
+              lines +
+              "</div>" +
+              '<p class="challenge-dyn-stock-amount">' +
+              escapeHtml(fmtYen(item.amount)) +
+              "</p></article>"
+            );
+          })
+          .join("");
+        if (totalEl) {
+          totalEl.hidden = false;
+          var strong = totalEl.querySelector("strong");
+          if (strong) strong.textContent = fmtYen(stockTotal());
+        }
+        stockEl.querySelectorAll(".challenge-dyn-stock-remove").forEach(function (btn) {
+          btn.addEventListener("click", function () {
+            var sid = String(btn.getAttribute("data-stock-id") || "");
+            state.stock = state.stock.filter(function (it) {
+              return String(it.id) !== sid;
+            });
+            if (msgEl) msgEl.textContent = "";
+            renderStock();
+            refreshUi();
+          });
+        });
+      }
+      refreshUi();
+    }
+
+    function renderHorseFields() {
+      var spec = BET_SPECS[state.betType];
+      if (!spec) {
+        horseStep.hidden = true;
+        horseFields.innerHTML = "";
+        state.picks = [];
+        refreshUi();
+        return;
+      }
+      horseStep.hidden = false;
+      if (state.picks.length !== spec.count) {
+        state.picks = [];
+        for (var z = 0; z < spec.count; z++) state.picks.push("");
+      }
+      var html = "";
+      for (var i = 0; i < spec.count; i++) {
+        var selected = String(state.picks[i] || "");
+        var used = {};
+        for (var j = 0; j < state.picks.length; j++) {
+          if (j !== i && state.picks[j]) used[String(state.picks[j])] = true;
+        }
+        html +=
+          '<label class="challenge-dyn-field">' +
+          "<span>" +
+          escapeHtml(spec.labels[i] || "馬") +
+          "</span>" +
+          '<select class="challenge-dyn-select challenge-dyn-horse" data-pick-index="' +
+          i +
+          '">' +
+          '<option value="">馬を選択してください</option>';
+        runners.forEach(function (r) {
+          var val = String(r.horse_number);
+          if (used[val] && val !== selected) return;
+          html +=
+            '<option value="' +
+            escapeHtml(val) +
+            '"' +
+            (val === selected ? " selected" : "") +
+            ">" +
+            escapeHtml(formatHorseOption(r)) +
+            "</option>";
+        });
+        html += "</select></label>";
+      }
+      horseFields.innerHTML = html;
+      horseFields.querySelectorAll("select.challenge-dyn-horse").forEach(function (sel) {
+        sel.addEventListener("change", function () {
+          var idx = Number(sel.getAttribute("data-pick-index"));
+          state.picks[idx] = sel.value || "";
+          renderHorseFields();
+        });
+      });
+      refreshUi();
+    }
+
+    function refreshUi() {
+      var amt = amountValidation();
+      var showAmtError = state.other && !amt.ok && String((otherInput && otherInput.value) || "").length > 0;
+      setAmountError(showAmtError ? amt.message : "");
+      if (addBtn) {
+        var canAdd = isBuilderComplete();
+        if (canAdd && amt.ok && stockTotal() + amt.amount > maxUnitAmount) {
+          canAdd = false;
+          setAmountError(
+            "合計金額は" +
+              maxUnitAmount.toLocaleString("ja-JP") +
+              "円以下で入力してください"
+          );
+        }
+        addBtn.disabled = !canAdd;
+      }
+      if (submitBtn) submitBtn.disabled = submitting || state.stock.length < 1;
+    }
+
+    if (betSelect) {
+      betSelect.addEventListener("change", function () {
+        state.betType = betSelect.value || "";
+        state.picks = [];
+        if (msgEl) msgEl.textContent = "";
+        renderHorseFields();
+      });
+    }
+
+    container.querySelectorAll(".purchase-preset").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        container.querySelectorAll(".purchase-preset").forEach(function (b) {
+          b.classList.remove("is-active");
+        });
+        btn.classList.add("is-active");
+        var v = btn.getAttribute("data-unit");
+        if (v === "other") {
+          state.other = true;
+          state.unit = null;
+          setOtherVisible(true);
+          if (otherInput) otherInput.focus();
+        } else {
+          state.other = false;
+          state.unit = Number(v);
+          setOtherVisible(false);
+        }
+        if (msgEl) msgEl.textContent = "";
+        refreshUi();
+      });
+    });
+
+    if (otherInput) {
+      otherInput.addEventListener("input", function () {
+        // Keep raw for validation; strip only spaces. Do not convert "100.5" → "1005".
+        otherInput.value = String(otherInput.value || "").replace(/\s+/g, "");
+        refreshUi();
+      });
+      otherInput.addEventListener("blur", function () {
+        refreshUi();
+      });
+    }
+
+    if (addBtn) {
+      addBtn.addEventListener("click", function () {
+        var amt = amountValidation();
+        if (!amt.ok) {
+          setAmountError(amt.message || "購入金額は100円単位で入力してください");
+          if (msgEl) msgEl.textContent = amt.message || "";
+          return;
+        }
+        if (stockTotal() + amt.amount > maxUnitAmount) {
+          var overMsg =
+            "合計金額は" +
+            maxUnitAmount.toLocaleString("ja-JP") +
+            "円以下で入力してください";
+          setAmountError(overMsg);
+          if (msgEl) msgEl.textContent = overMsg;
+          return;
+        }
+        var draft = buildDraftItem();
+        if (!draft) {
+          if (msgEl) {
+            msgEl.textContent = isAmountValid()
+              ? "式別・馬・金額をすべて選択してください。"
+              : "金額は100円単位の正の整数で入力してください。";
+          }
+          return;
+        }
+        if (isExactDuplicate(draft)) {
+          if (msgEl) msgEl.textContent = "同じ買い目がすでに追加されています";
+          return;
+        }
+        state.stockSeq += 1;
+        draft.id = "bet-" + state.stockSeq;
+        state.stock.push(draft);
+        if (msgEl) msgEl.textContent = "";
+        setAmountError("");
+        resetBuilder();
+        renderStock();
+      });
+    }
+
+    function closeConfirmDialog() {
+      if (confirmDialog) confirmDialog.hidden = true;
+      document.body.classList.remove("is-challenge-confirm-open");
+    }
+
+    function openConfirmDialog() {
+      if (!confirmDialog || !confirmBody) return;
+      var rows = state.stock
+        .map(function (item, idx) {
+          return (
+            "<tr>" +
+            "<td>" +
+            escapeHtml(String(idx + 1)) +
+            "</td>" +
+            "<td>" +
+            escapeHtml(item.bet_type) +
+            "</td>" +
+            "<td>" +
+            escapeHtml(item.legs_display || "") +
+            "</td>" +
+            "<td>" +
+            escapeHtml(fmtYen(item.amount)) +
+            "</td>" +
+            "</tr>"
+          );
+        })
+        .join("");
+      confirmBody.innerHTML =
+        '<p class="challenge-confirm-lead">登録する買い目・金額に間違いがないか確認してください。</p>' +
+        '<p class="challenge-confirm-odds-note">実際の馬券購入では、投票状況や購入タイミングによってオッズが変動する場合があります。</p>' +
+        '<p class="challenge-confirm-ask">この内容でChallengeに参加しますか？</p>' +
+        '<div class="challenge-confirm-summary">' +
+        "<p>買い目数 <strong>" +
+        state.stock.length +
+        "</strong></p>" +
+        '<p class="challenge-confirm-total">合計金額 <strong>' +
+        escapeHtml(fmtYen(stockTotal())) +
+        "</strong></p>" +
+        "</div>" +
+        '<div class="challenge-confirm-table-wrap"><table class="challenge-confirm-table">' +
+        "<thead><tr><th>#</th><th>式別</th><th>馬番号/組み合わせ</th><th>金額</th></tr></thead>" +
+        "<tbody>" +
+        rows +
+        "</tbody></table></div>";
+      confirmDialog.hidden = false;
+      document.body.classList.add("is-challenge-confirm-open");
+      if (confirmSubmitBtn) confirmSubmitBtn.focus();
+    }
+
+    function performChallengeJoin() {
+      if (submitting || !state.stock.length) return;
+      submitting = true;
+      closeConfirmDialog();
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.textContent = isUiTest
+          ? "参加処理中…（UIテスト）"
+          : "参加処理中…";
+      }
+
+      if (isUiTest) {
+        var enriched = state.stock.map(function (item) {
+          return {
+            bet_type: item.bet_type,
+            ordered: !!item.ordered,
+            legs_display: item.legs_display,
+            selection: item.selection,
+            selection_lines: (item.selection || []).map(function (n) {
+              var r = runnerByNum(n);
+              return r ? formatHorseOption(r) : n + "番";
+            }),
+            amount: item.amount,
+          };
+        });
+        var entry =
+          global.ExpectUiTestChallengeEntry &&
+          ExpectUiTestChallengeEntry.buildFromStock
+            ? ExpectUiTestChallengeEntry.buildFromStock(raceId, enriched, meta)
+            : null;
+        if (entry && ExpectUiTestChallengeEntry.save) {
+          ExpectUiTestChallengeEntry.save(entry);
+        }
+        var hrefUi =
+          ExpectUiTestChallengeEntry && ExpectUiTestChallengeEntry.aiChallengeHref
+            ? ExpectUiTestChallengeEntry.aiChallengeHref({
+                raceId: raceId,
+                from: "challenge-entry",
+              })
+            : "saved.html";
+        location.href = hrefUi;
+        return;
+      }
+
+      if (!(global.ExpectApi && ExpectApi.User && ExpectApi.User.registerPurchase)) {
+        if (msgEl) msgEl.textContent = "API を利用できません。";
+        submitting = false;
+        if (submitBtn) {
+          submitBtn.disabled = state.stock.length < 1;
+          submitBtn.textContent = "Challengeに参加する";
+        }
+        return;
+      }
+
+      if (msgEl) msgEl.textContent = "登録中…";
+      var chain = Promise.resolve();
+      state.stock.forEach(function (item) {
+        chain = chain.then(function () {
+          var axisRunner = runnerByNum(item.selection[0]);
+          var rivals = item.selection.slice(1).map(function (n) {
+            var r = runnerByNum(n);
+            return { num: String(n), name: r ? r.horse_name : "" };
+          });
+          return ExpectApi.User.registerPurchase({
+            race_id: raceId,
+            race_date: meta.raceDate || raceDateFromId(raceId),
+            race_label: meta.raceLabel || meta.place || null,
+            prediction_version: meta.predictionVersion || null,
+            unit_stake: item.amount,
+            bet_types: [item.bet_type],
+            axis: {
+              num: String(item.selection[0]),
+              name: axisRunner ? axisRunner.horse_name : "",
+            },
+            rivals: rivals,
+            confirm_divergence: false,
+          });
+        });
+      });
+      chain
+        .then(function () {
+          if (msgEl) msgEl.textContent = "Challenge参加を登録しました。";
+          if (submitBtn) submitBtn.textContent = "登録済み";
+          var href =
+            "saved.html?race_id=" +
+            encodeURIComponent(raceId) +
+            "&from=challenge-entry";
+          setTimeout(function () {
+            location.href = href;
+          }, 400);
+        })
+        .catch(function (err) {
+          if (msgEl) msgEl.textContent = (err && err.message) || "登録に失敗しました。";
+          submitting = false;
+          if (submitBtn) {
+            submitBtn.disabled = state.stock.length < 1;
+            submitBtn.textContent = "Challengeに参加する";
+          }
+        });
+    }
+
+    if (submitBtn) {
+      submitBtn.addEventListener("click", function () {
+        if (submitting) return;
+        if (!state.stock.length) {
+          if (msgEl) msgEl.textContent = "買い目を1件以上追加してください。";
+          return;
+        }
+        openConfirmDialog();
+      });
+    }
+
+    if (confirmDialog) {
+      confirmDialog.querySelectorAll("[data-challenge-confirm-cancel]").forEach(function (el) {
+        el.addEventListener("click", function () {
+          if (submitting) return;
+          closeConfirmDialog();
+          if (msgEl) msgEl.textContent = "参加をキャンセルしました。";
+        });
+      });
+    }
+    if (confirmSubmitBtn) {
+      confirmSubmitBtn.addEventListener("click", function () {
+        performChallengeJoin();
+      });
+    }
+
+    setOtherVisible(false);
+    renderStock();
+    refreshUi();
   }
 
   /** @deprecated auto snapshot — prefer mountPurchaseForm */
@@ -818,6 +1629,10 @@
   global.ExpectUserRaceResults = {
     saveSnapshot: saveSnapshot,
     mountPurchaseForm: mountPurchaseForm,
+    mountChallengeDynamicPurchaseForm: mountChallengeDynamicPurchaseForm,
+    BET_TYPES: BET_TYPES,
+    OFFICIAL_MAX_PURCHASE_AMOUNT_PER_RACE: OFFICIAL_MAX_PURCHASE_AMOUNT_PER_RACE,
+    validateChallengeUnitAmount: validateChallengeUnitAmount,
     bindMonthlyPage: bindMonthlyPage,
     bindPurchaseHistory: bindPurchaseHistory,
     loadAndPaintResult: loadAndPaintResult,

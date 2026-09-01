@@ -34,7 +34,8 @@
     "v8_canary_delete": false,
     "v8_canary_confidence": false,
     "v8_production_canary": false,
-    "single_ai_detail": false
+    "single_ai_detail": false,
+    "enable_ui_test_race": true
   },
-  "notes": "Version8 Research flags reserved OFF for PE. v8_research_enabled gates weekly tooling only. single_ai_detail is detail-only (I3); list LOCK."
+  "notes": "Version8 Research flags reserved OFF for PE. v8_research_enabled gates weekly tooling only. single_ai_detail is detail-only (I3); list LOCK. enable_ui_test_race = frontend-only UI fixture (ui-test-race-001); set false to hide."
 }

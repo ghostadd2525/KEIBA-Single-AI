@@ -319,9 +319,16 @@
     var summary = card && card.summary;
     var rid = (card && card.race_id) || "";
     var raceNo = info.race_number != null ? info.race_number : info.race_no;
+    var venueRaw = String(info.venue || "").trim();
+    var venueOk =
+      venueRaw &&
+      venueRaw.toLowerCase() !== "unknown" &&
+      venueRaw !== "不明"
+        ? venueRaw
+        : "";
     var place =
       info.race_label ||
-      (info.venue || "") + (raceNo != null ? " " + raceNo + "R" : "");
+      (venueOk ? venueOk + (raceNo != null ? " " + raceNo + "R" : "") : "");
     var name = shortRaceName(info.race_name || info.class_label || "レース");
     var grade = info.grade || "";
     var post = info.post_time != null ? String(info.post_time) : "";
@@ -349,6 +356,14 @@
     var bg = bgClass(info, raceNo);
     var nameDisp = name;
     var eng = pred.engine_source || "";
+    var isUiTest =
+      (window.ExpectUiTestRace &&
+        ExpectUiTestRace.isUiTestRaceId &&
+        ExpectUiTestRace.isUiTestRaceId(rid)) ||
+      !!((card && card.__ui_test_fixture) || eng === "frontend_ui_test_fixture");
+    var testBadge = isUiTest
+      ? '<span class="race-item-test-badge" aria-label="UIテスト">UIテスト</span>'
+      : "";
 
     var confPct = null;
     var band = null;
@@ -403,6 +418,7 @@
     return (
       '<a class="race-item race-item--bg' +
       bg +
+      (isUiTest ? " race-item--ui-test" : "") +
       '" href="race.html?race_id=' +
       encodeURIComponent(rid) +
       '" data-race-date="' +
@@ -424,6 +440,7 @@
       '"' +
       (band ? ' data-confidence-band="' + escapeHtml(band) + '"' : "") +
       (eng ? ' data-engine-source="' + escapeHtml(eng) + '"' : "") +
+      (isUiTest ? ' data-ui-test-race="1"' : "") +
       ">" +
       '<button type="button" class="fav-btn fav-btn--icon" data-fav-toggle="' +
       escapeHtml(rid) +
@@ -450,6 +467,7 @@
       '<span class="fav-star" aria-hidden="true">★</span></button>' +
       "<div>" +
       '<p class="race-item-place">' +
+      testBadge +
       escapeHtml(place) +
       "</p>" +
       '<p class="race-item-name">' +
@@ -487,9 +505,16 @@
   function raceCardHtml(bundle) {
     var info = (bundle && bundle.race_info) || {};
     var rid = (bundle && bundle.race_id) || info.race_id || "";
+    var venueRaw = String(info.venue || "").trim();
+    var venueOk =
+      venueRaw &&
+      venueRaw.toLowerCase() !== "unknown" &&
+      venueRaw !== "不明"
+        ? venueRaw
+        : "";
     var place =
       info.race_label ||
-      (info.venue || "") + (info.race_no != null ? " " + info.race_no + "R" : "");
+      (venueOk ? venueOk + (info.race_no != null ? " " + info.race_no + "R" : "") : "");
     var name = shortRaceName(info.race_name || info.class_label || "レース");
     var grade = info.grade || "";
     var conf = scorePercent(bundle) || 0;
@@ -1031,17 +1056,20 @@
 
   function venueOnly(info) {
     if (global.ExpectCatalogIdentity && ExpectCatalogIdentity.venueOnly) {
-      return ExpectCatalogIdentity.venueOnly(info) || "レース";
+      var cat = ExpectCatalogIdentity.venueOnly(info) || "";
+      if (cat && cat.toLowerCase() !== "unknown" && cat !== "不明") return cat;
     }
     info = info || {};
     var v = String(info.venue || info.course || "")
       .replace(/\s*\d{1,2}\s*R\s*$/u, "")
       .trim();
-    if (v) return v;
+    if (v && v.toLowerCase() !== "unknown" && v !== "不明") return v;
     var label = String(info.race_label || "");
     var m = label.match(/^(.+?)\s*\d{1,2}\s*R\s*$/u);
     if (m) return m[1].trim();
-    return label.replace(/\s*\d{1,2}\s*R\s*$/u, "").trim() || "レース";
+    var fromLabel = label.replace(/\s*\d{1,2}\s*R\s*$/u, "").trim();
+    if (fromLabel && fromLabel.toLowerCase() !== "unknown") return fromLabel;
+    return "レース";
   }
 
   /** Catalog race_id → seed race_info (same race only). */
@@ -1329,10 +1357,33 @@
     var ridForCatalog = bundle.race_id || seedCard.race_id || "";
     var catalogInfo = getCatalogRaceInfo(ridForCatalog) || {};
     var mergedInfo = Object.assign({}, seedInfo, bundleInfo);
-    // Prediction 側の空文字で Catalog の venue/date/name/post_time を消さない
-    if (!String(mergedInfo.venue || "").trim()) {
+    function isMissingVenue(v) {
+      var s = String(v == null ? "" : v).trim().toLowerCase();
+      return !s || s === "unknown" || s === "不明";
+    }
+    // Literal "unknown" from BFF coerce must not beat Catalog/seed venue.
+    if (isMissingVenue(mergedInfo.venue)) {
       mergedInfo.venue =
-        seedInfo.venue || catalogInfo.venue || bundleInfo.venue || "";
+        (!isMissingVenue(seedInfo.venue) && seedInfo.venue) ||
+        (!isMissingVenue(catalogInfo.venue) && catalogInfo.venue) ||
+        (!isMissingVenue(bundleInfo.venue) && bundleInfo.venue) ||
+        "";
+    }
+    if (isMissingVenue(mergedInfo.course)) {
+      mergedInfo.course =
+        (!isMissingVenue(seedInfo.course) && seedInfo.course) ||
+        (!isMissingVenue(catalogInfo.course) && catalogInfo.course) ||
+        mergedInfo.venue ||
+        "";
+    }
+    if (
+      isMissingVenue(mergedInfo.venue) &&
+      String(mergedInfo.race_label || "").trim()
+    ) {
+      // Keep race_label; place renderer prefers it over venue+" NR"
+    } else if (isMissingVenue(mergedInfo.venue)) {
+      // Do not invent venue; leave empty rather than "unknown"
+      mergedInfo.venue = "";
     }
     if (!mergedInfo.date) {
       mergedInfo.date =

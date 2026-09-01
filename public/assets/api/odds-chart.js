@@ -86,16 +86,58 @@
     return "—";
   }
 
+  function isPlaceholderHorseName(name, horseNo) {
+    var clean = String(name == null ? "" : name).trim();
+    if (!clean) return true;
+    if (horseNo != null && (clean === String(horseNo) || clean === String(horseNo) + "番")) {
+      return true;
+    }
+    return /^\d+番$/.test(clean);
+  }
+
+  function addHorseNameToMap(map, horseNo, name) {
+    if (horseNo == null || horseNo === "") return;
+    var clean = String(name == null ? "" : name).trim();
+    if (!clean || isPlaceholderHorseName(clean, horseNo)) return;
+    var num = parseInt(horseNo, 10);
+    map[String(horseNo)] = clean;
+    if (Number.isFinite(num)) map[String(num)] = clean;
+  }
+
+  function horseNameMapFromEntries(entries) {
+    var map = Object.create(null);
+    (entries || []).forEach(function (e) {
+      if (!e) return;
+      var n = e.horse_number != null ? e.horse_number : e.umaban;
+      addHorseNameToMap(map, n, e.horse_name);
+    });
+    return map;
+  }
+
+  function horseNameMapFromPrediction(bundle) {
+    var map = Object.create(null);
+    var runners =
+      bundle && bundle.evaluation && Array.isArray(bundle.evaluation.runners)
+        ? bundle.evaluation.runners
+        : [];
+    runners.forEach(function (r) {
+      if (!r) return;
+      addHorseNameToMap(map, r.horse_number, r.horse_name);
+    });
+    return map;
+  }
+
   function seriesHorseName(s, nameMap) {
     var no = seriesUmaban(s);
-    if (nameMap && no != null && nameMap[String(no)]) {
-      return String(nameMap[String(no)]).trim();
+    if (nameMap && no != null) {
+      var fromMap = nameMap[String(no)];
+      if (!fromMap && Number.isFinite(parseInt(no, 10))) {
+        fromMap = nameMap[String(parseInt(no, 10))];
+      }
+      if (fromMap) return String(fromMap).trim();
     }
     var name = String((s && s.horse_name) || "").trim();
-    if (!name) return "";
-    // API が「7番」プレースホルダを返す場合は表示しない
-    if (no != null && (name === String(no) || name === String(no) + "番")) return "";
-    if (/^\d+番$/.test(name)) return "";
+    if (!name || isPlaceholderHorseName(name, no)) return "";
     return name;
   }
 
@@ -350,6 +392,7 @@
       venue: "all",
       openVenue: null,
       accordionClosed: false,
+      directOpenRace: false,
       horseNames: {},
       horseNamesRaceId: "",
     };
@@ -363,11 +406,34 @@
       return h;
     }
 
-    /** 表示用馬名（既存 board を参照。Board 実装は変更しない） */
+    /** 表示用馬名（board → prediction runners。race detail と同系の正本のみ） */
     function loadHorseNames(raceId) {
       if (!raceId) return Promise.resolve({});
       if (state.horseNamesRaceId === raceId && state.horseNames) {
         return Promise.resolve(state.horseNames);
+      }
+      function remember(map) {
+        state.horseNames = map || {};
+        state.horseNamesRaceId = raceId;
+        return state.horseNames;
+      }
+      function loadFromPrediction(map) {
+        if (
+          !global.ExpectApi ||
+          !ExpectApi.Prediction ||
+          typeof ExpectApi.Prediction.get !== "function"
+        ) {
+          return Promise.resolve(map);
+        }
+        return ExpectApi.Prediction.get(raceId)
+          .then(function (bundle) {
+            var predMap = horseNameMapFromPrediction(bundle);
+            if (!Object.keys(predMap).length) return map;
+            return predMap;
+          })
+          .catch(function () {
+            return map;
+          });
       }
       return fetch("/api/races/" + encodeURIComponent(raceId) + "/board", {
         credentials: "same-origin",
@@ -376,23 +442,15 @@
       })
         .then(function (res) {
           return res.json().then(function (body) {
-            if (!res.ok) return {};
+            if (!res.ok) return loadFromPrediction({}).then(remember);
             var data = (body && body.data) || body || {};
-            var map = {};
-            (data.entries || []).forEach(function (e) {
-              if (!e) return;
-              var n = e.horse_number != null ? e.horse_number : e.umaban;
-              var name = String(e.horse_name || "").trim();
-              if (n == null || !name || /^\d+番$/.test(name)) return;
-              map[String(n)] = name;
-            });
-            state.horseNames = map;
-            state.horseNamesRaceId = raceId;
-            return map;
+            var map = horseNameMapFromEntries(data.entries || []);
+            if (Object.keys(map).length) return remember(map);
+            return loadFromPrediction(map).then(remember);
           });
         })
         .catch(function () {
-          return {};
+          return loadFromPrediction({}).then(remember);
         });
     }
 
@@ -711,7 +769,7 @@
       var openVenue = null;
       if (!state.accordionClosed) {
         openVenue = state.openVenue;
-        if (!openVenue && state.raceId) {
+        if (!openVenue && state.directOpenRace && state.raceId) {
           for (var i = 0; i < items.length; i++) {
             if (items[i].race_id === state.raceId) {
               openVenue = itemVenue(items[i]) || "その他";
@@ -719,7 +777,6 @@
             }
           }
         }
-        if (!openVenue) openVenue = order[0] || null;
       }
 
       raceListEl.innerHTML = order
@@ -925,6 +982,7 @@
           if (hitItem) {
             state.raceId = preset;
             state.date = itemDate(hitItem) || "all";
+            state.directOpenRace = true;
           }
         }
         renderFilters();
@@ -953,4 +1011,15 @@
   }
 
   global.ExpectOddsChart = { bind: bind };
+
+  if (typeof module !== "undefined" && module.exports) {
+    module.exports = {
+      horseNameMapFromEntries: horseNameMapFromEntries,
+      horseNameMapFromPrediction: horseNameMapFromPrediction,
+      seriesHorseName: seriesHorseName,
+      legendHtml: legendHtml,
+      seriesUmaban: seriesUmaban,
+      umabanMark: umabanMark,
+    };
+  }
 })(typeof window !== "undefined" ? window : globalThis);

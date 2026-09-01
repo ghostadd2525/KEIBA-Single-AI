@@ -7,8 +7,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Noto+Sans+JP:wght@400;500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="assets/styles.css?v=31" />
-  <link rel="stylesheet" href="assets/screens.css?v=52" />
+  <link rel="stylesheet" href="assets/styles.css?v=33" />
+  <link rel="stylesheet" href="assets/screens.css?v=74" />
   <link rel="stylesheet" href="assets/vqa.css?v=52" />
   <script src="assets/api/calendar-weekend.js?v=14"></script>
   <script src="assets/auto-maintenance.js?v=12.4"></script>
@@ -39,19 +39,26 @@
         <button type="button" class="ledger-month-btn" data-ledger-next aria-label="翌月">›</button>
       </div>
 
+      <section
+        id="userChallengeEntrySection"
+        class="chart-card user-challenge-entry"
+        aria-label="User Challenge"
+        hidden
+      ></section>
+
       <section id="challengeBanner" class="challenge-banner" aria-live="polite">
         <p class="challenge-kicker">読み込み中…</p>
         <h2>今月のAIチャレンジ</h2>
         <p class="challenge-msg muted">月間成績を取得しています</p>
       </section>
 
-      <section class="dash-cards" aria-label="AIとあなたの成績">
+      <section class="dash-cards" aria-label="Game MasterとUser Challengeの成績">
         <article class="dash-score-card" id="aiScoreCard">
-          <h3>AI成績（今月の目標）</h3>
+          <h3>Game Master</h3>
           <p class="dash-card-profit">Pending</p>
         </article>
         <article class="dash-score-card" id="userScoreCard">
-          <h3>あなた</h3>
+          <h3>User Challenge</h3>
           <p class="dash-card-profit">Pending</p>
         </article>
       </section>
@@ -95,15 +102,29 @@
   <script src="assets/api/mock-gate.js"></script>
   <script src="assets/api/auth.js"></script>
   <script src="assets/roles.js?v=1"></script>
-  <script src="assets/api/user.js?v=7"></script>
-  <script src="assets/api/challenge-dashboard.js?v=3"></script>
+  <script src="assets/api/user.js?v=8"></script>
+  <script src="assets/api/challenge-dashboard.js?v=10"></script>
+  <script src="assets/api/ui-features.js?v=16"></script>
+  <script src="assets/api/ui-test-race.js?v=3"></script>
+  <script src="assets/api/challenge-lifecycle.js?v=3"></script>
+  <script src="assets/api/challenge-notifications.js?v=1"></script>
+  <script src="assets/api/ui-test-challenge-entry.js?v=15"></script>
   <script src="assets/favorites.js?v=4"></script>
   <script src="assets/shell.js?v=5"></script>
-  <script src="assets/reminders.js"></script>
+  <script src="assets/reminders.js?v=5"></script>
   <script src="assets/partials-nav.js?v=2"></script>
   <script>
     if (window.ExpectChallengeDashboard) {
       ExpectChallengeDashboard.bindDashboard(document);
+    }
+    if (window.ExpectUiTestChallengeEntry && ExpectUiTestChallengeEntry.bindSavedPage) {
+      ExpectUiTestChallengeEntry.bindSavedPage(
+        document.getElementById("userChallengeEntrySection")
+      );
+    } else if (window.ExpectUiTestChallengeEntry && ExpectUiTestChallengeEntry.mount) {
+      ExpectUiTestChallengeEntry.mount(
+        document.getElementById("userChallengeEntrySection")
+      );
     }
   </script>
 </body>

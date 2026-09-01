@@ -1815,6 +1815,11 @@ details.fold > summary::-webkit-details-marker { display: none; }
 .page-tab .home-chrome {
   flex: 1 1 auto;
   min-height: 0;
+  /* flex子の min-width:auto でカード群が .app を押し広げて右端クリップするのを防ぐ */
+  min-width: 0;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
   overflow-y: auto;
   overflow-x: hidden;
   -webkit-overflow-scrolling: touch;

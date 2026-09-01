@@ -7,8 +7,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Noto+Sans+JP:wght@400;500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="assets/styles.css?v=31" />
-  <link rel="stylesheet" href="assets/screens.css?v=52" />
+  <link rel="stylesheet" href="assets/styles.css?v=32" />
+  <link rel="stylesheet" href="assets/screens.css?v=58" />
   <link rel="stylesheet" href="assets/ux.css?v=16" />
   <script src="assets/api/calendar-weekend.js?v=14"></script>
   <script src="assets/auto-maintenance.js?v=12.4"></script>
@@ -26,7 +26,7 @@
         <div class="topbar-left">
           <a class="back-btn" id="strategyBack" href="race.html" aria-label="戻る">‹</a>
           <div class="brand-block topbar-text topbar-title-only">
-            <p class="brand-name">買い目戦略</p>
+            <p class="brand-name" id="strategyBrandTitle">買い目戦略</p>
             <p class="brand-sub" id="strategySub">詳細分析</p>
           </div>
         </div>
@@ -48,6 +48,7 @@
   <script src="assets/api/mock-gate.js"></script>
   <script src="assets/api/race-id-meta.js"></script>
   <script src="assets/api/auth.js"></script>
+  <script src="assets/api/user.js?v=8"></script>
   <script src="assets/api/http-cache.js?v=1"></script>
   <script src="assets/api/prediction.js?v=16"></script>
   <script src="assets/api/analysis.js"></script>
@@ -57,15 +58,28 @@
   <script src="assets/api/odds-series.js?v=1"></script>
   <script src="assets/api/strategy-stakes.js?v=2"></script>
   <script src="assets/api/strategy-composer.js?v=3"></script>
+  <script src="assets/api/ui-features.js?v=16"></script>
+  <script src="assets/api/ui-test-race.js?v=3"></script>
   <script src="assets/ux.js?v=15"></script>
   <script src="assets/favorites.js?v=4"></script>
+  <script src="assets/api/user.js?v=8"></script>
+  <script src="assets/api/challenge-lifecycle.js?v=3"></script>
+  <script src="assets/api/challenge-notifications.js?v=1"></script>
   <script src="assets/shell.js?v=5"></script>
-  <script src="assets/reminders.js"></script>
+  <script src="assets/reminders.js?v=5"></script>
   <script src="assets/partials-nav.js"></script>
   <script>
     (function () {
       var screen = document.getElementById("strategyScreen");
-      var id = new URLSearchParams(location.search).get("race_id") || "";
+      var params = new URLSearchParams(location.search);
+      var id = params.get("race_id") || "";
+      if (window.ExpectUiTestRace && ExpectUiTestRace.installHooks) {
+        ExpectUiTestRace.installHooks();
+      }
+      var brand = document.getElementById("strategyBrandTitle");
+      var subEl = document.getElementById("strategySub");
+      if (brand) brand.textContent = "買い目戦略";
+      if (subEl) subEl.textContent = "詳細分析";
       if (!id) {
         if (window.ExpectUx) ExpectUx.hideLoading(screen);
         screen.innerHTML =

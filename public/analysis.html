@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Noto+Sans+JP:wght@400;500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="assets/styles.css?v=31" />
+  <link rel="stylesheet" href="assets/styles.css?v=32" />
   <link rel="stylesheet" href="assets/screens.css?v=39" />
   <link rel="stylesheet" href="assets/ux.css?v=18" />
   <link rel="stylesheet" href="assets/vqa.css?v=4" />
@@ -79,18 +79,28 @@
     <div data-expect-nav></div>
   </div>
   <script src="assets/api/mock-gate.js"></script>
-  <script src="assets/api/auth.js"></script>
+  <script src="assets/api/auth.js?v=10"></script>
   <script src="assets/api/contract-guard.js"></script>
   <script src="assets/api/http-cache.js?v=1"></script>
   <script src="assets/api/prediction.js?v=16"></script>
-  <script src="assets/api/analysis-bind.js?v=31"></script>
+  <script src="assets/api/analysis.js?v=10"></script>
+  <script src="assets/api/analysis-bind.js?v=33"></script>
+  <script src="assets/api/ui-features.js?v=16"></script>
+  <script src="assets/api/ui-test-race.js?v=5"></script>
   <script src="assets/ux.js?v=15"></script>
-  <script src="assets/favorites.js?v=7"></script>
+  <script src="assets/favorites.js?v=10"></script>
+  <script src="assets/api/user.js?v=8"></script>
+  <script src="assets/api/challenge-lifecycle.js?v=3"></script>
+  <script src="assets/api/challenge-notifications.js?v=1"></script>
   <script src="assets/shell.js?v=5"></script>
-  <script src="assets/reminders.js"></script>
+  <script src="assets/reminders.js?v=5"></script>
   <script src="assets/partials-nav.js"></script>
   <script>
     (function () {
+      if (window.ExpectUiTestRace && ExpectUiTestRace.installHooks) {
+        ExpectUiTestRace.installHooks();
+      }
+
       var COLORS = ["#c1a26d", "#7eb8a8", "#d4a574", "#8fa4d4", "#c98989"];
       var PARAM_KEYS =
         (window.ExpectAnalysisBind && ExpectAnalysisBind.KEYS) ||
@@ -130,6 +140,109 @@
         if (!ai) return false;
         return PARAM_KEYS.some(function (k) {
           return ai[k] != null && isFinite(Number(ai[k]));
+        });
+      }
+
+      function applyAiToItem(item, ai, bundle, analysis) {
+        if (!ai || !hasRealAi(ai)) return false;
+        item.ai = {
+          overall: ai.overall != null ? ai.overall : null,
+          history: ai.history != null ? ai.history : null,
+          distance: ai.distance != null ? ai.distance : null,
+          style_fit: ai.style_fit != null ? ai.style_fit : null,
+          front: ai.front != null ? ai.front : null,
+          pace_resilience:
+            ai.pace_resilience != null ? ai.pace_resilience : null,
+        };
+        item.ready = true;
+        var info =
+          (bundle && bundle.race_info) ||
+          (analysis && analysis.race_info) ||
+          null;
+        if (info) {
+          var raceNo =
+            info.race_no != null ? info.race_no : info.race_number;
+          var venueRaw = String(info.venue || "").trim();
+          var venueOk =
+            venueRaw &&
+            venueRaw.toLowerCase() !== "unknown" &&
+            venueRaw !== "不明"
+              ? venueRaw
+              : "";
+          item.place =
+            info.race_label ||
+            (venueOk
+              ? venueOk + (raceNo != null ? " " + raceNo + "R" : "")
+              : "") ||
+            item.place;
+          item.name =
+            info.race_name || info.class_label || item.name || "";
+          item.badge = info.grade || item.badge || "";
+        }
+        return true;
+      }
+
+      function resolveFavoriteAi(item) {
+        if (!window.ExpectApi || !ExpectApi.Prediction || !ExpectApi.Prediction.get) {
+          return Promise.resolve();
+        }
+        return ExpectApi.Prediction.get(item.id)
+          .then(function (bundle) {
+            var pbOk = !bundle || !bundle.__contract || bundle.__contract.ok;
+            if (!bundle || !pbOk) bundle = null;
+            if (bundle && window.ExpectFavorites && ExpectFavorites.cacheBundle) {
+              ExpectFavorites.cacheBundle(bundle);
+            }
+            var ai =
+              bundle &&
+              window.ExpectAnalysisBind &&
+              ExpectAnalysisBind.toAiParams
+                ? ExpectAnalysisBind.toAiParams(bundle, null)
+                : null;
+            if (applyAiToItem(item, ai, bundle, null)) return;
+
+            // Same canonical path as Race detail: Analysis.get when PB charts missing
+            if (!(ExpectApi.Analysis && ExpectApi.Analysis.get)) return;
+            return ExpectApi.Analysis.get(item.id).then(function (analysis) {
+              if (!analysis) return;
+              var ai2 =
+                window.ExpectAnalysisBind && ExpectAnalysisBind.toAiParams
+                  ? ExpectAnalysisBind.toAiParams(bundle, analysis)
+                  : null;
+              if (!ai2 && analysis.charts && ExpectAnalysisBind.chartMap) {
+                var mapped = ExpectAnalysisBind.chartMap(analysis);
+                ai2 = {
+                  overall: mapped.overall,
+                  history: mapped.history,
+                  distance: mapped.distance,
+                  style_fit: mapped.style_fit,
+                  front: mapped.front,
+                  pace_resilience: mapped.pace_resilience,
+                };
+              }
+              applyAiToItem(item, ai2, bundle, analysis);
+            });
+          })
+          .catch(function () {
+            /* keep pending — never invent 0% */
+          });
+      }
+
+      function enrichFromPrediction(rows) {
+        if (!rows.length) {
+          paint(rows);
+          finishLoading();
+          return;
+        }
+        if (!window.ExpectApi || !ExpectApi.Prediction || !ExpectApi.Prediction.get) {
+          paint(rows);
+          finishLoading();
+          return;
+        }
+
+        Promise.all(rows.map(resolveFavoriteAi)).then(function () {
+          paint(rows);
+          finishLoading();
         });
       }
 
@@ -362,66 +475,6 @@
             ai: emptyAi(),
             ready: false,
           };
-        });
-      }
-
-      function enrichFromPrediction(rows) {
-        if (!rows.length) {
-          paint(rows);
-          finishLoading();
-          return;
-        }
-        if (!window.ExpectApi || !ExpectApi.Prediction || !ExpectApi.Prediction.get) {
-          paint(rows);
-          finishLoading();
-          return;
-        }
-
-        Promise.all(
-          rows.map(function (item) {
-            return ExpectApi.Prediction.get(item.id)
-              .then(function (bundle) {
-                var pbOk = !bundle || !bundle.__contract || bundle.__contract.ok;
-                if (!bundle || !pbOk) return;
-                if (window.ExpectFavorites && ExpectFavorites.cacheBundle) {
-                  ExpectFavorites.cacheBundle(bundle);
-                }
-                var ai =
-                  window.ExpectAnalysisBind && ExpectAnalysisBind.toAiParams
-                    ? ExpectAnalysisBind.toAiParams(bundle, null)
-                    : null;
-                if (!ai || !hasRealAi(ai)) return;
-                item.ai = {
-                  overall: ai.overall != null ? ai.overall : null,
-                  history: ai.history != null ? ai.history : null,
-                  distance: ai.distance != null ? ai.distance : null,
-                  style_fit: ai.style_fit != null ? ai.style_fit : null,
-                  front: ai.front != null ? ai.front : null,
-                  pace_resilience:
-                    ai.pace_resilience != null ? ai.pace_resilience : null,
-                };
-                item.ready = true;
-                if (bundle.race_info) {
-                  var info = bundle.race_info;
-                  var raceNo =
-                    info.race_no != null ? info.race_no : info.race_number;
-                  item.place =
-                    info.race_label ||
-                    (info.venue || "") +
-                      (raceNo != null ? " " + raceNo + "R" : "") ||
-                    item.place;
-                  item.name =
-                    info.race_name || info.class_label || item.name || "";
-                  item.badge = info.grade || item.badge || "";
-                }
-              })
-              .catch(function () {
-                /* keep pending — no mock 70% */
-              });
-          })
-        ).then(function () {
-          paint(rows);
-          finishLoading();
         });
       }
 

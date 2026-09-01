@@ -7,8 +7,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Noto+Sans+JP:wght@400;500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="assets/styles.css?v=31" />
-  <link rel="stylesheet" href="assets/screens.css?v=55" />
+  <link rel="stylesheet" href="assets/styles.css?v=32" />
+  <link rel="stylesheet" href="assets/screens.css?v=58" />
   <link rel="stylesheet" href="assets/ux.css?v=20" />
   <link rel="stylesheet" href="assets/vqa.css" />
   <link rel="stylesheet" href="assets/v11.css?v=11" />
@@ -109,8 +109,32 @@
         <div id="reasonsSectionBody"></div>
       </section>
 
-      <div class="fab-bet">
-        <a id="strategyLink" href="strategy.html">買い目戦略を詳しく見る</a>
+      <div class="fab-bet race-detail-cta-stack" id="raceDetailCtaStack">
+        <a
+          id="strategyLink"
+          class="race-detail-cta race-detail-cta--buy"
+          href="strategy.html"
+        >
+          <span class="race-detail-cta-icon" aria-hidden="true" id="strategyCtaIcon"></span>
+          <span class="race-detail-cta-copy">
+            <span class="race-detail-cta-title">買い目攻略を詳しく見る</span>
+            <span class="race-detail-cta-sub">AIの買い目攻略・推奨の組み合わせを確認</span>
+          </span>
+          <span class="race-detail-cta-chevron" aria-hidden="true">›</span>
+        </a>
+        <a
+          id="challengePurchaseLink"
+          class="race-detail-cta race-detail-cta--challenge"
+          href="strategy.html"
+          hidden
+        >
+          <span class="race-detail-cta-icon" aria-hidden="true" id="challengeCtaIcon"></span>
+          <span class="race-detail-cta-copy">
+            <span class="race-detail-cta-title">Challengeに参加する</span>
+            <span class="race-detail-cta-sub">自分の買い目で挑戦・購入する</span>
+          </span>
+          <span class="race-detail-cta-chevron" aria-hidden="true">›</span>
+        </a>
       </div>
       </div>
 
@@ -141,29 +165,33 @@
   </div>
   <script src="assets/api/mock-gate.js"></script>
   <script src="assets/api/race-id-meta.js?v=2"></script>
-  <script src="assets/api/auth.js"></script>
+  <script src="assets/api/auth.js?v=10"></script>
   <script src="assets/api/contract-guard.js"></script>
   <script src="assets/api/http-cache.js?v=1"></script>
   <script src="assets/api/race.js?v=16"></script>
   <script src="assets/api/catalog-identity.js?v=2"></script>
   <script src="assets/api/prediction.js?v=16"></script>
   <script src="assets/api/explain-ux.js?v=3"></script>
-  <script src="assets/api/prediction-bind.js?v=59"></script>
+  <script src="assets/api/prediction-bind.js?v=62"></script>
   <script src="assets/api/single-detail.js?v=2"></script>
   <script src="assets/api/race-prefetch.js?v=1"></script>
   <script src="assets/api/race-board.js?v=10"></script>
   <script src="assets/api/race-history.js?v=1"></script>
   <script src="assets/api/race-detail-tabs.js?v=19"></script>
   <script src="assets/api/analysis.js?v=10"></script>
-  <script src="assets/api/analysis-bind.js?v=31"></script>
+  <script src="assets/api/analysis-bind.js?v=33"></script>
   <script src="assets/ux.js?v=20"></script>
   <script src="assets/api/conversation.js?v=6"></script>
   <script src="assets/api/conversation-ui.js?v=7"></script>
-  <script src="assets/api/ui-features.js?v=12"></script>
+  <script src="assets/api/ui-features.js?v=16"></script>
+  <script src="assets/api/ui-test-race.js?v=5"></script>
   <script src="assets/v11.js?v=11"></script>
-  <script src="assets/favorites.js?v=4"></script>
+  <script src="assets/favorites.js?v=10"></script>
+  <script src="assets/api/user.js?v=8"></script>
+  <script src="assets/api/challenge-lifecycle.js?v=3"></script>
+  <script src="assets/api/challenge-notifications.js?v=1"></script>
   <script src="assets/shell.js?v=5"></script>
-  <script src="assets/reminders.js?v=2"></script>
+  <script src="assets/reminders.js?v=5"></script>
   <script src="assets/partials-nav.js"></script>
   <script>
     ExpectShell.initMascotTalk([
@@ -209,6 +237,13 @@
     if (raceIdYearFixed) {
       location.replace("race?race_id=" + encodeURIComponent(raceIdYearFixed));
     } else {
+
+    if (window.ExpectUiTestRace && ExpectUiTestRace.installHooks) {
+      ExpectUiTestRace.installHooks();
+    }
+    if (window.ExpectUiTestRace && ExpectUiTestRace.applyDetailHeader) {
+      ExpectUiTestRace.applyDetailHeader(id);
+    }
 
     if (window.ExpectConversationUi) ExpectConversationUi.mountRaceCtas(id);
     if (window.ExpectRaceDetailTabs) ExpectRaceDetailTabs.bind(id);
@@ -342,7 +377,39 @@
     }
     var strategyLink = document.getElementById("strategyLink");
     if (strategyLink) {
-      strategyLink.href = "strategy.html?race_id=" + encodeURIComponent(id);
+      strategyLink.href =
+        window.ExpectUiTestRace && ExpectUiTestRace.buyStrategyHref
+          ? ExpectUiTestRace.buyStrategyHref(id)
+          : "strategy.html?race_id=" + encodeURIComponent(id);
+    }
+    var strategyIcon = document.getElementById("strategyCtaIcon");
+    if (
+      strategyIcon &&
+      window.ExpectUiTestRace &&
+      ExpectUiTestRace.ANALYSIS_ICON_SVG
+    ) {
+      strategyIcon.innerHTML = ExpectUiTestRace.ANALYSIS_ICON_SVG;
+    } else if (strategyIcon) {
+      strategyIcon.innerHTML =
+        '<svg class="nav-ico race-detail-cta-ico" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 19h16M7 16V9M12 16V5M17 16v-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>';
+    }
+    var challengeLink = document.getElementById("challengePurchaseLink");
+    var challengeIcon = document.getElementById("challengeCtaIcon");
+    if (challengeLink) {
+      var showChallenge =
+        window.ExpectUiTestRace &&
+        ExpectUiTestRace.showChallengeCtaForRace &&
+        ExpectUiTestRace.showChallengeCtaForRace(id);
+      if (showChallenge) {
+        challengeLink.hidden = false;
+        challengeLink.href = ExpectUiTestRace.challengePurchaseHref(id);
+        if (challengeIcon && ExpectUiTestRace.CHALLENGE_ICON_SVG) {
+          challengeIcon.innerHTML = ExpectUiTestRace.CHALLENGE_ICON_SVG;
+        }
+      } else {
+        challengeLink.hidden = true;
+        challengeLink.removeAttribute("href");
+      }
     }
 
     /* PB / Board / History は並列。全画面オーバーレイは出さず Skeleton → Progressive */
@@ -779,7 +846,36 @@
         window.addEventListener("pagehide", clearPendingRetry);
       } catch (e) { /* ignore */ }
 
-      startDetail();
+      function bootDetail() {
+        if (window.ExpectUiTestRace && ExpectUiTestRace.installHooks) {
+          ExpectUiTestRace.installHooks();
+        }
+        if (window.ExpectUiTestRace && ExpectUiTestRace.applyDetailHeader) {
+          ExpectUiTestRace.applyDetailHeader(id);
+        }
+        var challengeLinkReady = document.getElementById("challengePurchaseLink");
+        if (challengeLinkReady && window.ExpectUiTestRace) {
+          if (ExpectUiTestRace.showChallengeCtaForRace(id)) {
+            challengeLinkReady.hidden = false;
+            challengeLinkReady.href = ExpectUiTestRace.challengePurchaseHref(id);
+            var cico = document.getElementById("challengeCtaIcon");
+            if (cico && ExpectUiTestRace.CHALLENGE_ICON_SVG) {
+              cico.innerHTML = ExpectUiTestRace.CHALLENGE_ICON_SVG;
+            }
+          } else {
+            challengeLinkReady.hidden = true;
+          }
+        }
+        startDetail();
+      }
+
+      if (window.ExpectUiFeatures && typeof ExpectUiFeatures.ready === "function") {
+        ExpectUiFeatures.ready(function () {
+          bootDetail();
+        });
+      } else {
+        bootDetail();
+      }
     } else {
       markReady();
       ExpectFavorites.bindButtons();

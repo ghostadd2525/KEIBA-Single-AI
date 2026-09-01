@@ -199,7 +199,16 @@
 
   function aiFromBundle(b) {
     if (global.ExpectAnalysisBind && typeof ExpectAnalysisBind.toAiParams === "function") {
-      return ExpectAnalysisBind.toAiParams(b, null);
+      var mapped = ExpectAnalysisBind.toAiParams(b, null);
+      if (mapped) return mapped;
+      return {
+        overall: null,
+        history: null,
+        distance: null,
+        style_fit: null,
+        front: null,
+        pace_resilience: null,
+      };
     }
     var overall = scoreFromBundle(b);
     if (overall == null) {
@@ -367,14 +376,18 @@
     }
   }
 
-  function write(list) {
+  function write(list, opts) {
+    opts = opts || {};
     var store = storage();
     if (!store) return false;
     try {
       var key = storageKey();
       migrateLegacyFavorites(store, key);
       store.setItem(key, JSON.stringify(list));
-      scheduleServerSync();
+      // intent 同期は add/remove が enqueue。importFromServer 等は schedule しない。
+      if (opts.scheduleSync !== false && !_suppressSyncSchedule) {
+        scheduleServerSync();
+      }
       return true;
     } catch (e) {
       return false;
@@ -384,6 +397,12 @@
   /** ログイン切替後に UI を当該ユーザーの枠へ載せ替える */
   function bindToCurrentUser(opts) {
     opts = opts || {};
+    // 別ユーザー枠へ載せる前に、未送信 intent を破棄（誤適用防止）
+    _pendingOps = [];
+    if (_syncTimer) {
+      clearTimeout(_syncTimer);
+      _syncTimer = null;
+    }
     var store = storage();
     if (store) migrateLegacyFavorites(store, storageKey());
     if (opts.clearGuest) {
@@ -401,20 +420,24 @@
 
   var _syncTimer = null;
   var _syncing = false;
+  var _pendingOps = [];
+  var _suppressSyncSchedule = false;
 
-  /** サーバー同期用 DTO（expect-favorites/1.0） */
+  function itemToSyncDto(item) {
+    return {
+      race_id: item.id,
+      place: item.place || null,
+      name: item.name || null,
+      badge: item.badge || null,
+      post_time: item.postTime || null,
+      date_label: item.dateLabel || null,
+      added_at: item.addedAt || Date.now(),
+    };
+  }
+
+  /** サーバー同期用 DTO（expect-favorites/1.0）— 表示・login payload 用。PUT 本体には使わない */
   function exportForSync() {
-    var items = list().map(function (item) {
-      return {
-        race_id: item.id,
-        place: item.place || null,
-        name: item.name || null,
-        badge: item.badge || null,
-        post_time: item.postTime || null,
-        date_label: item.dateLabel || null,
-        added_at: item.addedAt || Date.now(),
-      };
-    });
+    var items = list().map(itemToSyncDto);
     return {
       schema_version: "expect-favorites/1.0",
       race_ids: items.map(function (x) {
@@ -423,6 +446,11 @@
       items: items,
       synced_at: null,
     };
+  }
+
+  function enqueueOp(op) {
+    if (!op || !op.op || !op.race_id) return;
+    _pendingOps.push(op);
   }
 
   /**
@@ -469,13 +497,18 @@
         .slice(0, MAX);
     }
 
-    var store = storage();
-    if (store) {
-      try {
-        var key = storageKey();
-        migrateLegacyFavorites(store, key);
-        store.setItem(key, JSON.stringify(next));
-      } catch (e) { /* ignore */ }
+    _suppressSyncSchedule = true;
+    try {
+      var store = storage();
+      if (store) {
+        try {
+          var key = storageKey();
+          migrateLegacyFavorites(store, key);
+          store.setItem(key, JSON.stringify(next));
+        } catch (e) { /* ignore */ }
+      }
+    } finally {
+      _suppressSyncSchedule = false;
     }
     global.dispatchEvent(
       new CustomEvent("expect:favorites-changed", { detail: { list: list(), source: "server" } })
@@ -499,33 +532,51 @@
 
   function scheduleServerSync() {
     if (!canSync()) return;
+    if (!_pendingOps.length) return;
     if (_syncTimer) clearTimeout(_syncTimer);
     _syncTimer = setTimeout(function () {
       syncNow({ reason: "local-change" }).catch(function () { /* ignore */ });
     }, 600);
   }
 
-  /** ログイン後・変更後の push / pull */
+  /**
+   * intent ops をサーバー最新へ適用。pending がなければ pull（login）または noop。
+   * フルリスト PUT は行わない（stale overwrite 防止）。
+   */
   function syncNow(opts) {
     opts = opts || {};
     if (!canSync()) return Promise.resolve({ ok: false, reason: "guest" });
     if (_syncing) return Promise.resolve({ ok: false, reason: "busy" });
-    _syncing = true;
 
-    var push = ExpectApi.Auth.putFavorites(exportForSync())
+    if (!_pendingOps.length) {
+      if (opts.reason === "login" || opts.pullIfEmpty) {
+        return pullFromServer().then(function (r) {
+          return Object.assign({ reason: opts.reason || "pull" }, r);
+        });
+      }
+      return Promise.resolve({ ok: true, reason: "noop", favorites: exportForSync() });
+    }
+
+    _syncing = true;
+    var batch = _pendingOps.slice();
+    _pendingOps = [];
+
+    var body = batch.length === 1 ? batch[0] : { ops: batch };
+
+    return ExpectApi.Auth.putFavorites(body)
       .then(function (fav) {
         if (fav) importFromServer(fav, { merge: false });
-        return { ok: true, favorites: fav, reason: opts.reason || "sync" };
+        return { ok: true, favorites: fav, reason: opts.reason || "sync", ops: batch };
       })
       .catch(function (err) {
+        // 失敗時は未送信 ops を先頭に戻す
+        _pendingOps = batch.concat(_pendingOps);
         return { ok: false, error: err };
       })
       .then(function (result) {
         _syncing = false;
         return result;
       });
-
-    return push;
   }
 
   function pullFromServer() {
@@ -640,6 +691,8 @@
       });
       items.shift();
     }
+    // 明示 ADD のみ送信。ローカル eviction を REMOVE として送ると stale が他端末の race を消す。
+    enqueueOp({ op: "add", race_id: id, item: itemToSyncDto(entry) });
     write(items);
     return { ok: true, added: true, list: list(), evicted: evicted };
   }
@@ -648,6 +701,7 @@
     var next = read().filter(function (item) {
       return item.id !== id;
     });
+    enqueueOp({ op: "remove", race_id: id });
     write(next);
     return { ok: true, added: false, list: list() };
   }
@@ -1046,6 +1100,9 @@
     syncNow: syncNow,
     pullFromServer: pullFromServer,
     canSync: canSync,
+    pendingOps: function () {
+      return _pendingOps.slice();
+    },
     bindToCurrentUser: bindToCurrentUser,
     storageKey: storageKey,
     cacheBundles: cacheBundles,
