@@ -96,11 +96,6 @@
         <div id="inviteList" class="invite-list"></div>
       </section>
 
-      <section class="chart-card" id="supplyPanel">
-        <h3>Data Supply / Coverage</h3>
-        <div id="supplyPanelBody"><p class="muted">読み込み中…</p></div>
-      </section>
-
     </div>
 
     <aside class="mascot-ka0ba" id="mascotKa0ba" data-mascot-mode="png">
@@ -410,53 +405,6 @@
           revealAdmin();
         }
       });
-
-      (function () {
-        var el = document.getElementById("supplyPanelBody");
-        if (!el || !ExpectApi.Supply) return;
-        Promise.all([
-          ExpectApi.Supply.coverage().catch(function () {
-            return null;
-          }),
-          ExpectApi.Supply.diagnosticsMissing().catch(function () {
-            return null;
-          }),
-        ]).then(function (pair) {
-          var cov = pair[0];
-          var diag = pair[1];
-          var html = "";
-          if (!cov && !diag) {
-            el.innerHTML =
-              "<p class=\"muted\">データ供給状況を取得できませんでした（タイムアウトまたは一時障害）。発行機能には影響しません。</p>";
-            return;
-          }
-          if (cov) {
-            var total = Number(cov.race_total) || 0;
-            var real = Number(cov.real_ai) || 0;
-            var rate = total ? Math.round((real / total) * 1000) / 10 : 0;
-            html +=
-              "<p><strong>Coverage</strong> " +
-              rate +
-              "% (" +
-              real +
-              "/" +
-              total +
-              " real_ai)</p>";
-          }
-          if (diag) {
-            var summary =
-              typeof diag.summary === "string"
-                ? diag.summary
-                : diag.summary && typeof diag.summary === "object"
-                  ? JSON.stringify(diag.summary)
-                  : diag.message || diag.status || "";
-            if (summary) {
-              html += "<p><strong>Diagnostics</strong> " + escapeHtml(summary) + "</p>";
-            }
-          }
-          el.innerHTML = html || "<p class='muted'>Supply API 未接続</p>";
-        });
-      })();
 
       (function () {
         var btn = document.getElementById("brightnessBtn");

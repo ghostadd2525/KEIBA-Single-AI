@@ -632,18 +632,17 @@ a.back-btn { color: var(--gold-soft); }
   position: relative;
   display: flex;
   align-items: flex-end;
-  justify-content: flex-end;
-  gap: 12px 16px;
+  justify-content: center;
   padding: 2px 2px 0;
   min-width: 0;
-  min-height: 88px;
+  min-height: 72px;
 }
 
 .dash-time {
-  position: absolute;
-  left: 34%;
-  bottom: 18px;
-  transform: translateX(-50%);
+  position: relative;
+  left: auto;
+  bottom: auto;
+  transform: none;
   margin: 0;
   text-align: center;
   font-family: var(--display);
