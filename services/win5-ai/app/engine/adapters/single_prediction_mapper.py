@@ -46,9 +46,11 @@ def locate_ai_platform_root() -> Path | None:
     """Return platform root that contains ai_platform/, or None."""
     if "ai_platform" in sys.modules:
         mod = sys.modules["ai_platform"]
-        root = Path(getattr(mod, "__file__", "")).resolve().parent.parent
-        if (root / "ai_platform").is_dir():
-            return root
+        file_name = getattr(mod, "__file__", None)
+        if file_name:
+            root = Path(file_name).resolve().parent.parent
+            if (root / "ai_platform").is_dir():
+                return root
     candidates: list[Path] = []
     env_root = (os.environ.get("AI_PLATFORM_ROOT") or "").strip()
     if env_root:
@@ -68,14 +70,21 @@ def locate_ai_platform_root() -> Path | None:
     return None
 
 
-def classify_feature_availability(core_race_id: str) -> str | None:
+def classify_feature_availability(
+    lookup_key: str,
+    *,
+    numeric_race_id: str = "",
+) -> str | None:
     """
-    Core race の特徴量有無を分類（FeatureLoader 経由）。
-    Returns None if loadable; otherwise a fallback_reason code.
+    Feature lookup key で特徴量有無を分類（FeatureLoader 経由）。
+    CoreRaceRef を渡してはならない。
     """
     from ai_platform.core.features import FeatureLoader
 
-    return FeatureLoader().classify_unavailable(str(core_race_id))
+    return FeatureLoader().classify_unavailable(
+        str(lookup_key),
+        numeric_race_id=numeric_race_id,
+    )
 
 
 def _now() -> str:
@@ -500,19 +509,22 @@ def diagnose_inference(
         "engine_source": "mock_fallback",
         "fallback_reason": "unknown",
         "core_race_id": None,
+        "catalog_race_id": None,
+        "numeric_race_id": None,
+        "feature_lookup_key": None,
         "detail": None,
         "bundle": None,
     }
-    if locate_ai_platform_root() is None:
-        out["fallback_reason"] = "platform_missing"
-        out["detail"] = "ai_platform not found on sys.path / AI_PLATFORM_ROOT"
-        return out
-
     try:
         identity = resolve_identity(public_race_id, race_meta=race_meta)
         core_id = identity.core_race_id if identity else None
+        lookup_key = identity.feature_lookup_key if identity else None
+        numeric_id = identity.numeric_race_id if identity else None
         if not core_id:
             core_id = resolve_core_race_id(public_race_id, race_meta)
+        if not lookup_key:
+            # Catalog が無い legacy 入力のみ Core 文字列を Feature key にする。
+            lookup_key = core_id
     except Exception as exc:
         out["fallback_reason"] = "exception"
         out["detail"] = f"resolve_core_race_id: {exc}"
@@ -522,19 +534,35 @@ def diagnose_inference(
         out["fallback_reason"] = "race_not_found"
         out["detail"] = "no resolvable core race_id"
         return out
+    if not lookup_key:
+        out["fallback_reason"] = "race_not_found"
+        out["detail"] = "no resolvable feature_lookup_key"
+        return out
 
     out["core_race_id"] = core_id
-    feat_reason = classify_feature_availability(core_id)
+    out["catalog_race_id"] = identity.catalog_race_id if identity else None
+    out["numeric_race_id"] = numeric_id
+    out["feature_lookup_key"] = lookup_key
+
+    if locate_ai_platform_root() is None:
+        out["fallback_reason"] = "platform_missing"
+        out["detail"] = "ai_platform not found on sys.path / AI_PLATFORM_ROOT"
+        return out
+
+    feat_reason = classify_feature_availability(
+        lookup_key,
+        numeric_race_id=str(numeric_id or ""),
+    )
     if feat_reason:
         out["fallback_reason"] = feat_reason
-        out["detail"] = f"features unavailable for {core_id}"
+        out["detail"] = f"features unavailable for {lookup_key}"
         return out
 
     try:
-        response, fail_reason = run_single_prediction_detailed(core_id)
+        response, fail_reason = run_single_prediction_detailed(lookup_key)
         if not response:
             out["fallback_reason"] = fail_reason or "prediction_failed"
-            out["detail"] = f"get_prediction failed for {core_id}"
+            out["detail"] = f"get_prediction failed for {lookup_key}"
             return out
         bundle = prediction_response_to_bundle(
             response,
