@@ -169,7 +169,7 @@
   <script src="assets/api/contract-guard.js"></script>
   <script src="assets/api/http-cache.js?v=1"></script>
   <script src="assets/api/race.js?v=16"></script>
-  <script src="assets/api/catalog-identity.js?v=2"></script>
+  <script src="assets/api/catalog-identity.js?v=3"></script>
   <script src="assets/api/prediction.js?v=16"></script>
   <script src="assets/api/explain-ux.js?v=3"></script>
   <script src="assets/api/prediction-bind.js?v=62"></script>
@@ -393,17 +393,28 @@
       strategyIcon.innerHTML =
         '<svg class="nav-ico race-detail-cta-ico" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 19h16M7 16V9M12 16V5M17 16v-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>';
     }
-    var challengeLink = document.getElementById("challengePurchaseLink");
-    var challengeIcon = document.getElementById("challengeCtaIcon");
-    if (challengeLink) {
-      var showChallenge =
-        window.ExpectUiTestRace &&
-        ExpectUiTestRace.showChallengeCtaForRace &&
-        ExpectUiTestRace.showChallengeCtaForRace(id);
-      if (showChallenge) {
+    function applyChallengeCta(raceId) {
+      var challengeLink = document.getElementById("challengePurchaseLink");
+      if (!challengeLink) return;
+      var catalog = window.ExpectCatalogIdentity;
+      var href =
+        catalog && typeof catalog.challengePurchaseHref === "function"
+          ? catalog.challengePurchaseHref(raceId)
+          : "";
+      var show =
+        !!href &&
+        catalog &&
+        typeof catalog.showChallengeCtaForRace === "function" &&
+        catalog.showChallengeCtaForRace(raceId);
+      if (show) {
         challengeLink.hidden = false;
-        challengeLink.href = ExpectUiTestRace.challengePurchaseHref(id);
-        if (challengeIcon && ExpectUiTestRace.CHALLENGE_ICON_SVG) {
+        challengeLink.href = href;
+        var challengeIcon = document.getElementById("challengeCtaIcon");
+        if (
+          challengeIcon &&
+          window.ExpectUiTestRace &&
+          ExpectUiTestRace.CHALLENGE_ICON_SVG
+        ) {
           challengeIcon.innerHTML = ExpectUiTestRace.CHALLENGE_ICON_SVG;
         }
       } else {
@@ -411,6 +422,7 @@
         challengeLink.removeAttribute("href");
       }
     }
+    applyChallengeCta(id);
 
     /* PB / Board / History は並列。全画面オーバーレイは出さず Skeleton → Progressive */
     var detailMount = document.querySelector(".screen");
@@ -853,19 +865,7 @@
         if (window.ExpectUiTestRace && ExpectUiTestRace.applyDetailHeader) {
           ExpectUiTestRace.applyDetailHeader(id);
         }
-        var challengeLinkReady = document.getElementById("challengePurchaseLink");
-        if (challengeLinkReady && window.ExpectUiTestRace) {
-          if (ExpectUiTestRace.showChallengeCtaForRace(id)) {
-            challengeLinkReady.hidden = false;
-            challengeLinkReady.href = ExpectUiTestRace.challengePurchaseHref(id);
-            var cico = document.getElementById("challengeCtaIcon");
-            if (cico && ExpectUiTestRace.CHALLENGE_ICON_SVG) {
-              cico.innerHTML = ExpectUiTestRace.CHALLENGE_ICON_SVG;
-            }
-          } else {
-            challengeLinkReady.hidden = true;
-          }
-        }
+        applyChallengeCta(id);
         startDetail();
       }
 
