@@ -6,7 +6,7 @@ import hashlib
 import json
 import os
 import sys
-from dataclasses import asdict, dataclass, field
+from dataclasses import asdict, dataclass, field, fields
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Callable
@@ -80,6 +80,9 @@ class RaceSnapshotEntry:
     fingerprint: str
     features_ok: bool = False
     updated_at: str = ""
+    # True after an actual history fetch attempt (including 0-row empty_maiden).
+    # False/absent: STATIC hold may have skipped fetch; empty CSV is not legal empty.
+    history_ok: bool = False
 
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)
@@ -188,9 +191,12 @@ def load_snapshot(config: RefreshConfig, date: str) -> dict[str, RaceSnapshotEnt
     if not path.is_file():
         return {}
     raw = json.loads(path.read_text(encoding="utf-8"))
+    allowed = {f.name for f in fields(RaceSnapshotEntry)}
     out: dict[str, RaceSnapshotEntry] = {}
     for race_id, item in raw.get("races", {}).items():
-        out[race_id] = RaceSnapshotEntry(**item)
+        out[race_id] = RaceSnapshotEntry(
+            **{k: v for k, v in dict(item).items() if k in allowed}
+        )
     return out
 
 
@@ -270,6 +276,55 @@ def select_races_for_update(
     return to_update, unchanged
 
 
+def race_needs_history_repair(
+    config: RefreshConfig,
+    date: str,
+    race_id: str,
+    snapshot_entry: RaceSnapshotEntry | None,
+) -> bool:
+    """STATIC-hold repair predicate: missing history only, never legal empty_maiden.
+
+    Legal empty (empty_maiden / 過去走0確定) is snapshot.history_ok after a real
+    fetch attempt, even when horse_history_raw.csv has no rows for the race.
+    """
+    if snapshot_entry is not None and bool(snapshot_entry.history_ok):
+        return False
+    from .history_store import csv_has_history_rows
+
+    return not csv_has_history_rows(_history_path(config, date), race_id)
+
+
+def _enqueue_history_repairs(
+    published: list[dict[str, Any]],
+    snapshot: dict[str, RaceSnapshotEntry],
+    to_update: list[dict[str, Any]],
+    unchanged: int,
+    *,
+    config: RefreshConfig,
+    date: str,
+) -> tuple[list[dict[str, Any]], int, int]:
+    """Add STATIC-held races whose history is missing to the existing update list."""
+    selected = {str(race.get("race_id") or "") for race in to_update}
+    scheduled = 0
+    for race in published:
+        race_id = str(race.get("race_id") or "")
+        needs = race_needs_history_repair(config, date, race_id, snapshot.get(race_id))
+        if race_id in selected:
+            race["_history_repair"] = needs
+            if needs:
+                scheduled += 1
+            continue
+        if not needs:
+            continue
+        race["fingerprint"] = compute_entries_fingerprint(race["entries"])
+        race["_history_repair"] = True
+        to_update.append(race)
+        scheduled += 1
+        if unchanged > 0:
+            unchanged -= 1
+    return to_update, unchanged, scheduled
+
+
 def _runners_from_entries(
     race: dict[str, Any],
     date: str,
@@ -340,6 +395,11 @@ def process_race_pipeline(
             f"race_id={race.get('race_id')} date={date}"
         )
         return runners, history_rows, meta
+    if fetch_history is True and is_weekend_jst(date):
+        print(
+            f"[pi-keibanet] race_refresh history repair (STATIC hold missing) "
+            f"race_id={race.get('race_id')} date={date}"
+        )
 
     for row in runners:
         hid = str(row.get("horse_id") or "").strip()
@@ -600,7 +660,17 @@ def run_refresh(
     report.skipped_unpublished = skipped_unpublished
 
     to_update, unchanged = select_races_for_update(published, snapshot)
+    to_update, unchanged, history_repair_count = _enqueue_history_repairs(
+        published,
+        snapshot,
+        to_update,
+        unchanged,
+        config=cfg,
+        date=date,
+    )
     report.skipped_unchanged = unchanged
+    if history_repair_count:
+        log(f"[race-refresh] history_repair scheduled={history_repair_count}")
 
     if not to_update:
         report.finished_at = now_jst().isoformat()
@@ -613,17 +683,30 @@ def run_refresh(
     all_new_history: list[dict[str, Any]] = []
     replace_ids: set[str] = set()
 
+    from .history_store import csv_has_history_rows, is_weekend_jst
+
     for race in to_update:
         race_id = race["race_id"]
         replace_ids.add(race_id)
+        force_history = bool(race.get("_history_repair"))
         try:
-            runners, history_rows, _meta = process_race_pipeline(net_client, race, date)
+            runners, history_rows, _meta = process_race_pipeline(
+                net_client,
+                race,
+                date,
+                fetch_history=True if force_history else None,
+            )
             if not runners:
                 report.error_count += 1
                 report.errors.append(f"{race_id}: empty_runners")
                 continue
             all_new_runners.extend(runners)
             all_new_history.extend(history_rows)
+            prev = snapshot.get(race_id)
+            fetched_history = force_history or (not is_weekend_jst(date))
+            history_ok = fetched_history or bool(prev and prev.history_ok) or csv_has_history_rows(
+                _history_path(cfg, date), race_id
+            )
             snapshot[race_id] = RaceSnapshotEntry(
                 race_id=race_id,
                 numeric_race_id=race["numeric_race_id"],
@@ -632,6 +715,7 @@ def run_refresh(
                 fingerprint=race["fingerprint"],
                 features_ok=False,
                 updated_at=now_jst().isoformat(),
+                history_ok=history_ok,
             )
             report.updated_count += 1
             report.processed_race_ids.append(race_id)
@@ -757,6 +841,7 @@ __all__ = [
     "load_snapshot",
     "merge_daily_features",
     "merge_day_frames",
+    "race_needs_history_repair",
     "run_refresh",
     "select_races_for_update",
     "write_daily_features",
