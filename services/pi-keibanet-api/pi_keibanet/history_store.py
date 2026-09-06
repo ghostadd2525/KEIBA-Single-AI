@@ -42,6 +42,23 @@ def _refresh_paths(date: str) -> tuple[Path, Path]:
     return _history_path(cfg, date), _runners_path(cfg, date)
 
 
+def csv_has_history_rows(history_path: Path, race_id: str) -> bool:
+    """True iff horse_history_raw.csv already has at least one data row for race_id.
+
+    Header-only CSV and runners-only presence are not history. Legal empty
+    (empty_maiden) is decided by snapshot history_ok after a real fetch attempt,
+    not by this helper.
+    """
+    if not history_path.is_file():
+        return False
+    rid = str(race_id).strip()
+    with history_path.open("r", encoding="utf-8-sig", newline="") as fh:
+        for row in csv.DictReader(fh):
+            if str(row.get("race_id") or "").strip() == rid:
+                return True
+    return False
+
+
 class HistoryStore(ABC):
     """Near-run history rows in horse_history_raw shape."""
 
@@ -64,6 +81,10 @@ class CsvHistoryStore(HistoryStore):
     def day_csv_exists(self, date: str) -> bool:
         hist, _ = _refresh_paths(date)
         return hist.is_file()
+
+    def has_history_rows(self, race_id: str, date: str) -> bool:
+        hist, _ = _refresh_paths(date)
+        return csv_has_history_rows(hist, race_id)
 
     def race_known_in_day(self, race_id: str, date: str) -> bool:
         """refresh が当該 race を扱ったか（history または runners）。"""
