@@ -189,6 +189,36 @@
     return /^\d{4}-\d{2}-\d{2}-\d{2}-\d{2}$/.test(String(raceId || "").trim());
   }
 
+  /**
+   * Race Detail「Challengeに参加する」表示。
+   * UI_TEST_ENABLED ≠ PRODUCTION_CHALLENGE_ENABLED
+   * — 実レースは catalog-valid race_id のみ。enable_ui_test_race に依存しない。
+   * — UI-test race は既存 fixture 制御のまま（enabled && isUiTestRaceId）。
+   * auth / OPS / prediction READY / 参加済みは購入フロー側の既存 gate に委ねる。
+   */
+  function isUiTestChallengeCtaAllowed(raceId) {
+    var ui = global.ExpectUiTestRace;
+    if (!ui) return false;
+    if (typeof ui.isUiTestRaceId === "function" && !ui.isUiTestRaceId(raceId)) {
+      return false;
+    }
+    if (typeof ui.enabled === "function") return !!ui.enabled();
+    return false;
+  }
+
+  function showChallengeCtaForRace(raceId) {
+    var id = String(raceId || "").trim();
+    if (!id) return false;
+    if (isCanonicalRaceId(id)) return true;
+    return isUiTestChallengeCtaAllowed(id);
+  }
+
+  function challengePurchaseHref(raceId) {
+    var id = String(raceId || "").trim();
+    if (!showChallengeCtaForRace(id)) return "";
+    return "challenge-purchase.html?race_id=" + encodeURIComponent(id);
+  }
+
   function isTestOrFixtureRaceId(raceId) {
     var id = String(raceId || "");
     if (!id) return true;
@@ -303,6 +333,8 @@
     venueRaceHeading: venueRaceHeading,
     formalRaceName: formalRaceName,
     isCanonicalRaceId: isCanonicalRaceId,
+    showChallengeCtaForRace: showChallengeCtaForRace,
+    challengePurchaseHref: challengePurchaseHref,
     isTestOrFixtureRaceId: isTestOrFixtureRaceId,
     raceDateFromCard: raceDateFromCard,
     filterRaceCardsForProduction: filterRaceCardsForProduction,
