@@ -14,6 +14,7 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any, Callable
 
+from ..http_budget import BudgetDenied
 from ..netkeiba.client import NetkeibaClient, NetkeibaFetchError
 from ..netkeiba.horse_history import build_history_rows, fetch_horse_history
 from ..w2_haron.p1_lock import p1_allows_w2, read_p1_lock
@@ -87,6 +88,8 @@ class AcquireReport:
     yielded_w4: bool = False
     stopped_block: bool = False
     stopped_budget: bool = False
+    stopped_global_budget: bool = False
+    global_budget_reason: str = ""
     stopped_runtime: bool = False
     stopped_consecutive: bool = False
     stop_reason: str | None = None
@@ -133,6 +136,8 @@ class AcquireReport:
             self.stop_reason = "yielded_w4"
         elif self.stopped_block:
             self.stop_reason = "blocked_source_health"
+        elif self.stopped_global_budget:
+            self.stop_reason = "global_http_budget"
         elif self.stopped_runtime:
             self.stop_reason = "max_runtime"
         elif self.stopped_consecutive:
@@ -392,7 +397,7 @@ def run_w5_acquire(
         report.finalize_stop_reason()
         return report
 
-    net = client or NetkeibaClient(min_interval_sec=cfg.min_interval_sec)
+    net = client or NetkeibaClient(min_interval_sec=cfg.min_interval_sec, component="w5")
     consecutive = 0
     t0 = time.monotonic()
 
@@ -453,6 +458,12 @@ def run_w5_acquire(
                 save_health(health_path, health)
                 report.source_health_state = health.state
                 consecutive = 0
+            except BudgetDenied as exc:
+                report.stopped_global_budget = True
+                report.global_budget_reason = exc.reason
+                report.errors.append(f"global_budget_denied:{exc.reason}")
+                log(f"[w5] global budget denied reason={exc.reason}")
+                break
             except NetkeibaFetchError as exc:
                 report.http_request_count += 1
                 status = _extract_http_status(exc)

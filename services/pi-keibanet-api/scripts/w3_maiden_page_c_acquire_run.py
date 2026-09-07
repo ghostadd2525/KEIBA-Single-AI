@@ -52,6 +52,7 @@ def main() -> int:
     parser.add_argument("--max-runtime-sec", type=float, default=None)
     args = parser.parse_args()
 
+    os.environ.setdefault("GLOBAL_HTTP_BUDGET_COMPONENT", "w3c")
     cfg = W3AConfig.from_env(data_root=Path(args.data_root) if args.data_root else None)
     if args.w3_root:
         cfg.w3_root = Path(args.w3_root)
@@ -89,6 +90,8 @@ def main() -> int:
         c4_busy=_unit_busy(c4_unit),
     )
     print(json.dumps(report.to_dict(), ensure_ascii=False, indent=2))
+    if report.stopped_global_budget:
+        return 5
     if report.stopped_block:
         return 2
     if report.paused_p1 or report.yielded_w2 or report.yielded_c4:

@@ -18,7 +18,8 @@ def debug_dir() -> Path | None:
 
 
 def log_fetch(*, url: str, html: str, label: str) -> None:
-    print(f"[pi-keibanet] fetch {label}: {url} (bytes={len(html.encode('utf-8', errors='replace'))})")
+    public = url.split("?", 1)[0]
+    print(f"[pi-keibanet] fetch {label}: {public} (bytes={len(html.encode('utf-8', errors='replace'))})")
     out = debug_dir()
     if out is None:
         return
