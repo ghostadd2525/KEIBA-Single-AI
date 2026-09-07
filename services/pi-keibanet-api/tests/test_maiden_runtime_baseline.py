@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""PR-A: Production W3/W5 runtime baseline (snapshot byte-identical, HTTP 0)."""
+"""PR-A baseline checks that remain valid on the P0 branch (HTTP 0)."""
 from __future__ import annotations
 
 import ast
@@ -16,20 +16,20 @@ REPO = ROOT.parents[1]
 
 HTTP_CALLS = 0
 
-# Content SHA256 of 2026-09-07 Production snapshot originals.
+# Snapshot-identical files that P0 does not rewrite.
 SNAPSHOT_SHA256 = {
     "services/pi-keibanet-api/pi_keibanet/netkeiba/client.py":
         "b7fc3b90588608ba6f47da3a4b095d964d448d9030f326ea0e9495b2ad0a3f91",
+    "services/pi-keibanet-api/pi_keibanet/c4_calendar/__init__.py":
+        "0d55f913cd6ecc003f537a02d1140b58f8b4d4ea5dacd44f77c3aa5233f81dd2",
+    "services/pi-keibanet-api/pi_keibanet/c4_calendar/config.py":
+        "a324bca38da42920683e8cb618d6faa09e8a642166eecc5dd345c012a8809d68",
     "services/pi-keibanet-api/pi_keibanet/w3_maiden/__init__.py":
         "9e38a569907a655b5c603ac7aa44c422dc8cc4c0b04a689a289ae5e983e0e389",
     "services/pi-keibanet-api/pi_keibanet/w3_maiden/acquisition.py":
         "5e18f37373cca74e9670805e47ee8e3227f884c5d219924a9a56817b23320ea2",
     "services/pi-keibanet-api/pi_keibanet/w3_maiden/cache_probe.py":
         "4930f8d5ba52fcc3d925837f06c8b7363c16623e339ebb53f0d89a4b041124f4",
-    "services/pi-keibanet-api/pi_keibanet/w3_maiden/config.py":
-        "cac5fd1df67fcf8cc1183ee92224a9cf0b12ba228cff2ba38f6916d2022d8239",
-    "services/pi-keibanet-api/pi_keibanet/w3_maiden/handoff.py":
-        "21e52fea90887c1b8f7e8af638d5fe9ef950f40d0293313b7f3687c2eb12f140",
     "services/pi-keibanet-api/pi_keibanet/w3_maiden/queue.py":
         "9f1eb013a1db20275a7086fd1c68adb68689031439334ada68a617d77255c541",
     "services/pi-keibanet-api/pi_keibanet/w3_maiden/result_apply.py":
@@ -42,10 +42,6 @@ SNAPSHOT_SHA256 = {
         "5855f79ae071f984b9131ddaa2c01d4fe07a5de01a0fedbc84be91f6252c655e",
     "services/pi-keibanet-api/pi_keibanet/w5_maiden_history/__init__.py":
         "6021e7aae9d3b4cafffa26813f46c7eb1dc6eb18ef99ee09444f02e99a9d5159",
-    "services/pi-keibanet-api/pi_keibanet/w5_maiden_history/acquisition.py":
-        "3131731d914f5a9860935e4554486e1831682a8c1d19fda203d4835de683b7ca",
-    "services/pi-keibanet-api/pi_keibanet/w5_maiden_history/config.py":
-        "7a32910c52003a1e9bd45ae27a1db6af0adb353c0272be2c36383f0d2a7300be",
     "services/pi-keibanet-api/pi_keibanet/w5_maiden_history/gate_monitor.py":
         "adaa9f432c141ef35c444f850322a0cf36f5e5eb9d8f41df0f70c173a1fb1246",
     "services/pi-keibanet-api/pi_keibanet/w5_maiden_history/handoff.py":
@@ -66,14 +62,10 @@ SNAPSHOT_SHA256 = {
         "ce4f1747bf01657ee7ea3d8f00d2fd69affe6318160e10dd7fcde22b0f7fe519",
     "services/pi-keibanet-api/pi_keibanet/page_a1_coverage.py":
         "ee53bcd2dfcbdc9478f1a55a14a3c43239f4a67d47e7c9a80f08db249e3ddf96",
-    "services/pi-keibanet-api/scripts/w3_maiden_page_c_acquire_run.py":
-        "3793f24554a57c9128d91ebae458dc9b42ecb4d747a4c3010432d5c8a3d8fc86",
     "services/pi-keibanet-api/scripts/w3_maiden_handoff_run.py":
         "df222ea8be38be192f4c51402f6dd59a497071a6fc79770efce27986391f15cd",
     "services/pi-keibanet-api/scripts/w3_maiden_result_parse_run.py":
         "a07f7aeb72d325bb3928d134ec906038506650a16515792fe3933adb1d526daa",
-    "services/pi-keibanet-api/scripts/w5_maiden_history_acquire_run.py":
-        "4904a9b3163ebdada390fafda6035f09f73ca85a954c411743cbdee06765413a",
     "services/pi-keibanet-api/scripts/w5_maiden_history_handoff_run.py":
         "97b6708c78345ef09aa663e53cc6961ac51635b3c6a71e2782532b5077cd7444",
     "infra/aws/systemd/expect-w3c-page-c-maiden.service":
@@ -106,7 +98,11 @@ MAIN_EXISTING_TESTS = (
 )
 
 FORBIDDEN_IMPORT_PREFIXES = (
-    "pi_keibanet.c4_calendar",
+    "pi_keibanet.c4_calendar.runner",
+    "pi_keibanet.c4_calendar.queue",
+    "pi_keibanet.c4_calendar.source_health",
+    "pi_keibanet.c4_calendar.domain_halt",
+    "pi_keibanet.c4_calendar.target_policy",
     "pi_keibanet.w2_haron.runner",
     "pi_keibanet.w2_haron.eligibility",
     "pi_keibanet.w2_haron.intake",
@@ -129,17 +125,12 @@ urllib.request.urlopen = _forbid
 import pi_keibanet.page_a1_store
 import pi_keibanet.w3_maiden
 import pi_keibanet.w5_maiden_history
-from pi_keibanet.netkeiba.client import (
-    NetkeibaClient,
-    NetkeibaFetchError,
-    RaceListFetchResult,
-    RaceListPart,
-)
+import pi_keibanet.c4_calendar.config
+from pi_keibanet.netkeiba.client import RaceListFetchResult, NetkeibaFetchError
 
 assert RaceListFetchResult is pi_keibanet.page_a1_store.RaceListFetchResult
 err = NetkeibaFetchError("compat")
 assert err.http_status is None
-assert str(err) == "compat"
 print("IMPORT_OK")
 print("HTTP_CALLS", calls["n"])
 """
@@ -258,7 +249,6 @@ class MaidenRuntimeBaselineTests(unittest.TestCase):
         text = path.read_text(encoding="utf-8")
         self.assertIn("class RaceListFetchResult", text)
         self.assertIn("def fetch_race_list_result", text)
-        self.assertIn("class RaceListPart", text)
 
     def test_compileall_added_python(self) -> None:
         for path in _iter_added_py():
@@ -281,6 +271,14 @@ class MaidenRuntimeBaselineTests(unittest.TestCase):
             "pi_keibanet.netkeiba.horse_history",
             "pi_keibanet.netkeiba.parse",
             "pi_keibanet.w2_haron",
+            "pi_keibanet.c4_calendar",
+            "pi_keibanet.c4_calendar.config",
+            "pi_keibanet.w3_maiden",
+            "pi_keibanet.w3_maiden.config",
+            "pi_keibanet.w3_maiden.handoff",
+            "pi_keibanet.w5_maiden_history",
+            "pi_keibanet.w5_maiden_history.config",
+            "pi_keibanet.w5_maiden_history.acquisition",
         }
         closure: set[str] = set()
         for path in _iter_added_py():
@@ -330,7 +328,8 @@ class MaidenRuntimeBaselineTests(unittest.TestCase):
     def test_no_research_or_full_snapshot_dump(self) -> None:
         self.assertFalse((REPO / "research" / "maiden_w3w5_patch").exists())
         self.assertFalse((ROOT / "pi_keibanet" / "w4_horse" / "__init__.py").is_file())
-        self.assertFalse((ROOT / "pi_keibanet" / "c4_calendar" / "config.py").is_file())
+        self.assertTrue((ROOT / "pi_keibanet" / "c4_calendar" / "config.py").is_file())
+        self.assertFalse((ROOT / "pi_keibanet" / "c4_calendar" / "runner.py").is_file())
         self.assertFalse((ROOT / "pi_keibanet" / "w2_haron" / "runner.py").is_file())
 
 

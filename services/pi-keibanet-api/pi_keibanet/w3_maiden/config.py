@@ -33,6 +33,9 @@ class W3AConfig:
     page_c_health_path: Path | None = None
     extra_cache_roots: list[Path] = field(default_factory=list)
     enabled: bool = True  # W3-A
+    # W3-A supply bounds / fail-closed (new; systemd does not set these)
+    w3a_handoff_dry_run: bool = True
+    w3a_max_enqueue_per_run: int = 2
     # W3-C bounds (safe defaults — never bulk 56)
     w3c_enabled: bool = True
     w3c_fetch_enabled: bool = True
@@ -114,6 +117,9 @@ class W3AConfig:
             page_c_health_path=health,
             extra_cache_roots=extra,
             enabled=os.environ.get("W3A_ENABLED", "1") not in ("0", "false", "False"),
+            w3a_handoff_dry_run=os.environ.get("W3A_HANDOFF_DRY_RUN", "1")
+            not in ("0", "false", "False"),
+            w3a_max_enqueue_per_run=int(os.environ.get("W3A_MAX_ENQUEUE_PER_RUN", "2")),
             w3c_enabled=os.environ.get("W3C_ENABLED", "1") not in ("0", "false", "False"),
             w3c_fetch_enabled=os.environ.get("W3C_FETCH_ENABLED", "1")
             not in ("0", "false", "False"),
