@@ -1,13 +1,14 @@
-maiden-prod-snapshot-20260907 staging patch
+maiden-prod-snapshot-20260907 staging patch (P0 audit fix)
 ZIP SHA256 MATCH: 27e730218fe0a25220377ecc7b33cb49b5ac36eb53329dba63c01c8e229eb2be
-READONLY original was not modified. Implementation is on the work copy only.
 PRODUCTION_APPLY_READY=NO
 
-Third-party review package:
-  /workspace/tmp/maiden-patch-review-20260907/
-  (not committed; download the ZIP artifact)
+P0-1: snapshot originals added as newly tracked files, then patched
+  at official services/pi-keibanet-api paths.
+P0-2: C4 HEALTHY only for new W3-A supply.
+P0-3: W5 retry allowlist Timeout* / HTTP 429 / HTTP 500-599.
+P0-4: migration one-time + idempotent (next_eligible_at is null).
+P0-5: historical known/existing/missing; planned = missing after cap.
+P0-7: W3W5_LIVE_HTTP default 0. Real HTTP ON is a later phase after
+  Global HTTP budget. Production units are not changed.
 
-Tests: 22 passed. HTTP_CALLS_DURING_TEST=0
-W3 first-enqueue planned count from this ZIP: null (no var/ listed_races)
-W5 migrate planned count on fixtures: 3
-systemd units: unchanged
+Tests: official tests/test_maiden_w3w5_staging_patch.py
