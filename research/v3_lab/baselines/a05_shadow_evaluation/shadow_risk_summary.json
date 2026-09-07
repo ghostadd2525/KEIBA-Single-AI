@@ -1,0 +1,16 @@
+{
+  "production_decision_changed": false,
+  "purchase_executed": false,
+  "flag_default_changed": false,
+  "shadow_error_n": 0,
+  "shadow_error_rate": 0.0,
+  "worsened_winner_rank1": 0,
+  "promote_rate": 0.16140350877192983,
+  "parity_with_offline_validation": true,
+  "residual_risks": [
+    "S0 uses labeled historical operational corpus (real 285R), not a live multi-day calendar window",
+    "Production Mesh / Prediction API still unwired — live ingress not exercised",
+    "Virtual ROI/Purchase only — accounting path not validated"
+  ],
+  "risk_level": "low"
+}

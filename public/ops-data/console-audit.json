@@ -1,0 +1,78 @@
+{
+  "schema_version": "expect-v89-console-audit/1.0",
+  "published_at": "2026-07-27T00:18:38.114Z",
+  "cards": [
+    {
+      "card": "Current Week",
+      "display": "portal.research.week_id",
+      "api": "/api/ops/portal",
+      "publish": "/ops-data/portal-snapshot.json",
+      "runner": "v8:runner → publishOpsSnapshot",
+      "source": "development/scheduler/weekly-runner.json"
+    },
+    {
+      "card": "Next Run",
+      "display": "portal.research.next_run",
+      "api": "/api/ops/portal|/api/ops/research-scheduler",
+      "publish": "/ops-data/research-scheduler.json",
+      "runner": "nextRunHintJst / publishScheduler",
+      "source": "development/scheduler/weekly-runner.json"
+    },
+    {
+      "card": "Approval Queue",
+      "display": "approval-queue items",
+      "api": "/api/ops/approvals",
+      "publish": "/ops-data/approval-queue.json",
+      "runner": "approval-queue + publishApprovals",
+      "source": "development/approvals/"
+    },
+    {
+      "card": "Deploy Note",
+      "display": "portal.deploy.deploy_note",
+      "api": "/api/ops/portal",
+      "publish": "/ops-data/deploy.json",
+      "runner": "approve → deploy-note → publishDeploy",
+      "source": "development/weekly/*/sat-deploy/"
+    },
+    {
+      "card": "Knowledge",
+      "display": "portal.knowledge.*",
+      "api": "/api/ops/portal",
+      "publish": "/ops-data/knowledge.json",
+      "runner": "publishKnowledge",
+      "source": "development/knowledge/"
+    },
+    {
+      "card": "Weekly Report",
+      "display": "portal.reports.weekly_report",
+      "api": "/api/ops/portal",
+      "publish": "/ops-data/reports.json",
+      "runner": "publishReports",
+      "source": "development/weekly/*/reports/"
+    },
+    {
+      "card": "PI / AI / Pages",
+      "display": "Live Monitor",
+      "api": "/api/health|/api/ops/monitor-live",
+      "publish": null,
+      "runner": null,
+      "source": "live health probes"
+    },
+    {
+      "card": "ResultAutomation",
+      "display": "run.status",
+      "api": "/api/ops/result-automation",
+      "publish": null,
+      "runner": null,
+      "source": "AI /v1/admin/results/status (read-only)"
+    },
+    {
+      "card": "Runner Timeline",
+      "display": "timeline.steps",
+      "api": "/api/ops/timeline",
+      "publish": "/ops-data/timeline.json",
+      "runner": "weekly-runner phases + publish",
+      "source": "development/scheduler/"
+    }
+  ]
+}

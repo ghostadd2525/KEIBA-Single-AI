@@ -48,7 +48,10 @@
           "type": ["object", "null"],
           "properties": {
             "score": { "type": ["number", "null"] },
-            "band": { "type": "string", "enum": ["high", "medium", "low"] }
+            "band": {
+              "type": "string",
+              "enum": ["high", "rather_high", "medium", "low"]
+            }
           },
           "required": ["score", "band"]
         },

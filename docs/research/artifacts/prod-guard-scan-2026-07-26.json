@@ -1,0 +1,50 @@
+{
+  "race_date": "2026-07-26",
+  "n": 36,
+  "ok_counts": {
+    "predictions": 36,
+    "single_detail": 36
+  },
+  "fail_counts": {
+    "predictions": 0,
+    "single_detail": 0
+  },
+  "fails": {
+    "predictions": [],
+    "single_detail": []
+  },
+  "ui_prediction_bundle_sample": {
+    "rid": "2026-07-26-01-01",
+    "envelope_ok": true,
+    "meta": {
+      "generated_at": "2026-07-29T02:23:20.573Z",
+      "source": "bff-local",
+      "cache": "miss",
+      "service": "UiAdaptation",
+      "adapter": "singleToBundleMapper",
+      "layout_changed": false,
+      "internal_terms_exposed": false
+    },
+    "errors": [],
+    "artifact": {
+      "schema_version": "single-prediction-bundle/2.0",
+      "race_id": "2026-07-26-01-01",
+      "race_info": {
+        "race_id": "2026-07-26-01-01",
+        "date": "2026-07-26",
+        "venue": "unknown",
+        "race_no": 1,
+        "post_time": null,
+        "distance": null,
+        "surface": null,
+        "course": null,
+        "class_label": null,
+        "grade": null,
+        "field_size": 3,
+        "race_status": null,
+        "race_name": null
+      },
+      "narrative_is_str": true
+    }
+  }
+}

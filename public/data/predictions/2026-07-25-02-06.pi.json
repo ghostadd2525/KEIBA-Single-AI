@@ -1,0 +1,201 @@
+{
+  "race_id": "2026-07-25-02-06",
+  "race_date": "2026-07-25",
+  "course": "中京",
+  "venue": "中京",
+  "race_number": 6,
+  "race_no": 6,
+  "race_name": "四日市特別",
+  "race_label": "中京6R",
+  "status": "published",
+  "prediction_available": true,
+  "prediction": {
+    "race_id": "2026-07-25-02-06",
+    "candidates": [
+      {
+        "CandidateID": "ゼロヴィジビリティ",
+        "Rank": 1,
+        "Confidence": 0.08011539092478416,
+        "HorseNumber": 10,
+        "WorldMeta": "midupper_world",
+        "SubWorldMeta": "midupper_route"
+      },
+      {
+        "CandidateID": "ヘリテージブルーム",
+        "Rank": 2,
+        "Confidence": 0.06216216363003021,
+        "HorseNumber": 15,
+        "WorldMeta": "midupper_world",
+        "SubWorldMeta": "midupper_route"
+      },
+      {
+        "CandidateID": "ザックザク",
+        "Rank": 3,
+        "Confidence": 0.058390383447681264,
+        "HorseNumber": 6,
+        "WorldMeta": "midupper_world",
+        "SubWorldMeta": "midupper_route"
+      },
+      {
+        "CandidateID": "アリエスキング",
+        "Rank": 4,
+        "Confidence": 0.0504461920251573,
+        "HorseNumber": 1,
+        "WorldMeta": "midupper_world",
+        "SubWorldMeta": "midupper_route"
+      },
+      {
+        "CandidateID": "エブリーポッシブル",
+        "Rank": 5,
+        "Confidence": 0.04924907822085517,
+        "HorseNumber": 3,
+        "WorldMeta": "midupper_world",
+        "SubWorldMeta": "midupper_route"
+      },
+      {
+        "CandidateID": "ポートデラメール",
+        "Rank": 6,
+        "Confidence": 0.044919410521542094,
+        "HorseNumber": 17,
+        "WorldMeta": "midupper_world",
+        "SubWorldMeta": "midupper_route"
+      },
+      {
+        "CandidateID": "モズケイスター",
+        "Rank": 7,
+        "Confidence": 0.04402096383169671,
+        "HorseNumber": 18,
+        "WorldMeta": "midupper_world",
+        "SubWorldMeta": "midupper_route"
+      },
+      {
+        "CandidateID": "ジェミート",
+        "Rank": 8,
+        "Confidence": 0.041775225068663,
+        "HorseNumber": 7,
+        "WorldMeta": "midupper_world",
+        "SubWorldMeta": "midupper_route"
+      },
+      {
+        "CandidateID": "ハリウッドブルース",
+        "Rank": 9,
+        "Confidence": 0.041545094777837965,
+        "HorseNumber": 12,
+        "WorldMeta": "midupper_world",
+        "SubWorldMeta": "midupper_route"
+      },
+      {
+        "CandidateID": "オカメノコイ",
+        "Rank": 10,
+        "Confidence": 0.04128406178539708,
+        "HorseNumber": 4,
+        "WorldMeta": "midupper_world",
+        "SubWorldMeta": "midupper_route"
+      },
+      {
+        "CandidateID": "フィーチャリング",
+        "Rank": 11,
+        "Confidence": 0.04123131530705551,
+        "HorseNumber": 13,
+        "WorldMeta": "midupper_world",
+        "SubWorldMeta": "midupper_route"
+      },
+      {
+        "CandidateID": "チュウワチーフ",
+        "Rank": 12,
+        "Confidence": 0.04121373433524524,
+        "HorseNumber": 11,
+        "WorldMeta": "midupper_world",
+        "SubWorldMeta": "midupper_route"
+      },
+      {
+        "CandidateID": "ライトオブヌカタ",
+        "Rank": 13,
+        "Confidence": 0.04091124965145727,
+        "HorseNumber": 21,
+        "WorldMeta": "midupper_world",
+        "SubWorldMeta": "midupper_route"
+      },
+      {
+        "CandidateID": "ステラスプレンダー",
+        "Rank": 14,
+        "Confidence": 0.04061625404841354,
+        "HorseNumber": 8,
+        "WorldMeta": "midupper_world",
+        "SubWorldMeta": "midupper_route"
+      },
+      {
+        "CandidateID": "ヤマニンバロネス",
+        "Rank": 15,
+        "Confidence": 0.04050775414565001,
+        "HorseNumber": 20,
+        "WorldMeta": "midupper_world",
+        "SubWorldMeta": "midupper_route"
+      },
+      {
+        "CandidateID": "モズタチアガレ",
+        "Rank": 16,
+        "Confidence": 0.040501684417439995,
+        "HorseNumber": 19,
+        "WorldMeta": "midupper_world",
+        "SubWorldMeta": "midupper_route"
+      },
+      {
+        "CandidateID": "ゴルデールスカー",
+        "Rank": 17,
+        "Confidence": 0.040443799781092325,
+        "HorseNumber": 5,
+        "WorldMeta": "midupper_world",
+        "SubWorldMeta": "midupper_route"
+      },
+      {
+        "CandidateID": "ラヴオントップ",
+        "Rank": 18,
+        "Confidence": 0.040269724449604256,
+        "HorseNumber": 22,
+        "WorldMeta": "midupper_world",
+        "SubWorldMeta": "midupper_route"
+      },
+      {
+        "CandidateID": "ホウオウゴールド",
+        "Rank": 19,
+        "Confidence": 0.04021715312507202,
+        "HorseNumber": 16,
+        "WorldMeta": "midupper_world",
+        "SubWorldMeta": "midupper_route"
+      },
+      {
+        "CandidateID": "アレ",
+        "Rank": 20,
+        "Confidence": 0.040201770822001395,
+        "HorseNumber": 2,
+        "WorldMeta": "midupper_world",
+        "SubWorldMeta": "midupper_route"
+      },
+      {
+        "CandidateID": "スーパージョック",
+        "Rank": 21,
+        "Confidence": 0.040070288190852704,
+        "HorseNumber": 9,
+        "WorldMeta": "midupper_world",
+        "SubWorldMeta": "midupper_route"
+      },
+      {
+        "CandidateID": "フクチャントウメイ",
+        "Rank": 22,
+        "Confidence": 0.039907307492470546,
+        "HorseNumber": 14,
+        "WorldMeta": "midupper_world",
+        "SubWorldMeta": "midupper_route"
+      }
+    ],
+    "world": "midupper_world",
+    "sub_world": "midupper_route",
+    "overall_confidence": 0.04865301362056242,
+    "core_version": "ai-core-migrated/1.0-phase1",
+    "meta": {
+      "generated_at": "2026-07-25T15:53:10.191032+09:00",
+      "source": "local_core_pipeline"
+    }
+  }
+}

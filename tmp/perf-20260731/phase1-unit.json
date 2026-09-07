@@ -1,0 +1,10 @@
+{
+  "inflightDedupe": true,
+  "sessionHit": true,
+  "fetches": 1,
+  "webpSavingsKB": {
+    "before": 9881,
+    "after": 1070,
+    "reductionPct": 89
+  }
+}

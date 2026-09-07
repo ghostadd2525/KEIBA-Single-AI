@@ -8,7 +8,10 @@ import {
   buildSummaryFromBundle,
   classifyPiPredictionPayload,
   confidenceBandFromScore,
+  confidenceBandFromLabelAndScore,
+  resolveConfidenceDisplay,
   CONFIDENCE_BAND_HIGH,
+  CONFIDENCE_BAND_RATHER_HIGH,
   CONFIDENCE_BAND_MEDIUM,
   predictionStatusFromHttp,
 } from "../../functions/_lib/raceCardSummary.js";
@@ -33,15 +36,52 @@ const readyFixture = readJson("fixtures/race-card-summary/ready.json");
 const missingFixture = readJson("fixtures/race-card-summary/missing.json");
 const apiSample = readJson("fixtures/race-card-summary/api-race-cards-sample.json");
 
-describe("RaceCardSummary band（BFF 閾値）", () => {
-  it("high ≥ 0.60 / medium ≥ 0.35 / low < 0.35", () => {
-    assert.equal(CONFIDENCE_BAND_HIGH, 0.6);
+describe("RaceCardSummary band（BFF 閾値 UI7/UI8）", () => {
+  it("high ≥ 0.75 / rather_high ≥ 0.60 / medium ≥ 0.35 / low < 0.35", () => {
+    assert.equal(CONFIDENCE_BAND_HIGH, 0.75);
+    assert.equal(CONFIDENCE_BAND_RATHER_HIGH, 0.6);
     assert.equal(CONFIDENCE_BAND_MEDIUM, 0.35);
-    assert.equal(confidenceBandFromScore(0.6), "high");
+    assert.equal(confidenceBandFromScore(0.75), "high");
+    assert.equal(confidenceBandFromScore(0.74), "rather_high");
+    assert.equal(confidenceBandFromScore(0.6), "rather_high");
     assert.equal(confidenceBandFromScore(0.59), "medium");
     assert.equal(confidenceBandFromScore(0.35), "medium");
     assert.equal(confidenceBandFromScore(0.34), "low");
     assert.equal(confidenceBandFromScore(42), "medium"); // percent → /100
+  });
+});
+
+describe("UI8 label + score band", () => {
+  it("Near Miss 天井で high score でも rather_high 止まり", () => {
+    assert.equal(
+      confidenceBandFromLabelAndScore("near_miss", 0.9),
+      "rather_high"
+    );
+  });
+  it("Pure Residual は高 score でも low", () => {
+    assert.equal(
+      confidenceBandFromLabelAndScore("pure_residual", 0.95),
+      "low"
+    );
+  });
+  it("Normal + medium score → medium", () => {
+    assert.equal(confidenceBandFromLabelAndScore("normal", 0.5), "medium");
+  });
+  it("midupper_world + 0.8 → rather_high（Near Miss 天井）", () => {
+    const { label, band } = resolveConfidenceDisplay({
+      world: "midupper_world",
+      score: 0.8,
+    });
+    assert.equal(label, "near_miss");
+    assert.equal(band, "rather_high");
+  });
+  it("core_world + 0.8 → high", () => {
+    const { label, band } = resolveConfidenceDisplay({
+      world: "core_world",
+      score: 0.8,
+    });
+    assert.equal(label, "normal");
+    assert.equal(band, "high");
   });
 });
 

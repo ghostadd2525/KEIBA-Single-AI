@@ -1,0 +1,68 @@
+{
+  "configuration_id": "v3-lab-config-a01-a03/1.0",
+  "freeze_id": "v3-lab-configuration-freeze/1.0",
+  "freeze_date": "2026-07-24",
+  "frozen": true,
+  "production_wiring": false,
+  "name": "Lab Stack A-01 + A-03",
+  "pipeline": [
+    {
+      "stage": "representation",
+      "mode": "baseline",
+      "policy_id": "identity",
+      "flag": "F_V3_REPRESENTATION",
+      "flag_state_in_stack": false,
+      "note": "Baseline passthrough"
+    },
+    {
+      "stage": "admission",
+      "mode": "A-03",
+      "policy_id": "AP-V3-A03-pool-coverage",
+      "admission_id": "v3-adm-a03-v1",
+      "flag": "F_V3_A03_POOL_ADMIT_ENABLED",
+      "flag_state_in_stack": true,
+      "contract": "v3-lab-admission/2.1",
+      "validation": "PASS"
+    },
+    {
+      "stage": "selection",
+      "mode": "baseline",
+      "policy_id": "identity",
+      "flag": "F_V3_SELECTION",
+      "flag_state_in_stack": false,
+      "note": "Baseline passthrough"
+    },
+    {
+      "stage": "evaluation",
+      "mode": "A-01",
+      "policy_id": "D1-Recalibrator",
+      "evaluation_id": "v3-eval-a01-d1",
+      "flag": "F_V3_RANK_D1_ENABLED",
+      "flag_state_in_stack": true,
+      "contract": "v3-lab-evaluation/2.0",
+      "validation": "PASS"
+    },
+    {
+      "stage": "purchase",
+      "mode": "baseline",
+      "mapper": "identity",
+      "flag": "F_V3_PURCHASE_ENABLED",
+      "flag_state_in_stack": false,
+      "note": "Baseline passthrough · Delete unchanged"
+    }
+  ],
+  "stack_flags_on": [
+    "F_V3_A03_POOL_ADMIT_ENABLED",
+    "F_V3_RANK_D1_ENABLED"
+  ],
+  "stack_flags_explicitly_off": [
+    "F_V3_REPRESENTATION",
+    "F_V3_ADMISSION",
+    "F_V3_SELECTION",
+    "F_V3_RANK_D2_ENABLED",
+    "F_V3_PURCHASE_ENABLED"
+  ],
+  "diagram": {
+    "ascii": "Representation (Baseline)\n        ↓\nAdmission (A-03)\n        ↓\nSelection (Baseline)\n        ↓\nEvaluation (A-01)\n        ↓\nPurchase (Baseline)"
+  }
+}

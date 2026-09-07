@@ -1,0 +1,24 @@
+{
+  "decision_id": "v3-prr-final/1.0",
+  "date": "2026-07-24",
+  "prr_final_status": "HOLD",
+  "go_nogo": "NO-GO",
+  "production_rollout_authorized": false,
+  "feature_flag_on_authorized": false,
+  "phase3_authorized": false,
+  "baseline_v3_a03_stack_production_forbidden": true,
+  "a05_lab_continuation_authorized": true,
+  "summary": {
+    "lab_baseline_v3_hit": 279,
+    "offline_gate_a03_stack": "FAIL",
+    "a05_offline_validation": "PASS",
+    "shadow_s0": "PASS",
+    "shadow_s1": "PASS"
+  },
+  "reports": {
+    "final_report": "docs/releases/v3-production-readiness-final-report.md",
+    "residual_risk": "docs/releases/v3-residual-risk-report.md",
+    "go_nogo": "docs/releases/v3-go-nogo-recommendation.md",
+    "prr_final": "docs/releases/v3-prr-final-decision.md"
+  }
+}

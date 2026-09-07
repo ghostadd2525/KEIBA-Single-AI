@@ -6,6 +6,9 @@ Race results are loaded via AJAX (ajax_horse_results.html), not the initial page
 Ported from demo_horse_history_fetcher.py (Win5AI legacy).
 Uses stdlib urllib (no Selenium) — same as NetkeibaClient.
 Output columns are identical to horse_history_raw.csv.
+
+EC2 / AWS egress is often blocked by CloudFront on db.netkeiba.com (HTTP 400).
+Board already falls back to race.sp; history falls back to db.sp horse HTML.
 """
 from __future__ import annotations
 
@@ -14,12 +17,13 @@ import re
 from html import unescape
 from typing import Any, Dict, List, Optional, Tuple
 
-from .client import NetkeibaClient
+from .client import NetkeibaClient, NetkeibaFetchError
 
 HORSE_AJAX_RESULTS_URL = (
     "https://db.netkeiba.com/horse/ajax_horse_results.html"
     "?input=UTF-8&output=json&id={horse_id}"
 )
+HORSE_SP_PAGE_URL = "https://db.sp.netkeiba.com/horse/{horse_id}/"
 
 OUT_COLUMNS = [
     "race_id", "numeric_race_id", "date", "course", "race_number", "race_name",
@@ -255,13 +259,34 @@ def _find_history_table(html: str) -> Optional[str]:
     return best_table
 
 
-def fetch_horse_history(
-    client: NetkeibaClient,
-    horse_id: str,
-) -> List[Dict[str, Any]]:
-    """Fetch race results via AJAX and parse history rows."""
-    url = HORSE_AJAX_RESULTS_URL.format(horse_id=horse_id)
-    raw = client.fetch(url, label=f"horse_ajax_{horse_id}")
+def _enrich_history_row(row: Dict[str, Any]) -> Dict[str, Any]:
+    """Fill date/place/class when SP table packs them into the race-name cell."""
+    if row.get("history_date"):
+        return row
+    name = str(row.get("history_race_name") or "")
+    if not name:
+        return row
+    lines = [ln.strip() for ln in name.replace("\r", "").split("\n") if ln.strip()]
+    if not lines:
+        return row
+    m = re.match(
+        r"(\d{2,4}/\d{1,2}/\d{1,2})\s+(\S+)(?:\s+(\d+R))?",
+        lines[0],
+    )
+    if not m:
+        return row
+    row["history_date"] = m.group(1)
+    if not row.get("history_place"):
+        row["history_place"] = m.group(2)
+    rest = lines[1:]
+    if rest:
+        row["history_race_name"] = rest[0]
+        if len(rest) > 1 and not row.get("history_class"):
+            row["history_class"] = rest[1]
+    return row
+
+
+def _parse_ajax_payload(raw: str) -> List[Dict[str, Any]]:
     try:
         payload = json.loads(raw)
     except json.JSONDecodeError:
@@ -271,7 +296,35 @@ def fetch_horse_history(
     fragment = payload.get("data") or ""
     if not fragment:
         return []
-    return parse_history_table_html(fragment)
+    return [_enrich_history_row(r) for r in parse_history_table_html(fragment)]
+
+
+def fetch_horse_history(
+    client: NetkeibaClient,
+    horse_id: str,
+) -> List[Dict[str, Any]]:
+    """Fetch race results via PC AJAX, falling back to db.sp horse HTML."""
+    from .. import cache_metrics
+
+    ajax_url = HORSE_AJAX_RESULTS_URL.format(horse_id=horse_id)
+    try:
+        raw = client.fetch(ajax_url, label=f"horse_ajax_{horse_id}")
+        rows = _parse_ajax_payload(raw)
+        if rows:
+            cache_metrics.note_history_source("ajax")
+            return rows
+    except NetkeibaFetchError as exc:
+        print(f"[pi-keibanet] horse_ajax skipped: {exc}")
+
+    sp_url = HORSE_SP_PAGE_URL.format(horse_id=horse_id)
+    html = client.fetch(
+        sp_url,
+        label=f"horse_sp_{horse_id}",
+        accept="text/html,application/xhtml+xml",
+    )
+    rows = [_enrich_history_row(r) for r in parse_history_table_html(html)]
+    cache_metrics.note_history_source("sp" if rows else "fail")
+    return rows
 
 
 def build_history_rows(

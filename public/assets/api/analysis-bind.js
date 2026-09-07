@@ -105,21 +105,32 @@
   function chartsFromAbilityScores(ability, overallHint) {
     if (!ability || typeof ability !== "object") return null;
 
-    var history = toPct(ability.history_score);
-    var distance = toPct(ability.distance_score);
+    // Canonical keys first; UI/fixture aliases (history, distance, …) second.
+    var history = toPct(
+      ability.history_score != null ? ability.history_score : ability.history
+    );
+    var distance = toPct(
+      ability.distance_score != null ? ability.distance_score : ability.distance
+    );
     // style_confidence は高止まりしやすいため、脚質×距離フィットを優先
     var styleFit = null;
     if (ability.style_distance_fit_weight != null) {
       styleFit = toPct(ability.style_distance_fit_weight);
+    } else if (ability.style_fit != null) {
+      styleFit = toPct(ability.style_fit);
     } else if (ability.gate_risk_score != null) {
       styleFit = toPct(1 - Number(ability.gate_risk_score));
     } else if (ability.style_disadvantage_score != null) {
       styleFit = toPct(1 - Number(ability.style_disadvantage_score));
     }
-    var front = toPct(ability.front_rate);
+    var front = toPct(
+      ability.front_rate != null ? ability.front_rate : ability.front
+    );
 
     var paceResilience = null;
-    if (ability.pace_collapse_risk_v2 != null) {
+    if (ability.pace_resilience != null) {
+      paceResilience = toPct(ability.pace_resilience);
+    } else if (ability.pace_collapse_risk_v2 != null) {
       paceResilience = toPct(1 - Number(ability.pace_collapse_risk_v2));
     } else if (ability.inside_traffic_risk != null) {
       paceResilience = toPct(1 - Number(ability.inside_traffic_risk));
@@ -233,19 +244,31 @@
 
   function toAiParams(bundle, analysis) {
     var fromPb = chartsFromPredictionBundle(bundle);
-    var scores = fromPb ? chartMap(fromPb) : chartMap(analysis);
+    var fromAnalysis =
+      !fromPb && analysis && typeof analysis === "object"
+        ? {
+            charts: analysis.charts || [],
+            overall: analysis.overall,
+          }
+        : null;
+    // Lookup failure must not become silent 0% success.
+    if (!fromPb && !fromAnalysis) return null;
+    if (!fromPb && fromAnalysis && !(fromAnalysis.charts && fromAnalysis.charts.length)) {
+      return null;
+    }
+    var scores = fromPb ? chartMap(fromPb) : chartMap(fromAnalysis);
     var conf = null;
-    if (global.ExpectApi && ExpectApi.Prediction && ExpectApi.Prediction.scorePercent) {
+    if (fromPb && global.ExpectApi && ExpectApi.Prediction && ExpectApi.Prediction.scorePercent) {
       conf = ExpectApi.Prediction.scorePercent(bundle);
     }
     if (conf == null && scores.overall) conf = scores.overall;
     return {
-      overall: conf != null ? conf : scores.overall || 0,
-      history: scores.history,
-      distance: scores.distance,
-      style_fit: scores.style_fit,
-      front: scores.front,
-      pace_resilience: scores.pace_resilience,
+      overall: conf != null ? conf : scores.overall != null ? scores.overall : null,
+      history: scores.history != null ? scores.history : null,
+      distance: scores.distance != null ? scores.distance : null,
+      style_fit: scores.style_fit != null ? scores.style_fit : null,
+      front: scores.front != null ? scores.front : null,
+      pace_resilience: scores.pace_resilience != null ? scores.pace_resilience : null,
       // 旧キー互換
       style: scores.style_fit,
       pedigree: scores.history,

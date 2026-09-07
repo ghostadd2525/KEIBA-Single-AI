@@ -82,7 +82,20 @@ class UserAuth:
             return None
         user_id = parsed["user_id"]
         user = self.users.get_by_id(user_id)
-        if not user or user.get("status") != "active":
+        # BFF stub ログイン済みで AI SQLite に未ミラーのユーザーは最小 UPSERT（V8.9.1）
+        if not user:
+            try:
+                user = self.users.ensure_stub_mirror(
+                    user_id,
+                    display_name=user_id,
+                    role="USER",
+                )
+            except Exception:
+                user = None
+            if not user:
+                # Mirror failed — still allow read paths; progress.ensure is FK-safe.
+                return AuthContext(user_id=user_id, session_id=None)
+        if user.get("status") != "active":
             return None
 
         sess = self.sessions.get_by_token_hash(token_hash(token))

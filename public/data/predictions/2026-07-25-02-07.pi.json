@@ -1,0 +1,113 @@
+{
+  "race_id": "2026-07-25-02-07",
+  "race_date": "2026-07-25",
+  "course": "中京",
+  "venue": "中京",
+  "race_number": 7,
+  "race_no": 7,
+  "race_name": "関ケ原S",
+  "race_label": "中京7R",
+  "status": "published",
+  "prediction_available": true,
+  "prediction": {
+    "race_id": "2026-07-25-02-07",
+    "candidates": [
+      {
+        "CandidateID": "ミュージシャン",
+        "Rank": 1,
+        "Confidence": 0.12050915803020333,
+        "HorseNumber": 9,
+        "WorldMeta": "midupper_world",
+        "SubWorldMeta": "midupper_route"
+      },
+      {
+        "CandidateID": "リンフレスカンテ",
+        "Rank": 2,
+        "Confidence": 0.10948895952968271,
+        "HorseNumber": 11,
+        "WorldMeta": "midupper_world",
+        "SubWorldMeta": "midupper_route"
+      },
+      {
+        "CandidateID": "ミッキーゴールド",
+        "Rank": 3,
+        "Confidence": 0.09219034177983161,
+        "HorseNumber": 8,
+        "WorldMeta": "midupper_world",
+        "SubWorldMeta": "midupper_route"
+      },
+      {
+        "CandidateID": "タイセイフェリーク",
+        "Rank": 4,
+        "Confidence": 0.08664814270042971,
+        "HorseNumber": 5,
+        "WorldMeta": "midupper_world",
+        "SubWorldMeta": "midupper_route"
+      },
+      {
+        "CandidateID": "ハーツコンチェルト",
+        "Rank": 5,
+        "Confidence": 0.08602153004212677,
+        "HorseNumber": 7,
+        "WorldMeta": "midupper_world",
+        "SubWorldMeta": "midupper_route"
+      },
+      {
+        "CandidateID": "ウインデイジー",
+        "Rank": 6,
+        "Confidence": 0.08547142736554275,
+        "HorseNumber": 1,
+        "WorldMeta": "midupper_world",
+        "SubWorldMeta": "midupper_route"
+      },
+      {
+        "CandidateID": "サトノクローク",
+        "Rank": 7,
+        "Confidence": 0.08467982346468636,
+        "HorseNumber": 4,
+        "WorldMeta": "midupper_world",
+        "SubWorldMeta": "midupper_route"
+      },
+      {
+        "CandidateID": "サダムオプシス",
+        "Rank": 8,
+        "Confidence": 0.084596949188709,
+        "HorseNumber": 3,
+        "WorldMeta": "midupper_world",
+        "SubWorldMeta": "midupper_route"
+      },
+      {
+        "CandidateID": "メイショウソウタ",
+        "Rank": 9,
+        "Confidence": 0.08410177695344992,
+        "HorseNumber": 10,
+        "WorldMeta": "midupper_world",
+        "SubWorldMeta": "midupper_route"
+      },
+      {
+        "CandidateID": "ナムラフッカー",
+        "Rank": 10,
+        "Confidence": 0.08370816280102159,
+        "HorseNumber": 6,
+        "WorldMeta": "midupper_world",
+        "SubWorldMeta": "midupper_route"
+      },
+      {
+        "CandidateID": "エイカイマッケンロ",
+        "Rank": 11,
+        "Confidence": 0.08258372814431619,
+        "HorseNumber": 2,
+        "WorldMeta": "midupper_world",
+        "SubWorldMeta": "midupper_route"
+      }
+    ],
+    "world": "midupper_world",
+    "sub_world": "midupper_route",
+    "overall_confidence": 0.06911498838706809,
+    "core_version": "ai-core-migrated/1.0-phase1",
+    "meta": {
+      "generated_at": "2026-07-25T15:53:10.442908+09:00",
+      "source": "local_core_pipeline"
+    }
+  }
+}

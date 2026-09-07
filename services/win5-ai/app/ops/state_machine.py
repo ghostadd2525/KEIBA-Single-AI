@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Result Automation State Machine — Production only."""
+"""Result Automation State Machine — Production only (Version7)."""
 from __future__ import annotations
 
 from typing import FrozenSet
@@ -12,6 +12,10 @@ EVALUATING = "EVALUATING"
 STATS_UPDATING = "STATS_UPDATING"
 SELF_EVAL_UPDATING = "SELF_EVAL_UPDATING"
 EVIDENCE_EXPORTING = "EVIDENCE_EXPORTING"
+USER_SETTLING = "USER_SETTLING"
+POINT_UPDATING = "POINT_UPDATING"
+LEVEL_UPDATING = "LEVEL_UPDATING"
+ARCHIVING = "ARCHIVING"
 COMPLETED = "COMPLETED"
 DEGRADED = "DEGRADED"
 FAILED = "FAILED"
@@ -28,8 +32,33 @@ ACTIVE: FrozenSet[str] = frozenset(
         STATS_UPDATING,
         SELF_EVAL_UPDATING,
         EVIDENCE_EXPORTING,
+        USER_SETTLING,
+        POINT_UPDATING,
+        LEVEL_UPDATING,
+        ARCHIVING,
     }
 )
+
+# Dashboard / ops display order (logical stages)
+PIPELINE_STAGES: tuple[str, ...] = (
+    RESULT_SYNCING,
+    EVALUATING,
+    EVIDENCE_EXPORTING,
+    USER_SETTLING,
+    POINT_UPDATING,
+    LEVEL_UPDATING,
+    ARCHIVING,
+)
+
+STAGE_LABELS: dict[str, str] = {
+    RESULT_SYNCING: "Result Sync",
+    EVALUATING: "Evaluation",
+    EVIDENCE_EXPORTING: "Evidence Export",
+    USER_SETTLING: "User Settlement",
+    POINT_UPDATING: "Point",
+    LEVEL_UPDATING: "Level",
+    ARCHIVING: "Archive",
+}
 
 # allowed transitions (from -> to)
 TRANSITIONS: dict[str, FrozenSet[str]] = {
@@ -40,7 +69,13 @@ TRANSITIONS: dict[str, FrozenSet[str]] = {
     EVALUATING: frozenset({STATS_UPDATING, FAILED}),
     STATS_UPDATING: frozenset({SELF_EVAL_UPDATING, FAILED}),
     SELF_EVAL_UPDATING: frozenset({EVIDENCE_EXPORTING, FAILED}),
-    EVIDENCE_EXPORTING: frozenset({COMPLETED, DEGRADED, FAILED}),
+    EVIDENCE_EXPORTING: frozenset(
+        {USER_SETTLING, COMPLETED, DEGRADED, FAILED}
+    ),
+    USER_SETTLING: frozenset({POINT_UPDATING, FAILED}),
+    POINT_UPDATING: frozenset({LEVEL_UPDATING, FAILED}),
+    LEVEL_UPDATING: frozenset({ARCHIVING, FAILED}),
+    ARCHIVING: frozenset({COMPLETED, DEGRADED, FAILED}),
 }
 
 

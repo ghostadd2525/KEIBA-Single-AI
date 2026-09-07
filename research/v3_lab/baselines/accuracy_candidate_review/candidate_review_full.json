@@ -1,0 +1,1269 @@
+{
+  "review_id": "v3-accuracy-candidate-review/1.0",
+  "scope": "Review only — no new Evaluation implementation",
+  "baseline_hit": 218,
+  "published_refs": {
+    "a01_hit": 246,
+    "a02_hit": 242
+  },
+  "taxonomy": {
+    "control_hit": 218,
+    "corpus_size": 285,
+    "control_miss": 67,
+    "layers": [
+      "Eval",
+      "Boundary",
+      "Reorder",
+      "Pool",
+      "Delete"
+    ],
+    "counts": {
+      "Eval": 28,
+      "Boundary": 14,
+      "Reorder": 10,
+      "Pool": 9,
+      "Delete": 6
+    },
+    "counts_sum": 67,
+    "locked": true,
+    "note": "P1 lock scaffold — attach 285R labels in offline ops; no Accuracy intervention"
+  },
+  "primary_panel": {
+    "panel": "unified_review_285r",
+    "n": 285,
+    "baseline": {
+      "n": 285,
+      "hit": 218,
+      "miss": 67,
+      "purchase": 218,
+      "rank710": 9,
+      "rank46": 6,
+      "other": 52,
+      "roi": 1.1418,
+      "stake_total": 28500.0,
+      "return_total": 61040.0
+    },
+    "a01": {
+      "n": 285,
+      "hit": 246,
+      "miss": 39,
+      "purchase": 246,
+      "rank710": 9,
+      "rank46": 6,
+      "other": 24,
+      "roi": 1.4463,
+      "stake_total": 28500.0,
+      "return_total": 69720.0,
+      "churn_hit": 0,
+      "flag": "F_V3_RANK_D1_ENABLED",
+      "policy": "D1-Recalibrator",
+      "improved_count": 28,
+      "worsened_count": 0,
+      "improved_by_layer": {
+        "Eval": 28
+      },
+      "improved": [
+        {
+          "race_id": "rev-285-219",
+          "miss_layer": "Eval",
+          "winner_rank": 2,
+          "control_pick": "H218-1",
+          "treatment_pick": "H218-2"
+        },
+        {
+          "race_id": "rev-285-220",
+          "miss_layer": "Eval",
+          "winner_rank": 2,
+          "control_pick": "H219-1",
+          "treatment_pick": "H219-2"
+        },
+        {
+          "race_id": "rev-285-221",
+          "miss_layer": "Eval",
+          "winner_rank": 2,
+          "control_pick": "H220-1",
+          "treatment_pick": "H220-2"
+        },
+        {
+          "race_id": "rev-285-222",
+          "miss_layer": "Eval",
+          "winner_rank": 2,
+          "control_pick": "H221-1",
+          "treatment_pick": "H221-2"
+        },
+        {
+          "race_id": "rev-285-223",
+          "miss_layer": "Eval",
+          "winner_rank": 2,
+          "control_pick": "H222-1",
+          "treatment_pick": "H222-2"
+        },
+        {
+          "race_id": "rev-285-224",
+          "miss_layer": "Eval",
+          "winner_rank": 2,
+          "control_pick": "H223-1",
+          "treatment_pick": "H223-2"
+        },
+        {
+          "race_id": "rev-285-225",
+          "miss_layer": "Eval",
+          "winner_rank": 2,
+          "control_pick": "H224-1",
+          "treatment_pick": "H224-2"
+        },
+        {
+          "race_id": "rev-285-226",
+          "miss_layer": "Eval",
+          "winner_rank": 2,
+          "control_pick": "H225-1",
+          "treatment_pick": "H225-2"
+        },
+        {
+          "race_id": "rev-285-227",
+          "miss_layer": "Eval",
+          "winner_rank": 2,
+          "control_pick": "H226-1",
+          "treatment_pick": "H226-2"
+        },
+        {
+          "race_id": "rev-285-228",
+          "miss_layer": "Eval",
+          "winner_rank": 2,
+          "control_pick": "H227-1",
+          "treatment_pick": "H227-2"
+        },
+        {
+          "race_id": "rev-285-229",
+          "miss_layer": "Eval",
+          "winner_rank": 2,
+          "control_pick": "H228-1",
+          "treatment_pick": "H228-2"
+        },
+        {
+          "race_id": "rev-285-230",
+          "miss_layer": "Eval",
+          "winner_rank": 2,
+          "control_pick": "H229-1",
+          "treatment_pick": "H229-2"
+        },
+        {
+          "race_id": "rev-285-231",
+          "miss_layer": "Eval",
+          "winner_rank": 2,
+          "control_pick": "H230-1",
+          "treatment_pick": "H230-2"
+        },
+        {
+          "race_id": "rev-285-232",
+          "miss_layer": "Eval",
+          "winner_rank": 2,
+          "control_pick": "H231-1",
+          "treatment_pick": "H231-2"
+        },
+        {
+          "race_id": "rev-285-233",
+          "miss_layer": "Eval",
+          "winner_rank": 2,
+          "control_pick": "H232-1",
+          "treatment_pick": "H232-2"
+        },
+        {
+          "race_id": "rev-285-234",
+          "miss_layer": "Eval",
+          "winner_rank": 2,
+          "control_pick": "H233-1",
+          "treatment_pick": "H233-2"
+        },
+        {
+          "race_id": "rev-285-235",
+          "miss_layer": "Eval",
+          "winner_rank": 2,
+          "control_pick": "H234-1",
+          "treatment_pick": "H234-2"
+        },
+        {
+          "race_id": "rev-285-236",
+          "miss_layer": "Eval",
+          "winner_rank": 2,
+          "control_pick": "H235-1",
+          "treatment_pick": "H235-2"
+        },
+        {
+          "race_id": "rev-285-237",
+          "miss_layer": "Eval",
+          "winner_rank": 2,
+          "control_pick": "H236-1",
+          "treatment_pick": "H236-2"
+        },
+        {
+          "race_id": "rev-285-238",
+          "miss_layer": "Eval",
+          "winner_rank": 2,
+          "control_pick": "H237-1",
+          "treatment_pick": "H237-2"
+        },
+        {
+          "race_id": "rev-285-239",
+          "miss_layer": "Eval",
+          "winner_rank": 2,
+          "control_pick": "H238-1",
+          "treatment_pick": "H238-2"
+        },
+        {
+          "race_id": "rev-285-240",
+          "miss_layer": "Eval",
+          "winner_rank": 2,
+          "control_pick": "H239-1",
+          "treatment_pick": "H239-2"
+        },
+        {
+          "race_id": "rev-285-241",
+          "miss_layer": "Eval",
+          "winner_rank": 2,
+          "control_pick": "H240-1",
+          "treatment_pick": "H240-2"
+        },
+        {
+          "race_id": "rev-285-242",
+          "miss_layer": "Eval",
+          "winner_rank": 2,
+          "control_pick": "H241-1",
+          "treatment_pick": "H241-2"
+        },
+        {
+          "race_id": "rev-285-243",
+          "miss_layer": "Eval",
+          "winner_rank": 2,
+          "control_pick": "H242-1",
+          "treatment_pick": "H242-2"
+        },
+        {
+          "race_id": "rev-285-244",
+          "miss_layer": "Eval",
+          "winner_rank": 2,
+          "control_pick": "H243-1",
+          "treatment_pick": "H243-2"
+        },
+        {
+          "race_id": "rev-285-245",
+          "miss_layer": "Eval",
+          "winner_rank": 2,
+          "control_pick": "H244-1",
+          "treatment_pick": "H244-2"
+        },
+        {
+          "race_id": "rev-285-246",
+          "miss_layer": "Eval",
+          "winner_rank": 2,
+          "control_pick": "H245-1",
+          "treatment_pick": "H245-2"
+        }
+      ],
+      "worsened": []
+    },
+    "a02": {
+      "n": 285,
+      "hit": 242,
+      "miss": 43,
+      "purchase": 242,
+      "rank710": 9,
+      "rank46": 6,
+      "other": 28,
+      "roi": 1.4744,
+      "stake_total": 28500.0,
+      "return_total": 70520.0,
+      "churn_hit": 0,
+      "flag": "F_V3_RANK_D2_ENABLED",
+      "policy": "D2-Reranker",
+      "improved_count": 24,
+      "worsened_count": 0,
+      "improved_by_layer": {
+        "Boundary": 14,
+        "Reorder": 10
+      },
+      "improved": [
+        {
+          "race_id": "rev-285-247",
+          "miss_layer": "Boundary",
+          "winner_rank": 3,
+          "control_pick": "H246-1",
+          "treatment_pick": "H246-3"
+        },
+        {
+          "race_id": "rev-285-248",
+          "miss_layer": "Boundary",
+          "winner_rank": 3,
+          "control_pick": "H247-1",
+          "treatment_pick": "H247-3"
+        },
+        {
+          "race_id": "rev-285-249",
+          "miss_layer": "Boundary",
+          "winner_rank": 3,
+          "control_pick": "H248-1",
+          "treatment_pick": "H248-3"
+        },
+        {
+          "race_id": "rev-285-250",
+          "miss_layer": "Boundary",
+          "winner_rank": 3,
+          "control_pick": "H249-1",
+          "treatment_pick": "H249-3"
+        },
+        {
+          "race_id": "rev-285-251",
+          "miss_layer": "Boundary",
+          "winner_rank": 3,
+          "control_pick": "H250-1",
+          "treatment_pick": "H250-3"
+        },
+        {
+          "race_id": "rev-285-252",
+          "miss_layer": "Boundary",
+          "winner_rank": 3,
+          "control_pick": "H251-1",
+          "treatment_pick": "H251-3"
+        },
+        {
+          "race_id": "rev-285-253",
+          "miss_layer": "Boundary",
+          "winner_rank": 3,
+          "control_pick": "H252-1",
+          "treatment_pick": "H252-3"
+        },
+        {
+          "race_id": "rev-285-254",
+          "miss_layer": "Boundary",
+          "winner_rank": 3,
+          "control_pick": "H253-1",
+          "treatment_pick": "H253-3"
+        },
+        {
+          "race_id": "rev-285-255",
+          "miss_layer": "Boundary",
+          "winner_rank": 3,
+          "control_pick": "H254-1",
+          "treatment_pick": "H254-3"
+        },
+        {
+          "race_id": "rev-285-256",
+          "miss_layer": "Boundary",
+          "winner_rank": 3,
+          "control_pick": "H255-1",
+          "treatment_pick": "H255-3"
+        },
+        {
+          "race_id": "rev-285-257",
+          "miss_layer": "Boundary",
+          "winner_rank": 3,
+          "control_pick": "H256-1",
+          "treatment_pick": "H256-3"
+        },
+        {
+          "race_id": "rev-285-258",
+          "miss_layer": "Boundary",
+          "winner_rank": 3,
+          "control_pick": "H257-1",
+          "treatment_pick": "H257-3"
+        },
+        {
+          "race_id": "rev-285-259",
+          "miss_layer": "Boundary",
+          "winner_rank": 3,
+          "control_pick": "H258-1",
+          "treatment_pick": "H258-3"
+        },
+        {
+          "race_id": "rev-285-260",
+          "miss_layer": "Boundary",
+          "winner_rank": 3,
+          "control_pick": "H259-1",
+          "treatment_pick": "H259-3"
+        },
+        {
+          "race_id": "rev-285-261",
+          "miss_layer": "Reorder",
+          "winner_rank": 2,
+          "control_pick": "H260-1",
+          "treatment_pick": "H260-2"
+        },
+        {
+          "race_id": "rev-285-262",
+          "miss_layer": "Reorder",
+          "winner_rank": 2,
+          "control_pick": "H261-1",
+          "treatment_pick": "H261-2"
+        },
+        {
+          "race_id": "rev-285-263",
+          "miss_layer": "Reorder",
+          "winner_rank": 2,
+          "control_pick": "H262-1",
+          "treatment_pick": "H262-2"
+        },
+        {
+          "race_id": "rev-285-264",
+          "miss_layer": "Reorder",
+          "winner_rank": 2,
+          "control_pick": "H263-1",
+          "treatment_pick": "H263-2"
+        },
+        {
+          "race_id": "rev-285-265",
+          "miss_layer": "Reorder",
+          "winner_rank": 2,
+          "control_pick": "H264-1",
+          "treatment_pick": "H264-2"
+        },
+        {
+          "race_id": "rev-285-266",
+          "miss_layer": "Reorder",
+          "winner_rank": 2,
+          "control_pick": "H265-1",
+          "treatment_pick": "H265-2"
+        },
+        {
+          "race_id": "rev-285-267",
+          "miss_layer": "Reorder",
+          "winner_rank": 2,
+          "control_pick": "H266-1",
+          "treatment_pick": "H266-2"
+        },
+        {
+          "race_id": "rev-285-268",
+          "miss_layer": "Reorder",
+          "winner_rank": 2,
+          "control_pick": "H267-1",
+          "treatment_pick": "H267-2"
+        },
+        {
+          "race_id": "rev-285-269",
+          "miss_layer": "Reorder",
+          "winner_rank": 2,
+          "control_pick": "H268-1",
+          "treatment_pick": "H268-2"
+        },
+        {
+          "race_id": "rev-285-270",
+          "miss_layer": "Reorder",
+          "winner_rank": 2,
+          "control_pick": "H269-1",
+          "treatment_pick": "H269-2"
+        }
+      ],
+      "worsened": []
+    },
+    "race_comparison": {
+      "overlap_improved": [],
+      "overlap_count": 0,
+      "overlap_rate_of_union": 0.0,
+      "only_a01": [
+        "rev-285-219",
+        "rev-285-220",
+        "rev-285-221",
+        "rev-285-222",
+        "rev-285-223",
+        "rev-285-224",
+        "rev-285-225",
+        "rev-285-226",
+        "rev-285-227",
+        "rev-285-228",
+        "rev-285-229",
+        "rev-285-230",
+        "rev-285-231",
+        "rev-285-232",
+        "rev-285-233",
+        "rev-285-234",
+        "rev-285-235",
+        "rev-285-236",
+        "rev-285-237",
+        "rev-285-238",
+        "rev-285-239",
+        "rev-285-240",
+        "rev-285-241",
+        "rev-285-242",
+        "rev-285-243",
+        "rev-285-244",
+        "rev-285-245",
+        "rev-285-246"
+      ],
+      "only_a01_count": 28,
+      "only_a01_layers": {
+        "Eval": 28
+      },
+      "only_a02": [
+        "rev-285-247",
+        "rev-285-248",
+        "rev-285-249",
+        "rev-285-250",
+        "rev-285-251",
+        "rev-285-252",
+        "rev-285-253",
+        "rev-285-254",
+        "rev-285-255",
+        "rev-285-256",
+        "rev-285-257",
+        "rev-285-258",
+        "rev-285-259",
+        "rev-285-260",
+        "rev-285-261",
+        "rev-285-262",
+        "rev-285-263",
+        "rev-285-264",
+        "rev-285-265",
+        "rev-285-266",
+        "rev-285-267",
+        "rev-285-268",
+        "rev-285-269",
+        "rev-285-270"
+      ],
+      "only_a02_count": 24,
+      "only_a02_layers": {
+        "Boundary": 14,
+        "Reorder": 10
+      },
+      "union_count": 52,
+      "worsened_a01": [],
+      "worsened_a02": []
+    },
+    "delta_vs_baseline": {
+      "a01_hit": 28,
+      "a02_hit": 24,
+      "a01_roi": 0.3045,
+      "a02_roi": 0.3326
+    }
+  },
+  "native_panels": {
+    "a01_corpus": {
+      "panel": "a01_native_corpus",
+      "n": 285,
+      "baseline": {
+        "n": 285,
+        "hit": 218,
+        "miss": 67,
+        "purchase": 218,
+        "rank710": 9,
+        "rank46": 6,
+        "other": 52,
+        "roi": 1.1418,
+        "stake_total": 28500.0,
+        "return_total": 61040.0
+      },
+      "a01": {
+        "n": 285,
+        "hit": 246,
+        "miss": 39,
+        "purchase": 246,
+        "rank710": 9,
+        "rank46": 6,
+        "other": 24,
+        "roi": 1.4463,
+        "stake_total": 28500.0,
+        "return_total": 69720.0,
+        "churn_hit": 0,
+        "flag": "F_V3_RANK_D1_ENABLED",
+        "policy": "D1-Recalibrator",
+        "improved_count": 28,
+        "worsened_count": 0,
+        "improved_by_layer": {
+          "Eval": 28
+        },
+        "improved": [
+          {
+            "race_id": "a01-285-219",
+            "miss_layer": "Eval",
+            "winner_rank": 2,
+            "control_pick": "H218-1",
+            "treatment_pick": "H218-2"
+          },
+          {
+            "race_id": "a01-285-220",
+            "miss_layer": "Eval",
+            "winner_rank": 2,
+            "control_pick": "H219-1",
+            "treatment_pick": "H219-2"
+          },
+          {
+            "race_id": "a01-285-221",
+            "miss_layer": "Eval",
+            "winner_rank": 2,
+            "control_pick": "H220-1",
+            "treatment_pick": "H220-2"
+          },
+          {
+            "race_id": "a01-285-222",
+            "miss_layer": "Eval",
+            "winner_rank": 2,
+            "control_pick": "H221-1",
+            "treatment_pick": "H221-2"
+          },
+          {
+            "race_id": "a01-285-223",
+            "miss_layer": "Eval",
+            "winner_rank": 2,
+            "control_pick": "H222-1",
+            "treatment_pick": "H222-2"
+          },
+          {
+            "race_id": "a01-285-224",
+            "miss_layer": "Eval",
+            "winner_rank": 2,
+            "control_pick": "H223-1",
+            "treatment_pick": "H223-2"
+          },
+          {
+            "race_id": "a01-285-225",
+            "miss_layer": "Eval",
+            "winner_rank": 2,
+            "control_pick": "H224-1",
+            "treatment_pick": "H224-2"
+          },
+          {
+            "race_id": "a01-285-226",
+            "miss_layer": "Eval",
+            "winner_rank": 2,
+            "control_pick": "H225-1",
+            "treatment_pick": "H225-2"
+          },
+          {
+            "race_id": "a01-285-227",
+            "miss_layer": "Eval",
+            "winner_rank": 2,
+            "control_pick": "H226-1",
+            "treatment_pick": "H226-2"
+          },
+          {
+            "race_id": "a01-285-228",
+            "miss_layer": "Eval",
+            "winner_rank": 2,
+            "control_pick": "H227-1",
+            "treatment_pick": "H227-2"
+          },
+          {
+            "race_id": "a01-285-229",
+            "miss_layer": "Eval",
+            "winner_rank": 2,
+            "control_pick": "H228-1",
+            "treatment_pick": "H228-2"
+          },
+          {
+            "race_id": "a01-285-230",
+            "miss_layer": "Eval",
+            "winner_rank": 2,
+            "control_pick": "H229-1",
+            "treatment_pick": "H229-2"
+          },
+          {
+            "race_id": "a01-285-231",
+            "miss_layer": "Eval",
+            "winner_rank": 2,
+            "control_pick": "H230-1",
+            "treatment_pick": "H230-2"
+          },
+          {
+            "race_id": "a01-285-232",
+            "miss_layer": "Eval",
+            "winner_rank": 2,
+            "control_pick": "H231-1",
+            "treatment_pick": "H231-2"
+          },
+          {
+            "race_id": "a01-285-233",
+            "miss_layer": "Eval",
+            "winner_rank": 2,
+            "control_pick": "H232-1",
+            "treatment_pick": "H232-2"
+          },
+          {
+            "race_id": "a01-285-234",
+            "miss_layer": "Eval",
+            "winner_rank": 2,
+            "control_pick": "H233-1",
+            "treatment_pick": "H233-2"
+          },
+          {
+            "race_id": "a01-285-235",
+            "miss_layer": "Eval",
+            "winner_rank": 2,
+            "control_pick": "H234-1",
+            "treatment_pick": "H234-2"
+          },
+          {
+            "race_id": "a01-285-236",
+            "miss_layer": "Eval",
+            "winner_rank": 2,
+            "control_pick": "H235-1",
+            "treatment_pick": "H235-2"
+          },
+          {
+            "race_id": "a01-285-237",
+            "miss_layer": "Eval",
+            "winner_rank": 2,
+            "control_pick": "H236-1",
+            "treatment_pick": "H236-2"
+          },
+          {
+            "race_id": "a01-285-238",
+            "miss_layer": "Eval",
+            "winner_rank": 2,
+            "control_pick": "H237-1",
+            "treatment_pick": "H237-2"
+          },
+          {
+            "race_id": "a01-285-239",
+            "miss_layer": "Eval",
+            "winner_rank": 2,
+            "control_pick": "H238-1",
+            "treatment_pick": "H238-2"
+          },
+          {
+            "race_id": "a01-285-240",
+            "miss_layer": "Eval",
+            "winner_rank": 2,
+            "control_pick": "H239-1",
+            "treatment_pick": "H239-2"
+          },
+          {
+            "race_id": "a01-285-241",
+            "miss_layer": "Eval",
+            "winner_rank": 2,
+            "control_pick": "H240-1",
+            "treatment_pick": "H240-2"
+          },
+          {
+            "race_id": "a01-285-242",
+            "miss_layer": "Eval",
+            "winner_rank": 2,
+            "control_pick": "H241-1",
+            "treatment_pick": "H241-2"
+          },
+          {
+            "race_id": "a01-285-243",
+            "miss_layer": "Eval",
+            "winner_rank": 2,
+            "control_pick": "H242-1",
+            "treatment_pick": "H242-2"
+          },
+          {
+            "race_id": "a01-285-244",
+            "miss_layer": "Eval",
+            "winner_rank": 2,
+            "control_pick": "H243-1",
+            "treatment_pick": "H243-2"
+          },
+          {
+            "race_id": "a01-285-245",
+            "miss_layer": "Eval",
+            "winner_rank": 2,
+            "control_pick": "H244-1",
+            "treatment_pick": "H244-2"
+          },
+          {
+            "race_id": "a01-285-246",
+            "miss_layer": "Eval",
+            "winner_rank": 2,
+            "control_pick": "H245-1",
+            "treatment_pick": "H245-2"
+          }
+        ],
+        "worsened": []
+      },
+      "a02": {
+        "n": 285,
+        "hit": 218,
+        "miss": 67,
+        "purchase": 218,
+        "rank710": 9,
+        "rank46": 6,
+        "other": 52,
+        "roi": 1.1418,
+        "stake_total": 28500.0,
+        "return_total": 61040.0,
+        "churn_hit": 0,
+        "flag": "F_V3_RANK_D2_ENABLED",
+        "policy": "D2-Reranker",
+        "improved_count": 0,
+        "worsened_count": 0,
+        "improved_by_layer": {},
+        "improved": [],
+        "worsened": []
+      },
+      "race_comparison": {
+        "overlap_improved": [],
+        "overlap_count": 0,
+        "overlap_rate_of_union": 0.0,
+        "only_a01": [
+          "a01-285-219",
+          "a01-285-220",
+          "a01-285-221",
+          "a01-285-222",
+          "a01-285-223",
+          "a01-285-224",
+          "a01-285-225",
+          "a01-285-226",
+          "a01-285-227",
+          "a01-285-228",
+          "a01-285-229",
+          "a01-285-230",
+          "a01-285-231",
+          "a01-285-232",
+          "a01-285-233",
+          "a01-285-234",
+          "a01-285-235",
+          "a01-285-236",
+          "a01-285-237",
+          "a01-285-238",
+          "a01-285-239",
+          "a01-285-240",
+          "a01-285-241",
+          "a01-285-242",
+          "a01-285-243",
+          "a01-285-244",
+          "a01-285-245",
+          "a01-285-246"
+        ],
+        "only_a01_count": 28,
+        "only_a01_layers": {
+          "Eval": 28
+        },
+        "only_a02": [],
+        "only_a02_count": 0,
+        "only_a02_layers": {},
+        "union_count": 28,
+        "worsened_a01": [],
+        "worsened_a02": []
+      },
+      "delta_vs_baseline": {
+        "a01_hit": 28,
+        "a02_hit": 0,
+        "a01_roi": 0.3045,
+        "a02_roi": 0.0
+      }
+    },
+    "a02_corpus": {
+      "panel": "a02_native_corpus",
+      "n": 285,
+      "baseline": {
+        "n": 285,
+        "hit": 218,
+        "miss": 67,
+        "purchase": 218,
+        "rank710": 9,
+        "rank46": 6,
+        "other": 52,
+        "roi": 1.1418,
+        "stake_total": 28500.0,
+        "return_total": 61040.0
+      },
+      "a01": {
+        "n": 285,
+        "hit": 218,
+        "miss": 67,
+        "purchase": 218,
+        "rank710": 9,
+        "rank46": 6,
+        "other": 52,
+        "roi": 1.1418,
+        "stake_total": 28500.0,
+        "return_total": 61040.0,
+        "churn_hit": 0,
+        "flag": "F_V3_RANK_D1_ENABLED",
+        "policy": "D1-Recalibrator",
+        "improved_count": 0,
+        "worsened_count": 0,
+        "improved_by_layer": {},
+        "improved": [],
+        "worsened": []
+      },
+      "a02": {
+        "n": 285,
+        "hit": 242,
+        "miss": 43,
+        "purchase": 242,
+        "rank710": 9,
+        "rank46": 6,
+        "other": 28,
+        "roi": 1.4744,
+        "stake_total": 28500.0,
+        "return_total": 70520.0,
+        "churn_hit": 0,
+        "flag": "F_V3_RANK_D2_ENABLED",
+        "policy": "D2-Reranker",
+        "improved_count": 24,
+        "worsened_count": 0,
+        "improved_by_layer": {
+          "Boundary": 14,
+          "Reorder": 10
+        },
+        "improved": [
+          {
+            "race_id": "a02-285-247",
+            "miss_layer": "Boundary",
+            "winner_rank": 3,
+            "control_pick": "H246-1",
+            "treatment_pick": "H246-3"
+          },
+          {
+            "race_id": "a02-285-248",
+            "miss_layer": "Boundary",
+            "winner_rank": 3,
+            "control_pick": "H247-1",
+            "treatment_pick": "H247-3"
+          },
+          {
+            "race_id": "a02-285-249",
+            "miss_layer": "Boundary",
+            "winner_rank": 3,
+            "control_pick": "H248-1",
+            "treatment_pick": "H248-3"
+          },
+          {
+            "race_id": "a02-285-250",
+            "miss_layer": "Boundary",
+            "winner_rank": 3,
+            "control_pick": "H249-1",
+            "treatment_pick": "H249-3"
+          },
+          {
+            "race_id": "a02-285-251",
+            "miss_layer": "Boundary",
+            "winner_rank": 3,
+            "control_pick": "H250-1",
+            "treatment_pick": "H250-3"
+          },
+          {
+            "race_id": "a02-285-252",
+            "miss_layer": "Boundary",
+            "winner_rank": 3,
+            "control_pick": "H251-1",
+            "treatment_pick": "H251-3"
+          },
+          {
+            "race_id": "a02-285-253",
+            "miss_layer": "Boundary",
+            "winner_rank": 3,
+            "control_pick": "H252-1",
+            "treatment_pick": "H252-3"
+          },
+          {
+            "race_id": "a02-285-254",
+            "miss_layer": "Boundary",
+            "winner_rank": 3,
+            "control_pick": "H253-1",
+            "treatment_pick": "H253-3"
+          },
+          {
+            "race_id": "a02-285-255",
+            "miss_layer": "Boundary",
+            "winner_rank": 3,
+            "control_pick": "H254-1",
+            "treatment_pick": "H254-3"
+          },
+          {
+            "race_id": "a02-285-256",
+            "miss_layer": "Boundary",
+            "winner_rank": 3,
+            "control_pick": "H255-1",
+            "treatment_pick": "H255-3"
+          },
+          {
+            "race_id": "a02-285-257",
+            "miss_layer": "Boundary",
+            "winner_rank": 3,
+            "control_pick": "H256-1",
+            "treatment_pick": "H256-3"
+          },
+          {
+            "race_id": "a02-285-258",
+            "miss_layer": "Boundary",
+            "winner_rank": 3,
+            "control_pick": "H257-1",
+            "treatment_pick": "H257-3"
+          },
+          {
+            "race_id": "a02-285-259",
+            "miss_layer": "Boundary",
+            "winner_rank": 3,
+            "control_pick": "H258-1",
+            "treatment_pick": "H258-3"
+          },
+          {
+            "race_id": "a02-285-260",
+            "miss_layer": "Boundary",
+            "winner_rank": 3,
+            "control_pick": "H259-1",
+            "treatment_pick": "H259-3"
+          },
+          {
+            "race_id": "a02-285-261",
+            "miss_layer": "Reorder",
+            "winner_rank": 2,
+            "control_pick": "H260-1",
+            "treatment_pick": "H260-2"
+          },
+          {
+            "race_id": "a02-285-262",
+            "miss_layer": "Reorder",
+            "winner_rank": 2,
+            "control_pick": "H261-1",
+            "treatment_pick": "H261-2"
+          },
+          {
+            "race_id": "a02-285-263",
+            "miss_layer": "Reorder",
+            "winner_rank": 2,
+            "control_pick": "H262-1",
+            "treatment_pick": "H262-2"
+          },
+          {
+            "race_id": "a02-285-264",
+            "miss_layer": "Reorder",
+            "winner_rank": 2,
+            "control_pick": "H263-1",
+            "treatment_pick": "H263-2"
+          },
+          {
+            "race_id": "a02-285-265",
+            "miss_layer": "Reorder",
+            "winner_rank": 2,
+            "control_pick": "H264-1",
+            "treatment_pick": "H264-2"
+          },
+          {
+            "race_id": "a02-285-266",
+            "miss_layer": "Reorder",
+            "winner_rank": 2,
+            "control_pick": "H265-1",
+            "treatment_pick": "H265-2"
+          },
+          {
+            "race_id": "a02-285-267",
+            "miss_layer": "Reorder",
+            "winner_rank": 2,
+            "control_pick": "H266-1",
+            "treatment_pick": "H266-2"
+          },
+          {
+            "race_id": "a02-285-268",
+            "miss_layer": "Reorder",
+            "winner_rank": 2,
+            "control_pick": "H267-1",
+            "treatment_pick": "H267-2"
+          },
+          {
+            "race_id": "a02-285-269",
+            "miss_layer": "Reorder",
+            "winner_rank": 2,
+            "control_pick": "H268-1",
+            "treatment_pick": "H268-2"
+          },
+          {
+            "race_id": "a02-285-270",
+            "miss_layer": "Reorder",
+            "winner_rank": 2,
+            "control_pick": "H269-1",
+            "treatment_pick": "H269-2"
+          }
+        ],
+        "worsened": []
+      },
+      "race_comparison": {
+        "overlap_improved": [],
+        "overlap_count": 0,
+        "overlap_rate_of_union": 0.0,
+        "only_a01": [],
+        "only_a01_count": 0,
+        "only_a01_layers": {},
+        "only_a02": [
+          "a02-285-247",
+          "a02-285-248",
+          "a02-285-249",
+          "a02-285-250",
+          "a02-285-251",
+          "a02-285-252",
+          "a02-285-253",
+          "a02-285-254",
+          "a02-285-255",
+          "a02-285-256",
+          "a02-285-257",
+          "a02-285-258",
+          "a02-285-259",
+          "a02-285-260",
+          "a02-285-261",
+          "a02-285-262",
+          "a02-285-263",
+          "a02-285-264",
+          "a02-285-265",
+          "a02-285-266",
+          "a02-285-267",
+          "a02-285-268",
+          "a02-285-269",
+          "a02-285-270"
+        ],
+        "only_a02_count": 24,
+        "only_a02_layers": {
+          "Boundary": 14,
+          "Reorder": 10
+        },
+        "union_count": 24,
+        "worsened_a01": [],
+        "worsened_a02": []
+      },
+      "delta_vs_baseline": {
+        "a01_hit": 0,
+        "a02_hit": 24,
+        "a01_roi": 0.0,
+        "a02_roi": 0.3326
+      }
+    }
+  },
+  "comparison_table": {
+    "metric": [
+      "Hit",
+      "Purchase",
+      "rank710",
+      "rank46",
+      "other",
+      "ROI",
+      "churn",
+      "ΔHit"
+    ],
+    "baseline": [
+      218,
+      218,
+      9,
+      6,
+      52,
+      1.1418,
+      0,
+      0
+    ],
+    "a01": [
+      246,
+      246,
+      9,
+      6,
+      24,
+      1.4463,
+      0,
+      28
+    ],
+    "a02": [
+      242,
+      242,
+      9,
+      6,
+      28,
+      1.4744,
+      0,
+      24
+    ]
+  },
+  "qualitative": {
+    "implementation_complexity": {
+      "a01": {
+        "score": 2,
+        "scale": "1=simple .. 5=complex",
+        "notes": [
+          "Feature-invariant scalar recalibration",
+          "Single runner score; no field pairwise loop",
+          "Contract 2.0 / ~120 LOC policy"
+        ]
+      },
+      "a02": {
+        "score": 3,
+        "scale": "1=simple .. 5=complex",
+        "notes": [
+          "Listwise crowding + pairwise history strength",
+          "O(n^2) pairwise over field",
+          "Contract 2.1 / crowding hyperparameter (0.15 gap)"
+        ]
+      },
+      "winner": "A-01（より単純）"
+    },
+    "maintainability": {
+      "a01": {
+        "score": 4,
+        "notes": [
+          "Signals limited to win_prob/rank/odds/form",
+          "Frozen after Validation PASS",
+          "Easy to reason about Fail modes"
+        ]
+      },
+      "a02": {
+        "score": 3,
+        "notes": [
+          "Depends on history_score quality / crowding threshold",
+          "Crowded-field behavior harder to debug",
+          "Still isolated module (evaluation_policy_d2)"
+        ]
+      },
+      "winner": "A-01（保守しやすい）"
+    },
+    "extensibility": {
+      "a01": {
+        "score": 3,
+        "notes": [
+          "Natural path to learned isotonic calibrator",
+          "Less suited to relative/listwise objectives alone"
+        ]
+      },
+      "a02": {
+        "score": 4,
+        "notes": [
+          "Maps to pairwise/listwise rank-loss training",
+          "Can absorb Representation embeddings later",
+          "Orthogonal miss layer to A-01 → stack candidate"
+        ]
+      },
+      "winner": "A-02（学習・表現拡張に近い）"
+    }
+  },
+  "ranking": {
+    "rank_1": "A-01",
+    "rank_2": "A-02",
+    "recommendation": {
+      "lab_primary_candidate": "A-01",
+      "lab_secondary_candidate": "A-02",
+      "stack_both": false,
+      "stack_note": "単独 Flag 原則のため同時 ON は禁止。重複率が低いため将来の stack は別実験承認が必要。",
+      "production_wiring": false,
+      "rationale": [
+        "同一条件 Hit A-01 246 > A-02 242",
+        "両候補とも churn=0",
+        "実装・保守は A-01 が優位",
+        "改善レース重複率 0.0（ほぼ相補）→ 併用余地は別承認"
+      ]
+    },
+    "scores": {
+      "a01": {
+        "hit": 246,
+        "churn": 0,
+        "roi": 1.4463,
+        "validation": "PASS",
+        "complexity_advantage": true
+      },
+      "a02": {
+        "hit": 242,
+        "churn": 0,
+        "roi": 1.4744,
+        "validation": "Lab PASS only（Validation 未実施）",
+        "extensibility_advantage": true
+      }
+    }
+  },
+  "stake_yen": 100,
+  "notes": {
+    "same_condition": "unified_review_285r embeds A-01 Eval shape + A-02 Boundary/Reorder shape",
+    "native_panels": "Original experiment corpora retained for reproducibility cross-check",
+    "unchanged": [
+      "Evaluation algorithms",
+      "Representation",
+      "Admission",
+      "Selection",
+      "Purchase",
+      "V2 Production"
+    ]
+  }
+}

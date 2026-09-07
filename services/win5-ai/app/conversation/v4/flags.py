@@ -51,6 +51,11 @@ def knowledge_runtime_enabled() -> bool:
     return _env_bool("F_V5_KNOWLEDGE_RUNTIME", False)
 
 
+def memory_enabled() -> bool:
+    """V6 Memory Platform（Consent-only Long-term）有効。既定 OFF。"""
+    return _env_bool("F_V6_MEMORY", False)
+
+
 def v4_platform_active() -> bool:
     """Conversation Platform（Orchestrator）有効。Ollama Flag とは独立。"""
     return conversation_enabled()
@@ -66,4 +71,5 @@ def flag_snapshot() -> dict[str, bool]:
         "F_V4_KNOWLEDGE_LAYER": knowledge_layer_enabled(),
         "F_V4_KNOWLEDGE_INTEGRATION": knowledge_integration_enabled(),
         "F_V5_KNOWLEDGE_RUNTIME": knowledge_runtime_enabled(),
+        "F_V6_MEMORY": memory_enabled(),
     }

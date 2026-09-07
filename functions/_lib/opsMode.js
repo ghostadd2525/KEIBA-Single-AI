@@ -1,5 +1,5 @@
 /**
- * Phase OPS-1 / OPS-1A / V1.1 auto-maintenance — 公開モード（Ops Mode）
+ * Phase OPS-1 / OPS-1A / V1.1 / V7 Maintenance Mode — 公開モード（Ops Mode）
  *
  * PUBLIC: 一般ユーザー（USER）が Prediction / Conversation / User API を利用可
  * CLOSED: USER はブロック。ADMIN（および将来 OPS / DEVELOPER）は bypass
@@ -7,10 +7,18 @@
  * 優先順位:
  * 1. beta.ops_mode（明示 override）
  * 2. beta.maintenance_mode === true → CLOSED
- * 3. ui_features.v11_auto_maintenance + CalendarProvider（非開催日 → CLOSED）
+ * 3. ui_features.v11_auto_maintenance + Research Week schedule
+ *    （日曜 21:00 JST 〜 土曜 00:00 JST → CLOSED）
  * 4. それ以外 → PUBLIC
+ *
+ * ADMIN / OPS / DEVELOPER は CLOSED でも bypass（JWT 維持・強制ログアウト対象外）。
+ * PE / CE / AI / ResultAutomation / Research ロジックは変更しない。
  */
-import { createCalendarProvider } from "./calendar/createCalendarProvider.js";
+import {
+  isResearchWeekMaintenance,
+  resolveMaintenanceWindow,
+  maintenanceUserMessage,
+} from "./maintenanceSchedule.js";
 import { canBypassOpsMode, normalizeRole, Role } from "./roles.js";
 
 export const OpsMode = Object.freeze({
@@ -31,6 +39,7 @@ export const OPS_MODE_EXEMPT_PATHS = new Set([
   "/api/health",
   "/api/ops/monitor",
   "/api/ops/public-status",
+  "/api/system/status",
   "/api/v1/stats/heatmap",
 ]);
 
@@ -45,22 +54,24 @@ export function isAutoMaintenanceEnabled(beta) {
 
 /**
  * @param {object | null | undefined} beta
- * @param {{
- *   now?: Date,
- *   provider?: import("./calendar/CalendarProvider.js").CalendarProvider,
- *   decision?: import("./calendar/CalendarProvider.js").CalendarDecision,
- * }} [options]
+ * @param {{ now?: Date }} [options]
  * @returns {Promise<{
  *   ops_mode: "PUBLIC"|"CLOSED",
  *   reason: string,
  *   manual_override: boolean,
  *   auto_maintenance_enabled: boolean,
- *   calendar: import("./calendar/CalendarProvider.js").CalendarDecision | null,
+ *   maintenance: boolean,
+ *   maintenance_start: string | null,
+ *   maintenance_end: string | null,
+ *   schedule_reason: string | null,
+ *   calendar: null,
  * }>}
  */
 export async function resolveOpsModeDetailed(beta, options) {
   const opts = options || {};
+  const now = opts.now || new Date();
   const autoOn = isAutoMaintenanceEnabled(beta);
+  const window = resolveMaintenanceWindow(now);
 
   if (beta && beta.ops_mode != null && String(beta.ops_mode).trim()) {
     const m = String(beta.ops_mode).trim().toUpperCase();
@@ -70,6 +81,10 @@ export async function resolveOpsModeDetailed(beta, options) {
         reason: "manual_ops_mode",
         manual_override: true,
         auto_maintenance_enabled: autoOn,
+        maintenance: true,
+        maintenance_start: window.maintenance_start,
+        maintenance_end: window.maintenance_end,
+        schedule_reason: window.reason,
         calendar: null,
       };
     }
@@ -79,6 +94,10 @@ export async function resolveOpsModeDetailed(beta, options) {
         reason: "manual_ops_mode",
         manual_override: true,
         auto_maintenance_enabled: autoOn,
+        maintenance: false,
+        maintenance_start: window.maintenance_start,
+        maintenance_end: window.maintenance_end,
+        schedule_reason: window.reason,
         calendar: null,
       };
     }
@@ -90,31 +109,26 @@ export async function resolveOpsModeDetailed(beta, options) {
       reason: "manual_maintenance_mode",
       manual_override: true,
       auto_maintenance_enabled: autoOn,
+      maintenance: true,
+      maintenance_start: window.maintenance_start,
+      maintenance_end: window.maintenance_end,
+      schedule_reason: "manual_maintenance_mode",
       calendar: null,
     };
   }
 
-  let calendar = opts.decision || null;
   if (autoOn) {
-    if (!calendar) {
-      const provider = opts.provider || createCalendarProvider(beta);
-      calendar = await Promise.resolve(provider.decide(opts.now || new Date()));
-    }
-    if (calendar && calendar.is_race_day === false) {
-      return {
-        ops_mode: OpsMode.CLOSED,
-        reason: "auto_calendar",
-        manual_override: false,
-        auto_maintenance_enabled: true,
-        calendar: calendar,
-      };
-    }
+    const closed = isResearchWeekMaintenance(now);
     return {
-      ops_mode: OpsMode.PUBLIC,
-      reason: "auto_calendar_race_day",
+      ops_mode: closed ? OpsMode.CLOSED : OpsMode.PUBLIC,
+      reason: closed ? "research_week_maintenance" : "research_week_open",
       manual_override: false,
       auto_maintenance_enabled: true,
-      calendar: calendar,
+      maintenance: closed,
+      maintenance_start: window.maintenance_start,
+      maintenance_end: window.maintenance_end,
+      schedule_reason: window.reason,
+      calendar: null,
     };
   }
 
@@ -123,24 +137,24 @@ export async function resolveOpsModeDetailed(beta, options) {
     reason: "default_public",
     manual_override: false,
     auto_maintenance_enabled: false,
-    calendar: calendar,
+    maintenance: false,
+    maintenance_start: window.maintenance_start,
+    maintenance_end: window.maintenance_end,
+    schedule_reason: window.reason,
+    calendar: null,
   };
 }
 
 /**
- * 同期互換 API。Flag OFF / 手動のみの既存テスト向け。
- * auto maintenance 時は Weekend（または options.decision）を同期評価する。
+ * 同期互換 API。
  *
  * @param {object | null | undefined} beta
- * @param {{
- *   now?: Date,
- *   provider?: import("./calendar/CalendarProvider.js").CalendarProvider,
- *   decision?: import("./calendar/CalendarProvider.js").CalendarDecision,
- * }} [options]
+ * @param {{ now?: Date }} [options]
  * @returns {"PUBLIC"|"CLOSED"}
  */
 export function resolveOpsMode(beta, options) {
   const opts = options || {};
+  const now = opts.now || new Date();
   const autoOn = isAutoMaintenanceEnabled(beta);
 
   if (beta && beta.ops_mode != null && String(beta.ops_mode).trim()) {
@@ -157,24 +171,13 @@ export function resolveOpsMode(beta, options) {
   }
 
   if (autoOn) {
-    const provider = opts.provider || createCalendarProvider(beta);
-    const decision =
-      opts.decision || provider.decide(opts.now || new Date());
-    // sync path: decide must not return a Promise here（Weekend は sync）
-    if (decision && typeof decision.then === "function") {
-      return OpsMode.PUBLIC;
-    }
-    if (decision && decision.is_race_day === false) {
-      return OpsMode.CLOSED;
-    }
+    return isResearchWeekMaintenance(now) ? OpsMode.CLOSED : OpsMode.PUBLIC;
   }
 
   return OpsMode.PUBLIC;
 }
 
 /**
- * 認可（ロール）評価のあとに呼ぶ公開制御判定。
- *
  * @param {{
  *   pathname: string,
  *   opsMode: string,
@@ -230,4 +233,4 @@ export async function isListedAdmin(context, userId, beta) {
   return set.has(id);
 }
 
-export { Role, canBypassOpsMode, normalizeRole };
+export { Role, canBypassOpsMode, normalizeRole, maintenanceUserMessage };

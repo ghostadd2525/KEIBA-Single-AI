@@ -1,0 +1,231 @@
+{
+  "baseline_id": "v3-lab-baseline-v2-a01-a03",
+  "freeze_id": "v3-lab-configuration-freeze/1.0",
+  "freeze_date": "2026-07-24",
+  "generated_on": "2026-07-24",
+  "parent_baseline": "v3-lab-baseline-p5-v1",
+  "corpus": {
+    "id": "a03-285-*",
+    "n": 285,
+    "builder": "build_a03_accuracy_corpus"
+  },
+  "control": {
+    "name": "Lab Baseline OFF (identity)",
+    "hit": 218,
+    "metrics": {
+      "n": 285,
+      "hit": 218,
+      "miss": 67,
+      "purchase": 218,
+      "rank710": 9,
+      "rank46": 6,
+      "other": 52,
+      "roi": 1.1418,
+      "stake_total": 28500.0,
+      "return_total": 61040.0
+    }
+  },
+  "a01_reference": {
+    "name": "A-01 Evaluation only",
+    "hit": 246,
+    "metrics": {
+      "n": 285,
+      "hit": 246,
+      "miss": 39,
+      "purchase": 246,
+      "rank710": 9,
+      "rank46": 6,
+      "other": 24,
+      "roi": 1.4463,
+      "stake_total": 28500.0,
+      "return_total": 69720.0
+    }
+  },
+  "stack": {
+    "name": "A-01 Evaluation + A-03 Admission",
+    "flags_on": [
+      "F_V3_A03_POOL_ADMIT_ENABLED",
+      "F_V3_RANK_D1_ENABLED"
+    ],
+    "hit": 255,
+    "metrics": {
+      "n": 285,
+      "hit": 255,
+      "miss": 30,
+      "purchase": 255,
+      "rank710": 0,
+      "rank46": 6,
+      "other": 24,
+      "roi": 2.7095,
+      "stake_total": 28500.0,
+      "return_total": 105720.0
+    },
+    "churn_vs_control": 0,
+    "churn_vs_a01": 0
+  },
+  "delta_stack_vs_control": {
+    "hit": 37,
+    "purchase": 37,
+    "rank710": -9,
+    "rank46": 0,
+    "other": -28,
+    "roi": 1.5677
+  },
+  "configuration": {
+    "configuration_id": "v3-lab-config-a01-a03/1.0",
+    "freeze_id": "v3-lab-configuration-freeze/1.0",
+    "freeze_date": "2026-07-24",
+    "frozen": true,
+    "production_wiring": false,
+    "name": "Lab Stack A-01 + A-03",
+    "pipeline": [
+      {
+        "stage": "representation",
+        "mode": "baseline",
+        "policy_id": "identity",
+        "flag": "F_V3_REPRESENTATION",
+        "flag_state_in_stack": false,
+        "note": "Baseline passthrough"
+      },
+      {
+        "stage": "admission",
+        "mode": "A-03",
+        "policy_id": "AP-V3-A03-pool-coverage",
+        "admission_id": "v3-adm-a03-v1",
+        "flag": "F_V3_A03_POOL_ADMIT_ENABLED",
+        "flag_state_in_stack": true,
+        "contract": "v3-lab-admission/2.1",
+        "validation": "PASS"
+      },
+      {
+        "stage": "selection",
+        "mode": "baseline",
+        "policy_id": "identity",
+        "flag": "F_V3_SELECTION",
+        "flag_state_in_stack": false,
+        "note": "Baseline passthrough"
+      },
+      {
+        "stage": "evaluation",
+        "mode": "A-01",
+        "policy_id": "D1-Recalibrator",
+        "evaluation_id": "v3-eval-a01-d1",
+        "flag": "F_V3_RANK_D1_ENABLED",
+        "flag_state_in_stack": true,
+        "contract": "v3-lab-evaluation/2.0",
+        "validation": "PASS"
+      },
+      {
+        "stage": "purchase",
+        "mode": "baseline",
+        "mapper": "identity",
+        "flag": "F_V3_PURCHASE_ENABLED",
+        "flag_state_in_stack": false,
+        "note": "Baseline passthrough · Delete unchanged"
+      }
+    ],
+    "stack_flags_on": [
+      "F_V3_A03_POOL_ADMIT_ENABLED",
+      "F_V3_RANK_D1_ENABLED"
+    ],
+    "stack_flags_explicitly_off": [
+      "F_V3_REPRESENTATION",
+      "F_V3_ADMISSION",
+      "F_V3_SELECTION",
+      "F_V3_RANK_D2_ENABLED",
+      "F_V3_PURCHASE_ENABLED"
+    ],
+    "diagram": {
+      "ascii": "Representation (Baseline)\n        ↓\nAdmission (A-03)\n        ↓\nSelection (Baseline)\n        ↓\nEvaluation (A-01)\n        ↓\nPurchase (Baseline)"
+    }
+  },
+  "candidates": {
+    "registry_id": "v3-accuracy-candidate-registry/2.0",
+    "phase": "Lab Configuration Freeze",
+    "freeze_id": "v3-lab-configuration-freeze/1.0",
+    "freeze_date": "2026-07-24",
+    "closed": true,
+    "baseline_v2": {
+      "id": "v3-lab-baseline-v2-a01-a03",
+      "path": "research/v3_lab/baselines/lab_baseline_v2_a01_a03.json",
+      "stack_hit": 255,
+      "control_hit": 218
+    },
+    "baseline_p5": {
+      "id": "v3-lab-baseline-p5-v1",
+      "path": "research/v3_lab/baselines/lab_baseline_p5.json",
+      "note": "Foundation freeze retained; Accuracy stack baseline is v2"
+    },
+    "decision": {
+      "adopted_stack": [
+        "A-03 Admission",
+        "A-01 Evaluation"
+      ],
+      "a02_role": "secondary_candidate_held",
+      "simultaneous_d1_d2": false,
+      "production_wiring": false
+    },
+    "stack_primary": {
+      "name": "A-01 + A-03",
+      "evaluation": "A-01",
+      "admission": "A-03",
+      "lab_hit": 255,
+      "churn_hit": 0,
+      "validation": "PASS",
+      "status": "lab_adopted_configuration"
+    },
+    "evaluation_primary": {
+      "candidate_id": "A-01",
+      "flag": "F_V3_RANK_D1_ENABLED",
+      "lab_hit_alone": 246,
+      "status": "lab_primary_evaluation",
+      "in_adopted_stack": true,
+      "frozen_logic": true
+    },
+    "admission_primary": {
+      "candidate_id": "A-03",
+      "flag": "F_V3_A03_POOL_ADMIT_ENABLED",
+      "lab_hit_incremental": 255,
+      "status": "lab_primary_admission",
+      "in_adopted_stack": true,
+      "frozen_logic": true
+    },
+    "evaluation_secondary": {
+      "candidate_id": "A-02",
+      "flag": "F_V3_RANK_D2_ENABLED",
+      "lab_hit_alone": 242,
+      "status": "lab_secondary_candidate",
+      "in_adopted_stack": false,
+      "note": "Held as Secondary; not in official Lab stack",
+      "frozen_logic": true
+    }
+  },
+  "contracts": {
+    "representation": "v3-lab-representation/2.0",
+    "admission": "v3-lab-admission/2.0",
+    "selection": "v3-lab-selection/2.0",
+    "evaluation": "v3-lab-evaluation/2.0",
+    "purchase": "v3-lab-purchase/1.0",
+    "pipeline": "v3-lab-pipeline/1.0"
+  },
+  "module_sha256_16": {
+    "feature_generator.py": "32a71445b03ddb65",
+    "admission_policy.py": "78a79ebce7786dea",
+    "admission_policy_a03.py": "04142443526f62b0",
+    "selection_policy.py": "cea5a9befae0b1a6",
+    "evaluation_policy.py": "5fcd339f846e4d46",
+    "evaluation_policy_d2.py": "9e6c63994517371b"
+  },
+  "invariants": {
+    "control_hit_218": true,
+    "stack_hit_255": true,
+    "churn_vs_control_0": true,
+    "churn_vs_a01_0": true,
+    "production_wiring": false,
+    "algorithms_unchanged": true
+  },
+  "notes": {
+    "a02": "Secondary candidate held; not in stack",
+    "defaults": "All F_V3_* remain default OFF in runtime; stack documents Lab adoption intent"
+  }
+}

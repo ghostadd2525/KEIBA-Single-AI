@@ -3,3 +3,5 @@
 logs/*.jsonl
 reports/missing_*.csv
 reports/missing_report.json
+memory/*.json
+memory/*.tmp

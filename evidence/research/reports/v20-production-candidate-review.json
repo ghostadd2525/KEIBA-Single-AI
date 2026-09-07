@@ -1,0 +1,1395 @@
+{
+  "schema_version": "expect-production-candidate-review/1.0",
+  "generated_at": "2026-07-27T10:23:12+00:00",
+  "run_id": "pcr-41772dfdd5c3",
+  "week_id": "2026-W31",
+  "prediction_mutation": "FORBIDDEN",
+  "ai_mutation": "FORBIDDEN",
+  "production_mutation": "FORBIDDEN",
+  "summary": {
+    "week_id": "2026-W31",
+    "reviewed": 3,
+    "pass": 0,
+    "warning": 3,
+    "fail": 0,
+    "promote_v21": 0
+  },
+  "thresholds": {
+    "leak_risk_fail": 0.85,
+    "leak_risk_warn": 0.55,
+    "min_n_pass": 40,
+    "min_n_warn": 20,
+    "min_segment_diversity": 2,
+    "max_knowledge_drift_fail": 0.15,
+    "max_knowledge_drift_warn": 0.08,
+    "min_reliability_pass": 65.0,
+    "min_reliability_warn": 55.0,
+    "min_coverage_pass": 0.7,
+    "min_coverage_warn": 0.4,
+    "min_shadow_strict_pass": 0.25,
+    "min_shadow_strict_warn": 0.18,
+    "min_stability_pass": 0.55,
+    "min_stability_warn": 0.4,
+    "max_weekly_drift_fail": 0.35,
+    "max_weekly_drift_warn": 0.2
+  },
+  "reviews": [
+    {
+      "knowledge_id": "kb-a222dc9f1218",
+      "knowledge_type": "interaction",
+      "source_key": "interaction:mined_2way:popularity=P1|sire=SIRE_WEAK",
+      "observation": "Interaction `popularity=P1|sire=SIRE_WEAK` (mined_2way): rate=40.0% on n=35.",
+      "hypothesis": "The combination `popularity=P1|sire=SIRE_WEAK` may indicate a recurring winner profile; this is a research pattern, not a proven rule.",
+      "shadow_metrics": {
+        "n": 35,
+        "applicable_races": 35,
+        "strict": 14,
+        "soft": 0,
+        "strict_rate": 0.4,
+        "soft_rate": 0.0,
+        "baseline_strict_rate": 0.14285714285714285,
+        "strict_improvement": 0.2571,
+        "roi": 0.0,
+        "wilson_ci": {
+          "low": 0.2555,
+          "high": 0.5643
+        },
+        "coverage": 1.0,
+        "reliability": 74.95,
+        "shadow_outcomes": {
+          "win": 14,
+          "lose": 21,
+          "draw": 0
+        },
+        "knowledge_drift": 0.0,
+        "discovery_hit_rate": 0.4
+      },
+      "rank_score": 0.6835,
+      "dimensions": {
+        "leak_risk": {
+          "dimension": "leak_risk",
+          "verdict": "WARNING",
+          "max_leak_risk": 0.7,
+          "mean_asof_or_temporal": 1.0,
+          "features": [
+            "popularity",
+            "sire"
+          ],
+          "note": "V14 reports high asof_clamped / leak floor across Evidence features; market features may still be pre-race but require asof audit before PE/CE use."
+        },
+        "generalization": {
+          "dimension": "generalization",
+          "verdict": "WARNING",
+          "n": 35,
+          "knowledge_type": "interaction",
+          "segment_hints": [],
+          "diversity_proxy": 0,
+          "note": "Small Evidence corpus (exploratory) limits out-of-sample claims; interaction patterns need multi-season confirmation."
+        },
+        "pe_ce_alignment": {
+          "dimension": "pe_ce_alignment",
+          "verdict": "WARNING",
+          "pe_ce_core_features": [
+            "popularity"
+          ],
+          "non_core_features": [
+            "sire"
+          ],
+          "note": "Candidate mixes PE/CE-core market signals with non-core features. Design must define ownership (PE market layer vs CE feature) to avoid conflict."
+        },
+        "shadow_reproducibility": {
+          "dimension": "shadow_reproducibility",
+          "verdict": "PASS",
+          "shadow_n": 35,
+          "strict_rate": 0.4,
+          "strict_improvement": 0.2571,
+          "governance_passed": true,
+          "shadow_outcomes": {
+            "win": 14,
+            "lose": 21,
+            "draw": 0
+          },
+          "note": "Shadow metrics come from V19 Knowledge Validation Lab (research-only flags)."
+        },
+        "corpus_drift": {
+          "dimension": "corpus_drift",
+          "verdict": "WARNING",
+          "unique_races": 335,
+          "with_evidence": 50,
+          "exploratory_corpus": true,
+          "max_unknown_share_proxy": 0.8676,
+          "note": "Corpus still exploratory; class/age unknown mass remains a drift risk for segment-conditioned Candidates."
+        },
+        "knowledge_drift": {
+          "dimension": "knowledge_drift",
+          "verdict": "PASS",
+          "knowledge_drift": 0.0,
+          "discovery_hit_rate": 0.4,
+          "shadow_strict_rate": 0.4,
+          "note": "Drift = |discovery hit_rate − shadow strict_rate| from V19."
+        },
+        "evidence_quality": {
+          "dimension": "evidence_quality",
+          "verdict": "PASS",
+          "mean_reliability": 74.95,
+          "shadow_coverage": 1.0,
+          "feature_reliabilities": {
+            "popularity": 75.4,
+            "sire": 74.5
+          },
+          "note": "Reliability from V14 Evidence Reliability Research."
+        },
+        "long_term_stability": {
+          "dimension": "long_term_stability",
+          "verdict": "PASS",
+          "mean_stability": 0.9999,
+          "max_weekly_drift": 0.0,
+          "validation_weeks_observed": 1,
+          "note": "Long-term stability inferred mainly from V14 weekly_drift/stability; multi-week V19 revalidation history is still thin."
+        }
+      },
+      "dimension_list": [
+        {
+          "dimension": "leak_risk",
+          "verdict": "WARNING",
+          "max_leak_risk": 0.7,
+          "mean_asof_or_temporal": 1.0,
+          "features": [
+            "popularity",
+            "sire"
+          ],
+          "note": "V14 reports high asof_clamped / leak floor across Evidence features; market features may still be pre-race but require asof audit before PE/CE use."
+        },
+        {
+          "dimension": "generalization",
+          "verdict": "WARNING",
+          "n": 35,
+          "knowledge_type": "interaction",
+          "segment_hints": [],
+          "diversity_proxy": 0,
+          "note": "Small Evidence corpus (exploratory) limits out-of-sample claims; interaction patterns need multi-season confirmation."
+        },
+        {
+          "dimension": "pe_ce_alignment",
+          "verdict": "WARNING",
+          "pe_ce_core_features": [
+            "popularity"
+          ],
+          "non_core_features": [
+            "sire"
+          ],
+          "note": "Candidate mixes PE/CE-core market signals with non-core features. Design must define ownership (PE market layer vs CE feature) to avoid conflict."
+        },
+        {
+          "dimension": "shadow_reproducibility",
+          "verdict": "PASS",
+          "shadow_n": 35,
+          "strict_rate": 0.4,
+          "strict_improvement": 0.2571,
+          "governance_passed": true,
+          "shadow_outcomes": {
+            "win": 14,
+            "lose": 21,
+            "draw": 0
+          },
+          "note": "Shadow metrics come from V19 Knowledge Validation Lab (research-only flags)."
+        },
+        {
+          "dimension": "corpus_drift",
+          "verdict": "WARNING",
+          "unique_races": 335,
+          "with_evidence": 50,
+          "exploratory_corpus": true,
+          "max_unknown_share_proxy": 0.8676,
+          "note": "Corpus still exploratory; class/age unknown mass remains a drift risk for segment-conditioned Candidates."
+        },
+        {
+          "dimension": "knowledge_drift",
+          "verdict": "PASS",
+          "knowledge_drift": 0.0,
+          "discovery_hit_rate": 0.4,
+          "shadow_strict_rate": 0.4,
+          "note": "Drift = |discovery hit_rate − shadow strict_rate| from V19."
+        },
+        {
+          "dimension": "evidence_quality",
+          "verdict": "PASS",
+          "mean_reliability": 74.95,
+          "shadow_coverage": 1.0,
+          "feature_reliabilities": {
+            "popularity": 75.4,
+            "sire": 74.5
+          },
+          "note": "Reliability from V14 Evidence Reliability Research."
+        },
+        {
+          "dimension": "long_term_stability",
+          "verdict": "PASS",
+          "mean_stability": 0.9999,
+          "max_weekly_drift": 0.0,
+          "validation_weeks_observed": 1,
+          "note": "Long-term stability inferred mainly from V14 weekly_drift/stability; multi-week V19 revalidation history is still thin."
+        }
+      ],
+      "overall_verdict": "WARNING",
+      "promote_v21": false,
+      "risk": {
+        "top_risks": [
+          {
+            "dimension": "leak_risk",
+            "verdict": "WARNING",
+            "note": "V14 reports high asof_clamped / leak floor across Evidence features; market features may still be pre-race but require asof audit before PE/CE use."
+          },
+          {
+            "dimension": "generalization",
+            "verdict": "WARNING",
+            "note": "Small Evidence corpus (exploratory) limits out-of-sample claims; interaction patterns need multi-season confirmation."
+          },
+          {
+            "dimension": "pe_ce_alignment",
+            "verdict": "WARNING",
+            "note": "Candidate mixes PE/CE-core market signals with non-core features. Design must define ownership (PE market layer vs CE feature) to avoid conflict."
+          },
+          {
+            "dimension": "corpus_drift",
+            "verdict": "WARNING",
+            "note": "Corpus still exploratory; class/age unknown mass remains a drift risk for segment-conditioned Candidates."
+          }
+        ],
+        "features": [
+          "popularity",
+          "sire"
+        ],
+        "forbid_product_mutation": true
+      },
+      "adoption": {
+        "promote_v21": false,
+        "v21_label": null,
+        "recommended_next": "Hold — address FAIL/WARNING dimensions before any AI wiring. Remain Production_Candidate or demote to Watch/Research.",
+        "pe_ce_note": "Candidate mixes PE/CE-core market signals with non-core features. Design must define ownership (PE market layer vs CE feature) to avoid conflict."
+      }
+    },
+    {
+      "knowledge_id": "kb-72cb124b5471",
+      "knowledge_type": "feature",
+      "source_key": "feature:ALL:popularity",
+      "observation": "In category `ALL`, Popularity resolved 50 field picks with hit rate 32.0% (tie hit 11.1%, importance=0.4718).",
+      "hypothesis": "Popularity may correlate with winner selection in this segment; causation is not established.",
+      "shadow_metrics": {
+        "n": 50,
+        "applicable_races": 50,
+        "strict": 16,
+        "soft": 0,
+        "strict_rate": 0.32,
+        "soft_rate": 0.0,
+        "baseline_strict_rate": 0.16,
+        "strict_improvement": 0.16,
+        "roi": -0.2,
+        "wilson_ci": {
+          "low": 0.2076,
+          "high": 0.4581
+        },
+        "coverage": 1.0,
+        "reliability": 75.4,
+        "shadow_outcomes": {
+          "win": 16,
+          "lose": 34,
+          "draw": 0
+        },
+        "knowledge_drift": 0.0,
+        "discovery_hit_rate": 0.32
+      },
+      "rank_score": 0.6794,
+      "dimensions": {
+        "leak_risk": {
+          "dimension": "leak_risk",
+          "verdict": "WARNING",
+          "max_leak_risk": 0.7,
+          "mean_asof_or_temporal": 1.0,
+          "features": [
+            "popularity"
+          ],
+          "note": "V14 reports high asof_clamped / leak floor across Evidence features; market features may still be pre-race but require asof audit before PE/CE use."
+        },
+        "generalization": {
+          "dimension": "generalization",
+          "verdict": "PASS",
+          "n": 50,
+          "knowledge_type": "feature",
+          "segment_hints": [],
+          "diversity_proxy": 3,
+          "note": "Small Evidence corpus (exploratory) limits out-of-sample claims; interaction patterns need multi-season confirmation."
+        },
+        "pe_ce_alignment": {
+          "dimension": "pe_ce_alignment",
+          "verdict": "WARNING",
+          "pe_ce_core_features": [
+            "popularity"
+          ],
+          "non_core_features": [],
+          "note": "Candidate relies only on PE/CE-core market signals (popularity/odds). Implementing as new AI Score risks double-counting market prior; prefer Shadow monitoring or explicit PE integration design — not a new CE feature."
+        },
+        "shadow_reproducibility": {
+          "dimension": "shadow_reproducibility",
+          "verdict": "PASS",
+          "shadow_n": 50,
+          "strict_rate": 0.32,
+          "strict_improvement": 0.16,
+          "governance_passed": true,
+          "shadow_outcomes": {
+            "win": 16,
+            "lose": 34,
+            "draw": 0
+          },
+          "note": "Shadow metrics come from V19 Knowledge Validation Lab (research-only flags)."
+        },
+        "corpus_drift": {
+          "dimension": "corpus_drift",
+          "verdict": "WARNING",
+          "unique_races": 335,
+          "with_evidence": 50,
+          "exploratory_corpus": true,
+          "max_unknown_share_proxy": 0.8676,
+          "note": "Corpus still exploratory; class/age unknown mass remains a drift risk for segment-conditioned Candidates."
+        },
+        "knowledge_drift": {
+          "dimension": "knowledge_drift",
+          "verdict": "PASS",
+          "knowledge_drift": 0.0,
+          "discovery_hit_rate": 0.32,
+          "shadow_strict_rate": 0.32,
+          "note": "Drift = |discovery hit_rate − shadow strict_rate| from V19."
+        },
+        "evidence_quality": {
+          "dimension": "evidence_quality",
+          "verdict": "PASS",
+          "mean_reliability": 75.4,
+          "shadow_coverage": 1.0,
+          "feature_reliabilities": {
+            "popularity": 75.4
+          },
+          "note": "Reliability from V14 Evidence Reliability Research."
+        },
+        "long_term_stability": {
+          "dimension": "long_term_stability",
+          "verdict": "PASS",
+          "mean_stability": 0.9998,
+          "max_weekly_drift": 0.0,
+          "validation_weeks_observed": 1,
+          "note": "Long-term stability inferred mainly from V14 weekly_drift/stability; multi-week V19 revalidation history is still thin."
+        }
+      },
+      "dimension_list": [
+        {
+          "dimension": "leak_risk",
+          "verdict": "WARNING",
+          "max_leak_risk": 0.7,
+          "mean_asof_or_temporal": 1.0,
+          "features": [
+            "popularity"
+          ],
+          "note": "V14 reports high asof_clamped / leak floor across Evidence features; market features may still be pre-race but require asof audit before PE/CE use."
+        },
+        {
+          "dimension": "generalization",
+          "verdict": "PASS",
+          "n": 50,
+          "knowledge_type": "feature",
+          "segment_hints": [],
+          "diversity_proxy": 3,
+          "note": "Small Evidence corpus (exploratory) limits out-of-sample claims; interaction patterns need multi-season confirmation."
+        },
+        {
+          "dimension": "pe_ce_alignment",
+          "verdict": "WARNING",
+          "pe_ce_core_features": [
+            "popularity"
+          ],
+          "non_core_features": [],
+          "note": "Candidate relies only on PE/CE-core market signals (popularity/odds). Implementing as new AI Score risks double-counting market prior; prefer Shadow monitoring or explicit PE integration design — not a new CE feature."
+        },
+        {
+          "dimension": "shadow_reproducibility",
+          "verdict": "PASS",
+          "shadow_n": 50,
+          "strict_rate": 0.32,
+          "strict_improvement": 0.16,
+          "governance_passed": true,
+          "shadow_outcomes": {
+            "win": 16,
+            "lose": 34,
+            "draw": 0
+          },
+          "note": "Shadow metrics come from V19 Knowledge Validation Lab (research-only flags)."
+        },
+        {
+          "dimension": "corpus_drift",
+          "verdict": "WARNING",
+          "unique_races": 335,
+          "with_evidence": 50,
+          "exploratory_corpus": true,
+          "max_unknown_share_proxy": 0.8676,
+          "note": "Corpus still exploratory; class/age unknown mass remains a drift risk for segment-conditioned Candidates."
+        },
+        {
+          "dimension": "knowledge_drift",
+          "verdict": "PASS",
+          "knowledge_drift": 0.0,
+          "discovery_hit_rate": 0.32,
+          "shadow_strict_rate": 0.32,
+          "note": "Drift = |discovery hit_rate − shadow strict_rate| from V19."
+        },
+        {
+          "dimension": "evidence_quality",
+          "verdict": "PASS",
+          "mean_reliability": 75.4,
+          "shadow_coverage": 1.0,
+          "feature_reliabilities": {
+            "popularity": 75.4
+          },
+          "note": "Reliability from V14 Evidence Reliability Research."
+        },
+        {
+          "dimension": "long_term_stability",
+          "verdict": "PASS",
+          "mean_stability": 0.9998,
+          "max_weekly_drift": 0.0,
+          "validation_weeks_observed": 1,
+          "note": "Long-term stability inferred mainly from V14 weekly_drift/stability; multi-week V19 revalidation history is still thin."
+        }
+      ],
+      "overall_verdict": "WARNING",
+      "promote_v21": false,
+      "risk": {
+        "top_risks": [
+          {
+            "dimension": "leak_risk",
+            "verdict": "WARNING",
+            "note": "V14 reports high asof_clamped / leak floor across Evidence features; market features may still be pre-race but require asof audit before PE/CE use."
+          },
+          {
+            "dimension": "pe_ce_alignment",
+            "verdict": "WARNING",
+            "note": "Candidate relies only on PE/CE-core market signals (popularity/odds). Implementing as new AI Score risks double-counting market prior; prefer Shadow monitoring or explicit PE integration design — not a new CE feature."
+          },
+          {
+            "dimension": "corpus_drift",
+            "verdict": "WARNING",
+            "note": "Corpus still exploratory; class/age unknown mass remains a drift risk for segment-conditioned Candidates."
+          }
+        ],
+        "features": [
+          "popularity"
+        ],
+        "forbid_product_mutation": true
+      },
+      "adoption": {
+        "promote_v21": false,
+        "v21_label": null,
+        "recommended_next": "Hold — address FAIL/WARNING dimensions before any AI wiring. Remain Production_Candidate or demote to Watch/Research.",
+        "pe_ce_note": "Candidate relies only on PE/CE-core market signals (popularity/odds). Implementing as new AI Score risks double-counting market prior; prefer Shadow monitoring or explicit PE integration design — not a new CE feature."
+      }
+    },
+    {
+      "knowledge_id": "kb-0e3d73cec628",
+      "knowledge_type": "feature",
+      "source_key": "feature:ALL:win_odds",
+      "observation": "In category `ALL`, Win Odds resolved 50 field picks with hit rate 32.0% (tie hit 11.1%, importance=0.4718).",
+      "hypothesis": "Win Odds may correlate with winner selection in this segment; causation is not established.",
+      "shadow_metrics": {
+        "n": 50,
+        "applicable_races": 50,
+        "strict": 16,
+        "soft": 0,
+        "strict_rate": 0.32,
+        "soft_rate": 0.0,
+        "baseline_strict_rate": 0.16,
+        "strict_improvement": 0.16,
+        "roi": -0.2,
+        "wilson_ci": {
+          "low": 0.2076,
+          "high": 0.4581
+        },
+        "coverage": 1.0,
+        "reliability": 65.8,
+        "shadow_outcomes": {
+          "win": 16,
+          "lose": 34,
+          "draw": 0
+        },
+        "knowledge_drift": 0.0,
+        "discovery_hit_rate": 0.32
+      },
+      "rank_score": 0.6698,
+      "dimensions": {
+        "leak_risk": {
+          "dimension": "leak_risk",
+          "verdict": "WARNING",
+          "max_leak_risk": 0.7,
+          "mean_asof_or_temporal": 1.0,
+          "features": [
+            "win_odds"
+          ],
+          "note": "V14 reports high asof_clamped / leak floor across Evidence features; market features may still be pre-race but require asof audit before PE/CE use."
+        },
+        "generalization": {
+          "dimension": "generalization",
+          "verdict": "PASS",
+          "n": 50,
+          "knowledge_type": "feature",
+          "segment_hints": [],
+          "diversity_proxy": 3,
+          "note": "Small Evidence corpus (exploratory) limits out-of-sample claims; interaction patterns need multi-season confirmation."
+        },
+        "pe_ce_alignment": {
+          "dimension": "pe_ce_alignment",
+          "verdict": "WARNING",
+          "pe_ce_core_features": [
+            "win_odds"
+          ],
+          "non_core_features": [],
+          "note": "Candidate relies only on PE/CE-core market signals (popularity/odds). Implementing as new AI Score risks double-counting market prior; prefer Shadow monitoring or explicit PE integration design — not a new CE feature."
+        },
+        "shadow_reproducibility": {
+          "dimension": "shadow_reproducibility",
+          "verdict": "PASS",
+          "shadow_n": 50,
+          "strict_rate": 0.32,
+          "strict_improvement": 0.16,
+          "governance_passed": true,
+          "shadow_outcomes": {
+            "win": 16,
+            "lose": 34,
+            "draw": 0
+          },
+          "note": "Shadow metrics come from V19 Knowledge Validation Lab (research-only flags)."
+        },
+        "corpus_drift": {
+          "dimension": "corpus_drift",
+          "verdict": "WARNING",
+          "unique_races": 335,
+          "with_evidence": 50,
+          "exploratory_corpus": true,
+          "max_unknown_share_proxy": 0.8676,
+          "note": "Corpus still exploratory; class/age unknown mass remains a drift risk for segment-conditioned Candidates."
+        },
+        "knowledge_drift": {
+          "dimension": "knowledge_drift",
+          "verdict": "PASS",
+          "knowledge_drift": 0.0,
+          "discovery_hit_rate": 0.32,
+          "shadow_strict_rate": 0.32,
+          "note": "Drift = |discovery hit_rate − shadow strict_rate| from V19."
+        },
+        "evidence_quality": {
+          "dimension": "evidence_quality",
+          "verdict": "PASS",
+          "mean_reliability": 65.8,
+          "shadow_coverage": 1.0,
+          "feature_reliabilities": {
+            "win_odds": 65.8
+          },
+          "note": "Reliability from V14 Evidence Reliability Research."
+        },
+        "long_term_stability": {
+          "dimension": "long_term_stability",
+          "verdict": "PASS",
+          "mean_stability": 0.9505,
+          "max_weekly_drift": 0.0,
+          "validation_weeks_observed": 1,
+          "note": "Long-term stability inferred mainly from V14 weekly_drift/stability; multi-week V19 revalidation history is still thin."
+        }
+      },
+      "dimension_list": [
+        {
+          "dimension": "leak_risk",
+          "verdict": "WARNING",
+          "max_leak_risk": 0.7,
+          "mean_asof_or_temporal": 1.0,
+          "features": [
+            "win_odds"
+          ],
+          "note": "V14 reports high asof_clamped / leak floor across Evidence features; market features may still be pre-race but require asof audit before PE/CE use."
+        },
+        {
+          "dimension": "generalization",
+          "verdict": "PASS",
+          "n": 50,
+          "knowledge_type": "feature",
+          "segment_hints": [],
+          "diversity_proxy": 3,
+          "note": "Small Evidence corpus (exploratory) limits out-of-sample claims; interaction patterns need multi-season confirmation."
+        },
+        {
+          "dimension": "pe_ce_alignment",
+          "verdict": "WARNING",
+          "pe_ce_core_features": [
+            "win_odds"
+          ],
+          "non_core_features": [],
+          "note": "Candidate relies only on PE/CE-core market signals (popularity/odds). Implementing as new AI Score risks double-counting market prior; prefer Shadow monitoring or explicit PE integration design — not a new CE feature."
+        },
+        {
+          "dimension": "shadow_reproducibility",
+          "verdict": "PASS",
+          "shadow_n": 50,
+          "strict_rate": 0.32,
+          "strict_improvement": 0.16,
+          "governance_passed": true,
+          "shadow_outcomes": {
+            "win": 16,
+            "lose": 34,
+            "draw": 0
+          },
+          "note": "Shadow metrics come from V19 Knowledge Validation Lab (research-only flags)."
+        },
+        {
+          "dimension": "corpus_drift",
+          "verdict": "WARNING",
+          "unique_races": 335,
+          "with_evidence": 50,
+          "exploratory_corpus": true,
+          "max_unknown_share_proxy": 0.8676,
+          "note": "Corpus still exploratory; class/age unknown mass remains a drift risk for segment-conditioned Candidates."
+        },
+        {
+          "dimension": "knowledge_drift",
+          "verdict": "PASS",
+          "knowledge_drift": 0.0,
+          "discovery_hit_rate": 0.32,
+          "shadow_strict_rate": 0.32,
+          "note": "Drift = |discovery hit_rate − shadow strict_rate| from V19."
+        },
+        {
+          "dimension": "evidence_quality",
+          "verdict": "PASS",
+          "mean_reliability": 65.8,
+          "shadow_coverage": 1.0,
+          "feature_reliabilities": {
+            "win_odds": 65.8
+          },
+          "note": "Reliability from V14 Evidence Reliability Research."
+        },
+        {
+          "dimension": "long_term_stability",
+          "verdict": "PASS",
+          "mean_stability": 0.9505,
+          "max_weekly_drift": 0.0,
+          "validation_weeks_observed": 1,
+          "note": "Long-term stability inferred mainly from V14 weekly_drift/stability; multi-week V19 revalidation history is still thin."
+        }
+      ],
+      "overall_verdict": "WARNING",
+      "promote_v21": false,
+      "risk": {
+        "top_risks": [
+          {
+            "dimension": "leak_risk",
+            "verdict": "WARNING",
+            "note": "V14 reports high asof_clamped / leak floor across Evidence features; market features may still be pre-race but require asof audit before PE/CE use."
+          },
+          {
+            "dimension": "pe_ce_alignment",
+            "verdict": "WARNING",
+            "note": "Candidate relies only on PE/CE-core market signals (popularity/odds). Implementing as new AI Score risks double-counting market prior; prefer Shadow monitoring or explicit PE integration design — not a new CE feature."
+          },
+          {
+            "dimension": "corpus_drift",
+            "verdict": "WARNING",
+            "note": "Corpus still exploratory; class/age unknown mass remains a drift risk for segment-conditioned Candidates."
+          }
+        ],
+        "features": [
+          "win_odds"
+        ],
+        "forbid_product_mutation": true
+      },
+      "adoption": {
+        "promote_v21": false,
+        "v21_label": null,
+        "recommended_next": "Hold — address FAIL/WARNING dimensions before any AI wiring. Remain Production_Candidate or demote to Watch/Research.",
+        "pe_ce_note": "Candidate relies only on PE/CE-core market signals (popularity/odds). Implementing as new AI Score risks double-counting market prior; prefer Shadow monitoring or explicit PE integration design — not a new CE feature."
+      }
+    }
+  ],
+  "v21_candidates": [],
+  "held": [
+    {
+      "knowledge_id": "kb-a222dc9f1218",
+      "knowledge_type": "interaction",
+      "source_key": "interaction:mined_2way:popularity=P1|sire=SIRE_WEAK",
+      "observation": "Interaction `popularity=P1|sire=SIRE_WEAK` (mined_2way): rate=40.0% on n=35.",
+      "hypothesis": "The combination `popularity=P1|sire=SIRE_WEAK` may indicate a recurring winner profile; this is a research pattern, not a proven rule.",
+      "shadow_metrics": {
+        "n": 35,
+        "applicable_races": 35,
+        "strict": 14,
+        "soft": 0,
+        "strict_rate": 0.4,
+        "soft_rate": 0.0,
+        "baseline_strict_rate": 0.14285714285714285,
+        "strict_improvement": 0.2571,
+        "roi": 0.0,
+        "wilson_ci": {
+          "low": 0.2555,
+          "high": 0.5643
+        },
+        "coverage": 1.0,
+        "reliability": 74.95,
+        "shadow_outcomes": {
+          "win": 14,
+          "lose": 21,
+          "draw": 0
+        },
+        "knowledge_drift": 0.0,
+        "discovery_hit_rate": 0.4
+      },
+      "rank_score": 0.6835,
+      "dimensions": {
+        "leak_risk": {
+          "dimension": "leak_risk",
+          "verdict": "WARNING",
+          "max_leak_risk": 0.7,
+          "mean_asof_or_temporal": 1.0,
+          "features": [
+            "popularity",
+            "sire"
+          ],
+          "note": "V14 reports high asof_clamped / leak floor across Evidence features; market features may still be pre-race but require asof audit before PE/CE use."
+        },
+        "generalization": {
+          "dimension": "generalization",
+          "verdict": "WARNING",
+          "n": 35,
+          "knowledge_type": "interaction",
+          "segment_hints": [],
+          "diversity_proxy": 0,
+          "note": "Small Evidence corpus (exploratory) limits out-of-sample claims; interaction patterns need multi-season confirmation."
+        },
+        "pe_ce_alignment": {
+          "dimension": "pe_ce_alignment",
+          "verdict": "WARNING",
+          "pe_ce_core_features": [
+            "popularity"
+          ],
+          "non_core_features": [
+            "sire"
+          ],
+          "note": "Candidate mixes PE/CE-core market signals with non-core features. Design must define ownership (PE market layer vs CE feature) to avoid conflict."
+        },
+        "shadow_reproducibility": {
+          "dimension": "shadow_reproducibility",
+          "verdict": "PASS",
+          "shadow_n": 35,
+          "strict_rate": 0.4,
+          "strict_improvement": 0.2571,
+          "governance_passed": true,
+          "shadow_outcomes": {
+            "win": 14,
+            "lose": 21,
+            "draw": 0
+          },
+          "note": "Shadow metrics come from V19 Knowledge Validation Lab (research-only flags)."
+        },
+        "corpus_drift": {
+          "dimension": "corpus_drift",
+          "verdict": "WARNING",
+          "unique_races": 335,
+          "with_evidence": 50,
+          "exploratory_corpus": true,
+          "max_unknown_share_proxy": 0.8676,
+          "note": "Corpus still exploratory; class/age unknown mass remains a drift risk for segment-conditioned Candidates."
+        },
+        "knowledge_drift": {
+          "dimension": "knowledge_drift",
+          "verdict": "PASS",
+          "knowledge_drift": 0.0,
+          "discovery_hit_rate": 0.4,
+          "shadow_strict_rate": 0.4,
+          "note": "Drift = |discovery hit_rate − shadow strict_rate| from V19."
+        },
+        "evidence_quality": {
+          "dimension": "evidence_quality",
+          "verdict": "PASS",
+          "mean_reliability": 74.95,
+          "shadow_coverage": 1.0,
+          "feature_reliabilities": {
+            "popularity": 75.4,
+            "sire": 74.5
+          },
+          "note": "Reliability from V14 Evidence Reliability Research."
+        },
+        "long_term_stability": {
+          "dimension": "long_term_stability",
+          "verdict": "PASS",
+          "mean_stability": 0.9999,
+          "max_weekly_drift": 0.0,
+          "validation_weeks_observed": 1,
+          "note": "Long-term stability inferred mainly from V14 weekly_drift/stability; multi-week V19 revalidation history is still thin."
+        }
+      },
+      "dimension_list": [
+        {
+          "dimension": "leak_risk",
+          "verdict": "WARNING",
+          "max_leak_risk": 0.7,
+          "mean_asof_or_temporal": 1.0,
+          "features": [
+            "popularity",
+            "sire"
+          ],
+          "note": "V14 reports high asof_clamped / leak floor across Evidence features; market features may still be pre-race but require asof audit before PE/CE use."
+        },
+        {
+          "dimension": "generalization",
+          "verdict": "WARNING",
+          "n": 35,
+          "knowledge_type": "interaction",
+          "segment_hints": [],
+          "diversity_proxy": 0,
+          "note": "Small Evidence corpus (exploratory) limits out-of-sample claims; interaction patterns need multi-season confirmation."
+        },
+        {
+          "dimension": "pe_ce_alignment",
+          "verdict": "WARNING",
+          "pe_ce_core_features": [
+            "popularity"
+          ],
+          "non_core_features": [
+            "sire"
+          ],
+          "note": "Candidate mixes PE/CE-core market signals with non-core features. Design must define ownership (PE market layer vs CE feature) to avoid conflict."
+        },
+        {
+          "dimension": "shadow_reproducibility",
+          "verdict": "PASS",
+          "shadow_n": 35,
+          "strict_rate": 0.4,
+          "strict_improvement": 0.2571,
+          "governance_passed": true,
+          "shadow_outcomes": {
+            "win": 14,
+            "lose": 21,
+            "draw": 0
+          },
+          "note": "Shadow metrics come from V19 Knowledge Validation Lab (research-only flags)."
+        },
+        {
+          "dimension": "corpus_drift",
+          "verdict": "WARNING",
+          "unique_races": 335,
+          "with_evidence": 50,
+          "exploratory_corpus": true,
+          "max_unknown_share_proxy": 0.8676,
+          "note": "Corpus still exploratory; class/age unknown mass remains a drift risk for segment-conditioned Candidates."
+        },
+        {
+          "dimension": "knowledge_drift",
+          "verdict": "PASS",
+          "knowledge_drift": 0.0,
+          "discovery_hit_rate": 0.4,
+          "shadow_strict_rate": 0.4,
+          "note": "Drift = |discovery hit_rate − shadow strict_rate| from V19."
+        },
+        {
+          "dimension": "evidence_quality",
+          "verdict": "PASS",
+          "mean_reliability": 74.95,
+          "shadow_coverage": 1.0,
+          "feature_reliabilities": {
+            "popularity": 75.4,
+            "sire": 74.5
+          },
+          "note": "Reliability from V14 Evidence Reliability Research."
+        },
+        {
+          "dimension": "long_term_stability",
+          "verdict": "PASS",
+          "mean_stability": 0.9999,
+          "max_weekly_drift": 0.0,
+          "validation_weeks_observed": 1,
+          "note": "Long-term stability inferred mainly from V14 weekly_drift/stability; multi-week V19 revalidation history is still thin."
+        }
+      ],
+      "overall_verdict": "WARNING",
+      "promote_v21": false,
+      "risk": {
+        "top_risks": [
+          {
+            "dimension": "leak_risk",
+            "verdict": "WARNING",
+            "note": "V14 reports high asof_clamped / leak floor across Evidence features; market features may still be pre-race but require asof audit before PE/CE use."
+          },
+          {
+            "dimension": "generalization",
+            "verdict": "WARNING",
+            "note": "Small Evidence corpus (exploratory) limits out-of-sample claims; interaction patterns need multi-season confirmation."
+          },
+          {
+            "dimension": "pe_ce_alignment",
+            "verdict": "WARNING",
+            "note": "Candidate mixes PE/CE-core market signals with non-core features. Design must define ownership (PE market layer vs CE feature) to avoid conflict."
+          },
+          {
+            "dimension": "corpus_drift",
+            "verdict": "WARNING",
+            "note": "Corpus still exploratory; class/age unknown mass remains a drift risk for segment-conditioned Candidates."
+          }
+        ],
+        "features": [
+          "popularity",
+          "sire"
+        ],
+        "forbid_product_mutation": true
+      },
+      "adoption": {
+        "promote_v21": false,
+        "v21_label": null,
+        "recommended_next": "Hold — address FAIL/WARNING dimensions before any AI wiring. Remain Production_Candidate or demote to Watch/Research.",
+        "pe_ce_note": "Candidate mixes PE/CE-core market signals with non-core features. Design must define ownership (PE market layer vs CE feature) to avoid conflict."
+      }
+    },
+    {
+      "knowledge_id": "kb-72cb124b5471",
+      "knowledge_type": "feature",
+      "source_key": "feature:ALL:popularity",
+      "observation": "In category `ALL`, Popularity resolved 50 field picks with hit rate 32.0% (tie hit 11.1%, importance=0.4718).",
+      "hypothesis": "Popularity may correlate with winner selection in this segment; causation is not established.",
+      "shadow_metrics": {
+        "n": 50,
+        "applicable_races": 50,
+        "strict": 16,
+        "soft": 0,
+        "strict_rate": 0.32,
+        "soft_rate": 0.0,
+        "baseline_strict_rate": 0.16,
+        "strict_improvement": 0.16,
+        "roi": -0.2,
+        "wilson_ci": {
+          "low": 0.2076,
+          "high": 0.4581
+        },
+        "coverage": 1.0,
+        "reliability": 75.4,
+        "shadow_outcomes": {
+          "win": 16,
+          "lose": 34,
+          "draw": 0
+        },
+        "knowledge_drift": 0.0,
+        "discovery_hit_rate": 0.32
+      },
+      "rank_score": 0.6794,
+      "dimensions": {
+        "leak_risk": {
+          "dimension": "leak_risk",
+          "verdict": "WARNING",
+          "max_leak_risk": 0.7,
+          "mean_asof_or_temporal": 1.0,
+          "features": [
+            "popularity"
+          ],
+          "note": "V14 reports high asof_clamped / leak floor across Evidence features; market features may still be pre-race but require asof audit before PE/CE use."
+        },
+        "generalization": {
+          "dimension": "generalization",
+          "verdict": "PASS",
+          "n": 50,
+          "knowledge_type": "feature",
+          "segment_hints": [],
+          "diversity_proxy": 3,
+          "note": "Small Evidence corpus (exploratory) limits out-of-sample claims; interaction patterns need multi-season confirmation."
+        },
+        "pe_ce_alignment": {
+          "dimension": "pe_ce_alignment",
+          "verdict": "WARNING",
+          "pe_ce_core_features": [
+            "popularity"
+          ],
+          "non_core_features": [],
+          "note": "Candidate relies only on PE/CE-core market signals (popularity/odds). Implementing as new AI Score risks double-counting market prior; prefer Shadow monitoring or explicit PE integration design — not a new CE feature."
+        },
+        "shadow_reproducibility": {
+          "dimension": "shadow_reproducibility",
+          "verdict": "PASS",
+          "shadow_n": 50,
+          "strict_rate": 0.32,
+          "strict_improvement": 0.16,
+          "governance_passed": true,
+          "shadow_outcomes": {
+            "win": 16,
+            "lose": 34,
+            "draw": 0
+          },
+          "note": "Shadow metrics come from V19 Knowledge Validation Lab (research-only flags)."
+        },
+        "corpus_drift": {
+          "dimension": "corpus_drift",
+          "verdict": "WARNING",
+          "unique_races": 335,
+          "with_evidence": 50,
+          "exploratory_corpus": true,
+          "max_unknown_share_proxy": 0.8676,
+          "note": "Corpus still exploratory; class/age unknown mass remains a drift risk for segment-conditioned Candidates."
+        },
+        "knowledge_drift": {
+          "dimension": "knowledge_drift",
+          "verdict": "PASS",
+          "knowledge_drift": 0.0,
+          "discovery_hit_rate": 0.32,
+          "shadow_strict_rate": 0.32,
+          "note": "Drift = |discovery hit_rate − shadow strict_rate| from V19."
+        },
+        "evidence_quality": {
+          "dimension": "evidence_quality",
+          "verdict": "PASS",
+          "mean_reliability": 75.4,
+          "shadow_coverage": 1.0,
+          "feature_reliabilities": {
+            "popularity": 75.4
+          },
+          "note": "Reliability from V14 Evidence Reliability Research."
+        },
+        "long_term_stability": {
+          "dimension": "long_term_stability",
+          "verdict": "PASS",
+          "mean_stability": 0.9998,
+          "max_weekly_drift": 0.0,
+          "validation_weeks_observed": 1,
+          "note": "Long-term stability inferred mainly from V14 weekly_drift/stability; multi-week V19 revalidation history is still thin."
+        }
+      },
+      "dimension_list": [
+        {
+          "dimension": "leak_risk",
+          "verdict": "WARNING",
+          "max_leak_risk": 0.7,
+          "mean_asof_or_temporal": 1.0,
+          "features": [
+            "popularity"
+          ],
+          "note": "V14 reports high asof_clamped / leak floor across Evidence features; market features may still be pre-race but require asof audit before PE/CE use."
+        },
+        {
+          "dimension": "generalization",
+          "verdict": "PASS",
+          "n": 50,
+          "knowledge_type": "feature",
+          "segment_hints": [],
+          "diversity_proxy": 3,
+          "note": "Small Evidence corpus (exploratory) limits out-of-sample claims; interaction patterns need multi-season confirmation."
+        },
+        {
+          "dimension": "pe_ce_alignment",
+          "verdict": "WARNING",
+          "pe_ce_core_features": [
+            "popularity"
+          ],
+          "non_core_features": [],
+          "note": "Candidate relies only on PE/CE-core market signals (popularity/odds). Implementing as new AI Score risks double-counting market prior; prefer Shadow monitoring or explicit PE integration design — not a new CE feature."
+        },
+        {
+          "dimension": "shadow_reproducibility",
+          "verdict": "PASS",
+          "shadow_n": 50,
+          "strict_rate": 0.32,
+          "strict_improvement": 0.16,
+          "governance_passed": true,
+          "shadow_outcomes": {
+            "win": 16,
+            "lose": 34,
+            "draw": 0
+          },
+          "note": "Shadow metrics come from V19 Knowledge Validation Lab (research-only flags)."
+        },
+        {
+          "dimension": "corpus_drift",
+          "verdict": "WARNING",
+          "unique_races": 335,
+          "with_evidence": 50,
+          "exploratory_corpus": true,
+          "max_unknown_share_proxy": 0.8676,
+          "note": "Corpus still exploratory; class/age unknown mass remains a drift risk for segment-conditioned Candidates."
+        },
+        {
+          "dimension": "knowledge_drift",
+          "verdict": "PASS",
+          "knowledge_drift": 0.0,
+          "discovery_hit_rate": 0.32,
+          "shadow_strict_rate": 0.32,
+          "note": "Drift = |discovery hit_rate − shadow strict_rate| from V19."
+        },
+        {
+          "dimension": "evidence_quality",
+          "verdict": "PASS",
+          "mean_reliability": 75.4,
+          "shadow_coverage": 1.0,
+          "feature_reliabilities": {
+            "popularity": 75.4
+          },
+          "note": "Reliability from V14 Evidence Reliability Research."
+        },
+        {
+          "dimension": "long_term_stability",
+          "verdict": "PASS",
+          "mean_stability": 0.9998,
+          "max_weekly_drift": 0.0,
+          "validation_weeks_observed": 1,
+          "note": "Long-term stability inferred mainly from V14 weekly_drift/stability; multi-week V19 revalidation history is still thin."
+        }
+      ],
+      "overall_verdict": "WARNING",
+      "promote_v21": false,
+      "risk": {
+        "top_risks": [
+          {
+            "dimension": "leak_risk",
+            "verdict": "WARNING",
+            "note": "V14 reports high asof_clamped / leak floor across Evidence features; market features may still be pre-race but require asof audit before PE/CE use."
+          },
+          {
+            "dimension": "pe_ce_alignment",
+            "verdict": "WARNING",
+            "note": "Candidate relies only on PE/CE-core market signals (popularity/odds). Implementing as new AI Score risks double-counting market prior; prefer Shadow monitoring or explicit PE integration design — not a new CE feature."
+          },
+          {
+            "dimension": "corpus_drift",
+            "verdict": "WARNING",
+            "note": "Corpus still exploratory; class/age unknown mass remains a drift risk for segment-conditioned Candidates."
+          }
+        ],
+        "features": [
+          "popularity"
+        ],
+        "forbid_product_mutation": true
+      },
+      "adoption": {
+        "promote_v21": false,
+        "v21_label": null,
+        "recommended_next": "Hold — address FAIL/WARNING dimensions before any AI wiring. Remain Production_Candidate or demote to Watch/Research.",
+        "pe_ce_note": "Candidate relies only on PE/CE-core market signals (popularity/odds). Implementing as new AI Score risks double-counting market prior; prefer Shadow monitoring or explicit PE integration design — not a new CE feature."
+      }
+    },
+    {
+      "knowledge_id": "kb-0e3d73cec628",
+      "knowledge_type": "feature",
+      "source_key": "feature:ALL:win_odds",
+      "observation": "In category `ALL`, Win Odds resolved 50 field picks with hit rate 32.0% (tie hit 11.1%, importance=0.4718).",
+      "hypothesis": "Win Odds may correlate with winner selection in this segment; causation is not established.",
+      "shadow_metrics": {
+        "n": 50,
+        "applicable_races": 50,
+        "strict": 16,
+        "soft": 0,
+        "strict_rate": 0.32,
+        "soft_rate": 0.0,
+        "baseline_strict_rate": 0.16,
+        "strict_improvement": 0.16,
+        "roi": -0.2,
+        "wilson_ci": {
+          "low": 0.2076,
+          "high": 0.4581
+        },
+        "coverage": 1.0,
+        "reliability": 65.8,
+        "shadow_outcomes": {
+          "win": 16,
+          "lose": 34,
+          "draw": 0
+        },
+        "knowledge_drift": 0.0,
+        "discovery_hit_rate": 0.32
+      },
+      "rank_score": 0.6698,
+      "dimensions": {
+        "leak_risk": {
+          "dimension": "leak_risk",
+          "verdict": "WARNING",
+          "max_leak_risk": 0.7,
+          "mean_asof_or_temporal": 1.0,
+          "features": [
+            "win_odds"
+          ],
+          "note": "V14 reports high asof_clamped / leak floor across Evidence features; market features may still be pre-race but require asof audit before PE/CE use."
+        },
+        "generalization": {
+          "dimension": "generalization",
+          "verdict": "PASS",
+          "n": 50,
+          "knowledge_type": "feature",
+          "segment_hints": [],
+          "diversity_proxy": 3,
+          "note": "Small Evidence corpus (exploratory) limits out-of-sample claims; interaction patterns need multi-season confirmation."
+        },
+        "pe_ce_alignment": {
+          "dimension": "pe_ce_alignment",
+          "verdict": "WARNING",
+          "pe_ce_core_features": [
+            "win_odds"
+          ],
+          "non_core_features": [],
+          "note": "Candidate relies only on PE/CE-core market signals (popularity/odds). Implementing as new AI Score risks double-counting market prior; prefer Shadow monitoring or explicit PE integration design — not a new CE feature."
+        },
+        "shadow_reproducibility": {
+          "dimension": "shadow_reproducibility",
+          "verdict": "PASS",
+          "shadow_n": 50,
+          "strict_rate": 0.32,
+          "strict_improvement": 0.16,
+          "governance_passed": true,
+          "shadow_outcomes": {
+            "win": 16,
+            "lose": 34,
+            "draw": 0
+          },
+          "note": "Shadow metrics come from V19 Knowledge Validation Lab (research-only flags)."
+        },
+        "corpus_drift": {
+          "dimension": "corpus_drift",
+          "verdict": "WARNING",
+          "unique_races": 335,
+          "with_evidence": 50,
+          "exploratory_corpus": true,
+          "max_unknown_share_proxy": 0.8676,
+          "note": "Corpus still exploratory; class/age unknown mass remains a drift risk for segment-conditioned Candidates."
+        },
+        "knowledge_drift": {
+          "dimension": "knowledge_drift",
+          "verdict": "PASS",
+          "knowledge_drift": 0.0,
+          "discovery_hit_rate": 0.32,
+          "shadow_strict_rate": 0.32,
+          "note": "Drift = |discovery hit_rate − shadow strict_rate| from V19."
+        },
+        "evidence_quality": {
+          "dimension": "evidence_quality",
+          "verdict": "PASS",
+          "mean_reliability": 65.8,
+          "shadow_coverage": 1.0,
+          "feature_reliabilities": {
+            "win_odds": 65.8
+          },
+          "note": "Reliability from V14 Evidence Reliability Research."
+        },
+        "long_term_stability": {
+          "dimension": "long_term_stability",
+          "verdict": "PASS",
+          "mean_stability": 0.9505,
+          "max_weekly_drift": 0.0,
+          "validation_weeks_observed": 1,
+          "note": "Long-term stability inferred mainly from V14 weekly_drift/stability; multi-week V19 revalidation history is still thin."
+        }
+      },
+      "dimension_list": [
+        {
+          "dimension": "leak_risk",
+          "verdict": "WARNING",
+          "max_leak_risk": 0.7,
+          "mean_asof_or_temporal": 1.0,
+          "features": [
+            "win_odds"
+          ],
+          "note": "V14 reports high asof_clamped / leak floor across Evidence features; market features may still be pre-race but require asof audit before PE/CE use."
+        },
+        {
+          "dimension": "generalization",
+          "verdict": "PASS",
+          "n": 50,
+          "knowledge_type": "feature",
+          "segment_hints": [],
+          "diversity_proxy": 3,
+          "note": "Small Evidence corpus (exploratory) limits out-of-sample claims; interaction patterns need multi-season confirmation."
+        },
+        {
+          "dimension": "pe_ce_alignment",
+          "verdict": "WARNING",
+          "pe_ce_core_features": [
+            "win_odds"
+          ],
+          "non_core_features": [],
+          "note": "Candidate relies only on PE/CE-core market signals (popularity/odds). Implementing as new AI Score risks double-counting market prior; prefer Shadow monitoring or explicit PE integration design — not a new CE feature."
+        },
+        {
+          "dimension": "shadow_reproducibility",
+          "verdict": "PASS",
+          "shadow_n": 50,
+          "strict_rate": 0.32,
+          "strict_improvement": 0.16,
+          "governance_passed": true,
+          "shadow_outcomes": {
+            "win": 16,
+            "lose": 34,
+            "draw": 0
+          },
+          "note": "Shadow metrics come from V19 Knowledge Validation Lab (research-only flags)."
+        },
+        {
+          "dimension": "corpus_drift",
+          "verdict": "WARNING",
+          "unique_races": 335,
+          "with_evidence": 50,
+          "exploratory_corpus": true,
+          "max_unknown_share_proxy": 0.8676,
+          "note": "Corpus still exploratory; class/age unknown mass remains a drift risk for segment-conditioned Candidates."
+        },
+        {
+          "dimension": "knowledge_drift",
+          "verdict": "PASS",
+          "knowledge_drift": 0.0,
+          "discovery_hit_rate": 0.32,
+          "shadow_strict_rate": 0.32,
+          "note": "Drift = |discovery hit_rate − shadow strict_rate| from V19."
+        },
+        {
+          "dimension": "evidence_quality",
+          "verdict": "PASS",
+          "mean_reliability": 65.8,
+          "shadow_coverage": 1.0,
+          "feature_reliabilities": {
+            "win_odds": 65.8
+          },
+          "note": "Reliability from V14 Evidence Reliability Research."
+        },
+        {
+          "dimension": "long_term_stability",
+          "verdict": "PASS",
+          "mean_stability": 0.9505,
+          "max_weekly_drift": 0.0,
+          "validation_weeks_observed": 1,
+          "note": "Long-term stability inferred mainly from V14 weekly_drift/stability; multi-week V19 revalidation history is still thin."
+        }
+      ],
+      "overall_verdict": "WARNING",
+      "promote_v21": false,
+      "risk": {
+        "top_risks": [
+          {
+            "dimension": "leak_risk",
+            "verdict": "WARNING",
+            "note": "V14 reports high asof_clamped / leak floor across Evidence features; market features may still be pre-race but require asof audit before PE/CE use."
+          },
+          {
+            "dimension": "pe_ce_alignment",
+            "verdict": "WARNING",
+            "note": "Candidate relies only on PE/CE-core market signals (popularity/odds). Implementing as new AI Score risks double-counting market prior; prefer Shadow monitoring or explicit PE integration design — not a new CE feature."
+          },
+          {
+            "dimension": "corpus_drift",
+            "verdict": "WARNING",
+            "note": "Corpus still exploratory; class/age unknown mass remains a drift risk for segment-conditioned Candidates."
+          }
+        ],
+        "features": [
+          "win_odds"
+        ],
+        "forbid_product_mutation": true
+      },
+      "adoption": {
+        "promote_v21": false,
+        "v21_label": null,
+        "recommended_next": "Hold — address FAIL/WARNING dimensions before any AI wiring. Remain Production_Candidate or demote to Watch/Research.",
+        "pe_ce_note": "Candidate relies only on PE/CE-core market signals (popularity/odds). Implementing as new AI Score risks double-counting market prior; prefer Shadow monitoring or explicit PE integration design — not a new CE feature."
+      }
+    }
+  ]
+}

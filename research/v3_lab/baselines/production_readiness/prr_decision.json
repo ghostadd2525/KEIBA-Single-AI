@@ -1,0 +1,36 @@
+{
+  "review_id": "v3-production-readiness-review/1.0",
+  "date": "2026-07-24",
+  "subject_baseline": "v3-lab-baseline-v3-a01-a03-a04",
+  "stack": [
+    "A-01",
+    "A-03",
+    "A-04"
+  ],
+  "lab_hit": 279,
+  "decision": "HOLD",
+  "production_wiring_allowed": false,
+  "feature_flag_on_allowed": false,
+  "phase3_allowed": false,
+  "blockers": [
+    "Offline Gate FAIL on real 285R (Hit regress + churn)",
+    "Shadow / Flag Mesh design not approved"
+  ],
+  "pass_conditions_unmet": true,
+  "fail_conditions_met": false,
+  "algorithms_unchanged": true,
+  "flag_defaults_unchanged": true,
+  "docs": {
+    "readiness": "docs/releases/v3-production-readiness-report.md",
+    "risk": "docs/releases/v3-production-risk-assessment.md",
+    "rollout": "docs/releases/v3-production-rollout-plan.md",
+    "rollback": "docs/releases/v3-production-rollback-plan.md"
+  },
+  "offline_gate": {
+    "decision": "FAIL",
+    "control_hit": 59,
+    "treatment_hit": 42,
+    "churn_hit": 29,
+    "report": "docs/releases/v3-offline-gate-report.md"
+  }
+}

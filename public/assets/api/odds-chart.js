@@ -57,7 +57,7 @@
     return p.indexOf("出走") >= 0 ? p : p + "出走";
   }
 
-  function raceMetaLabel(data) {
+  function raceMetaLabel(data, sep) {
     data = data || {};
     var bits = [];
     if (data.race_label) bits.push(String(data.race_label));
@@ -65,7 +65,107 @@
     if (name) bits.push(name);
     var postLabel = formatPostLabel(data.post_time);
     if (postLabel) bits.push(postLabel);
-    return bits.join(" · ");
+    return bits.join(sep != null ? sep : " · ");
+  }
+
+  var CIRCLED_UMABAN = "①②③④⑤⑥⑦⑧⑨⑩⑪⑫⑬⑭⑮⑯⑰⑱";
+
+  function seriesUmaban(s) {
+    if (!s) return null;
+    if (s.umaban != null && s.umaban !== "") return s.umaban;
+    if (s.horse_number != null && s.horse_number !== "") return s.horse_number;
+    return null;
+  }
+
+  function umabanMark(n) {
+    var num = parseInt(n, 10);
+    if (Number.isFinite(num) && num >= 1 && num <= 18) {
+      return CIRCLED_UMABAN.charAt(num - 1);
+    }
+    if (n != null && String(n).trim() !== "") return String(n).trim();
+    return "—";
+  }
+
+  function isPlaceholderHorseName(name, horseNo) {
+    var clean = String(name == null ? "" : name).trim();
+    if (!clean) return true;
+    if (horseNo != null && (clean === String(horseNo) || clean === String(horseNo) + "番")) {
+      return true;
+    }
+    return /^\d+番$/.test(clean);
+  }
+
+  function addHorseNameToMap(map, horseNo, name) {
+    if (horseNo == null || horseNo === "") return;
+    var clean = String(name == null ? "" : name).trim();
+    if (!clean || isPlaceholderHorseName(clean, horseNo)) return;
+    var num = parseInt(horseNo, 10);
+    map[String(horseNo)] = clean;
+    if (Number.isFinite(num)) map[String(num)] = clean;
+  }
+
+  function horseNameMapFromEntries(entries) {
+    var map = Object.create(null);
+    (entries || []).forEach(function (e) {
+      if (!e) return;
+      var n = e.horse_number != null ? e.horse_number : e.umaban;
+      addHorseNameToMap(map, n, e.horse_name);
+    });
+    return map;
+  }
+
+  function horseNameMapFromPrediction(bundle) {
+    var map = Object.create(null);
+    var runners =
+      bundle && bundle.evaluation && Array.isArray(bundle.evaluation.runners)
+        ? bundle.evaluation.runners
+        : [];
+    runners.forEach(function (r) {
+      if (!r) return;
+      addHorseNameToMap(map, r.horse_number, r.horse_name);
+    });
+    return map;
+  }
+
+  function seriesHorseName(s, nameMap) {
+    var no = seriesUmaban(s);
+    if (nameMap && no != null) {
+      var fromMap = nameMap[String(no)];
+      if (!fromMap && Number.isFinite(parseInt(no, 10))) {
+        fromMap = nameMap[String(parseInt(no, 10))];
+      }
+      if (fromMap) return String(fromMap).trim();
+    }
+    var name = String((s && s.horse_name) || "").trim();
+    if (!name || isPlaceholderHorseName(name, no)) return "";
+    return name;
+  }
+
+  function legendHtml(seriesList, nameMap) {
+    return (
+      '<ul class="odds-legend">' +
+      seriesList
+        .map(function (s, i) {
+          var mark = umabanMark(seriesUmaban(s));
+          var name = seriesHorseName(s, nameMap);
+          var label = name ? mark + " " + name : mark;
+          return (
+            "<li>" +
+            '<i style="background:' +
+            COLORS[i % COLORS.length] +
+            '"></i>' +
+            '<span class="odds-legend__horse">' +
+            escapeHtml(label) +
+            "</span>" +
+            '<b class="odds-legend__odds">' +
+            escapeHtml(fmtOdds(s.latest_odds)) +
+            "</b>" +
+            "</li>"
+          );
+        })
+        .join("") +
+      "</ul>"
+    );
   }
 
   function jstToday() {
@@ -269,39 +369,12 @@
     svg.innerHTML = parts.join("");
   }
 
-  function legendHtml(seriesList) {
-    return (
-      '<ul class="odds-legend">' +
-      seriesList
-        .map(function (s, i) {
-          return (
-            "<li>" +
-            '<i style="background:' +
-            COLORS[i % COLORS.length] +
-            '"></i>' +
-            "<span>" +
-            escapeHtml(s.horse_number) +
-            " " +
-            escapeHtml(s.horse_name || "") +
-            "</span>" +
-            "<b>" +
-            escapeHtml(fmtOdds(s.latest_odds)) +
-            "</b>" +
-            "</li>"
-          );
-        })
-        .join("") +
-      "</ul>"
-    );
-  }
-
   function bind() {
     var raceListEl =
       document.getElementById("oddsRaceAccordion") ||
       document.getElementById("oddsRaceSelect") ||
       document.getElementById("oddsRaceList");
     var dateTabs = document.getElementById("oddsDateTabs");
-    var venueChips = document.getElementById("oddsVenueChips");
     var filterNote = document.getElementById("oddsFilterNote");
     var chartCard = document.getElementById("oddsChartCard");
     var chartSvg = document.getElementById("oddsLineChart");
@@ -319,7 +392,67 @@
       venue: "all",
       openVenue: null,
       accordionClosed: false,
+      directOpenRace: false,
+      horseNames: {},
+      horseNamesRaceId: "",
     };
+
+    function authHeaders() {
+      var h = { accept: "application/json" };
+      try {
+        var t = localStorage.getItem("expect_access_token_v1") || "";
+        if (t) h.Authorization = "Bearer " + t;
+      } catch (e) { /* ignore */ }
+      return h;
+    }
+
+    /** 表示用馬名（board → prediction runners。race detail と同系の正本のみ） */
+    function loadHorseNames(raceId) {
+      if (!raceId) return Promise.resolve({});
+      if (state.horseNamesRaceId === raceId && state.horseNames) {
+        return Promise.resolve(state.horseNames);
+      }
+      function remember(map) {
+        state.horseNames = map || {};
+        state.horseNamesRaceId = raceId;
+        return state.horseNames;
+      }
+      function loadFromPrediction(map) {
+        if (
+          !global.ExpectApi ||
+          !ExpectApi.Prediction ||
+          typeof ExpectApi.Prediction.get !== "function"
+        ) {
+          return Promise.resolve(map);
+        }
+        return ExpectApi.Prediction.get(raceId)
+          .then(function (bundle) {
+            var predMap = horseNameMapFromPrediction(bundle);
+            if (!Object.keys(predMap).length) return map;
+            return predMap;
+          })
+          .catch(function () {
+            return map;
+          });
+      }
+      return fetch("/api/races/" + encodeURIComponent(raceId) + "/board", {
+        credentials: "same-origin",
+        headers: authHeaders(),
+        cache: "no-store",
+      })
+        .then(function (res) {
+          return res.json().then(function (body) {
+            if (!res.ok) return loadFromPrediction({}).then(remember);
+            var data = (body && body.data) || body || {};
+            var map = horseNameMapFromEntries(data.entries || []);
+            if (Object.keys(map).length) return remember(map);
+            return loadFromPrediction(map).then(remember);
+          });
+        })
+        .catch(function () {
+          return loadFromPrediction({}).then(remember);
+        });
+    }
 
     function ensureSvg() {
       var mount = document.getElementById("oddsChartMount");
@@ -410,18 +543,24 @@
 
       detectOddsAlert(data);
       renderChart(svg, top, data.timestamps || []);
-      if (legendEl) legendEl.innerHTML = legendHtml(top);
+
+      var raceId = data.race_id || state.raceId || "";
+      var cachedNames =
+        state.horseNamesRaceId === raceId ? state.horseNames : {};
+      if (legendEl) legendEl.innerHTML = legendHtml(top, cachedNames);
+      loadHorseNames(raceId).then(function (map) {
+        if ((data.race_id || state.raceId) !== raceId) return;
+        if (legendEl) legendEl.innerHTML = legendHtml(top, map || {});
+      });
 
       var pc = data.point_count || 0;
       if (metaEl) {
-        var base = raceMetaLabel(data);
-        metaEl.textContent =
-          (base ? base + " · " : "") + "記録 " + pc + "点";
+        metaEl.textContent = raceMetaLabel(data, "\n") || "";
       }
       if (noteEl) {
         if (pc < 2) {
           noteEl.textContent =
-            "まだ記録点が少ないため点表示です。約5分ごとに自動取得し、折れ線が伸びていきます。";
+            "まだ点が少ないため点表示です。約5分ごとに自動取得し、折れ線が伸びていきます。";
         } else {
           noteEl.textContent =
             "単勝オッズの推移（人気上位" + TOP_N + "頭）。約5分間隔で更新します。";
@@ -557,6 +696,9 @@
         return String(a).localeCompare(String(b), "ja");
       });
 
+      // 会場フィルタはアコーディオン側のみ。上部チップは日付だけ。
+      state.venue = "all";
+
       if (dateTabs) {
         var dHtml =
           '<button type="button" class="tab-pill' +
@@ -573,23 +715,6 @@
             "</button>";
         });
         dateTabs.innerHTML = dHtml;
-      }
-      if (venueChips) {
-        var vHtml =
-          '<button type="button" class="chip' +
-          (state.venue === "all" ? " is-active" : "") +
-          '" data-venue="all">すべて</button>';
-        venues.forEach(function (v) {
-          vHtml +=
-            '<button type="button" class="chip' +
-            (state.venue === v ? " is-active" : "") +
-            '" data-venue="' +
-            escapeHtml(v) +
-            '">' +
-            escapeHtml(v) +
-            "</button>";
-        });
-        venueChips.innerHTML = vHtml;
       }
       if (filterNote) {
         filterNote.textContent =
@@ -644,7 +769,7 @@
       var openVenue = null;
       if (!state.accordionClosed) {
         openVenue = state.openVenue;
-        if (!openVenue && state.raceId) {
+        if (!openVenue && state.directOpenRace && state.raceId) {
           for (var i = 0; i < items.length; i++) {
             if (items[i].race_id === state.raceId) {
               openVenue = itemVenue(items[i]) || "その他";
@@ -652,7 +777,6 @@
             }
           }
         }
-        if (!openVenue) openVenue = order[0] || null;
       }
 
       raceListEl.innerHTML = order
@@ -702,10 +826,19 @@
 
     function selectRace(raceId) {
       if (!raceId) return;
+      if (state.raceId && state.raceId !== raceId && global.ExpectDataStatus) {
+        ExpectDataStatus.stopPolling(state.raceId);
+      }
       state.raceId = raceId;
       state.accordionClosed = true;
       state.openVenue = null;
       paintRaceList();
+      // data-status is auxiliary: never block odds chart / race list paint
+      if (global.ExpectDataStatus && ExpectDataStatus.bind) {
+        try {
+          Promise.resolve(ExpectDataStatus.bind(raceId)).catch(function () { /* ignore */ });
+        } catch (e) { /* ignore */ }
+      }
       load(false);
       startTimer();
       try {
@@ -744,15 +877,6 @@
         state.date = btn.getAttribute("data-filter-date") || "all";
         state.venue = "all";
         renderFilters();
-        applyFilterChange();
-      });
-    }
-    if (venueChips) {
-      venueChips.addEventListener("click", function (e) {
-        var btn = e.target.closest("[data-venue]");
-        if (!btn) return;
-        state.venue = btn.getAttribute("data-venue") || "all";
-        setActive(venueChips, "data-venue", state.venue);
         applyFilterChange();
       });
     }
@@ -858,6 +982,7 @@
           if (hitItem) {
             state.raceId = preset;
             state.date = itemDate(hitItem) || "all";
+            state.directOpenRace = true;
           }
         }
         renderFilters();
@@ -886,4 +1011,15 @@
   }
 
   global.ExpectOddsChart = { bind: bind };
+
+  if (typeof module !== "undefined" && module.exports) {
+    module.exports = {
+      horseNameMapFromEntries: horseNameMapFromEntries,
+      horseNameMapFromPrediction: horseNameMapFromPrediction,
+      seriesHorseName: seriesHorseName,
+      legendHtml: legendHtml,
+      seriesUmaban: seriesUmaban,
+      umabanMark: umabanMark,
+    };
+  }
 })(typeof window !== "undefined" ? window : globalThis);

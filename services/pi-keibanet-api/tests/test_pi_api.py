@@ -87,6 +87,14 @@ class ParseTest(unittest.TestCase):
         entries = parse_entries_from_shutuba(html)
         self.assertGreaterEqual(len(entries), 10)
         self.assertTrue(all(e.get("horse_name") for e in entries))
+        # Pre-draw fixture: Umaban empty → horse_number must stay null (no seq fallback).
+        self.assertTrue(all(e.get("horse_number") is None for e in entries))
+        self.assertTrue(all(isinstance(e.get("display_order"), int) for e in entries))
+
+    def test_entries_sample_keeps_formal_umaban(self) -> None:
+        entries = parse_entries_from_shutuba(self.shutuba_html)
+        self.assertEqual([e["horse_number"] for e in entries], [1, 2])
+        self.assertEqual([e.get("display_order") for e in entries], [1, 2])
 
 
 class HttpApiTest(unittest.TestCase):

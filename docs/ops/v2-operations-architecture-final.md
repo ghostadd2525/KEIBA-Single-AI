@@ -37,3 +37,6 @@ EC2 expect-ops-monitor.timer
 ```
 
 **非対象（継承）:** Prediction API / RaceCardSummary / Accuracy / UI Enhancement / Explainability
+
+**Addendum:** Race Refresh / Shadow / Production 切替ゲートは  
+[`v2-operations-race-refresh-addendum.md`](./v2-operations-race-refresh-addendum.md) を正とする。

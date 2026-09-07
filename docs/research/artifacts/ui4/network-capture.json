@@ -1,0 +1,27 @@
+﻿{
+  "captured_at": "2026-07-29T03:05:00Z",
+  "environment": "production",
+  "deployment_id": "4f6ece3a-3b4f-4e14-9b0e-e96f98ea26ee",
+  "endpoints": {
+    "predictions_pending": {
+      "url": "GET /api/predictions/2026-08-01-01-02",
+      "http": 202,
+      "error_code": "PREDICTION_PENDING",
+      "has_data": false
+    },
+    "predictions_ready": {
+      "url": "GET /api/predictions/2026-07-26-01-11",
+      "http": 200,
+      "schema_version": "single-prediction-bundle/2.0",
+      "has_data": true
+    },
+    "race_cards": { "url": "GET /api/race-cards?date=2026-07-26", "http": 200 },
+    "predictions_list": { "url": "GET /api/predictions?date=2026-07-26", "http": 200, "n": 4 }
+  },
+  "retry_observation": {
+    "page": "race?race_id=2026-08-01-01-02",
+    "window_s": 9,
+    "prediction_resource_delta": 1,
+    "note": "8s retry interval; at least one additional fetch observed"
+  }
+}

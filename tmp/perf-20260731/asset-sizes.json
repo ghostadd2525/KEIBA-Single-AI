@@ -1,0 +1,128 @@
+[
+  {
+    "path": "/assets/images/kaoba-fortune-fun.png",
+    "status": 200,
+    "bytes": 983117,
+    "kb": 960,
+    "cache": "public, max-age=14400, must-revalidate"
+  },
+  {
+    "path": "/assets/images/kaoba-fortune-happy.png",
+    "status": 200,
+    "bytes": 972098,
+    "kb": 949,
+    "cache": "public, max-age=14400, must-revalidate"
+  },
+  {
+    "path": "/assets/images/kaoba-fortune-angry.png",
+    "status": 200,
+    "bytes": 964346,
+    "kb": 942,
+    "cache": "public, max-age=14400, must-revalidate"
+  },
+  {
+    "path": "/assets/images/kaoba-fortune-sad.png",
+    "status": 200,
+    "bytes": 946332,
+    "kb": 924,
+    "cache": "public, max-age=14400, must-revalidate"
+  },
+  {
+    "path": "/assets/images/kaoba-fortune-dada.png",
+    "status": 200,
+    "bytes": 680792,
+    "kb": 665,
+    "cache": "public, max-age=14400, must-revalidate"
+  },
+  {
+    "path": "/assets/images/ai-card-bg-honmei.png?v=2",
+    "status": 200,
+    "bytes": 631780,
+    "kb": 617,
+    "cache": "public, max-age=14400, must-revalidate"
+  },
+  {
+    "path": "/assets/images/mascot-ka0ba-login.png?v=6",
+    "status": 200,
+    "bytes": 586403,
+    "kb": 573,
+    "cache": "public, max-age=14400, must-revalidate"
+  },
+  {
+    "path": "/assets/images/race-bg-4.png",
+    "status": 200,
+    "bytes": 385865,
+    "kb": 377,
+    "cache": "public, max-age=14400, must-revalidate"
+  },
+  {
+    "path": "/assets/images/race-bg-1.png",
+    "status": 200,
+    "bytes": 367901,
+    "kb": 359,
+    "cache": "public, max-age=14400, must-revalidate"
+  },
+  {
+    "path": "/assets/images/mascot-ka0ba.png?v=10",
+    "status": 200,
+    "bytes": 353556,
+    "kb": 345,
+    "cache": "public, max-age=14400, must-revalidate"
+  },
+  {
+    "path": "/assets/images/ai-card-bg-pedigree.png?v=2",
+    "status": 200,
+    "bytes": 334711,
+    "kb": 327,
+    "cache": "public, max-age=14400, must-revalidate"
+  },
+  {
+    "path": "/assets/images/race-bg-3.png",
+    "status": 200,
+    "bytes": 323032,
+    "kb": 315,
+    "cache": "public, max-age=14400, must-revalidate"
+  },
+  {
+    "path": "/assets/images/ai-card-bg-odds.png?v=2",
+    "status": 200,
+    "bytes": 322677,
+    "kb": 315,
+    "cache": "public, max-age=14400, must-revalidate"
+  },
+  {
+    "path": "/assets/images/race-bg-2.png",
+    "status": 200,
+    "bytes": 317399,
+    "kb": 310,
+    "cache": "public, max-age=14400, must-revalidate"
+  },
+  {
+    "path": "/assets/screens.css?v=52",
+    "status": 200,
+    "bytes": 74494,
+    "kb": 73,
+    "cache": "public, max-age=14400, must-revalidate"
+  },
+  {
+    "path": "/assets/api/prediction-bind.js?v=52",
+    "status": 200,
+    "bytes": 47297,
+    "kb": 46,
+    "cache": "public, max-age=14400, must-revalidate"
+  },
+  {
+    "path": "/assets/styles.css?v=25",
+    "status": 200,
+    "bytes": 35345,
+    "kb": 35,
+    "cache": "public, max-age=14400, must-revalidate"
+  },
+  {
+    "path": "/assets/favorites.js?v=7",
+    "status": 200,
+    "bytes": 31649,
+    "kb": 31,
+    "cache": "public, max-age=14400, must-revalidate"
+  }
+]

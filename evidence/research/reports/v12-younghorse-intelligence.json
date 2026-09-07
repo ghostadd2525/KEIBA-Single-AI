@@ -1,0 +1,2891 @@
+{
+  "schema_version": "expect-younghorse-intelligence/1.0",
+  "generated_at": "2026-07-27T08:18:26+00:00",
+  "shadow_only": true,
+  "young_horse_score": "NOT_CREATED",
+  "prediction_mutation": "FORBIDDEN",
+  "resolver_mutation": "FORBIDDEN",
+  "sample": {
+    "young_races_with_evidence": 31,
+    "debut_2yo_newcomer": 7,
+    "by_age": {
+      "2yo_maiden": 5,
+      "2yo_newcomer": 7,
+      "3yo_maiden": 19
+    },
+    "baseline_strict_hits": 6,
+    "baseline_soft_hits": 11,
+    "baseline_strict_rate": 0.1935483870967742,
+    "baseline_soft_rate": 0.3548387096774194,
+    "tie_races_ge2": 9,
+    "exploratory": true,
+    "note": "Low sample; treat as exploratory research, not adoption gate."
+  },
+  "features": [
+    "popularity",
+    "win_odds",
+    "trainer",
+    "sire",
+    "damsire",
+    "breeder",
+    "oikiri_time",
+    "oikiri_rating"
+  ],
+  "solo": [
+    {
+      "feature_id": "popularity",
+      "field_resolved": 31,
+      "field_correct": 10,
+      "field_missing": 0,
+      "tie_eligible": 9,
+      "tie_resolved": 9,
+      "tie_correct_strict": 1,
+      "tie_soft_hit_after": 5,
+      "ig_sum": 18.55074678538324,
+      "ig_n": 9,
+      "winner_is_feature_best_field": 10,
+      "coverage_cells": 379,
+      "coverage_filled": 379,
+      "coverage": 1.0,
+      "field_win_rate": 0.3225806451612903,
+      "tie_resolve_rate": 1.0,
+      "tie_strict_win_rate": 0.1111111111111111,
+      "avg_ig": 2.0611940872648042,
+      "soft_to_strict_recovery": 0.2,
+      "research_rank_score": 0.527612,
+      "rank": 1
+    },
+    {
+      "feature_id": "win_odds",
+      "field_resolved": 31,
+      "field_correct": 10,
+      "field_missing": 0,
+      "tie_eligible": 9,
+      "tie_resolved": 9,
+      "tie_correct_strict": 1,
+      "tie_soft_hit_after": 5,
+      "ig_sum": 18.55074678538324,
+      "ig_n": 9,
+      "winner_is_feature_best_field": 10,
+      "coverage_cells": 379,
+      "coverage_filled": 379,
+      "coverage": 1.0,
+      "field_win_rate": 0.3225806451612903,
+      "tie_resolve_rate": 1.0,
+      "tie_strict_win_rate": 0.1111111111111111,
+      "avg_ig": 2.0611940872648042,
+      "soft_to_strict_recovery": 0.2,
+      "research_rank_score": 0.527612,
+      "rank": 2
+    },
+    {
+      "feature_id": "damsire",
+      "field_resolved": 22,
+      "field_correct": 4,
+      "field_missing": 0,
+      "tie_eligible": 9,
+      "tie_resolved": 8,
+      "tie_correct_strict": 0,
+      "tie_soft_hit_after": 5,
+      "ig_sum": 17.55074678538324,
+      "ig_n": 9,
+      "winner_is_feature_best_field": 4,
+      "coverage_cells": 379,
+      "coverage_filled": 379,
+      "coverage": 1.0,
+      "field_win_rate": 0.18181818181818182,
+      "tie_resolve_rate": 0.8888888888888888,
+      "tie_strict_win_rate": 0.0,
+      "avg_ig": 1.9500829761536933,
+      "soft_to_strict_recovery": 0.0,
+      "research_rank_score": 0.429827,
+      "rank": 3
+    },
+    {
+      "feature_id": "breeder",
+      "field_resolved": 23,
+      "field_correct": 0,
+      "field_missing": 0,
+      "tie_eligible": 9,
+      "tie_resolved": 8,
+      "tie_correct_strict": 0,
+      "tie_soft_hit_after": 5,
+      "ig_sum": 17.55074678538324,
+      "ig_n": 9,
+      "winner_is_feature_best_field": 0,
+      "coverage_cells": 379,
+      "coverage_filled": 379,
+      "coverage": 1.0,
+      "field_win_rate": 0.0,
+      "tie_resolve_rate": 0.8888888888888888,
+      "tie_strict_win_rate": 0.0,
+      "avg_ig": 1.9500829761536933,
+      "soft_to_strict_recovery": 0.0,
+      "research_rank_score": 0.375282,
+      "rank": 4
+    },
+    {
+      "feature_id": "sire",
+      "field_resolved": 15,
+      "field_correct": 1,
+      "field_missing": 0,
+      "tie_eligible": 9,
+      "tie_resolved": 5,
+      "tie_correct_strict": 1,
+      "tie_soft_hit_after": 3,
+      "ig_sum": 10.321928094887362,
+      "ig_n": 9,
+      "winner_is_feature_best_field": 1,
+      "coverage_cells": 379,
+      "coverage_filled": 379,
+      "coverage": 1.0,
+      "field_win_rate": 0.06666666666666667,
+      "tie_resolve_rate": 0.5555555555555556,
+      "tie_strict_win_rate": 0.2,
+      "avg_ig": 1.146880899431929,
+      "soft_to_strict_recovery": 0.3333333333333333,
+      "research_rank_score": 0.338455,
+      "rank": 5
+    },
+    {
+      "feature_id": "trainer",
+      "field_resolved": 22,
+      "field_correct": 1,
+      "field_missing": 0,
+      "tie_eligible": 9,
+      "tie_resolved": 5,
+      "tie_correct_strict": 1,
+      "tie_soft_hit_after": 2,
+      "ig_sum": 8.906890595608518,
+      "ig_n": 9,
+      "winner_is_feature_best_field": 1,
+      "coverage_cells": 379,
+      "coverage_filled": 379,
+      "coverage": 1.0,
+      "field_win_rate": 0.045454545454545456,
+      "tie_resolve_rate": 0.5555555555555556,
+      "tie_strict_win_rate": 0.2,
+      "avg_ig": 0.9896545106231687,
+      "soft_to_strict_recovery": 0.5,
+      "research_rank_score": 0.32423,
+      "rank": 6
+    },
+    {
+      "feature_id": "oikiri_time",
+      "field_resolved": 0,
+      "field_correct": 0,
+      "field_missing": 31,
+      "tie_eligible": 9,
+      "tie_resolved": 0,
+      "tie_correct_strict": 0,
+      "tie_soft_hit_after": 0,
+      "ig_sum": 0.0,
+      "ig_n": 0,
+      "winner_is_feature_best_field": 0,
+      "coverage_cells": 379,
+      "coverage_filled": 65,
+      "coverage": 0.17150395778364116,
+      "field_win_rate": null,
+      "tie_resolve_rate": 0.0,
+      "tie_strict_win_rate": null,
+      "avg_ig": null,
+      "soft_to_strict_recovery": null,
+      "research_rank_score": 0.01715,
+      "rank": 7
+    },
+    {
+      "feature_id": "oikiri_rating",
+      "field_resolved": 0,
+      "field_correct": 0,
+      "field_missing": 31,
+      "tie_eligible": 9,
+      "tie_resolved": 0,
+      "tie_correct_strict": 0,
+      "tie_soft_hit_after": 0,
+      "ig_sum": 0.0,
+      "ig_n": 0,
+      "winner_is_feature_best_field": 0,
+      "coverage_cells": 379,
+      "coverage_filled": 65,
+      "coverage": 0.17150395778364116,
+      "field_win_rate": null,
+      "tie_resolve_rate": 0.0,
+      "tie_strict_win_rate": null,
+      "avg_ig": null,
+      "soft_to_strict_recovery": null,
+      "research_rank_score": 0.01715,
+      "rank": 8
+    }
+  ],
+  "interactions": [
+    {
+      "features": [
+        "trainer",
+        "sire"
+      ],
+      "tie_eligible": 9,
+      "cascade_resolved": 9,
+      "cascade_correct": 2,
+      "solo_a_correct": 1,
+      "solo_b_correct": 1,
+      "lift_vs_best_solo": 1,
+      "ig_sum": 18.55074678538324,
+      "ig_n": 9,
+      "cascade_resolve_rate": 1.0,
+      "cascade_win_rate": 0.2222222222222222,
+      "avg_ig": 2.0611940872648042
+    },
+    {
+      "features": [
+        "trainer",
+        "oikiri_time"
+      ],
+      "tie_eligible": 9,
+      "cascade_resolved": 5,
+      "cascade_correct": 1,
+      "solo_a_correct": 1,
+      "solo_b_correct": 0,
+      "lift_vs_best_solo": 0,
+      "ig_sum": 8.906890595608518,
+      "ig_n": 5,
+      "cascade_resolve_rate": 0.5555555555555556,
+      "cascade_win_rate": 0.2,
+      "avg_ig": 1.7813781191217035
+    },
+    {
+      "features": [
+        "trainer",
+        "oikiri_rating"
+      ],
+      "tie_eligible": 9,
+      "cascade_resolved": 5,
+      "cascade_correct": 1,
+      "solo_a_correct": 1,
+      "solo_b_correct": 0,
+      "lift_vs_best_solo": 0,
+      "ig_sum": 8.906890595608518,
+      "ig_n": 5,
+      "cascade_resolve_rate": 0.5555555555555556,
+      "cascade_win_rate": 0.2,
+      "avg_ig": 1.7813781191217035
+    },
+    {
+      "features": [
+        "sire",
+        "oikiri_time"
+      ],
+      "tie_eligible": 9,
+      "cascade_resolved": 5,
+      "cascade_correct": 1,
+      "solo_a_correct": 1,
+      "solo_b_correct": 0,
+      "lift_vs_best_solo": 0,
+      "ig_sum": 10.321928094887362,
+      "ig_n": 5,
+      "cascade_resolve_rate": 0.5555555555555556,
+      "cascade_win_rate": 0.2,
+      "avg_ig": 2.0643856189774725
+    },
+    {
+      "features": [
+        "sire",
+        "oikiri_rating"
+      ],
+      "tie_eligible": 9,
+      "cascade_resolved": 5,
+      "cascade_correct": 1,
+      "solo_a_correct": 1,
+      "solo_b_correct": 0,
+      "lift_vs_best_solo": 0,
+      "ig_sum": 10.321928094887362,
+      "ig_n": 5,
+      "cascade_resolve_rate": 0.5555555555555556,
+      "cascade_win_rate": 0.2,
+      "avg_ig": 2.0643856189774725
+    },
+    {
+      "features": [
+        "sire",
+        "breeder"
+      ],
+      "tie_eligible": 9,
+      "cascade_resolved": 7,
+      "cascade_correct": 1,
+      "solo_a_correct": 1,
+      "solo_b_correct": 0,
+      "lift_vs_best_solo": 0,
+      "ig_sum": 14.965784284662085,
+      "ig_n": 7,
+      "cascade_resolve_rate": 0.7777777777777778,
+      "cascade_win_rate": 0.14285714285714285,
+      "avg_ig": 2.137969183523155
+    },
+    {
+      "features": [
+        "sire",
+        "damsire"
+      ],
+      "tie_eligible": 9,
+      "cascade_resolved": 8,
+      "cascade_correct": 1,
+      "solo_a_correct": 1,
+      "solo_b_correct": 0,
+      "lift_vs_best_solo": 0,
+      "ig_sum": 17.55074678538324,
+      "ig_n": 8,
+      "cascade_resolve_rate": 0.8888888888888888,
+      "cascade_win_rate": 0.125,
+      "avg_ig": 2.193843348172905
+    },
+    {
+      "features": [
+        "popularity",
+        "win_odds"
+      ],
+      "tie_eligible": 9,
+      "cascade_resolved": 9,
+      "cascade_correct": 1,
+      "solo_a_correct": 1,
+      "solo_b_correct": 1,
+      "lift_vs_best_solo": 0,
+      "ig_sum": 18.55074678538324,
+      "ig_n": 9,
+      "cascade_resolve_rate": 1.0,
+      "cascade_win_rate": 0.1111111111111111,
+      "avg_ig": 2.0611940872648042
+    },
+    {
+      "features": [
+        "popularity",
+        "trainer"
+      ],
+      "tie_eligible": 9,
+      "cascade_resolved": 9,
+      "cascade_correct": 1,
+      "solo_a_correct": 1,
+      "solo_b_correct": 1,
+      "lift_vs_best_solo": 0,
+      "ig_sum": 18.55074678538324,
+      "ig_n": 9,
+      "cascade_resolve_rate": 1.0,
+      "cascade_win_rate": 0.1111111111111111,
+      "avg_ig": 2.0611940872648042
+    },
+    {
+      "features": [
+        "popularity",
+        "sire"
+      ],
+      "tie_eligible": 9,
+      "cascade_resolved": 9,
+      "cascade_correct": 1,
+      "solo_a_correct": 1,
+      "solo_b_correct": 1,
+      "lift_vs_best_solo": 0,
+      "ig_sum": 18.55074678538324,
+      "ig_n": 9,
+      "cascade_resolve_rate": 1.0,
+      "cascade_win_rate": 0.1111111111111111,
+      "avg_ig": 2.0611940872648042
+    },
+    {
+      "features": [
+        "popularity",
+        "damsire"
+      ],
+      "tie_eligible": 9,
+      "cascade_resolved": 9,
+      "cascade_correct": 1,
+      "solo_a_correct": 1,
+      "solo_b_correct": 0,
+      "lift_vs_best_solo": 0,
+      "ig_sum": 18.55074678538324,
+      "ig_n": 9,
+      "cascade_resolve_rate": 1.0,
+      "cascade_win_rate": 0.1111111111111111,
+      "avg_ig": 2.0611940872648042
+    },
+    {
+      "features": [
+        "popularity",
+        "breeder"
+      ],
+      "tie_eligible": 9,
+      "cascade_resolved": 9,
+      "cascade_correct": 1,
+      "solo_a_correct": 1,
+      "solo_b_correct": 0,
+      "lift_vs_best_solo": 0,
+      "ig_sum": 18.55074678538324,
+      "ig_n": 9,
+      "cascade_resolve_rate": 1.0,
+      "cascade_win_rate": 0.1111111111111111,
+      "avg_ig": 2.0611940872648042
+    },
+    {
+      "features": [
+        "popularity",
+        "oikiri_time"
+      ],
+      "tie_eligible": 9,
+      "cascade_resolved": 9,
+      "cascade_correct": 1,
+      "solo_a_correct": 1,
+      "solo_b_correct": 0,
+      "lift_vs_best_solo": 0,
+      "ig_sum": 18.55074678538324,
+      "ig_n": 9,
+      "cascade_resolve_rate": 1.0,
+      "cascade_win_rate": 0.1111111111111111,
+      "avg_ig": 2.0611940872648042
+    },
+    {
+      "features": [
+        "popularity",
+        "oikiri_rating"
+      ],
+      "tie_eligible": 9,
+      "cascade_resolved": 9,
+      "cascade_correct": 1,
+      "solo_a_correct": 1,
+      "solo_b_correct": 0,
+      "lift_vs_best_solo": 0,
+      "ig_sum": 18.55074678538324,
+      "ig_n": 9,
+      "cascade_resolve_rate": 1.0,
+      "cascade_win_rate": 0.1111111111111111,
+      "avg_ig": 2.0611940872648042
+    },
+    {
+      "features": [
+        "win_odds",
+        "trainer"
+      ],
+      "tie_eligible": 9,
+      "cascade_resolved": 9,
+      "cascade_correct": 1,
+      "solo_a_correct": 1,
+      "solo_b_correct": 1,
+      "lift_vs_best_solo": 0,
+      "ig_sum": 18.55074678538324,
+      "ig_n": 9,
+      "cascade_resolve_rate": 1.0,
+      "cascade_win_rate": 0.1111111111111111,
+      "avg_ig": 2.0611940872648042
+    },
+    {
+      "features": [
+        "win_odds",
+        "sire"
+      ],
+      "tie_eligible": 9,
+      "cascade_resolved": 9,
+      "cascade_correct": 1,
+      "solo_a_correct": 1,
+      "solo_b_correct": 1,
+      "lift_vs_best_solo": 0,
+      "ig_sum": 18.55074678538324,
+      "ig_n": 9,
+      "cascade_resolve_rate": 1.0,
+      "cascade_win_rate": 0.1111111111111111,
+      "avg_ig": 2.0611940872648042
+    },
+    {
+      "features": [
+        "win_odds",
+        "damsire"
+      ],
+      "tie_eligible": 9,
+      "cascade_resolved": 9,
+      "cascade_correct": 1,
+      "solo_a_correct": 1,
+      "solo_b_correct": 0,
+      "lift_vs_best_solo": 0,
+      "ig_sum": 18.55074678538324,
+      "ig_n": 9,
+      "cascade_resolve_rate": 1.0,
+      "cascade_win_rate": 0.1111111111111111,
+      "avg_ig": 2.0611940872648042
+    },
+    {
+      "features": [
+        "win_odds",
+        "breeder"
+      ],
+      "tie_eligible": 9,
+      "cascade_resolved": 9,
+      "cascade_correct": 1,
+      "solo_a_correct": 1,
+      "solo_b_correct": 0,
+      "lift_vs_best_solo": 0,
+      "ig_sum": 18.55074678538324,
+      "ig_n": 9,
+      "cascade_resolve_rate": 1.0,
+      "cascade_win_rate": 0.1111111111111111,
+      "avg_ig": 2.0611940872648042
+    },
+    {
+      "features": [
+        "win_odds",
+        "oikiri_time"
+      ],
+      "tie_eligible": 9,
+      "cascade_resolved": 9,
+      "cascade_correct": 1,
+      "solo_a_correct": 1,
+      "solo_b_correct": 0,
+      "lift_vs_best_solo": 0,
+      "ig_sum": 18.55074678538324,
+      "ig_n": 9,
+      "cascade_resolve_rate": 1.0,
+      "cascade_win_rate": 0.1111111111111111,
+      "avg_ig": 2.0611940872648042
+    },
+    {
+      "features": [
+        "win_odds",
+        "oikiri_rating"
+      ],
+      "tie_eligible": 9,
+      "cascade_resolved": 9,
+      "cascade_correct": 1,
+      "solo_a_correct": 1,
+      "solo_b_correct": 0,
+      "lift_vs_best_solo": 0,
+      "ig_sum": 18.55074678538324,
+      "ig_n": 9,
+      "cascade_resolve_rate": 1.0,
+      "cascade_win_rate": 0.1111111111111111,
+      "avg_ig": 2.0611940872648042
+    },
+    {
+      "features": [
+        "trainer",
+        "damsire"
+      ],
+      "tie_eligible": 9,
+      "cascade_resolved": 9,
+      "cascade_correct": 1,
+      "solo_a_correct": 1,
+      "solo_b_correct": 0,
+      "lift_vs_best_solo": 0,
+      "ig_sum": 18.55074678538324,
+      "ig_n": 9,
+      "cascade_resolve_rate": 1.0,
+      "cascade_win_rate": 0.1111111111111111,
+      "avg_ig": 2.0611940872648042
+    },
+    {
+      "features": [
+        "trainer",
+        "breeder"
+      ],
+      "tie_eligible": 9,
+      "cascade_resolved": 9,
+      "cascade_correct": 1,
+      "solo_a_correct": 1,
+      "solo_b_correct": 0,
+      "lift_vs_best_solo": 0,
+      "ig_sum": 18.55074678538324,
+      "ig_n": 9,
+      "cascade_resolve_rate": 1.0,
+      "cascade_win_rate": 0.1111111111111111,
+      "avg_ig": 2.0611940872648042
+    },
+    {
+      "features": [
+        "damsire",
+        "breeder"
+      ],
+      "tie_eligible": 9,
+      "cascade_resolved": 8,
+      "cascade_correct": 0,
+      "solo_a_correct": 0,
+      "solo_b_correct": 0,
+      "lift_vs_best_solo": 0,
+      "ig_sum": 17.55074678538324,
+      "ig_n": 8,
+      "cascade_resolve_rate": 0.8888888888888888,
+      "cascade_win_rate": 0.0,
+      "avg_ig": 2.193843348172905
+    },
+    {
+      "features": [
+        "damsire",
+        "oikiri_time"
+      ],
+      "tie_eligible": 9,
+      "cascade_resolved": 8,
+      "cascade_correct": 0,
+      "solo_a_correct": 0,
+      "solo_b_correct": 0,
+      "lift_vs_best_solo": 0,
+      "ig_sum": 17.55074678538324,
+      "ig_n": 8,
+      "cascade_resolve_rate": 0.8888888888888888,
+      "cascade_win_rate": 0.0,
+      "avg_ig": 2.193843348172905
+    },
+    {
+      "features": [
+        "damsire",
+        "oikiri_rating"
+      ],
+      "tie_eligible": 9,
+      "cascade_resolved": 8,
+      "cascade_correct": 0,
+      "solo_a_correct": 0,
+      "solo_b_correct": 0,
+      "lift_vs_best_solo": 0,
+      "ig_sum": 17.55074678538324,
+      "ig_n": 8,
+      "cascade_resolve_rate": 0.8888888888888888,
+      "cascade_win_rate": 0.0,
+      "avg_ig": 2.193843348172905
+    },
+    {
+      "features": [
+        "breeder",
+        "oikiri_time"
+      ],
+      "tie_eligible": 9,
+      "cascade_resolved": 8,
+      "cascade_correct": 0,
+      "solo_a_correct": 0,
+      "solo_b_correct": 0,
+      "lift_vs_best_solo": 0,
+      "ig_sum": 17.55074678538324,
+      "ig_n": 8,
+      "cascade_resolve_rate": 0.8888888888888888,
+      "cascade_win_rate": 0.0,
+      "avg_ig": 2.193843348172905
+    },
+    {
+      "features": [
+        "breeder",
+        "oikiri_rating"
+      ],
+      "tie_eligible": 9,
+      "cascade_resolved": 8,
+      "cascade_correct": 0,
+      "solo_a_correct": 0,
+      "solo_b_correct": 0,
+      "lift_vs_best_solo": 0,
+      "ig_sum": 17.55074678538324,
+      "ig_n": 8,
+      "cascade_resolve_rate": 0.8888888888888888,
+      "cascade_win_rate": 0.0,
+      "avg_ig": 2.193843348172905
+    },
+    {
+      "features": [
+        "oikiri_time",
+        "oikiri_rating"
+      ],
+      "tie_eligible": 9,
+      "cascade_resolved": 0,
+      "cascade_correct": 0,
+      "solo_a_correct": 0,
+      "solo_b_correct": 0,
+      "lift_vs_best_solo": 0,
+      "ig_sum": 0.0,
+      "ig_n": 0,
+      "cascade_resolve_rate": 0.0,
+      "cascade_win_rate": null,
+      "avg_ig": null
+    }
+  ],
+  "ranking": [
+    {
+      "rank": 1,
+      "feature_id": "popularity",
+      "research_rank_score": 0.527612,
+      "field_win_rate": 0.3225806451612903,
+      "tie_resolve_rate": 1.0,
+      "tie_strict_win_rate": 0.1111111111111111,
+      "avg_ig": 2.0611940872648042,
+      "coverage": 1.0
+    },
+    {
+      "rank": 2,
+      "feature_id": "win_odds",
+      "research_rank_score": 0.527612,
+      "field_win_rate": 0.3225806451612903,
+      "tie_resolve_rate": 1.0,
+      "tie_strict_win_rate": 0.1111111111111111,
+      "avg_ig": 2.0611940872648042,
+      "coverage": 1.0
+    },
+    {
+      "rank": 3,
+      "feature_id": "damsire",
+      "research_rank_score": 0.429827,
+      "field_win_rate": 0.18181818181818182,
+      "tie_resolve_rate": 0.8888888888888888,
+      "tie_strict_win_rate": 0.0,
+      "avg_ig": 1.9500829761536933,
+      "coverage": 1.0
+    },
+    {
+      "rank": 4,
+      "feature_id": "breeder",
+      "research_rank_score": 0.375282,
+      "field_win_rate": 0.0,
+      "tie_resolve_rate": 0.8888888888888888,
+      "tie_strict_win_rate": 0.0,
+      "avg_ig": 1.9500829761536933,
+      "coverage": 1.0
+    },
+    {
+      "rank": 5,
+      "feature_id": "sire",
+      "research_rank_score": 0.338455,
+      "field_win_rate": 0.06666666666666667,
+      "tie_resolve_rate": 0.5555555555555556,
+      "tie_strict_win_rate": 0.2,
+      "avg_ig": 1.146880899431929,
+      "coverage": 1.0
+    },
+    {
+      "rank": 6,
+      "feature_id": "trainer",
+      "research_rank_score": 0.32423,
+      "field_win_rate": 0.045454545454545456,
+      "tie_resolve_rate": 0.5555555555555556,
+      "tie_strict_win_rate": 0.2,
+      "avg_ig": 0.9896545106231687,
+      "coverage": 1.0
+    },
+    {
+      "rank": 7,
+      "feature_id": "oikiri_time",
+      "research_rank_score": 0.01715,
+      "field_win_rate": null,
+      "tie_resolve_rate": 0.0,
+      "tie_strict_win_rate": null,
+      "avg_ig": null,
+      "coverage": 0.17150395778364116
+    },
+    {
+      "rank": 8,
+      "feature_id": "oikiri_rating",
+      "research_rank_score": 0.01715,
+      "field_win_rate": null,
+      "tie_resolve_rate": 0.0,
+      "tie_strict_win_rate": null,
+      "avg_ig": null,
+      "coverage": 0.17150395778364116
+    }
+  ],
+  "debut_sample_size": 7,
+  "race_records": [
+    {
+      "race_id": "2026-07-25-01-01",
+      "age_group": "2yo_maiden",
+      "class_label": "2歳未勝利",
+      "venue": "新潟",
+      "winner": 10,
+      "baseline_strict": true,
+      "baseline_soft": true,
+      "tie_size": 1,
+      "features": {
+        "popularity": {
+          "field_pick": 10,
+          "field_status": "resolved",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        },
+        "win_odds": {
+          "field_pick": 10,
+          "field_status": "resolved",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        },
+        "trainer": {
+          "field_pick": 7,
+          "field_status": "resolved",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        },
+        "sire": {
+          "field_pick": 4,
+          "field_status": "resolved",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        },
+        "damsire": {
+          "field_pick": 3,
+          "field_status": "resolved",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        },
+        "breeder": {
+          "field_pick": 2,
+          "field_status": "resolved",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        },
+        "oikiri_time": {
+          "field_pick": null,
+          "field_status": "missing",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        },
+        "oikiri_rating": {
+          "field_pick": null,
+          "field_status": "missing",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        }
+      }
+    },
+    {
+      "race_id": "2026-07-25-01-02",
+      "age_group": "2yo_newcomer",
+      "class_label": "2歳新馬",
+      "venue": "新潟",
+      "winner": 12,
+      "baseline_strict": false,
+      "baseline_soft": true,
+      "tie_size": 4,
+      "features": {
+        "popularity": {
+          "field_pick": 4,
+          "field_status": "resolved",
+          "tie_pick": 11,
+          "tie_status": "resolved",
+          "ig": 2.0
+        },
+        "win_odds": {
+          "field_pick": 4,
+          "field_status": "resolved",
+          "tie_pick": 11,
+          "tie_status": "resolved",
+          "ig": 2.0
+        },
+        "trainer": {
+          "field_pick": null,
+          "field_status": "unresolved_tie",
+          "tie_pick": null,
+          "tie_status": "unresolved_tie",
+          "ig": 0.0
+        },
+        "sire": {
+          "field_pick": null,
+          "field_status": "unresolved_tie",
+          "tie_pick": 11,
+          "tie_status": "resolved",
+          "ig": 2.0
+        },
+        "damsire": {
+          "field_pick": null,
+          "field_status": "unresolved_tie",
+          "tie_pick": 14,
+          "tie_status": "resolved",
+          "ig": 2.0
+        },
+        "breeder": {
+          "field_pick": null,
+          "field_status": "unresolved_tie",
+          "tie_pick": 14,
+          "tie_status": "resolved",
+          "ig": 2.0
+        },
+        "oikiri_time": {
+          "field_pick": null,
+          "field_status": "missing",
+          "tie_pick": null,
+          "tie_status": "missing",
+          "ig": 0.0
+        },
+        "oikiri_rating": {
+          "field_pick": null,
+          "field_status": "missing",
+          "tie_pick": null,
+          "tie_status": "missing",
+          "ig": 0.0
+        }
+      }
+    },
+    {
+      "race_id": "2026-07-25-01-03",
+      "age_group": "2yo_newcomer",
+      "class_label": "2歳新馬",
+      "venue": "新潟",
+      "winner": 4,
+      "baseline_strict": false,
+      "baseline_soft": false,
+      "tie_size": 4,
+      "features": {
+        "popularity": {
+          "field_pick": 1,
+          "field_status": "resolved",
+          "tie_pick": 7,
+          "tie_status": "resolved",
+          "ig": 2.0
+        },
+        "win_odds": {
+          "field_pick": 1,
+          "field_status": "resolved",
+          "tie_pick": 7,
+          "tie_status": "resolved",
+          "ig": 2.0
+        },
+        "trainer": {
+          "field_pick": 5,
+          "field_status": "resolved",
+          "tie_pick": 5,
+          "tie_status": "resolved",
+          "ig": 2.0
+        },
+        "sire": {
+          "field_pick": 1,
+          "field_status": "resolved",
+          "tie_pick": 7,
+          "tie_status": "resolved",
+          "ig": 2.0
+        },
+        "damsire": {
+          "field_pick": null,
+          "field_status": "unresolved_tie",
+          "tie_pick": 8,
+          "tie_status": "resolved",
+          "ig": 2.0
+        },
+        "breeder": {
+          "field_pick": 6,
+          "field_status": "resolved",
+          "tie_pick": 6,
+          "tie_status": "resolved",
+          "ig": 2.0
+        },
+        "oikiri_time": {
+          "field_pick": null,
+          "field_status": "missing",
+          "tie_pick": null,
+          "tie_status": "missing",
+          "ig": 0.0
+        },
+        "oikiri_rating": {
+          "field_pick": null,
+          "field_status": "missing",
+          "tie_pick": null,
+          "tie_status": "missing",
+          "ig": 0.0
+        }
+      }
+    },
+    {
+      "race_id": "2026-07-25-01-04",
+      "age_group": "3yo_maiden",
+      "class_label": "3歳未勝利",
+      "venue": "新潟",
+      "winner": 3,
+      "baseline_strict": false,
+      "baseline_soft": false,
+      "tie_size": 1,
+      "features": {
+        "popularity": {
+          "field_pick": 14,
+          "field_status": "resolved",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        },
+        "win_odds": {
+          "field_pick": 14,
+          "field_status": "resolved",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        },
+        "trainer": {
+          "field_pick": 14,
+          "field_status": "resolved",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        },
+        "sire": {
+          "field_pick": 13,
+          "field_status": "resolved",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        },
+        "damsire": {
+          "field_pick": 3,
+          "field_status": "resolved",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        },
+        "breeder": {
+          "field_pick": null,
+          "field_status": "unresolved_tie",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        },
+        "oikiri_time": {
+          "field_pick": null,
+          "field_status": "missing",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        },
+        "oikiri_rating": {
+          "field_pick": null,
+          "field_status": "missing",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        }
+      }
+    },
+    {
+      "race_id": "2026-07-25-01-10",
+      "age_group": "3yo_maiden",
+      "class_label": "3歳未勝利",
+      "venue": "新潟",
+      "winner": 9,
+      "baseline_strict": true,
+      "baseline_soft": true,
+      "tie_size": 1,
+      "features": {
+        "popularity": {
+          "field_pick": 12,
+          "field_status": "resolved",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        },
+        "win_odds": {
+          "field_pick": 12,
+          "field_status": "resolved",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        },
+        "trainer": {
+          "field_pick": 8,
+          "field_status": "resolved",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        },
+        "sire": {
+          "field_pick": null,
+          "field_status": "unresolved_tie",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        },
+        "damsire": {
+          "field_pick": 9,
+          "field_status": "resolved",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        },
+        "breeder": {
+          "field_pick": 8,
+          "field_status": "resolved",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        },
+        "oikiri_time": {
+          "field_pick": null,
+          "field_status": "missing",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        },
+        "oikiri_rating": {
+          "field_pick": null,
+          "field_status": "missing",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        }
+      }
+    },
+    {
+      "race_id": "2026-07-25-01-11",
+      "age_group": "3yo_maiden",
+      "class_label": "3歳未勝利",
+      "venue": "新潟",
+      "winner": 4,
+      "baseline_strict": false,
+      "baseline_soft": false,
+      "tie_size": 1,
+      "features": {
+        "popularity": {
+          "field_pick": 16,
+          "field_status": "resolved",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        },
+        "win_odds": {
+          "field_pick": 16,
+          "field_status": "resolved",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        },
+        "trainer": {
+          "field_pick": 15,
+          "field_status": "resolved",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        },
+        "sire": {
+          "field_pick": 1,
+          "field_status": "resolved",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        },
+        "damsire": {
+          "field_pick": 4,
+          "field_status": "resolved",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        },
+        "breeder": {
+          "field_pick": 16,
+          "field_status": "resolved",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        },
+        "oikiri_time": {
+          "field_pick": null,
+          "field_status": "missing",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        },
+        "oikiri_rating": {
+          "field_pick": null,
+          "field_status": "missing",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        }
+      }
+    },
+    {
+      "race_id": "2026-07-25-02-01",
+      "age_group": "2yo_maiden",
+      "class_label": "2歳未勝利",
+      "venue": "中京",
+      "winner": 1,
+      "baseline_strict": false,
+      "baseline_soft": false,
+      "tie_size": 5,
+      "features": {
+        "popularity": {
+          "field_pick": 5,
+          "field_status": "resolved",
+          "tie_pick": 5,
+          "tie_status": "resolved",
+          "ig": 2.321928094887362
+        },
+        "win_odds": {
+          "field_pick": 5,
+          "field_status": "resolved",
+          "tie_pick": 5,
+          "tie_status": "resolved",
+          "ig": 2.321928094887362
+        },
+        "trainer": {
+          "field_pick": 1,
+          "field_status": "resolved",
+          "tie_pick": null,
+          "tie_status": "unresolved_tie",
+          "ig": 0.0
+        },
+        "sire": {
+          "field_pick": null,
+          "field_status": "unresolved_tie",
+          "tie_pick": null,
+          "tie_status": "unresolved_tie",
+          "ig": 0.0
+        },
+        "damsire": {
+          "field_pick": null,
+          "field_status": "unresolved_tie",
+          "tie_pick": 7,
+          "tie_status": "resolved",
+          "ig": 2.321928094887362
+        },
+        "breeder": {
+          "field_pick": 2,
+          "field_status": "resolved",
+          "tie_pick": 8,
+          "tie_status": "resolved",
+          "ig": 2.321928094887362
+        },
+        "oikiri_time": {
+          "field_pick": null,
+          "field_status": "missing",
+          "tie_pick": null,
+          "tie_status": "missing",
+          "ig": 0.0
+        },
+        "oikiri_rating": {
+          "field_pick": null,
+          "field_status": "missing",
+          "tie_pick": null,
+          "tie_status": "missing",
+          "ig": 0.0
+        }
+      }
+    },
+    {
+      "race_id": "2026-07-25-02-02",
+      "age_group": "2yo_newcomer",
+      "class_label": "2歳新馬",
+      "venue": "中京",
+      "winner": 11,
+      "baseline_strict": false,
+      "baseline_soft": true,
+      "tie_size": 8,
+      "features": {
+        "popularity": {
+          "field_pick": 11,
+          "field_status": "resolved",
+          "tie_pick": 11,
+          "tie_status": "resolved",
+          "ig": 3.0
+        },
+        "win_odds": {
+          "field_pick": 11,
+          "field_status": "resolved",
+          "tie_pick": 11,
+          "tie_status": "resolved",
+          "ig": 3.0
+        },
+        "trainer": {
+          "field_pick": 1,
+          "field_status": "resolved",
+          "tie_pick": null,
+          "tie_status": "unresolved_tie",
+          "ig": 0.0
+        },
+        "sire": {
+          "field_pick": null,
+          "field_status": "unresolved_tie",
+          "tie_pick": 10,
+          "tie_status": "resolved",
+          "ig": 3.0
+        },
+        "damsire": {
+          "field_pick": 7,
+          "field_status": "resolved",
+          "tie_pick": 7,
+          "tie_status": "resolved",
+          "ig": 3.0
+        },
+        "breeder": {
+          "field_pick": 10,
+          "field_status": "resolved",
+          "tie_pick": 10,
+          "tie_status": "resolved",
+          "ig": 3.0
+        },
+        "oikiri_time": {
+          "field_pick": null,
+          "field_status": "missing",
+          "tie_pick": null,
+          "tie_status": "missing",
+          "ig": 0.0
+        },
+        "oikiri_rating": {
+          "field_pick": null,
+          "field_status": "missing",
+          "tie_pick": null,
+          "tie_status": "missing",
+          "ig": 0.0
+        }
+      }
+    },
+    {
+      "race_id": "2026-07-25-02-03",
+      "age_group": "3yo_maiden",
+      "class_label": "3歳未勝利",
+      "venue": "中京",
+      "winner": 10,
+      "baseline_strict": false,
+      "baseline_soft": false,
+      "tie_size": 1,
+      "features": {
+        "popularity": {
+          "field_pick": 10,
+          "field_status": "resolved",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        },
+        "win_odds": {
+          "field_pick": 10,
+          "field_status": "resolved",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        },
+        "trainer": {
+          "field_pick": 8,
+          "field_status": "resolved",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        },
+        "sire": {
+          "field_pick": null,
+          "field_status": "unresolved_tie",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        },
+        "damsire": {
+          "field_pick": 9,
+          "field_status": "resolved",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        },
+        "breeder": {
+          "field_pick": null,
+          "field_status": "unresolved_tie",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        },
+        "oikiri_time": {
+          "field_pick": null,
+          "field_status": "missing",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        },
+        "oikiri_rating": {
+          "field_pick": null,
+          "field_status": "missing",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        }
+      }
+    },
+    {
+      "race_id": "2026-07-25-02-04",
+      "age_group": "3yo_maiden",
+      "class_label": "3歳未勝利",
+      "venue": "中京",
+      "winner": 8,
+      "baseline_strict": false,
+      "baseline_soft": false,
+      "tie_size": 1,
+      "features": {
+        "popularity": {
+          "field_pick": 8,
+          "field_status": "resolved",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        },
+        "win_odds": {
+          "field_pick": 8,
+          "field_status": "resolved",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        },
+        "trainer": {
+          "field_pick": 4,
+          "field_status": "resolved",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        },
+        "sire": {
+          "field_pick": null,
+          "field_status": "unresolved_tie",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        },
+        "damsire": {
+          "field_pick": null,
+          "field_status": "unresolved_tie",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        },
+        "breeder": {
+          "field_pick": 15,
+          "field_status": "resolved",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        },
+        "oikiri_time": {
+          "field_pick": null,
+          "field_status": "missing",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        },
+        "oikiri_rating": {
+          "field_pick": null,
+          "field_status": "missing",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        }
+      }
+    },
+    {
+      "race_id": "2026-07-25-02-05",
+      "age_group": "3yo_maiden",
+      "class_label": "3歳未勝利",
+      "venue": "中京",
+      "winner": 12,
+      "baseline_strict": false,
+      "baseline_soft": false,
+      "tie_size": 1,
+      "features": {
+        "popularity": {
+          "field_pick": 12,
+          "field_status": "resolved",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        },
+        "win_odds": {
+          "field_pick": 12,
+          "field_status": "resolved",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        },
+        "trainer": {
+          "field_pick": null,
+          "field_status": "unresolved_tie",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        },
+        "sire": {
+          "field_pick": 1,
+          "field_status": "resolved",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        },
+        "damsire": {
+          "field_pick": 14,
+          "field_status": "resolved",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        },
+        "breeder": {
+          "field_pick": 7,
+          "field_status": "resolved",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        },
+        "oikiri_time": {
+          "field_pick": null,
+          "field_status": "missing",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        },
+        "oikiri_rating": {
+          "field_pick": null,
+          "field_status": "missing",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        }
+      }
+    },
+    {
+      "race_id": "2026-07-25-02-12",
+      "age_group": "3yo_maiden",
+      "class_label": "3歳未勝利",
+      "venue": "中京",
+      "winner": 3,
+      "baseline_strict": false,
+      "baseline_soft": false,
+      "tie_size": 1,
+      "features": {
+        "popularity": {
+          "field_pick": 13,
+          "field_status": "resolved",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        },
+        "win_odds": {
+          "field_pick": 13,
+          "field_status": "resolved",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        },
+        "trainer": {
+          "field_pick": null,
+          "field_status": "unresolved_tie",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        },
+        "sire": {
+          "field_pick": null,
+          "field_status": "unresolved_tie",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        },
+        "damsire": {
+          "field_pick": null,
+          "field_status": "unresolved_tie",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        },
+        "breeder": {
+          "field_pick": null,
+          "field_status": "unresolved_tie",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        },
+        "oikiri_time": {
+          "field_pick": null,
+          "field_status": "missing",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        },
+        "oikiri_rating": {
+          "field_pick": null,
+          "field_status": "missing",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        }
+      }
+    },
+    {
+      "race_id": "2026-07-25-03-01",
+      "age_group": "3yo_maiden",
+      "class_label": "3歳未勝利",
+      "venue": "札幌",
+      "winner": 7,
+      "baseline_strict": false,
+      "baseline_soft": false,
+      "tie_size": 1,
+      "features": {
+        "popularity": {
+          "field_pick": 3,
+          "field_status": "resolved",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        },
+        "win_odds": {
+          "field_pick": 3,
+          "field_status": "resolved",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        },
+        "trainer": {
+          "field_pick": 6,
+          "field_status": "resolved",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        },
+        "sire": {
+          "field_pick": 3,
+          "field_status": "resolved",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        },
+        "damsire": {
+          "field_pick": 8,
+          "field_status": "resolved",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        },
+        "breeder": {
+          "field_pick": 4,
+          "field_status": "resolved",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        },
+        "oikiri_time": {
+          "field_pick": null,
+          "field_status": "missing",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        },
+        "oikiri_rating": {
+          "field_pick": null,
+          "field_status": "missing",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        }
+      }
+    },
+    {
+      "race_id": "2026-07-25-03-02",
+      "age_group": "2yo_maiden",
+      "class_label": "2歳未勝利",
+      "venue": "札幌",
+      "winner": 5,
+      "baseline_strict": false,
+      "baseline_soft": false,
+      "tie_size": 1,
+      "features": {
+        "popularity": {
+          "field_pick": 4,
+          "field_status": "resolved",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        },
+        "win_odds": {
+          "field_pick": 4,
+          "field_status": "resolved",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        },
+        "trainer": {
+          "field_pick": null,
+          "field_status": "unresolved_tie",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        },
+        "sire": {
+          "field_pick": null,
+          "field_status": "unresolved_tie",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        },
+        "damsire": {
+          "field_pick": 5,
+          "field_status": "resolved",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        },
+        "breeder": {
+          "field_pick": 1,
+          "field_status": "resolved",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        },
+        "oikiri_time": {
+          "field_pick": null,
+          "field_status": "missing",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        },
+        "oikiri_rating": {
+          "field_pick": null,
+          "field_status": "missing",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        }
+      }
+    },
+    {
+      "race_id": "2026-07-25-03-03",
+      "age_group": "3yo_maiden",
+      "class_label": "3歳未勝利",
+      "venue": "札幌",
+      "winner": 3,
+      "baseline_strict": false,
+      "baseline_soft": false,
+      "tie_size": 1,
+      "features": {
+        "popularity": {
+          "field_pick": 3,
+          "field_status": "resolved",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        },
+        "win_odds": {
+          "field_pick": 3,
+          "field_status": "resolved",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        },
+        "trainer": {
+          "field_pick": null,
+          "field_status": "unresolved_tie",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        },
+        "sire": {
+          "field_pick": 2,
+          "field_status": "resolved",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        },
+        "damsire": {
+          "field_pick": null,
+          "field_status": "unresolved_tie",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        },
+        "breeder": {
+          "field_pick": null,
+          "field_status": "unresolved_tie",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        },
+        "oikiri_time": {
+          "field_pick": null,
+          "field_status": "missing",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        },
+        "oikiri_rating": {
+          "field_pick": null,
+          "field_status": "missing",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        }
+      }
+    },
+    {
+      "race_id": "2026-07-25-03-04",
+      "age_group": "3yo_maiden",
+      "class_label": "3歳未勝利",
+      "venue": "札幌",
+      "winner": 11,
+      "baseline_strict": false,
+      "baseline_soft": false,
+      "tie_size": 1,
+      "features": {
+        "popularity": {
+          "field_pick": 11,
+          "field_status": "resolved",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        },
+        "win_odds": {
+          "field_pick": 11,
+          "field_status": "resolved",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        },
+        "trainer": {
+          "field_pick": 14,
+          "field_status": "resolved",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        },
+        "sire": {
+          "field_pick": 5,
+          "field_status": "resolved",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        },
+        "damsire": {
+          "field_pick": 4,
+          "field_status": "resolved",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        },
+        "breeder": {
+          "field_pick": 10,
+          "field_status": "resolved",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        },
+        "oikiri_time": {
+          "field_pick": null,
+          "field_status": "missing",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        },
+        "oikiri_rating": {
+          "field_pick": null,
+          "field_status": "missing",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        }
+      }
+    },
+    {
+      "race_id": "2026-07-25-03-05",
+      "age_group": "2yo_newcomer",
+      "class_label": "2歳新馬",
+      "venue": "札幌",
+      "winner": 1,
+      "baseline_strict": false,
+      "baseline_soft": false,
+      "tie_size": 2,
+      "features": {
+        "popularity": {
+          "field_pick": 3,
+          "field_status": "resolved",
+          "tie_pick": 5,
+          "tie_status": "resolved",
+          "ig": 1.0
+        },
+        "win_odds": {
+          "field_pick": 3,
+          "field_status": "resolved",
+          "tie_pick": 5,
+          "tie_status": "resolved",
+          "ig": 1.0
+        },
+        "trainer": {
+          "field_pick": 2,
+          "field_status": "resolved",
+          "tie_pick": 6,
+          "tie_status": "resolved",
+          "ig": 1.0
+        },
+        "sire": {
+          "field_pick": 1,
+          "field_status": "resolved",
+          "tie_pick": 6,
+          "tie_status": "resolved",
+          "ig": 1.0
+        },
+        "damsire": {
+          "field_pick": null,
+          "field_status": "unresolved_tie",
+          "tie_pick": 6,
+          "tie_status": "resolved",
+          "ig": 1.0
+        },
+        "breeder": {
+          "field_pick": 5,
+          "field_status": "resolved",
+          "tie_pick": 5,
+          "tie_status": "resolved",
+          "ig": 1.0
+        },
+        "oikiri_time": {
+          "field_pick": null,
+          "field_status": "missing",
+          "tie_pick": null,
+          "tie_status": "missing",
+          "ig": 0.0
+        },
+        "oikiri_rating": {
+          "field_pick": null,
+          "field_status": "missing",
+          "tie_pick": null,
+          "tie_status": "missing",
+          "ig": 0.0
+        }
+      }
+    },
+    {
+      "race_id": "2026-07-25-03-06",
+      "age_group": "3yo_maiden",
+      "class_label": "3歳未勝利",
+      "venue": "札幌",
+      "winner": 9,
+      "baseline_strict": false,
+      "baseline_soft": false,
+      "tie_size": 1,
+      "features": {
+        "popularity": {
+          "field_pick": 1,
+          "field_status": "resolved",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        },
+        "win_odds": {
+          "field_pick": 1,
+          "field_status": "resolved",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        },
+        "trainer": {
+          "field_pick": 5,
+          "field_status": "resolved",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        },
+        "sire": {
+          "field_pick": null,
+          "field_status": "unresolved_tie",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        },
+        "damsire": {
+          "field_pick": 1,
+          "field_status": "resolved",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        },
+        "breeder": {
+          "field_pick": 11,
+          "field_status": "resolved",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        },
+        "oikiri_time": {
+          "field_pick": null,
+          "field_status": "missing",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        },
+        "oikiri_rating": {
+          "field_pick": null,
+          "field_status": "missing",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        }
+      }
+    },
+    {
+      "race_id": "2026-07-26-01-02",
+      "age_group": "2yo_newcomer",
+      "class_label": "2歳新馬",
+      "venue": "新潟",
+      "winner": 6,
+      "baseline_strict": false,
+      "baseline_soft": true,
+      "tie_size": 5,
+      "features": {
+        "popularity": {
+          "field_pick": 3,
+          "field_status": "resolved",
+          "tie_pick": 9,
+          "tie_status": "resolved",
+          "ig": 2.321928094887362
+        },
+        "win_odds": {
+          "field_pick": 3,
+          "field_status": "resolved",
+          "tie_pick": 9,
+          "tie_status": "resolved",
+          "ig": 2.321928094887362
+        },
+        "trainer": {
+          "field_pick": null,
+          "field_status": "unresolved_tie",
+          "tie_pick": 9,
+          "tie_status": "resolved",
+          "ig": 2.321928094887362
+        },
+        "sire": {
+          "field_pick": null,
+          "field_status": "unresolved_tie",
+          "tie_pick": null,
+          "tie_status": "unresolved_tie",
+          "ig": 0.0
+        },
+        "damsire": {
+          "field_pick": 5,
+          "field_status": "resolved",
+          "tie_pick": 5,
+          "tie_status": "resolved",
+          "ig": 2.321928094887362
+        },
+        "breeder": {
+          "field_pick": 8,
+          "field_status": "resolved",
+          "tie_pick": 8,
+          "tie_status": "resolved",
+          "ig": 2.321928094887362
+        },
+        "oikiri_time": {
+          "field_pick": null,
+          "field_status": "missing",
+          "tie_pick": null,
+          "tie_status": "missing",
+          "ig": 0.0
+        },
+        "oikiri_rating": {
+          "field_pick": null,
+          "field_status": "missing",
+          "tie_pick": null,
+          "tie_status": "missing",
+          "ig": 0.0
+        }
+      }
+    },
+    {
+      "race_id": "2026-07-26-01-03",
+      "age_group": "3yo_maiden",
+      "class_label": "3歳未勝利",
+      "venue": "新潟",
+      "winner": 7,
+      "baseline_strict": false,
+      "baseline_soft": false,
+      "tie_size": 1,
+      "features": {
+        "popularity": {
+          "field_pick": 11,
+          "field_status": "resolved",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        },
+        "win_odds": {
+          "field_pick": 11,
+          "field_status": "resolved",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        },
+        "trainer": {
+          "field_pick": null,
+          "field_status": "unresolved_tie",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        },
+        "sire": {
+          "field_pick": 12,
+          "field_status": "resolved",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        },
+        "damsire": {
+          "field_pick": 12,
+          "field_status": "resolved",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        },
+        "breeder": {
+          "field_pick": 5,
+          "field_status": "resolved",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        },
+        "oikiri_time": {
+          "field_pick": null,
+          "field_status": "missing",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        },
+        "oikiri_rating": {
+          "field_pick": null,
+          "field_status": "missing",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        }
+      }
+    },
+    {
+      "race_id": "2026-07-26-01-04",
+      "age_group": "3yo_maiden",
+      "class_label": "3歳未勝利",
+      "venue": "新潟",
+      "winner": 1,
+      "baseline_strict": false,
+      "baseline_soft": false,
+      "tie_size": 1,
+      "features": {
+        "popularity": {
+          "field_pick": 14,
+          "field_status": "resolved",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        },
+        "win_odds": {
+          "field_pick": 14,
+          "field_status": "resolved",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        },
+        "trainer": {
+          "field_pick": null,
+          "field_status": "unresolved_tie",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        },
+        "sire": {
+          "field_pick": null,
+          "field_status": "unresolved_tie",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        },
+        "damsire": {
+          "field_pick": 13,
+          "field_status": "resolved",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        },
+        "breeder": {
+          "field_pick": 13,
+          "field_status": "resolved",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        },
+        "oikiri_time": {
+          "field_pick": null,
+          "field_status": "missing",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        },
+        "oikiri_rating": {
+          "field_pick": null,
+          "field_status": "missing",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        }
+      }
+    },
+    {
+      "race_id": "2026-07-26-02-01",
+      "age_group": "2yo_maiden",
+      "class_label": "2歳未勝利",
+      "venue": "中京",
+      "winner": 8,
+      "baseline_strict": false,
+      "baseline_soft": true,
+      "tie_size": 5,
+      "features": {
+        "popularity": {
+          "field_pick": 1,
+          "field_status": "resolved",
+          "tie_pick": 6,
+          "tie_status": "resolved",
+          "ig": 2.321928094887362
+        },
+        "win_odds": {
+          "field_pick": 1,
+          "field_status": "resolved",
+          "tie_pick": 6,
+          "tie_status": "resolved",
+          "ig": 2.321928094887362
+        },
+        "trainer": {
+          "field_pick": 1,
+          "field_status": "resolved",
+          "tie_pick": null,
+          "tie_status": "unresolved_tie",
+          "ig": 0.0
+        },
+        "sire": {
+          "field_pick": 3,
+          "field_status": "resolved",
+          "tie_pick": 8,
+          "tie_status": "resolved",
+          "ig": 2.321928094887362
+        },
+        "damsire": {
+          "field_pick": 7,
+          "field_status": "resolved",
+          "tie_pick": 7,
+          "tie_status": "resolved",
+          "ig": 2.321928094887362
+        },
+        "breeder": {
+          "field_pick": 4,
+          "field_status": "resolved",
+          "tie_pick": 7,
+          "tie_status": "resolved",
+          "ig": 2.321928094887362
+        },
+        "oikiri_time": {
+          "field_pick": null,
+          "field_status": "missing",
+          "tie_pick": null,
+          "tie_status": "missing",
+          "ig": 0.0
+        },
+        "oikiri_rating": {
+          "field_pick": null,
+          "field_status": "missing",
+          "tie_pick": null,
+          "tie_status": "missing",
+          "ig": 0.0
+        }
+      }
+    },
+    {
+      "race_id": "2026-07-26-02-02",
+      "age_group": "2yo_newcomer",
+      "class_label": "2歳新馬",
+      "venue": "中京",
+      "winner": 3,
+      "baseline_strict": false,
+      "baseline_soft": false,
+      "tie_size": 2,
+      "features": {
+        "popularity": {
+          "field_pick": 2,
+          "field_status": "resolved",
+          "tie_pick": 6,
+          "tie_status": "resolved",
+          "ig": 1.0
+        },
+        "win_odds": {
+          "field_pick": 2,
+          "field_status": "resolved",
+          "tie_pick": 6,
+          "tie_status": "resolved",
+          "ig": 1.0
+        },
+        "trainer": {
+          "field_pick": null,
+          "field_status": "unresolved_tie",
+          "tie_pick": 6,
+          "tie_status": "resolved",
+          "ig": 1.0
+        },
+        "sire": {
+          "field_pick": 1,
+          "field_status": "resolved",
+          "tie_pick": null,
+          "tie_status": "unresolved_tie",
+          "ig": 0.0
+        },
+        "damsire": {
+          "field_pick": 2,
+          "field_status": "resolved",
+          "tie_pick": null,
+          "tie_status": "unresolved_tie",
+          "ig": 0.0
+        },
+        "breeder": {
+          "field_pick": null,
+          "field_status": "unresolved_tie",
+          "tie_pick": null,
+          "tie_status": "unresolved_tie",
+          "ig": 0.0
+        },
+        "oikiri_time": {
+          "field_pick": null,
+          "field_status": "missing",
+          "tie_pick": null,
+          "tie_status": "missing",
+          "ig": 0.0
+        },
+        "oikiri_rating": {
+          "field_pick": null,
+          "field_status": "missing",
+          "tie_pick": null,
+          "tie_status": "missing",
+          "ig": 0.0
+        }
+      }
+    },
+    {
+      "race_id": "2026-07-26-02-03",
+      "age_group": "3yo_maiden",
+      "class_label": "3歳未勝利",
+      "venue": "中京",
+      "winner": 6,
+      "baseline_strict": true,
+      "baseline_soft": true,
+      "tie_size": 1,
+      "features": {
+        "popularity": {
+          "field_pick": 6,
+          "field_status": "resolved",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        },
+        "win_odds": {
+          "field_pick": 6,
+          "field_status": "resolved",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        },
+        "trainer": {
+          "field_pick": 8,
+          "field_status": "resolved",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        },
+        "sire": {
+          "field_pick": null,
+          "field_status": "unresolved_tie",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        },
+        "damsire": {
+          "field_pick": 8,
+          "field_status": "resolved",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        },
+        "breeder": {
+          "field_pick": 2,
+          "field_status": "resolved",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        },
+        "oikiri_time": {
+          "field_pick": null,
+          "field_status": "missing",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        },
+        "oikiri_rating": {
+          "field_pick": null,
+          "field_status": "missing",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        }
+      }
+    },
+    {
+      "race_id": "2026-07-26-02-04",
+      "age_group": "3yo_maiden",
+      "class_label": "3歳未勝利",
+      "venue": "中京",
+      "winner": 11,
+      "baseline_strict": false,
+      "baseline_soft": false,
+      "tie_size": 1,
+      "features": {
+        "popularity": {
+          "field_pick": 1,
+          "field_status": "resolved",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        },
+        "win_odds": {
+          "field_pick": 1,
+          "field_status": "resolved",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        },
+        "trainer": {
+          "field_pick": 14,
+          "field_status": "resolved",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        },
+        "sire": {
+          "field_pick": null,
+          "field_status": "unresolved_tie",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        },
+        "damsire": {
+          "field_pick": 9,
+          "field_status": "resolved",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        },
+        "breeder": {
+          "field_pick": null,
+          "field_status": "unresolved_tie",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        },
+        "oikiri_time": {
+          "field_pick": null,
+          "field_status": "missing",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        },
+        "oikiri_rating": {
+          "field_pick": null,
+          "field_status": "missing",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        }
+      }
+    },
+    {
+      "race_id": "2026-07-26-02-05",
+      "age_group": "3yo_maiden",
+      "class_label": "3歳未勝利",
+      "venue": "中京",
+      "winner": 6,
+      "baseline_strict": true,
+      "baseline_soft": true,
+      "tie_size": 1,
+      "features": {
+        "popularity": {
+          "field_pick": 14,
+          "field_status": "resolved",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        },
+        "win_odds": {
+          "field_pick": 14,
+          "field_status": "resolved",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        },
+        "trainer": {
+          "field_pick": 1,
+          "field_status": "resolved",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        },
+        "sire": {
+          "field_pick": 15,
+          "field_status": "resolved",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        },
+        "damsire": {
+          "field_pick": 10,
+          "field_status": "resolved",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        },
+        "breeder": {
+          "field_pick": null,
+          "field_status": "unresolved_tie",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        },
+        "oikiri_time": {
+          "field_pick": null,
+          "field_status": "missing",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        },
+        "oikiri_rating": {
+          "field_pick": null,
+          "field_status": "missing",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        }
+      }
+    },
+    {
+      "race_id": "2026-07-26-03-01",
+      "age_group": "2yo_maiden",
+      "class_label": "2歳未勝利",
+      "venue": "札幌",
+      "winner": 10,
+      "baseline_strict": true,
+      "baseline_soft": true,
+      "tie_size": 1,
+      "features": {
+        "popularity": {
+          "field_pick": 10,
+          "field_status": "resolved",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        },
+        "win_odds": {
+          "field_pick": 10,
+          "field_status": "resolved",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        },
+        "trainer": {
+          "field_pick": 2,
+          "field_status": "resolved",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        },
+        "sire": {
+          "field_pick": null,
+          "field_status": "unresolved_tie",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        },
+        "damsire": {
+          "field_pick": 8,
+          "field_status": "resolved",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        },
+        "breeder": {
+          "field_pick": 7,
+          "field_status": "resolved",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        },
+        "oikiri_time": {
+          "field_pick": null,
+          "field_status": "missing",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        },
+        "oikiri_rating": {
+          "field_pick": null,
+          "field_status": "missing",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        }
+      }
+    },
+    {
+      "race_id": "2026-07-26-03-02",
+      "age_group": "3yo_maiden",
+      "class_label": "3歳未勝利",
+      "venue": "札幌",
+      "winner": 9,
+      "baseline_strict": false,
+      "baseline_soft": false,
+      "tie_size": 1,
+      "features": {
+        "popularity": {
+          "field_pick": 6,
+          "field_status": "resolved",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        },
+        "win_odds": {
+          "field_pick": 6,
+          "field_status": "resolved",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        },
+        "trainer": {
+          "field_pick": 1,
+          "field_status": "resolved",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        },
+        "sire": {
+          "field_pick": 5,
+          "field_status": "resolved",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        },
+        "damsire": {
+          "field_pick": null,
+          "field_status": "unresolved_tie",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        },
+        "breeder": {
+          "field_pick": 1,
+          "field_status": "resolved",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        },
+        "oikiri_time": {
+          "field_pick": null,
+          "field_status": "missing",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        },
+        "oikiri_rating": {
+          "field_pick": null,
+          "field_status": "missing",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        }
+      }
+    },
+    {
+      "race_id": "2026-07-26-03-03",
+      "age_group": "3yo_maiden",
+      "class_label": "3歳未勝利",
+      "venue": "札幌",
+      "winner": 8,
+      "baseline_strict": true,
+      "baseline_soft": true,
+      "tie_size": 1,
+      "features": {
+        "popularity": {
+          "field_pick": 8,
+          "field_status": "resolved",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        },
+        "win_odds": {
+          "field_pick": 8,
+          "field_status": "resolved",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        },
+        "trainer": {
+          "field_pick": 5,
+          "field_status": "resolved",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        },
+        "sire": {
+          "field_pick": null,
+          "field_status": "unresolved_tie",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        },
+        "damsire": {
+          "field_pick": null,
+          "field_status": "unresolved_tie",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        },
+        "breeder": {
+          "field_pick": 4,
+          "field_status": "resolved",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        },
+        "oikiri_time": {
+          "field_pick": null,
+          "field_status": "missing",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        },
+        "oikiri_rating": {
+          "field_pick": null,
+          "field_status": "missing",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        }
+      }
+    },
+    {
+      "race_id": "2026-07-26-03-04",
+      "age_group": "3yo_maiden",
+      "class_label": "3歳未勝利",
+      "venue": "札幌",
+      "winner": 1,
+      "baseline_strict": false,
+      "baseline_soft": false,
+      "tie_size": 1,
+      "features": {
+        "popularity": {
+          "field_pick": 9,
+          "field_status": "resolved",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        },
+        "win_odds": {
+          "field_pick": 9,
+          "field_status": "resolved",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        },
+        "trainer": {
+          "field_pick": 8,
+          "field_status": "resolved",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        },
+        "sire": {
+          "field_pick": 10,
+          "field_status": "resolved",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        },
+        "damsire": {
+          "field_pick": 4,
+          "field_status": "resolved",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        },
+        "breeder": {
+          "field_pick": 4,
+          "field_status": "resolved",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        },
+        "oikiri_time": {
+          "field_pick": null,
+          "field_status": "missing",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        },
+        "oikiri_rating": {
+          "field_pick": null,
+          "field_status": "missing",
+          "tie_pick": null,
+          "tie_status": "skip",
+          "ig": 0.0
+        }
+      }
+    },
+    {
+      "race_id": "2026-07-26-03-05",
+      "age_group": "2yo_newcomer",
+      "class_label": "2歳新馬",
+      "venue": "札幌",
+      "winner": 9,
+      "baseline_strict": false,
+      "baseline_soft": true,
+      "tie_size": 6,
+      "features": {
+        "popularity": {
+          "field_pick": 2,
+          "field_status": "resolved",
+          "tie_pick": 6,
+          "tie_status": "resolved",
+          "ig": 2.584962500721156
+        },
+        "win_odds": {
+          "field_pick": 2,
+          "field_status": "resolved",
+          "tie_pick": 6,
+          "tie_status": "resolved",
+          "ig": 2.584962500721156
+        },
+        "trainer": {
+          "field_pick": 1,
+          "field_status": "resolved",
+          "tie_pick": 9,
+          "tie_status": "resolved",
+          "ig": 2.584962500721156
+        },
+        "sire": {
+          "field_pick": null,
+          "field_status": "unresolved_tie",
+          "tie_pick": null,
+          "tie_status": "unresolved_tie",
+          "ig": 0.0
+        },
+        "damsire": {
+          "field_pick": 8,
+          "field_status": "resolved",
+          "tie_pick": 8,
+          "tie_status": "resolved",
+          "ig": 2.584962500721156
+        },
+        "breeder": {
+          "field_pick": 6,
+          "field_status": "resolved",
+          "tie_pick": 6,
+          "tie_status": "resolved",
+          "ig": 2.584962500721156
+        },
+        "oikiri_time": {
+          "field_pick": null,
+          "field_status": "missing",
+          "tie_pick": null,
+          "tie_status": "missing",
+          "ig": 0.0
+        },
+        "oikiri_rating": {
+          "field_pick": null,
+          "field_status": "missing",
+          "tie_pick": null,
+          "tie_status": "missing",
+          "ig": 0.0
+        }
+      }
+    }
+  ]
+}

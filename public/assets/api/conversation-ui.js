@@ -1,4 +1,4 @@
-﻿/**
+/**
  * ExpectConversationUi — V5 Phase 3 Conversation UI Integration
  *
  * 既存画面から Review / Explain / Personal Chat へ導線を張る。

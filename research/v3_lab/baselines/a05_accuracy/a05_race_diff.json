@@ -1,0 +1,411 @@
+{
+  "lab": {
+    "a03": {
+      "improved": [
+        {
+          "race_id": "a03-285-271",
+          "miss_layer": "Pool",
+          "winner_rank": 8,
+          "control_pick": "H270-1",
+          "treatment_pick": "H270-8"
+        },
+        {
+          "race_id": "a03-285-272",
+          "miss_layer": "Pool",
+          "winner_rank": 9,
+          "control_pick": "H271-1",
+          "treatment_pick": "H271-9"
+        },
+        {
+          "race_id": "a03-285-273",
+          "miss_layer": "Pool",
+          "winner_rank": 10,
+          "control_pick": "H272-1",
+          "treatment_pick": "H272-10"
+        },
+        {
+          "race_id": "a03-285-274",
+          "miss_layer": "Pool",
+          "winner_rank": 8,
+          "control_pick": "H273-1",
+          "treatment_pick": "H273-8"
+        },
+        {
+          "race_id": "a03-285-275",
+          "miss_layer": "Pool",
+          "winner_rank": 9,
+          "control_pick": "H274-1",
+          "treatment_pick": "H274-9"
+        },
+        {
+          "race_id": "a03-285-276",
+          "miss_layer": "Pool",
+          "winner_rank": 10,
+          "control_pick": "H275-1",
+          "treatment_pick": "H275-10"
+        },
+        {
+          "race_id": "a03-285-277",
+          "miss_layer": "Pool",
+          "winner_rank": 8,
+          "control_pick": "H276-1",
+          "treatment_pick": "H276-8"
+        },
+        {
+          "race_id": "a03-285-278",
+          "miss_layer": "Pool",
+          "winner_rank": 9,
+          "control_pick": "H277-1",
+          "treatment_pick": "H277-9"
+        },
+        {
+          "race_id": "a03-285-279",
+          "miss_layer": "Pool",
+          "winner_rank": 10,
+          "control_pick": "H278-1",
+          "treatment_pick": "H278-10"
+        }
+      ],
+      "worsened": []
+    },
+    "a05": {
+      "improved": [],
+      "worsened": []
+    }
+  },
+  "offline": {
+    "a03": {
+      "improved": [
+        {
+          "race_id": "2024-02-11-東京-10",
+          "miss_layer": null,
+          "winner_rank": 8,
+          "control_pick": "2020106756",
+          "treatment_pick": "2015104714"
+        },
+        {
+          "race_id": "2024-04-21-東京-10",
+          "miss_layer": null,
+          "winner_rank": 7,
+          "control_pick": "2020100145",
+          "treatment_pick": "2019104116"
+        },
+        {
+          "race_id": "2024-04-28-東京-10",
+          "miss_layer": null,
+          "winner_rank": 7,
+          "control_pick": "2016105206",
+          "treatment_pick": "2018106571"
+        },
+        {
+          "race_id": "2024-06-02-京都-10",
+          "miss_layer": null,
+          "winner_rank": 10,
+          "control_pick": "2019105239",
+          "treatment_pick": "2019103430"
+        },
+        {
+          "race_id": "2024-06-30-小倉-10",
+          "miss_layer": null,
+          "winner_rank": 11,
+          "control_pick": "2020106635",
+          "treatment_pick": "2019104729"
+        },
+        {
+          "race_id": "2025-12-27-中山-09",
+          "miss_layer": null,
+          "winner_rank": 13,
+          "control_pick": "2021101399",
+          "treatment_pick": "2020102140"
+        },
+        {
+          "race_id": "2025-12-28-中山-10",
+          "miss_layer": null,
+          "winner_rank": 10,
+          "control_pick": "2022107163",
+          "treatment_pick": "2019104385"
+        },
+        {
+          "race_id": "2026-02-15-京都-11",
+          "miss_layer": null,
+          "winner_rank": 7,
+          "control_pick": "2018105012",
+          "treatment_pick": "2021100913"
+        },
+        {
+          "race_id": "2026-03-22-中京-11",
+          "miss_layer": null,
+          "winner_rank": 11,
+          "control_pick": "2021104434",
+          "treatment_pick": "2022103875"
+        },
+        {
+          "race_id": "2026-03-29-中山-11",
+          "miss_layer": null,
+          "winner_rank": 7,
+          "control_pick": "2020100116",
+          "treatment_pick": "2020104136"
+        },
+        {
+          "race_id": "2026-04-19-中山-10",
+          "miss_layer": null,
+          "winner_rank": 8,
+          "control_pick": "2020101707",
+          "treatment_pick": "2019101975"
+        }
+      ],
+      "worsened": [
+        {
+          "race_id": "2024-01-06-京都-10",
+          "miss_layer": null,
+          "winner_rank": 1,
+          "control_pick": "2019104091",
+          "treatment_pick": "2016104635"
+        },
+        {
+          "race_id": "2024-01-06-中山-11",
+          "miss_layer": null,
+          "winner_rank": 1,
+          "control_pick": "2019103823",
+          "treatment_pick": "2019102879"
+        },
+        {
+          "race_id": "2024-01-06-京都-11",
+          "miss_layer": null,
+          "winner_rank": 1,
+          "control_pick": "2020103043",
+          "treatment_pick": "2018103929"
+        },
+        {
+          "race_id": "2024-01-07-京都-11",
+          "miss_layer": null,
+          "winner_rank": 1,
+          "control_pick": "2019103472",
+          "treatment_pick": "2018101984"
+        },
+        {
+          "race_id": "2024-01-14-小倉-11",
+          "miss_layer": null,
+          "winner_rank": 1,
+          "control_pick": "2018105164",
+          "treatment_pick": "2019104194"
+        },
+        {
+          "race_id": "2024-01-28-東京-11",
+          "miss_layer": null,
+          "winner_rank": 1,
+          "control_pick": "2020101547",
+          "treatment_pick": "2020100484"
+        },
+        {
+          "race_id": "2024-02-04-東京-10",
+          "miss_layer": null,
+          "winner_rank": 1,
+          "control_pick": "2020103307",
+          "treatment_pick": "2019101741"
+        },
+        {
+          "race_id": "2024-03-03-中山-10",
+          "miss_layer": null,
+          "winner_rank": 1,
+          "control_pick": "2018102195",
+          "treatment_pick": "2019101908"
+        },
+        {
+          "race_id": "2024-03-03-阪神-10",
+          "miss_layer": null,
+          "winner_rank": 1,
+          "control_pick": "2020110155",
+          "treatment_pick": "2019110040"
+        },
+        {
+          "race_id": "2024-03-03-阪神-11",
+          "miss_layer": null,
+          "winner_rank": 1,
+          "control_pick": "2018104980",
+          "treatment_pick": "2016100763"
+        },
+        {
+          "race_id": "2024-03-10-阪神-10",
+          "miss_layer": null,
+          "winner_rank": 1,
+          "control_pick": "2019105519",
+          "treatment_pick": "2018104778"
+        },
+        {
+          "race_id": "2024-03-17-阪神-11",
+          "miss_layer": null,
+          "winner_rank": 1,
+          "control_pick": "2018106545",
+          "treatment_pick": "2019104091"
+        },
+        {
+          "race_id": "2024-03-31-中山-11",
+          "miss_layer": null,
+          "winner_rank": 1,
+          "control_pick": "2019104828",
+          "treatment_pick": "2019105398"
+        },
+        {
+          "race_id": "2024-04-14-中山-11",
+          "miss_layer": null,
+          "winner_rank": 1,
+          "control_pick": "2021105795",
+          "treatment_pick": "2021100953"
+        },
+        {
+          "race_id": "2024-04-14-阪神-11",
+          "miss_layer": null,
+          "winner_rank": 1,
+          "control_pick": "2018105431",
+          "treatment_pick": "2019105746"
+        },
+        {
+          "race_id": "2024-04-28-京都-11",
+          "miss_layer": null,
+          "winner_rank": 1,
+          "control_pick": "2018106545",
+          "treatment_pick": "2018103499"
+        },
+        {
+          "race_id": "2024-05-05-東京-11",
+          "miss_layer": null,
+          "winner_rank": 1,
+          "control_pick": "2021107171",
+          "treatment_pick": "2021100953"
+        },
+        {
+          "race_id": "2024-05-19-東京-11",
+          "miss_layer": null,
+          "winner_rank": 1,
+          "control_pick": "2021105643",
+          "treatment_pick": "2021106823"
+        },
+        {
+          "race_id": "2024-07-07-小倉-11",
+          "miss_layer": null,
+          "winner_rank": 1,
+          "control_pick": "2020105599",
+          "treatment_pick": "2017105789"
+        },
+        {
+          "race_id": "2025-12-13-中京-10",
+          "miss_layer": null,
+          "winner_rank": 1,
+          "control_pick": "2021107192",
+          "treatment_pick": "2021106164"
+        },
+        {
+          "race_id": "2025-12-27-阪神-10",
+          "miss_layer": null,
+          "winner_rank": 1,
+          "control_pick": "2022102874",
+          "treatment_pick": "2020110026"
+        },
+        {
+          "race_id": "2026-01-11-中山-09",
+          "miss_layer": null,
+          "winner_rank": 1,
+          "control_pick": "2022100201",
+          "treatment_pick": "2021103533"
+        },
+        {
+          "race_id": "2026-02-01-東京-11",
+          "miss_layer": null,
+          "winner_rank": 1,
+          "control_pick": "2020100145",
+          "treatment_pick": "2021103868"
+        },
+        {
+          "race_id": "2026-03-15-阪神-10",
+          "miss_layer": null,
+          "winner_rank": 1,
+          "control_pick": "2022103686",
+          "treatment_pick": "2020106635"
+        },
+        {
+          "race_id": "2026-03-22-中山-11",
+          "miss_layer": null,
+          "winner_rank": 1,
+          "control_pick": "2022110137",
+          "treatment_pick": "2021100653"
+        },
+        {
+          "race_id": "2026-04-05-中山-10",
+          "miss_layer": null,
+          "winner_rank": 1,
+          "control_pick": "2022100394",
+          "treatment_pick": "2020110100"
+        },
+        {
+          "race_id": "2026-04-05-阪神-10",
+          "miss_layer": null,
+          "winner_rank": 1,
+          "control_pick": "2022104053",
+          "treatment_pick": "2020105354"
+        },
+        {
+          "race_id": "2026-05-02-新潟-11",
+          "miss_layer": null,
+          "winner_rank": 1,
+          "control_pick": "2022100159",
+          "treatment_pick": "2020102317"
+        }
+      ]
+    },
+    "a05": {
+      "improved": [
+        {
+          "race_id": "2024-02-11-東京-10",
+          "miss_layer": null,
+          "winner_rank": 8,
+          "control_pick": "2020106756",
+          "treatment_pick": "2015104714"
+        },
+        {
+          "race_id": "2024-04-21-東京-10",
+          "miss_layer": null,
+          "winner_rank": 7,
+          "control_pick": "2020100145",
+          "treatment_pick": "2019104116"
+        },
+        {
+          "race_id": "2024-04-28-東京-10",
+          "miss_layer": null,
+          "winner_rank": 7,
+          "control_pick": "2016105206",
+          "treatment_pick": "2018106571"
+        },
+        {
+          "race_id": "2024-06-02-京都-10",
+          "miss_layer": null,
+          "winner_rank": 10,
+          "control_pick": "2019105239",
+          "treatment_pick": "2019103430"
+        },
+        {
+          "race_id": "2024-06-30-小倉-10",
+          "miss_layer": null,
+          "winner_rank": 11,
+          "control_pick": "2020106635",
+          "treatment_pick": "2019104729"
+        },
+        {
+          "race_id": "2026-02-15-京都-11",
+          "miss_layer": null,
+          "winner_rank": 7,
+          "control_pick": "2018105012",
+          "treatment_pick": "2021100913"
+        },
+        {
+          "race_id": "2026-03-22-中京-11",
+          "miss_layer": null,
+          "winner_rank": 11,
+          "control_pick": "2021104434",
+          "treatment_pick": "2022103875"
+        }
+      ],
+      "worsened": []
+    }
+  }
+}

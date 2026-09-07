@@ -1,0 +1,121 @@
+{
+  "schema_version": "expect-world-decision-trace/1.0",
+  "generated_at": "2026-07-28T01:10:34+00:00",
+  "note": "Signals = V39 FeatureLoader restoration pack (designed WIC path). Triggers = TRIGGER_RULES / first_match_world (product mirror). No Trigger/Threshold/World mutation. Trace audit only (not a new policy sim).",
+  "n_races": 56,
+  "decision_distribution": {
+    "midupper_world": 3,
+    "core_world": 42,
+    "midhole_world": 1,
+    "mixed_world": 10
+  },
+  "core_share": 0.75,
+  "fitness_agree_rate": 0.142857,
+  "primary_root_cause_counts": {
+    "その他": 2,
+    "Boundary": 9,
+    "Trigger不足": 39,
+    "Evaluation Order": 6
+  },
+  "core_primary_root_cause_counts": {
+    "Trigger不足": 39,
+    "Boundary": 3
+  },
+  "core_evidence": {
+    "n_core": 42,
+    "all_via_R8_default": 42,
+    "all_r1_r7_fail": 42,
+    "fitness_mismatch_among_core": 42,
+    "secondary_among_core": {
+      "Default/Fallback": 42,
+      "Evaluation Order": 42,
+      "Signal不足": 40
+    }
+  },
+  "mismatch": {
+    "n": 48,
+    "pair_counts": {
+      "midhole_world->core_world": 22,
+      "midupper_world->core_world": 18,
+      "midupper_world->mixed_world": 5,
+      "rank7_world->core_world": 1,
+      "midhole_world->mixed_world": 1,
+      "mixed_world->core_world": 1
+    },
+    "reason_buckets": {
+      "DEFAULT_core_vs_bestfit_trigger_fail": 42,
+      "first_match_priority_over_bestfit": 6
+    }
+  },
+  "governance": {
+    "verdict": "C",
+    "top_core_primary": "Trigger不足",
+    "shares_among_core": {
+      "Signal不足": 0.0,
+      "Trigger不足": 0.9286,
+      "Boundary": 0.0714,
+      "Evaluation Order": 0.0,
+      "Default/Fallback": 0.0
+    },
+    "secondary_shares_among_core": {
+      "Default/Fallback": 1.0,
+      "Evaluation Order": 1.0,
+      "Signal不足": 0.9524,
+      "Boundary": 0.0,
+      "Trigger不足": 0.0
+    },
+    "structural": {
+      "all_core_via_R8_default": true,
+      "all_core_r1_r7_fail": true,
+      "all_core_fitness_mismatch": true
+    },
+    "labels": {
+      "A": "Signalが主因",
+      "B": "Boundaryが主因",
+      "C": "Decision Engine構造が主因",
+      "D": "複数要因"
+    }
+  },
+  "trigger_rules_order": [
+    {
+      "rule_id": "R1_mixed_short_field",
+      "world": "mixed_world",
+      "priority": 1
+    },
+    {
+      "rule_id": "R2_midupper_sf_diff",
+      "world": "midupper_world",
+      "priority": 2
+    },
+    {
+      "rule_id": "R3_mixed_phase",
+      "world": "mixed_world",
+      "priority": 3
+    },
+    {
+      "rule_id": "R4_midhole",
+      "world": "midhole_world",
+      "priority": 4
+    },
+    {
+      "rule_id": "R5_rank7",
+      "world": "rank7_world",
+      "priority": 5
+    },
+    {
+      "rule_id": "R6_bug",
+      "world": "bug_world",
+      "priority": 6
+    },
+    {
+      "rule_id": "R7_midupper_diff",
+      "world": "midupper_world",
+      "priority": 7
+    },
+    {
+      "rule_id": "R8_core_default",
+      "world": "core_world",
+      "priority": 8
+    }
+  ]
+}

@@ -1,0 +1,1109 @@
+{
+  "schema_version": "expect-continuous-research-operation/1.0",
+  "week_id": "2026-W31",
+  "generated_at": "2026-07-27T11:06:01+00:00",
+  "causal_claim": "OPERATIONS_ONLY",
+  "product_mutation": false,
+  "ai_implementation": false,
+  "maturity_gate": {
+    "confidence": "High",
+    "min_n": 100,
+    "min_coverage": 0.9,
+    "min_reliability": 80.0,
+    "max_leak_risk_pass": 0.55,
+    "wilson_min_low": 0.12,
+    "require_wilson": true,
+    "governance_pass": true
+  },
+  "pipeline": {
+    "steps": {
+      "1_evidence_harvest": {
+        "ok": true,
+        "keys": [
+          "once"
+        ]
+      },
+      "1b_prediction_corpus_snapshot": {
+        "run_id": "9ec4eae6-8b42-4cbb-8ea2-3ad1ea18b394",
+        "_outputs": {
+          "prediction_md": "/home/ubuntu/KEIBA-Single-AI/docs/research/v11-prediction-corpus.md",
+          "tie_md": "/home/ubuntu/KEIBA-Single-AI/docs/research/v11-tie-corpus.md",
+          "young_md": "/home/ubuntu/KEIBA-Single-AI/docs/research/v11-young-horse-corpus.md",
+          "json": "/home/ubuntu/KEIBA-Single-AI/evidence/research/corpus/v11-prediction-corpus.json"
+        }
+      },
+      "1c_evidence_reliability": {
+        "sample": {
+          "feature_rows": 6190,
+          "snapshots": 50,
+          "races": 50,
+          "features": [
+            "popularity",
+            "win_odds",
+            "trainer",
+            "sire",
+            "damsire",
+            "breeder",
+            "oikiri_time",
+            "oikiri_rating",
+            "owner",
+            "sale_price"
+          ],
+          "exploratory": true,
+          "note": "Reliability is about Evidence trustworthiness, not win-rate effect."
+        },
+        "_outputs": {
+          "reliability": "/home/ubuntu/KEIBA-Single-AI/docs/research/v14-evidence-reliability.md",
+          "stability": "/home/ubuntu/KEIBA-Single-AI/docs/research/v14-feature-stability.md",
+          "selection_bias": "/home/ubuntu/KEIBA-Single-AI/docs/research/v14-selection-bias.md",
+          "json": "/home/ubuntu/KEIBA-Single-AI/evidence/research/reports/v14-evidence-reliability.json"
+        }
+      },
+      "2_metadata_completion": {
+        "run_id": "meta-ab2da6c1fa97",
+        "summary": {
+          "n_races": 337,
+          "baseline_rows": 285,
+          "pi_rows": 9,
+          "source_fills": {
+            "db.research_prediction_corpus": 1212,
+            "db.race_evaluations": 851,
+            "derive.surface": 336,
+            "netkeiba.result_html": 194,
+            "db.races.extra": 190,
+            "db.races": 95,
+            "db.race_results": 51,
+            "db.race_results.json": 51,
+            "db.research_historical_bundles": 1
+          },
+          "netkeiba": {
+            "enabled": true,
+            "attempted": 51,
+            "filled": 51,
+            "errors": 0,
+            "skipped": 0,
+            "jra_status": "unavailable_no_local_provider"
+          },
+          "mean_coverage_before": 0.201,
+          "mean_coverage_after": 0.747
+        },
+        "_outputs": {
+          "completion": "/home/ubuntu/KEIBA-Single-AI/docs/research/v16-metadata-completion.md",
+          "coverage": "/home/ubuntu/KEIBA-Single-AI/docs/research/v16-coverage-improvement.md",
+          "delta": "/home/ubuntu/KEIBA-Single-AI/docs/research/v16-weakness-delta.md",
+          "json": "/home/ubuntu/KEIBA-Single-AI/evidence/research/reports/v16-metadata-completion.json",
+          "atlas_json": "/home/ubuntu/KEIBA-Single-AI/evidence/research/reports/v16-weakness-atlas.json"
+        }
+      },
+      "3_evidence_discovery": {
+        "sample": {
+          "unique_races": 335,
+          "with_evidence": 50,
+          "strict_hits": 67,
+          "soft_hits": 73,
+          "global_strict": 0.2,
+          "global_soft": 0.21791044776119403,
+          "by_category": {
+            "other": 197,
+            "stakes": 96,
+            "2yo_maiden": 6,
+            "2yo_newcomer": 7,
+            "3yo_maiden": 19,
+            "class_1win": 9,
+            "open": 1
+          },
+          "confident_min_n": 20,
+          "confidence_level": 0.95,
+          "exploratory": true
+        },
+        "_outputs": {
+          "feature_discovery": "/home/ubuntu/KEIBA-Single-AI/docs/research/v17-feature-discovery.md",
+          "interactions": "/home/ubuntu/KEIBA-Single-AI/docs/research/v17-feature-interactions.md",
+          "segments": "/home/ubuntu/KEIBA-Single-AI/docs/research/v17-segment-comparison.md",
+          "failures": "/home/ubuntu/KEIBA-Single-AI/docs/research/v17-failure-analysis.md",
+          "winners": "/home/ubuntu/KEIBA-Single-AI/docs/research/v17-winner-analysis.md",
+          "discovery": "/home/ubuntu/KEIBA-Single-AI/docs/research/v17-evidence-discovery.md",
+          "json": "/home/ubuntu/KEIBA-Single-AI/evidence/research/reports/v17-evidence-discovery.json"
+        }
+      },
+      "4_knowledge_base": {
+        "week_id": "2026-W31",
+        "summary": {
+          "week_id": "2026-W31",
+          "entry_count": 346,
+          "by_confidence": {
+            "Exploratory": 177,
+            "High": 79,
+            "Medium": 90
+          },
+          "by_action": {
+            "Research": 216,
+            "Candidate": 42,
+            "Watch": 47,
+            "Reject": 41
+          },
+          "by_type": {
+            "feature": 72,
+            "segment": 35,
+            "interaction": 168,
+            "failure": 39,
+            "winner": 32
+          },
+          "v17_generated_at": "2026-07-27T11:05:57+00:00"
+        },
+        "sample": {
+          "unique_races": 335,
+          "with_evidence": 50,
+          "strict_hits": 67,
+          "soft_hits": 73,
+          "global_strict": 0.2,
+          "global_soft": 0.21791044776119403,
+          "by_category": {
+            "other": 197,
+            "stakes": 96,
+            "2yo_maiden": 6,
+            "2yo_newcomer": 7,
+            "3yo_maiden": 19,
+            "class_1win": 9,
+            "open": 1
+          },
+          "confident_min_n": 20,
+          "confidence_level": 0.95,
+          "exploratory": true
+        },
+        "_outputs": {
+          "knowledge_base": "/home/ubuntu/KEIBA-Single-AI/docs/research/v18-knowledge-base.md",
+          "graph": "/home/ubuntu/KEIBA-Single-AI/docs/research/v18-knowledge-graph.md",
+          "weekly": "/home/ubuntu/KEIBA-Single-AI/docs/research/v18-weekly-knowledge.md",
+          "json": "/home/ubuntu/KEIBA-Single-AI/evidence/research/reports/v18-knowledge-base.json",
+          "snapshot": "/home/ubuntu/KEIBA-Single-AI/evidence/research/knowledge/snapshots/2026-W31.json"
+        }
+      },
+      "5_knowledge_validation": {
+        "week_id": "2026-W31",
+        "run_id": "kv-1ff0348e86f3",
+        "summary": {
+          "week_id": "2026-W31",
+          "candidates": 42,
+          "passed": 9,
+          "validated": 9,
+          "rejected": 15,
+          "production_candidate": 3,
+          "by_type": {
+            "feature": 2,
+            "interaction": 19,
+            "winner": 21
+          },
+          "flags_generated": 42
+        },
+        "_outputs": {
+          "validation": "/home/ubuntu/KEIBA-Single-AI/docs/research/v19-knowledge-validation.md",
+          "ranking": "/home/ubuntu/KEIBA-Single-AI/docs/research/v19-candidate-ranking.md",
+          "history": "/home/ubuntu/KEIBA-Single-AI/docs/research/v19-validation-history.md",
+          "json": "/home/ubuntu/KEIBA-Single-AI/evidence/research/reports/v19-knowledge-validation.json"
+        }
+      },
+      "6_weakness_atlas": {
+        "sample": {
+          "prediction_corpus": 340,
+          "evaluable": 335,
+          "young_horse": 33,
+          "tie": 15,
+          "with_evidence": 55,
+          "with_shadow": 9,
+          "global_strict_rate": 0.2,
+          "global_soft_rate": 0.21791044776119403,
+          "global_roi": -0.05253731343283582,
+          "exploratory": true
+        },
+        "_outputs": {
+          "atlas": "/home/ubuntu/KEIBA-Single-AI/docs/research/v15-weakness-atlas.md",
+          "priority": "/home/ubuntu/KEIBA-Single-AI/docs/research/v15-priority-map.md",
+          "roadmap": "/home/ubuntu/KEIBA-Single-AI/docs/research/v15-improvement-roadmap.md",
+          "json": "/home/ubuntu/KEIBA-Single-AI/evidence/research/reports/v15-weakness-atlas.json"
+        }
+      },
+      "7_governance_resolver": {
+        "_outputs": {
+          "governance_md": "/home/ubuntu/KEIBA-Single-AI/docs/research/v106-resolver-governance.md",
+          "gate_md": "/home/ubuntu/KEIBA-Single-AI/docs/research/v106-adoption-gate.md",
+          "confidence_md": "/home/ubuntu/KEIBA-Single-AI/docs/research/v106-confidence-model.md",
+          "weekly_md": "/home/ubuntu/KEIBA-Single-AI/docs/research/v106-weekly-governance.md",
+          "json": "/home/ubuntu/KEIBA-Single-AI/evidence/research/reports/v106-resolver-governance.json"
+        }
+      },
+      "7b_production_candidate_review": {
+        "week_id": "2026-W31",
+        "run_id": "pcr-4318e642e5e8",
+        "summary": {
+          "week_id": "2026-W31",
+          "reviewed": 3,
+          "pass": 0,
+          "warning": 3,
+          "fail": 0,
+          "promote_v21": 0
+        },
+        "_outputs": {
+          "review": "/home/ubuntu/KEIBA-Single-AI/docs/research/v20-production-candidate-review.md",
+          "adoption": "/home/ubuntu/KEIBA-Single-AI/docs/research/v20-adoption-review.md",
+          "risk": "/home/ubuntu/KEIBA-Single-AI/docs/research/v20-risk-analysis.md",
+          "json": "/home/ubuntu/KEIBA-Single-AI/evidence/research/reports/v20-production-candidate-review.json"
+        }
+      },
+      "8_weekly_research_report": {
+        "week_id": "2026-W31",
+        "summary": {
+          "days": 7,
+          "features": [
+            "breeder",
+            "damsire",
+            "expected_popularity",
+            "oikiri_rating",
+            "oikiri_time",
+            "owner",
+            "popularity",
+            "sale_price",
+            "sire",
+            "trainer",
+            "win_odds"
+          ]
+        },
+        "path": "/home/ubuntu/KEIBA-Single-AI/evidence/research/reports/weekly/2026-W31.json"
+      }
+    },
+    "errors": [],
+    "report_only": false
+  },
+  "sample": {
+    "knowledge_entries": 346,
+    "confidence_counts": {
+      "High": 79,
+      "Medium": 90,
+      "Low": 0,
+      "Exploratory": 177
+    },
+    "evidence_snapshots": {
+      "unique_races": 335,
+      "with_evidence": 50,
+      "strict_hits": 67,
+      "soft_hits": 73,
+      "global_strict": 0.2,
+      "global_soft": 0.21791044776119403,
+      "by_category": {
+        "other": 197,
+        "stakes": 96,
+        "2yo_maiden": 6,
+        "2yo_newcomer": 7,
+        "3yo_maiden": 19,
+        "class_1win": 9,
+        "open": 1
+      },
+      "confident_min_n": 20,
+      "confidence_level": 0.95,
+      "exploratory": true
+    }
+  },
+  "knowledge_diff": {
+    "counts": {
+      "added": 0,
+      "removed": 0,
+      "changed": 0
+    },
+    "added": [],
+    "removed": [],
+    "changed": [],
+    "confidence_changes": [],
+    "new_high": []
+  },
+  "coverage": {
+    "mean_before": 0.201,
+    "mean_after": 0.747,
+    "prev_ops_mean_after": null
+  },
+  "weakness": {
+    "top": [
+      {
+        "axis": "course_type",
+        "segment": "turf",
+        "n": 212,
+        "n_eval": 209,
+        "strict_hits": 33,
+        "soft_hits": 38,
+        "strict_rate": 0.15789473684210525,
+        "soft_rate": 0.18181818181818182,
+        "roi": -0.20334928229665072,
+        "tie_rate": 0.04716981132075472,
+        "reliability": 51.7,
+        "resolver_win": 2,
+        "resolver_lose": 0,
+        "resolver_draw": 4,
+        "resolver_lose_rate": 0.0,
+        "evidence_coverage": 0.14622641509433962,
+        "weakness_index": 57.4,
+        "stable": true,
+        "priority_score": 306.92,
+        "rank": 1,
+        "strict_gap_vs_global": 0.0421,
+        "improvement_roi_est_yen": 2200.0,
+        "improvement_extra_hits_est": 8.8,
+        "priority_rank": 1
+      },
+      {
+        "axis": "surface",
+        "segment": "turf",
+        "n": 212,
+        "n_eval": 209,
+        "strict_hits": 33,
+        "soft_hits": 38,
+        "strict_rate": 0.15789473684210525,
+        "soft_rate": 0.18181818181818182,
+        "roi": -0.20334928229665072,
+        "tie_rate": 0.04716981132075472,
+        "reliability": 51.7,
+        "resolver_win": 2,
+        "resolver_lose": 0,
+        "resolver_draw": 4,
+        "resolver_lose_rate": 0.0,
+        "evidence_coverage": 0.14622641509433962,
+        "weakness_index": 57.4,
+        "stable": true,
+        "priority_score": 306.92,
+        "rank": 1,
+        "strict_gap_vs_global": 0.0421,
+        "improvement_roi_est_yen": 2200.0,
+        "improvement_extra_hits_est": 8.8,
+        "priority_rank": 2
+      },
+      {
+        "axis": "going",
+        "segment": "良",
+        "n": 268,
+        "n_eval": 265,
+        "strict_hits": 55,
+        "soft_hits": 60,
+        "strict_rate": 0.20754716981132076,
+        "soft_rate": 0.22641509433962265,
+        "roi": -0.02150943396226415,
+        "tie_rate": 0.048507462686567165,
+        "reliability": 52.4,
+        "resolver_win": 2,
+        "resolver_lose": 0,
+        "resolver_draw": 6,
+        "resolver_lose_rate": 0.0,
+        "evidence_coverage": 0.17164179104477612,
+        "weakness_index": 53.6,
+        "stable": true,
+        "priority_score": 299.28,
+        "rank": 1,
+        "strict_gap_vs_global": 0.0,
+        "improvement_roi_est_yen": 0.0,
+        "improvement_extra_hits_est": 0.0,
+        "priority_rank": 3
+      },
+      {
+        "axis": "odds_band",
+        "segment": "odds_mid",
+        "n": 130,
+        "n_eval": 130,
+        "strict_hits": 21,
+        "soft_hits": 22,
+        "strict_rate": 0.16153846153846155,
+        "soft_rate": 0.16923076923076924,
+        "roi": -0.13615384615384615,
+        "tie_rate": 0.046153846153846156,
+        "reliability": 51.2,
+        "resolver_win": 0,
+        "resolver_lose": 0,
+        "resolver_draw": 4,
+        "resolver_lose_rate": 0.0,
+        "evidence_coverage": 0.13076923076923078,
+        "weakness_index": 57.0,
+        "stable": true,
+        "priority_score": 277.89,
+        "rank": 1,
+        "strict_gap_vs_global": 0.0385,
+        "improvement_roi_est_yen": 1250.0,
+        "improvement_extra_hits_est": 5.0,
+        "priority_rank": 4
+      },
+      {
+        "axis": "distance_bucket",
+        "segment": "sprint",
+        "n": 111,
+        "n_eval": 111,
+        "strict_hits": 17,
+        "soft_hits": 20,
+        "strict_rate": 0.15315315315315314,
+        "soft_rate": 0.18018018018018017,
+        "roi": -0.3099099099099099,
+        "tie_rate": 0.04504504504504504,
+        "reliability": 52.7,
+        "resolver_win": 0,
+        "resolver_lose": 0,
+        "resolver_draw": 4,
+        "resolver_lose_rate": 0.0,
+        "evidence_coverage": 0.18018018018018017,
+        "weakness_index": 58.1,
+        "stable": true,
+        "priority_score": 274.14,
+        "rank": 1,
+        "strict_gap_vs_global": 0.0468,
+        "improvement_roi_est_yen": 1300.0,
+        "improvement_extra_hits_est": 5.2,
+        "priority_rank": 5
+      },
+      {
+        "axis": "field_bucket",
+        "segment": "field_15-16",
+        "n": 155,
+        "n_eval": 150,
+        "strict_hits": 29,
+        "soft_hits": 30,
+        "strict_rate": 0.19333333333333333,
+        "soft_rate": 0.2,
+        "roi": -0.014,
+        "tie_rate": 0.01935483870967742,
+        "reliability": 51.0,
+        "resolver_win": 0,
+        "resolver_lose": 0,
+        "resolver_draw": 0,
+        "resolver_lose_rate": null,
+        "evidence_coverage": 0.12258064516129032,
+        "weakness_index": 54.4,
+        "stable": true,
+        "priority_score": 272.94,
+        "rank": 1,
+        "strict_gap_vs_global": 0.0067,
+        "improvement_roi_est_yen": 250.0,
+        "improvement_extra_hits_est": 1.0,
+        "priority_rank": 6
+      },
+      {
+        "axis": "weather",
+        "segment": "晴",
+        "n": 98,
+        "n_eval": 95,
+        "strict_hits": 14,
+        "soft_hits": 16,
+        "strict_rate": 0.14736842105263157,
+        "soft_rate": 0.16842105263157894,
+        "roi": -0.3368421052631579,
+        "tie_rate": 0.04081632653061224,
+        "reliability": 54.6,
+        "resolver_win": 1,
+        "resolver_lose": 0,
+        "resolver_draw": 2,
+        "resolver_lose_rate": 0.0,
+        "evidence_coverage": 0.24489795918367346,
+        "weakness_index": 57.9,
+        "stable": true,
+        "priority_score": 264.28,
+        "rank": 2,
+        "strict_gap_vs_global": 0.0526,
+        "improvement_roi_est_yen": 1250.0,
+        "improvement_extra_hits_est": 5.0,
+        "priority_rank": 7
+      },
+      {
+        "axis": "distance_bucket",
+        "segment": "mile",
+        "n": 146,
+        "n_eval": 144,
+        "strict_hits": 33,
+        "soft_hits": 35,
+        "strict_rate": 0.22916666666666666,
+        "soft_rate": 0.24305555555555555,
+        "roi": 0.09375,
+        "tie_rate": 0.04794520547945205,
+        "reliability": 52.4,
+        "resolver_win": 2,
+        "resolver_lose": 0,
+        "resolver_draw": 2,
+        "resolver_lose_rate": 0.0,
+        "evidence_coverage": 0.17123287671232876,
+        "weakness_index": 51.7,
+        "stable": true,
+        "priority_score": 257.3,
+        "rank": 2,
+        "strict_gap_vs_global": 0.0,
+        "improvement_roi_est_yen": 0.0,
+        "improvement_extra_hits_est": 0.0,
+        "priority_rank": 8
+      },
+      {
+        "axis": "field_bucket",
+        "segment": "field_11-14",
+        "n": 99,
+        "n_eval": 99,
+        "strict_hits": 21,
+        "soft_hits": 23,
+        "strict_rate": 0.21212121212121213,
+        "soft_rate": 0.23232323232323232,
+        "roi": -0.08888888888888889,
+        "tie_rate": 0.030303030303030304,
+        "reliability": 51.8,
+        "resolver_win": 0,
+        "resolver_lose": 0,
+        "resolver_draw": 2,
+        "resolver_lose_rate": 0.0,
+        "evidence_coverage": 0.15151515151515152,
+        "weakness_index": 54.0,
+        "stable": true,
+        "priority_score": 248.68,
+        "rank": 2,
+        "strict_gap_vs_global": 0.0,
+        "improvement_roi_est_yen": 0.0,
+        "improvement_extra_hits_est": 0.0,
+        "priority_rank": 9
+      },
+      {
+        "axis": "odds_band",
+        "segment": "odds_short",
+        "n": 118,
+        "n_eval": 118,
+        "strict_hits": 37,
+        "soft_hits": 37,
+        "strict_rate": 0.3135593220338983,
+        "soft_rate": 0.3135593220338983,
+        "roi": -0.2135593220338983,
+        "tie_rate": 0.025423728813559324,
+        "reliability": 52.1,
+        "resolver_win": 0,
+        "resolver_lose": 0,
+        "resolver_draw": 1,
+        "resolver_lose_rate": 0.0,
+        "evidence_coverage": 0.16101694915254236,
+        "weakness_index": 51.1,
+        "stable": true,
+        "priority_score": 244.21,
+        "rank": 2,
+        "strict_gap_vs_global": 0.0,
+        "improvement_roi_est_yen": 0.0,
+        "improvement_extra_hits_est": 0.0,
+        "priority_rank": 10
+      },
+      {
+        "axis": "race_type",
+        "segment": "stakes",
+        "n": 65,
+        "n_eval": 65,
+        "strict_hits": 12,
+        "soft_hits": 12,
+        "strict_rate": 0.18461538461538463,
+        "soft_rate": 0.18461538461538463,
+        "roi": -0.17846153846153845,
+        "tie_rate": 0.03076923076923077,
+        "reliability": 47.7,
+        "resolver_win": 0,
+        "resolver_lose": 0,
+        "resolver_draw": 0,
+        "resolver_lose_rate": null,
+        "evidence_coverage": 0.015384615384615385,
+        "weakness_index": 57.7,
+        "stable": true,
+        "priority_score": 241.74,
+        "rank": 2,
+        "strict_gap_vs_global": 0.0154,
+        "improvement_roi_est_yen": 250.0,
+        "improvement_extra_hits_est": 1.0,
+        "priority_rank": 11
+      },
+      {
+        "axis": "class_family",
+        "segment": "stakes",
+        "n": 65,
+        "n_eval": 65,
+        "strict_hits": 12,
+        "soft_hits": 12,
+        "strict_rate": 0.18461538461538463,
+        "soft_rate": 0.18461538461538463,
+        "roi": -0.17846153846153845,
+        "tie_rate": 0.03076923076923077,
+        "reliability": 47.7,
+        "resolver_win": 0,
+        "resolver_lose": 0,
+        "resolver_draw": 0,
+        "resolver_lose_rate": null,
+        "evidence_coverage": 0.015384615384615385,
+        "weakness_index": 57.7,
+        "stable": true,
+        "priority_score": 241.74,
+        "rank": 2,
+        "strict_gap_vs_global": 0.0154,
+        "improvement_roi_est_yen": 250.0,
+        "improvement_extra_hits_est": 1.0,
+        "priority_rank": 12
+      },
+      {
+        "axis": "distance_bucket",
+        "segment": "middle",
+        "n": 64,
+        "n_eval": 61,
+        "strict_hits": 9,
+        "soft_hits": 10,
+        "strict_rate": 0.14754098360655737,
+        "soft_rate": 0.16393442622950818,
+        "roi": -0.11967213114754098,
+        "tie_rate": 0.046875,
+        "reliability": 51.0,
+        "resolver_win": 0,
+        "resolver_lose": 0,
+        "resolver_draw": 1,
+        "resolver_lose_rate": 0.0,
+        "evidence_coverage": 0.125,
+        "weakness_index": 57.4,
+        "stable": true,
+        "priority_score": 236.9,
+        "rank": 3,
+        "strict_gap_vs_global": 0.0525,
+        "improvement_roi_est_yen": 800.0,
+        "improvement_extra_hits_est": 3.2,
+        "priority_rank": 13
+      },
+      {
+        "axis": "course_type",
+        "segment": "dirt",
+        "n": 127,
+        "n_eval": 125,
+        "strict_hits": 34,
+        "soft_hits": 35,
+        "strict_rate": 0.272,
+        "soft_rate": 0.28,
+        "roi": 0.2072,
+        "tie_rate": 0.03937007874015748,
+        "reliability": 52.7,
+        "resolver_win": 0,
+        "resolver_lose": 0,
+        "resolver_draw": 3,
+        "resolver_lose_rate": 0.0,
+        "evidence_coverage": 0.18110236220472442,
+        "weakness_index": 48.9,
+        "stable": true,
+        "priority_score": 236.49,
+        "rank": 2,
+        "strict_gap_vs_global": 0.0,
+        "improvement_roi_est_yen": 0.0,
+        "improvement_extra_hits_est": 0.0,
+        "priority_rank": 14
+      },
+      {
+        "axis": "surface",
+        "segment": "dirt",
+        "n": 127,
+        "n_eval": 125,
+        "strict_hits": 34,
+        "soft_hits": 35,
+        "strict_rate": 0.272,
+        "soft_rate": 0.28,
+        "roi": 0.2072,
+        "tie_rate": 0.03937007874015748,
+        "reliability": 52.7,
+        "resolver_win": 0,
+        "resolver_lose": 0,
+        "resolver_draw": 3,
+        "resolver_lose_rate": 0.0,
+        "evidence_coverage": 0.18110236220472442,
+        "weakness_index": 48.9,
+        "stable": true,
+        "priority_score": 236.49,
+        "rank": 2,
+        "strict_gap_vs_global": 0.0,
+        "improvement_roi_est_yen": 0.0,
+        "improvement_extra_hits_est": 0.0,
+        "priority_rank": 15
+      }
+    ],
+    "rank_changes": [],
+    "priority_map": [
+      {
+        "axis": "course_type",
+        "segment": "turf",
+        "priority_rank": 1,
+        "weakness_index": 57.4,
+        "n_eval": 209
+      },
+      {
+        "axis": "surface",
+        "segment": "turf",
+        "priority_rank": 2,
+        "weakness_index": 57.4,
+        "n_eval": 209
+      },
+      {
+        "axis": "going",
+        "segment": "良",
+        "priority_rank": 3,
+        "weakness_index": 53.6,
+        "n_eval": 265
+      },
+      {
+        "axis": "odds_band",
+        "segment": "odds_mid",
+        "priority_rank": 4,
+        "weakness_index": 57.0,
+        "n_eval": 130
+      },
+      {
+        "axis": "distance_bucket",
+        "segment": "sprint",
+        "priority_rank": 5,
+        "weakness_index": 58.1,
+        "n_eval": 111
+      },
+      {
+        "axis": "field_bucket",
+        "segment": "field_15-16",
+        "priority_rank": 6,
+        "weakness_index": 54.4,
+        "n_eval": 150
+      },
+      {
+        "axis": "weather",
+        "segment": "晴",
+        "priority_rank": 7,
+        "weakness_index": 57.9,
+        "n_eval": 95
+      },
+      {
+        "axis": "distance_bucket",
+        "segment": "mile",
+        "priority_rank": 8,
+        "weakness_index": 51.7,
+        "n_eval": 144
+      },
+      {
+        "axis": "field_bucket",
+        "segment": "field_11-14",
+        "priority_rank": 9,
+        "weakness_index": 54.0,
+        "n_eval": 99
+      },
+      {
+        "axis": "odds_band",
+        "segment": "odds_short",
+        "priority_rank": 10,
+        "weakness_index": 51.1,
+        "n_eval": 118
+      },
+      {
+        "axis": "race_type",
+        "segment": "stakes",
+        "priority_rank": 11,
+        "weakness_index": 57.7,
+        "n_eval": 65
+      },
+      {
+        "axis": "class_family",
+        "segment": "stakes",
+        "priority_rank": 12,
+        "weakness_index": 57.7,
+        "n_eval": 65
+      },
+      {
+        "axis": "distance_bucket",
+        "segment": "middle",
+        "priority_rank": 13,
+        "weakness_index": 57.4,
+        "n_eval": 61
+      },
+      {
+        "axis": "course_type",
+        "segment": "dirt",
+        "priority_rank": 14,
+        "weakness_index": 48.9,
+        "n_eval": 125
+      },
+      {
+        "axis": "surface",
+        "segment": "dirt",
+        "priority_rank": 15,
+        "weakness_index": 48.9,
+        "n_eval": 125
+      },
+      {
+        "axis": "venue",
+        "segment": "京都",
+        "priority_rank": 16,
+        "weakness_index": 57.5,
+        "n_eval": 54
+      },
+      {
+        "axis": "odds_band",
+        "segment": "odds_long",
+        "priority_rank": 17,
+        "weakness_index": 52.3,
+        "n_eval": 70
+      },
+      {
+        "axis": "pop_band",
+        "segment": "pop_4-6",
+        "priority_rank": 18,
+        "weakness_index": 64.9,
+        "n_eval": 28
+      },
+      {
+        "axis": "venue",
+        "segment": "東京",
+        "priority_rank": 19,
+        "weakness_index": 57.7,
+        "n_eval": 42
+      },
+      {
+        "axis": "weather",
+        "segment": "曇",
+        "priority_rank": 20,
+        "weakness_index": 55.6,
+        "n_eval": 45
+      },
+      {
+        "axis": "going",
+        "segment": "稍重",
+        "priority_rank": 21,
+        "weakness_index": 58.9,
+        "n_eval": 36
+      },
+      {
+        "axis": "venue",
+        "segment": "小倉",
+        "priority_rank": 22,
+        "weakness_index": 66.0,
+        "n_eval": 22
+      },
+      {
+        "axis": "field_bucket",
+        "segment": "field_17+",
+        "priority_rank": 23,
+        "weakness_index": 54.3,
+        "n_eval": 44
+      },
+      {
+        "axis": "venue",
+        "segment": "中京",
+        "priority_rank": 24,
+        "weakness_index": 58.1,
+        "n_eval": 34
+      },
+      {
+        "axis": "field_bucket",
+        "segment": "field_<=10",
+        "priority_rank": 25,
+        "weakness_index": 53.9,
+        "n_eval": 42
+      },
+      {
+        "axis": "venue",
+        "segment": "阪神",
+        "priority_rank": 26,
+        "weakness_index": 51.5,
+        "n_eval": 48
+      },
+      {
+        "axis": "venue",
+        "segment": "中山",
+        "priority_rank": 27,
+        "weakness_index": 45.4,
+        "n_eval": 71
+      },
+      {
+        "axis": "pop_band",
+        "segment": "pop_2-3",
+        "priority_rank": 28,
+        "weakness_index": 54.9,
+        "n_eval": 32
+      },
+      {
+        "axis": "going",
+        "segment": "重",
+        "priority_rank": 29,
+        "weakness_index": 54.3,
+        "n_eval": 25
+      },
+      {
+        "axis": "venue",
+        "segment": "新潟",
+        "priority_rank": 30,
+        "weakness_index": 54.5,
+        "n_eval": 22
+      },
+      {
+        "axis": "race_type",
+        "segment": "young_horse",
+        "priority_rank": 31,
+        "weakness_index": 48.4,
+        "n_eval": 33
+      },
+      {
+        "axis": "odds_band",
+        "segment": "odds_heavy",
+        "priority_rank": 32,
+        "weakness_index": 62.7,
+        "n_eval": 12
+      },
+      {
+        "axis": "venue",
+        "segment": "函館",
+        "priority_rank": 33,
+        "weakness_index": 72.3,
+        "n_eval": 8
+      },
+      {
+        "axis": "pop_band",
+        "segment": "pop_1",
+        "priority_rank": 34,
+        "weakness_index": 48.0,
+        "n_eval": 26
+      },
+      {
+        "axis": "venue",
+        "segment": "福島",
+        "priority_rank": 35,
+        "weakness_index": 54.8,
+        "n_eval": 16
+      },
+      {
+        "axis": "class_family",
+        "segment": "maiden",
+        "priority_rank": 36,
+        "weakness_index": 45.0,
+        "n_eval": 25
+      },
+      {
+        "axis": "race_type",
+        "segment": "normal",
+        "priority_rank": 37,
+        "weakness_index": 60.7,
+        "n_eval": 10
+      },
+      {
+        "axis": "age_group",
+        "segment": "older",
+        "priority_rank": 38,
+        "weakness_index": 60.7,
+        "n_eval": 10
+      },
+      {
+        "axis": "venue",
+        "segment": "札幌",
+        "priority_rank": 39,
+        "weakness_index": 47.7,
+        "n_eval": 18
+      },
+      {
+        "axis": "race_class",
+        "segment": "3歳以上1勝クラス",
+        "priority_rank": 40,
+        "weakness_index": 60.7,
+        "n_eval": 9
+      }
+    ]
+  },
+  "candidates": {
+    "summary_v19": {
+      "week_id": "2026-W31",
+      "candidates": 42,
+      "passed": 9,
+      "validated": 9,
+      "rejected": 15,
+      "production_candidate": 3,
+      "by_type": {
+        "feature": 2,
+        "interaction": 19,
+        "winner": 21
+      },
+      "flags_generated": 42
+    },
+    "summary_v20": {
+      "week_id": "2026-W31",
+      "reviewed": 3,
+      "pass": 0,
+      "warning": 3,
+      "fail": 0,
+      "promote_v21": 0
+    },
+    "states": {
+      "kb-72cb124b5471": "Production_Candidate",
+      "kb-0e3d73cec628": "Production_Candidate",
+      "kb-a222dc9f1218": "Production_Candidate",
+      "kb-c05d4ddc44c6": "Validated",
+      "kb-9d66173773b1": "Validated",
+      "kb-bcec83a9623d": "Validated",
+      "kb-0cbb887f3e05": "Validated",
+      "kb-bb8432dd2ac4": "Validated",
+      "kb-ddad565c4377": "Validated",
+      "kb-592a527f38aa": "Rejected",
+      "kb-3f39db42a18d": "Rejected",
+      "kb-fbaa8a834886": "Rejected",
+      "kb-f50586a98c65": "Rejected",
+      "kb-eceb63668936": "Rejected",
+      "kb-6aa522d2526a": "Rejected",
+      "kb-0a76b3e7dda1": "Rejected",
+      "kb-10f0692084a8": "Rejected",
+      "kb-cfddcc6fa9d0": "Candidate",
+      "kb-8268e44d3cdd": "Rejected",
+      "kb-43e07c2ea924": "Candidate",
+      "kb-d2206b22932d": "Rejected",
+      "kb-7df7af302bd5": "Candidate",
+      "kb-461f44de9db0": "Candidate",
+      "kb-b4c8924eac20": "Rejected",
+      "kb-7c2c1752d3af": "Rejected",
+      "kb-cee419488701": "Rejected",
+      "kb-f5f8031c8bcc": "Rejected",
+      "kb-125752ee4090": "Candidate",
+      "kb-e0545bd640e8": "Candidate",
+      "kb-d64127c84fb7": "Rejected",
+      "kb-fa21fb0316c8": "Candidate",
+      "kb-d6e7035860ac": "Candidate",
+      "kb-d9b5db24ab01": "Candidate",
+      "kb-b7aa84bb878d": "Candidate",
+      "kb-2d5ca4087c3a": "Candidate",
+      "kb-1209d95472b3": "Candidate",
+      "kb-b5e62fb28818": "Candidate",
+      "kb-aaa5bac744cb": "Candidate",
+      "kb-4cd986a1f5c1": "Candidate",
+      "kb-1235daa9ca65": "Candidate",
+      "kb-195c781739cd": "Candidate",
+      "kb-8cf492ae6c37": "Candidate"
+    },
+    "promote": [],
+    "demote": []
+  },
+  "governance": {
+    "resolver_status": "sample_insufficient",
+    "resolver_eligible": null,
+    "maturity_gate": {
+      "confidence": "High",
+      "min_n": 100,
+      "min_coverage": 0.9,
+      "min_reliability": 80.0,
+      "max_leak_risk_pass": 0.55,
+      "wilson_min_low": 0.12,
+      "require_wilson": true,
+      "governance_pass": true
+    },
+    "review_queue_n": 0,
+    "note": "Governance PASS for Review Queue requires V19 passed (+ V20 PASS if reviewed) and resolver not rejected"
+  },
+  "reliability": {
+    "mean_score": 67.55,
+    "n_features": 10
+  },
+  "data_quality": {
+    "coverage_before": 0.201,
+    "coverage_after": 0.747,
+    "prev_ops_coverage": null,
+    "mean_reliability": 67.55,
+    "reliability_delta": null,
+    "quality_drop": false,
+    "drop_detail": []
+  },
+  "review_queue": [],
+  "notifications": [],
+  "notification_policy": [
+    "new_high_knowledge",
+    "weakness_rank_change",
+    "candidate_promote",
+    "candidate_demote",
+    "data_quality_drop"
+  ],
+  "_ops_snapshot": "/home/ubuntu/KEIBA-Single-AI/evidence/research/ops/weekly/2026-W31.json"
+}

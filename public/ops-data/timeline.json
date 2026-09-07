@@ -1,0 +1,131 @@
+{
+  "schema_version": "expect-v89-timeline/1.0",
+  "published_at": "2026-07-27T00:18:38.114Z",
+  "week_id": "2026-W31",
+  "baseline_lock": "Version8.5",
+  "next_run": "2026-07-28T03:00:00+09:00",
+  "last_run": "2026-07-26T23:56:20.550Z",
+  "steps": [
+    {
+      "key": "runner_start",
+      "label": "Runner Start",
+      "started_at": "2026-07-26T23:56:20.550Z",
+      "ended_at": "2026-07-26T23:56:20.550Z",
+      "duration_ms": 0,
+      "result": "PASS"
+    },
+    {
+      "key": "analyzer",
+      "label": "Proposal",
+      "started_at": "2026-07-26T23:56:20.318Z",
+      "ended_at": "2026-07-26T23:56:20.550Z",
+      "duration_ms": 232,
+      "result": "PASS",
+      "exit_reason": "success"
+    },
+    {
+      "key": "proposal",
+      "label": "Proposal",
+      "started_at": null,
+      "ended_at": null,
+      "duration_ms": null,
+      "result": "Skip",
+      "exit_reason": null
+    },
+    {
+      "key": "validation",
+      "label": "Validation",
+      "started_at": null,
+      "ended_at": null,
+      "duration_ms": null,
+      "result": "Skip",
+      "exit_reason": null
+    },
+    {
+      "key": "canary",
+      "label": "Canary",
+      "started_at": null,
+      "ended_at": null,
+      "duration_ms": null,
+      "result": "Skip",
+      "exit_reason": null
+    },
+    {
+      "key": "baseline",
+      "label": "285R",
+      "started_at": null,
+      "ended_at": null,
+      "duration_ms": null,
+      "result": "Skip",
+      "exit_reason": null
+    },
+    {
+      "key": "decision",
+      "label": "Decision",
+      "started_at": null,
+      "ended_at": null,
+      "duration_ms": null,
+      "result": "Skip",
+      "exit_reason": null
+    },
+    {
+      "key": "knowledge",
+      "label": "Knowledge",
+      "started_at": null,
+      "ended_at": null,
+      "duration_ms": null,
+      "result": "Skip",
+      "exit_reason": null
+    },
+    {
+      "key": "governance",
+      "label": "Governance",
+      "started_at": null,
+      "ended_at": null,
+      "duration_ms": null,
+      "result": "Skip",
+      "exit_reason": null
+    },
+    {
+      "key": "report",
+      "label": "Report",
+      "started_at": null,
+      "ended_at": null,
+      "duration_ms": null,
+      "result": "Skip",
+      "exit_reason": null
+    },
+    {
+      "key": "publish",
+      "label": "Publish",
+      "started_at": "2026-07-27T00:18:38.114Z",
+      "ended_at": "2026-07-27T00:18:38.114Z",
+      "duration_ms": 0,
+      "result": "PASS"
+    },
+    {
+      "key": "approval_queue",
+      "label": "Approval Queue",
+      "started_at": null,
+      "ended_at": null,
+      "duration_ms": null,
+      "result": "Skip"
+    },
+    {
+      "key": "deploy_note",
+      "label": "Deploy Note",
+      "started_at": null,
+      "ended_at": null,
+      "duration_ms": null,
+      "result": "Skip"
+    },
+    {
+      "key": "completed",
+      "label": "Completed",
+      "started_at": "2026-07-27T00:18:38.114Z",
+      "ended_at": "2026-07-27T00:18:38.114Z",
+      "duration_ms": 0,
+      "result": "PASS"
+    }
+  ]
+}

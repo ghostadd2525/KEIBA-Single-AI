@@ -1,0 +1,63 @@
+---
+description: 実装前必須の Production Diagnosis（Server+Client）と Decision ゲート。
+alwaysApply: true
+---
+
+# Production Diagnosis First + Client Diagnosis + Decision Gate
+
+実装前に必ず Diagnosis を行う。**Server PASS でも Client Diagnosis は必須。**  
+「API正常なので停止」は **Client 未診断では禁止**。Server PASS / Client FAIL も Root Cause として扱う。
+
+## 手順
+
+1. **Server Diagnosis**: Git / Production / EC2 / Flags / API / Prediction / Tunnel 等
+2. **Client Diagnosis（必須）**: Network / Console / Timing / Response Body / Cache / Parse / Render / Unhandled Promise / JS Error
+3. 問題分類 + Production 差分 + 不足一覧
+4. **【Decision】** を埋める
+5. Decision 通過後のみ: 設計 → 実装 → 検証 → 停止
+
+## 出力フォーマット（必須）
+
+```
+【Production Diagnosis】
+…（既存 Server 項目）…
+
+【Server Diagnosis】
+Status: PASS | FAIL | PARTIAL
+Evidence:
+
+【Client Diagnosis】
+Status: PASS | FAIL | PARTIAL | BLOCKED
+Network:
+Console:
+Timing:
+Response Body:
+Cache:
+PredictionBundle Parse:
+Render Flow:
+Unhandled Promise:
+JavaScript Error:
+Client Evidence:
+
+Diff Summary:
+Root Cause:            # Server / Client / Both を明示
+Expected Action:
+
+【Decision】
+Action Type:
+Implementation Required:
+Deployment Required:
+Configuration Required:
+Production Required:
+Rollback Required:
+Risk:
+Expected Next Action:
+```
+
+## 硬制約
+
+- Server PASS かつ Client 未実施 → **停止判定禁止・実装禁止**（先に Client Diagnosis）
+- Server PASS / Client FAIL → Root Cause = Client（実装または設定の対象になり得る）
+- `Implementation Required: No` → プロダクトコードを書かない
+- ブラウザ MCP / Playwright 等で実ページを確認。不可なら `Client Status: BLOCKED` と理由を書き、推測で Client PASS にしない
+- PowerShell `Set-Content` で UTF-8 HTML/JS を書かない

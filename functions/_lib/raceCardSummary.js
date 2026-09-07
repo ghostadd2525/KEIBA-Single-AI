@@ -8,11 +8,23 @@ import { mapPiPredictionToBundle } from "./piPredictionMapper.js";
 import { applySegmentConfidenceBlend } from "./segmentConfidence.js";
 import {
   CONFIDENCE_BAND_HIGH,
+  CONFIDENCE_BAND_RATHER_HIGH,
   CONFIDENCE_BAND_MEDIUM,
   confidenceBandFromScore,
+  confidenceBandFromLabelAndScore,
+  resolveInternalLabel,
+  resolveConfidenceDisplay,
 } from "./confidenceBands.js";
 
-export { CONFIDENCE_BAND_HIGH, CONFIDENCE_BAND_MEDIUM, confidenceBandFromScore };
+export {
+  CONFIDENCE_BAND_HIGH,
+  CONFIDENCE_BAND_RATHER_HIGH,
+  CONFIDENCE_BAND_MEDIUM,
+  confidenceBandFromScore,
+  confidenceBandFromLabelAndScore,
+  resolveInternalLabel,
+  resolveConfidenceDisplay,
+};
 
 export const RACE_CARD_SUMMARY_SCHEMA = "expect-race-card-summary/1.0";
 export const RACE_CARDS_LIST_SCHEMA = "expect-race-cards/1.0";
@@ -51,6 +63,11 @@ export function buildRaceInfoFromCatalog(race) {
     post_time: postTime,
     surface,
     distance,
+    date: String(race.date || race.race_date || "").trim() || null,
+    date_label:
+      race.date_label != null && String(race.date_label).trim() !== ""
+        ? String(race.date_label)
+        : null,
   };
 }
 
@@ -85,12 +102,17 @@ export function buildSummaryFromBundle(bundle, catalogRace = null) {
 
   const raceCtx = catalogRace || bundle?.race_info || {};
   const blended = applySegmentConfidenceBlend(modelScore, raceCtx);
+  // UI8: band = 内部ラベル（world 等）+ score。ラベル自体は summary に載せない
+  const world = bundle?.evaluation?.world;
   const confidence =
     blended == null
       ? null
       : {
           score: blended.score,
-          band: blended.band,
+          band: confidenceBandFromLabelAndScore(
+            resolveInternalLabel({ world, score: blended.score }),
+            blended.score
+          ),
         };
 
   return {
@@ -202,4 +224,5 @@ export async function mapWithConcurrency(items, concurrency, fn) {
   return results;
 }
 
-export const RACE_CARDS_FETCH_CONCURRENCY = 9;
+/** 全日 36R: CF ~30s 制限内に収めるため高めに */
+export const RACE_CARDS_FETCH_CONCURRENCY = 24;

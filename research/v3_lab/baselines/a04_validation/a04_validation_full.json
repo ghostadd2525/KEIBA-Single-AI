@@ -1,0 +1,1604 @@
+{
+  "validation_id": "v3-a04-validation/1.0",
+  "experiment_id": "v3-a04-sel-history",
+  "flag": "F_V3_A04_SEL_HISTORY_ENABLED",
+  "decision": "PASS",
+  "adopt_lab": true,
+  "production_wiring": false,
+  "panels": {
+    "a04_solo": {
+      "panel": "a04_solo",
+      "control_flags": {},
+      "treatment_flags": {
+        "F_V3_A04_SEL_HISTORY_ENABLED": true
+      },
+      "metric_summary": {
+        "control": {
+          "n": 285,
+          "hit": 218,
+          "miss": 67,
+          "purchase": 218,
+          "rank710": 9,
+          "rank46": 6,
+          "other": 52,
+          "roi": 1.1418,
+          "stake_total": 28500.0,
+          "return_total": 61040.0
+        },
+        "treatment": {
+          "n": 285,
+          "hit": 242,
+          "miss": 43,
+          "purchase": 242,
+          "rank710": 9,
+          "rank46": 6,
+          "other": 28,
+          "roi": 1.4744,
+          "stake_total": 28500.0,
+          "return_total": 70520.0
+        },
+        "delta": {
+          "hit": 24,
+          "purchase": 24,
+          "rank710": 0,
+          "rank46": 0,
+          "other": -24,
+          "roi": 0.3326
+        },
+        "churn_hit": 0,
+        "roi_def": "flat 100yen/race on top pick; ROI=(return-stake)/stake"
+      },
+      "race_diff": {
+        "improved_count": 24,
+        "worsened_count": 0,
+        "unchanged_hit_count": 218,
+        "unchanged_miss_count": 43,
+        "improved_by_layer": {
+          "Boundary": 14,
+          "Reorder": 10
+        },
+        "boundary_improved_count": 14,
+        "reorder_improved_count": 10,
+        "improved_races": [
+          {
+            "race_id": "a03-285-247",
+            "miss_layer": "Boundary",
+            "winner_id": "H246-3",
+            "winner_rank": 3,
+            "control_pick": "H246-1",
+            "treatment_pick": "H246-3",
+            "control_hit": false,
+            "treatment_hit": true,
+            "pick_changed": true,
+            "status": "improved"
+          },
+          {
+            "race_id": "a03-285-248",
+            "miss_layer": "Boundary",
+            "winner_id": "H247-3",
+            "winner_rank": 3,
+            "control_pick": "H247-1",
+            "treatment_pick": "H247-3",
+            "control_hit": false,
+            "treatment_hit": true,
+            "pick_changed": true,
+            "status": "improved"
+          },
+          {
+            "race_id": "a03-285-249",
+            "miss_layer": "Boundary",
+            "winner_id": "H248-3",
+            "winner_rank": 3,
+            "control_pick": "H248-1",
+            "treatment_pick": "H248-3",
+            "control_hit": false,
+            "treatment_hit": true,
+            "pick_changed": true,
+            "status": "improved"
+          },
+          {
+            "race_id": "a03-285-250",
+            "miss_layer": "Boundary",
+            "winner_id": "H249-3",
+            "winner_rank": 3,
+            "control_pick": "H249-1",
+            "treatment_pick": "H249-3",
+            "control_hit": false,
+            "treatment_hit": true,
+            "pick_changed": true,
+            "status": "improved"
+          },
+          {
+            "race_id": "a03-285-251",
+            "miss_layer": "Boundary",
+            "winner_id": "H250-3",
+            "winner_rank": 3,
+            "control_pick": "H250-1",
+            "treatment_pick": "H250-3",
+            "control_hit": false,
+            "treatment_hit": true,
+            "pick_changed": true,
+            "status": "improved"
+          },
+          {
+            "race_id": "a03-285-252",
+            "miss_layer": "Boundary",
+            "winner_id": "H251-3",
+            "winner_rank": 3,
+            "control_pick": "H251-1",
+            "treatment_pick": "H251-3",
+            "control_hit": false,
+            "treatment_hit": true,
+            "pick_changed": true,
+            "status": "improved"
+          },
+          {
+            "race_id": "a03-285-253",
+            "miss_layer": "Boundary",
+            "winner_id": "H252-3",
+            "winner_rank": 3,
+            "control_pick": "H252-1",
+            "treatment_pick": "H252-3",
+            "control_hit": false,
+            "treatment_hit": true,
+            "pick_changed": true,
+            "status": "improved"
+          },
+          {
+            "race_id": "a03-285-254",
+            "miss_layer": "Boundary",
+            "winner_id": "H253-3",
+            "winner_rank": 3,
+            "control_pick": "H253-1",
+            "treatment_pick": "H253-3",
+            "control_hit": false,
+            "treatment_hit": true,
+            "pick_changed": true,
+            "status": "improved"
+          },
+          {
+            "race_id": "a03-285-255",
+            "miss_layer": "Boundary",
+            "winner_id": "H254-3",
+            "winner_rank": 3,
+            "control_pick": "H254-1",
+            "treatment_pick": "H254-3",
+            "control_hit": false,
+            "treatment_hit": true,
+            "pick_changed": true,
+            "status": "improved"
+          },
+          {
+            "race_id": "a03-285-256",
+            "miss_layer": "Boundary",
+            "winner_id": "H255-3",
+            "winner_rank": 3,
+            "control_pick": "H255-1",
+            "treatment_pick": "H255-3",
+            "control_hit": false,
+            "treatment_hit": true,
+            "pick_changed": true,
+            "status": "improved"
+          },
+          {
+            "race_id": "a03-285-257",
+            "miss_layer": "Boundary",
+            "winner_id": "H256-3",
+            "winner_rank": 3,
+            "control_pick": "H256-1",
+            "treatment_pick": "H256-3",
+            "control_hit": false,
+            "treatment_hit": true,
+            "pick_changed": true,
+            "status": "improved"
+          },
+          {
+            "race_id": "a03-285-258",
+            "miss_layer": "Boundary",
+            "winner_id": "H257-3",
+            "winner_rank": 3,
+            "control_pick": "H257-1",
+            "treatment_pick": "H257-3",
+            "control_hit": false,
+            "treatment_hit": true,
+            "pick_changed": true,
+            "status": "improved"
+          },
+          {
+            "race_id": "a03-285-259",
+            "miss_layer": "Boundary",
+            "winner_id": "H258-3",
+            "winner_rank": 3,
+            "control_pick": "H258-1",
+            "treatment_pick": "H258-3",
+            "control_hit": false,
+            "treatment_hit": true,
+            "pick_changed": true,
+            "status": "improved"
+          },
+          {
+            "race_id": "a03-285-260",
+            "miss_layer": "Boundary",
+            "winner_id": "H259-3",
+            "winner_rank": 3,
+            "control_pick": "H259-1",
+            "treatment_pick": "H259-3",
+            "control_hit": false,
+            "treatment_hit": true,
+            "pick_changed": true,
+            "status": "improved"
+          },
+          {
+            "race_id": "a03-285-261",
+            "miss_layer": "Reorder",
+            "winner_id": "H260-2",
+            "winner_rank": 2,
+            "control_pick": "H260-1",
+            "treatment_pick": "H260-2",
+            "control_hit": false,
+            "treatment_hit": true,
+            "pick_changed": true,
+            "status": "improved"
+          },
+          {
+            "race_id": "a03-285-262",
+            "miss_layer": "Reorder",
+            "winner_id": "H261-2",
+            "winner_rank": 2,
+            "control_pick": "H261-1",
+            "treatment_pick": "H261-2",
+            "control_hit": false,
+            "treatment_hit": true,
+            "pick_changed": true,
+            "status": "improved"
+          },
+          {
+            "race_id": "a03-285-263",
+            "miss_layer": "Reorder",
+            "winner_id": "H262-2",
+            "winner_rank": 2,
+            "control_pick": "H262-1",
+            "treatment_pick": "H262-2",
+            "control_hit": false,
+            "treatment_hit": true,
+            "pick_changed": true,
+            "status": "improved"
+          },
+          {
+            "race_id": "a03-285-264",
+            "miss_layer": "Reorder",
+            "winner_id": "H263-2",
+            "winner_rank": 2,
+            "control_pick": "H263-1",
+            "treatment_pick": "H263-2",
+            "control_hit": false,
+            "treatment_hit": true,
+            "pick_changed": true,
+            "status": "improved"
+          },
+          {
+            "race_id": "a03-285-265",
+            "miss_layer": "Reorder",
+            "winner_id": "H264-2",
+            "winner_rank": 2,
+            "control_pick": "H264-1",
+            "treatment_pick": "H264-2",
+            "control_hit": false,
+            "treatment_hit": true,
+            "pick_changed": true,
+            "status": "improved"
+          },
+          {
+            "race_id": "a03-285-266",
+            "miss_layer": "Reorder",
+            "winner_id": "H265-2",
+            "winner_rank": 2,
+            "control_pick": "H265-1",
+            "treatment_pick": "H265-2",
+            "control_hit": false,
+            "treatment_hit": true,
+            "pick_changed": true,
+            "status": "improved"
+          },
+          {
+            "race_id": "a03-285-267",
+            "miss_layer": "Reorder",
+            "winner_id": "H266-2",
+            "winner_rank": 2,
+            "control_pick": "H266-1",
+            "treatment_pick": "H266-2",
+            "control_hit": false,
+            "treatment_hit": true,
+            "pick_changed": true,
+            "status": "improved"
+          },
+          {
+            "race_id": "a03-285-268",
+            "miss_layer": "Reorder",
+            "winner_id": "H267-2",
+            "winner_rank": 2,
+            "control_pick": "H267-1",
+            "treatment_pick": "H267-2",
+            "control_hit": false,
+            "treatment_hit": true,
+            "pick_changed": true,
+            "status": "improved"
+          },
+          {
+            "race_id": "a03-285-269",
+            "miss_layer": "Reorder",
+            "winner_id": "H268-2",
+            "winner_rank": 2,
+            "control_pick": "H268-1",
+            "treatment_pick": "H268-2",
+            "control_hit": false,
+            "treatment_hit": true,
+            "pick_changed": true,
+            "status": "improved"
+          },
+          {
+            "race_id": "a03-285-270",
+            "miss_layer": "Reorder",
+            "winner_id": "H269-2",
+            "winner_rank": 2,
+            "control_pick": "H269-1",
+            "treatment_pick": "H269-2",
+            "control_hit": false,
+            "treatment_hit": true,
+            "pick_changed": true,
+            "status": "improved"
+          }
+        ],
+        "worsened_races": []
+      },
+      "flag_comparison": {
+        "off": {
+          "flags": {},
+          "n": 285,
+          "hit": 218,
+          "miss": 67,
+          "purchase": 218,
+          "rank710": 9,
+          "rank46": 6,
+          "other": 52,
+          "roi": 1.1418,
+          "stake_total": 28500.0,
+          "return_total": 61040.0
+        },
+        "on": {
+          "flags": {
+            "F_V3_A04_SEL_HISTORY_ENABLED": true
+          },
+          "n": 285,
+          "hit": 242,
+          "miss": 43,
+          "purchase": 242,
+          "rank710": 9,
+          "rank46": 6,
+          "other": 28,
+          "roi": 1.4744,
+          "stake_total": 28500.0,
+          "return_total": 70520.0
+        }
+      },
+      "expected": {
+        "control_hit": 218,
+        "treatment_hit": 242,
+        "churn_hit": 0,
+        "delta_hit": 24,
+        "boundary_improved": 14,
+        "reorder_improved": 10
+      },
+      "matches_expected": true,
+      "pass": true
+    },
+    "baseline_v2_plus_a04": {
+      "panel": "baseline_v2_plus_a04",
+      "control_flags": {
+        "F_V3_RANK_D1_ENABLED": true,
+        "F_V3_A03_POOL_ADMIT_ENABLED": true
+      },
+      "treatment_flags": {
+        "F_V3_RANK_D1_ENABLED": true,
+        "F_V3_A03_POOL_ADMIT_ENABLED": true,
+        "F_V3_A04_SEL_HISTORY_ENABLED": true
+      },
+      "metric_summary": {
+        "control": {
+          "n": 285,
+          "hit": 255,
+          "miss": 30,
+          "purchase": 255,
+          "rank710": 0,
+          "rank46": 6,
+          "other": 24,
+          "roi": 2.7095,
+          "stake_total": 28500.0,
+          "return_total": 105720.0
+        },
+        "treatment": {
+          "n": 285,
+          "hit": 279,
+          "miss": 6,
+          "purchase": 279,
+          "rank710": 0,
+          "rank46": 6,
+          "other": 0,
+          "roi": 3.0421,
+          "stake_total": 28500.0,
+          "return_total": 115200.0
+        },
+        "delta": {
+          "hit": 24,
+          "purchase": 24,
+          "rank710": 0,
+          "rank46": 0,
+          "other": -24,
+          "roi": 0.3326
+        },
+        "churn_hit": 0,
+        "roi_def": "flat 100yen/race on top pick; ROI=(return-stake)/stake"
+      },
+      "race_diff": {
+        "improved_count": 24,
+        "worsened_count": 0,
+        "unchanged_hit_count": 255,
+        "unchanged_miss_count": 6,
+        "improved_by_layer": {
+          "Boundary": 14,
+          "Reorder": 10
+        },
+        "boundary_improved_count": 14,
+        "reorder_improved_count": 10,
+        "improved_races": [
+          {
+            "race_id": "a03-285-247",
+            "miss_layer": "Boundary",
+            "winner_id": "H246-3",
+            "winner_rank": 3,
+            "control_pick": "H246-1",
+            "treatment_pick": "H246-3",
+            "control_hit": false,
+            "treatment_hit": true,
+            "pick_changed": true,
+            "status": "improved"
+          },
+          {
+            "race_id": "a03-285-248",
+            "miss_layer": "Boundary",
+            "winner_id": "H247-3",
+            "winner_rank": 3,
+            "control_pick": "H247-1",
+            "treatment_pick": "H247-3",
+            "control_hit": false,
+            "treatment_hit": true,
+            "pick_changed": true,
+            "status": "improved"
+          },
+          {
+            "race_id": "a03-285-249",
+            "miss_layer": "Boundary",
+            "winner_id": "H248-3",
+            "winner_rank": 3,
+            "control_pick": "H248-1",
+            "treatment_pick": "H248-3",
+            "control_hit": false,
+            "treatment_hit": true,
+            "pick_changed": true,
+            "status": "improved"
+          },
+          {
+            "race_id": "a03-285-250",
+            "miss_layer": "Boundary",
+            "winner_id": "H249-3",
+            "winner_rank": 3,
+            "control_pick": "H249-1",
+            "treatment_pick": "H249-3",
+            "control_hit": false,
+            "treatment_hit": true,
+            "pick_changed": true,
+            "status": "improved"
+          },
+          {
+            "race_id": "a03-285-251",
+            "miss_layer": "Boundary",
+            "winner_id": "H250-3",
+            "winner_rank": 3,
+            "control_pick": "H250-1",
+            "treatment_pick": "H250-3",
+            "control_hit": false,
+            "treatment_hit": true,
+            "pick_changed": true,
+            "status": "improved"
+          },
+          {
+            "race_id": "a03-285-252",
+            "miss_layer": "Boundary",
+            "winner_id": "H251-3",
+            "winner_rank": 3,
+            "control_pick": "H251-1",
+            "treatment_pick": "H251-3",
+            "control_hit": false,
+            "treatment_hit": true,
+            "pick_changed": true,
+            "status": "improved"
+          },
+          {
+            "race_id": "a03-285-253",
+            "miss_layer": "Boundary",
+            "winner_id": "H252-3",
+            "winner_rank": 3,
+            "control_pick": "H252-1",
+            "treatment_pick": "H252-3",
+            "control_hit": false,
+            "treatment_hit": true,
+            "pick_changed": true,
+            "status": "improved"
+          },
+          {
+            "race_id": "a03-285-254",
+            "miss_layer": "Boundary",
+            "winner_id": "H253-3",
+            "winner_rank": 3,
+            "control_pick": "H253-1",
+            "treatment_pick": "H253-3",
+            "control_hit": false,
+            "treatment_hit": true,
+            "pick_changed": true,
+            "status": "improved"
+          },
+          {
+            "race_id": "a03-285-255",
+            "miss_layer": "Boundary",
+            "winner_id": "H254-3",
+            "winner_rank": 3,
+            "control_pick": "H254-1",
+            "treatment_pick": "H254-3",
+            "control_hit": false,
+            "treatment_hit": true,
+            "pick_changed": true,
+            "status": "improved"
+          },
+          {
+            "race_id": "a03-285-256",
+            "miss_layer": "Boundary",
+            "winner_id": "H255-3",
+            "winner_rank": 3,
+            "control_pick": "H255-1",
+            "treatment_pick": "H255-3",
+            "control_hit": false,
+            "treatment_hit": true,
+            "pick_changed": true,
+            "status": "improved"
+          },
+          {
+            "race_id": "a03-285-257",
+            "miss_layer": "Boundary",
+            "winner_id": "H256-3",
+            "winner_rank": 3,
+            "control_pick": "H256-1",
+            "treatment_pick": "H256-3",
+            "control_hit": false,
+            "treatment_hit": true,
+            "pick_changed": true,
+            "status": "improved"
+          },
+          {
+            "race_id": "a03-285-258",
+            "miss_layer": "Boundary",
+            "winner_id": "H257-3",
+            "winner_rank": 3,
+            "control_pick": "H257-1",
+            "treatment_pick": "H257-3",
+            "control_hit": false,
+            "treatment_hit": true,
+            "pick_changed": true,
+            "status": "improved"
+          },
+          {
+            "race_id": "a03-285-259",
+            "miss_layer": "Boundary",
+            "winner_id": "H258-3",
+            "winner_rank": 3,
+            "control_pick": "H258-1",
+            "treatment_pick": "H258-3",
+            "control_hit": false,
+            "treatment_hit": true,
+            "pick_changed": true,
+            "status": "improved"
+          },
+          {
+            "race_id": "a03-285-260",
+            "miss_layer": "Boundary",
+            "winner_id": "H259-3",
+            "winner_rank": 3,
+            "control_pick": "H259-1",
+            "treatment_pick": "H259-3",
+            "control_hit": false,
+            "treatment_hit": true,
+            "pick_changed": true,
+            "status": "improved"
+          },
+          {
+            "race_id": "a03-285-261",
+            "miss_layer": "Reorder",
+            "winner_id": "H260-2",
+            "winner_rank": 2,
+            "control_pick": "H260-1",
+            "treatment_pick": "H260-2",
+            "control_hit": false,
+            "treatment_hit": true,
+            "pick_changed": true,
+            "status": "improved"
+          },
+          {
+            "race_id": "a03-285-262",
+            "miss_layer": "Reorder",
+            "winner_id": "H261-2",
+            "winner_rank": 2,
+            "control_pick": "H261-1",
+            "treatment_pick": "H261-2",
+            "control_hit": false,
+            "treatment_hit": true,
+            "pick_changed": true,
+            "status": "improved"
+          },
+          {
+            "race_id": "a03-285-263",
+            "miss_layer": "Reorder",
+            "winner_id": "H262-2",
+            "winner_rank": 2,
+            "control_pick": "H262-1",
+            "treatment_pick": "H262-2",
+            "control_hit": false,
+            "treatment_hit": true,
+            "pick_changed": true,
+            "status": "improved"
+          },
+          {
+            "race_id": "a03-285-264",
+            "miss_layer": "Reorder",
+            "winner_id": "H263-2",
+            "winner_rank": 2,
+            "control_pick": "H263-1",
+            "treatment_pick": "H263-2",
+            "control_hit": false,
+            "treatment_hit": true,
+            "pick_changed": true,
+            "status": "improved"
+          },
+          {
+            "race_id": "a03-285-265",
+            "miss_layer": "Reorder",
+            "winner_id": "H264-2",
+            "winner_rank": 2,
+            "control_pick": "H264-1",
+            "treatment_pick": "H264-2",
+            "control_hit": false,
+            "treatment_hit": true,
+            "pick_changed": true,
+            "status": "improved"
+          },
+          {
+            "race_id": "a03-285-266",
+            "miss_layer": "Reorder",
+            "winner_id": "H265-2",
+            "winner_rank": 2,
+            "control_pick": "H265-1",
+            "treatment_pick": "H265-2",
+            "control_hit": false,
+            "treatment_hit": true,
+            "pick_changed": true,
+            "status": "improved"
+          },
+          {
+            "race_id": "a03-285-267",
+            "miss_layer": "Reorder",
+            "winner_id": "H266-2",
+            "winner_rank": 2,
+            "control_pick": "H266-1",
+            "treatment_pick": "H266-2",
+            "control_hit": false,
+            "treatment_hit": true,
+            "pick_changed": true,
+            "status": "improved"
+          },
+          {
+            "race_id": "a03-285-268",
+            "miss_layer": "Reorder",
+            "winner_id": "H267-2",
+            "winner_rank": 2,
+            "control_pick": "H267-1",
+            "treatment_pick": "H267-2",
+            "control_hit": false,
+            "treatment_hit": true,
+            "pick_changed": true,
+            "status": "improved"
+          },
+          {
+            "race_id": "a03-285-269",
+            "miss_layer": "Reorder",
+            "winner_id": "H268-2",
+            "winner_rank": 2,
+            "control_pick": "H268-1",
+            "treatment_pick": "H268-2",
+            "control_hit": false,
+            "treatment_hit": true,
+            "pick_changed": true,
+            "status": "improved"
+          },
+          {
+            "race_id": "a03-285-270",
+            "miss_layer": "Reorder",
+            "winner_id": "H269-2",
+            "winner_rank": 2,
+            "control_pick": "H269-1",
+            "treatment_pick": "H269-2",
+            "control_hit": false,
+            "treatment_hit": true,
+            "pick_changed": true,
+            "status": "improved"
+          }
+        ],
+        "worsened_races": []
+      },
+      "flag_comparison": {
+        "off": {
+          "flags": {
+            "F_V3_RANK_D1_ENABLED": true,
+            "F_V3_A03_POOL_ADMIT_ENABLED": true
+          },
+          "n": 285,
+          "hit": 255,
+          "miss": 30,
+          "purchase": 255,
+          "rank710": 0,
+          "rank46": 6,
+          "other": 24,
+          "roi": 2.7095,
+          "stake_total": 28500.0,
+          "return_total": 105720.0
+        },
+        "on": {
+          "flags": {
+            "F_V3_RANK_D1_ENABLED": true,
+            "F_V3_A03_POOL_ADMIT_ENABLED": true,
+            "F_V3_A04_SEL_HISTORY_ENABLED": true
+          },
+          "n": 285,
+          "hit": 279,
+          "miss": 6,
+          "purchase": 279,
+          "rank710": 0,
+          "rank46": 6,
+          "other": 0,
+          "roi": 3.0421,
+          "stake_total": 28500.0,
+          "return_total": 115200.0
+        }
+      },
+      "expected": {
+        "control_hit": 255,
+        "treatment_hit": 279,
+        "churn_hit": 0,
+        "delta_hit": 24,
+        "boundary_improved": 14,
+        "reorder_improved": 10
+      },
+      "matches_expected": true,
+      "pass": true
+    }
+  },
+  "hard_gate": {
+    "a04_solo_hit_gt_218": true,
+    "stack_hit_gt_255": true,
+    "churn_solo_0": true,
+    "churn_stack_0": true,
+    "boundary_14_solo": true,
+    "reorder_10_solo": true,
+    "boundary_14_stack": true,
+    "reorder_10_stack": true,
+    "pass": true
+  },
+  "reproducibility": {
+    "pass": true,
+    "rounds": 2,
+    "reference": {
+      "baseline_off_hit": 218,
+      "a04_only_hit": 242,
+      "control_hit": 255,
+      "treatment_hit": 279,
+      "churn_hit": 0,
+      "delta_hit": 24,
+      "decision": "PASS",
+      "boundary_improved": 14,
+      "reorder_improved": 10,
+      "improved_n": 24
+    },
+    "matches_expected": true
+  },
+  "input_identity": {
+    "pass": true,
+    "corpus_fingerprint": "442afd28877be24ad4d36022",
+    "n": 285,
+    "same_race_ids": true,
+    "note": "Control/Treatment arms share identical corpus inputs"
+  },
+  "frozen_modules": {
+    "pass": true,
+    "modules": [
+      {
+        "module": "feature_generator.py",
+        "expected": "32a71445b03ddb65",
+        "actual": "32a71445b03ddb65",
+        "match": true
+      },
+      {
+        "module": "admission_policy.py",
+        "expected": "78a79ebce7786dea",
+        "actual": "78a79ebce7786dea",
+        "match": true
+      },
+      {
+        "module": "admission_policy_a03.py",
+        "expected": "04142443526f62b0",
+        "actual": "04142443526f62b0",
+        "match": true
+      },
+      {
+        "module": "evaluation_policy.py",
+        "expected": "5fcd339f846e4d46",
+        "actual": "5fcd339f846e4d46",
+        "match": true
+      },
+      {
+        "module": "evaluation_policy_d2.py",
+        "expected": "9e6c63994517371b",
+        "actual": "9e6c63994517371b",
+        "match": true
+      },
+      {
+        "module": "selection_policy.py",
+        "expected": "cea5a9befae0b1a6",
+        "actual": "cea5a9befae0b1a6",
+        "match": true
+      },
+      {
+        "module": "selection_policy_a04.py",
+        "expected": "4c3538e74ba05980",
+        "actual": "4c3538e74ba05980",
+        "match": true
+      }
+    ]
+  },
+  "stage_isolation": {
+    "a04_solo": {
+      "pass": true,
+      "checks": {
+        "representation_disabled": true,
+        "admission_identity": true,
+        "selection_a04": true,
+        "evaluation_disabled": true,
+        "purchase_identity_mapper": true,
+        "flags_only_a04": true
+      },
+      "race_id": "a03-285-247"
+    },
+    "baseline_v2_plus_a04": {
+      "pass": true,
+      "checks": {
+        "representation_disabled": true,
+        "admission_a03": true,
+        "selection_a04": true,
+        "selection_mode_history_crowding": true,
+        "evaluation_d1": true,
+        "purchase_identity_mapper": true,
+        "no_d2": true,
+        "no_p3_admission_flag": true,
+        "no_representation_flag": true,
+        "no_p4_selection_flag": true,
+        "a04_flag_on": true
+      },
+      "race_id": "a03-285-001"
+    }
+  },
+  "metric_summary": {
+    "a04_solo": {
+      "control": {
+        "n": 285,
+        "hit": 218,
+        "miss": 67,
+        "purchase": 218,
+        "rank710": 9,
+        "rank46": 6,
+        "other": 52,
+        "roi": 1.1418,
+        "stake_total": 28500.0,
+        "return_total": 61040.0
+      },
+      "treatment": {
+        "n": 285,
+        "hit": 242,
+        "miss": 43,
+        "purchase": 242,
+        "rank710": 9,
+        "rank46": 6,
+        "other": 28,
+        "roi": 1.4744,
+        "stake_total": 28500.0,
+        "return_total": 70520.0
+      },
+      "delta": {
+        "hit": 24,
+        "purchase": 24,
+        "rank710": 0,
+        "rank46": 0,
+        "other": -24,
+        "roi": 0.3326
+      },
+      "churn_hit": 0,
+      "roi_def": "flat 100yen/race on top pick; ROI=(return-stake)/stake"
+    },
+    "baseline_v2_plus_a04": {
+      "control": {
+        "n": 285,
+        "hit": 255,
+        "miss": 30,
+        "purchase": 255,
+        "rank710": 0,
+        "rank46": 6,
+        "other": 24,
+        "roi": 2.7095,
+        "stake_total": 28500.0,
+        "return_total": 105720.0
+      },
+      "treatment": {
+        "n": 285,
+        "hit": 279,
+        "miss": 6,
+        "purchase": 279,
+        "rank710": 0,
+        "rank46": 6,
+        "other": 0,
+        "roi": 3.0421,
+        "stake_total": 28500.0,
+        "return_total": 115200.0
+      },
+      "delta": {
+        "hit": 24,
+        "purchase": 24,
+        "rank710": 0,
+        "rank46": 0,
+        "other": -24,
+        "roi": 0.3326
+      },
+      "churn_hit": 0,
+      "roi_def": "flat 100yen/race on top pick; ROI=(return-stake)/stake"
+    }
+  },
+  "race_diff": {
+    "a04_solo": {
+      "improved_count": 24,
+      "worsened_count": 0,
+      "unchanged_hit_count": 218,
+      "unchanged_miss_count": 43,
+      "improved_by_layer": {
+        "Boundary": 14,
+        "Reorder": 10
+      },
+      "boundary_improved_count": 14,
+      "reorder_improved_count": 10,
+      "improved_races": [
+        {
+          "race_id": "a03-285-247",
+          "miss_layer": "Boundary",
+          "winner_id": "H246-3",
+          "winner_rank": 3,
+          "control_pick": "H246-1",
+          "treatment_pick": "H246-3",
+          "control_hit": false,
+          "treatment_hit": true,
+          "pick_changed": true,
+          "status": "improved"
+        },
+        {
+          "race_id": "a03-285-248",
+          "miss_layer": "Boundary",
+          "winner_id": "H247-3",
+          "winner_rank": 3,
+          "control_pick": "H247-1",
+          "treatment_pick": "H247-3",
+          "control_hit": false,
+          "treatment_hit": true,
+          "pick_changed": true,
+          "status": "improved"
+        },
+        {
+          "race_id": "a03-285-249",
+          "miss_layer": "Boundary",
+          "winner_id": "H248-3",
+          "winner_rank": 3,
+          "control_pick": "H248-1",
+          "treatment_pick": "H248-3",
+          "control_hit": false,
+          "treatment_hit": true,
+          "pick_changed": true,
+          "status": "improved"
+        },
+        {
+          "race_id": "a03-285-250",
+          "miss_layer": "Boundary",
+          "winner_id": "H249-3",
+          "winner_rank": 3,
+          "control_pick": "H249-1",
+          "treatment_pick": "H249-3",
+          "control_hit": false,
+          "treatment_hit": true,
+          "pick_changed": true,
+          "status": "improved"
+        },
+        {
+          "race_id": "a03-285-251",
+          "miss_layer": "Boundary",
+          "winner_id": "H250-3",
+          "winner_rank": 3,
+          "control_pick": "H250-1",
+          "treatment_pick": "H250-3",
+          "control_hit": false,
+          "treatment_hit": true,
+          "pick_changed": true,
+          "status": "improved"
+        },
+        {
+          "race_id": "a03-285-252",
+          "miss_layer": "Boundary",
+          "winner_id": "H251-3",
+          "winner_rank": 3,
+          "control_pick": "H251-1",
+          "treatment_pick": "H251-3",
+          "control_hit": false,
+          "treatment_hit": true,
+          "pick_changed": true,
+          "status": "improved"
+        },
+        {
+          "race_id": "a03-285-253",
+          "miss_layer": "Boundary",
+          "winner_id": "H252-3",
+          "winner_rank": 3,
+          "control_pick": "H252-1",
+          "treatment_pick": "H252-3",
+          "control_hit": false,
+          "treatment_hit": true,
+          "pick_changed": true,
+          "status": "improved"
+        },
+        {
+          "race_id": "a03-285-254",
+          "miss_layer": "Boundary",
+          "winner_id": "H253-3",
+          "winner_rank": 3,
+          "control_pick": "H253-1",
+          "treatment_pick": "H253-3",
+          "control_hit": false,
+          "treatment_hit": true,
+          "pick_changed": true,
+          "status": "improved"
+        },
+        {
+          "race_id": "a03-285-255",
+          "miss_layer": "Boundary",
+          "winner_id": "H254-3",
+          "winner_rank": 3,
+          "control_pick": "H254-1",
+          "treatment_pick": "H254-3",
+          "control_hit": false,
+          "treatment_hit": true,
+          "pick_changed": true,
+          "status": "improved"
+        },
+        {
+          "race_id": "a03-285-256",
+          "miss_layer": "Boundary",
+          "winner_id": "H255-3",
+          "winner_rank": 3,
+          "control_pick": "H255-1",
+          "treatment_pick": "H255-3",
+          "control_hit": false,
+          "treatment_hit": true,
+          "pick_changed": true,
+          "status": "improved"
+        },
+        {
+          "race_id": "a03-285-257",
+          "miss_layer": "Boundary",
+          "winner_id": "H256-3",
+          "winner_rank": 3,
+          "control_pick": "H256-1",
+          "treatment_pick": "H256-3",
+          "control_hit": false,
+          "treatment_hit": true,
+          "pick_changed": true,
+          "status": "improved"
+        },
+        {
+          "race_id": "a03-285-258",
+          "miss_layer": "Boundary",
+          "winner_id": "H257-3",
+          "winner_rank": 3,
+          "control_pick": "H257-1",
+          "treatment_pick": "H257-3",
+          "control_hit": false,
+          "treatment_hit": true,
+          "pick_changed": true,
+          "status": "improved"
+        },
+        {
+          "race_id": "a03-285-259",
+          "miss_layer": "Boundary",
+          "winner_id": "H258-3",
+          "winner_rank": 3,
+          "control_pick": "H258-1",
+          "treatment_pick": "H258-3",
+          "control_hit": false,
+          "treatment_hit": true,
+          "pick_changed": true,
+          "status": "improved"
+        },
+        {
+          "race_id": "a03-285-260",
+          "miss_layer": "Boundary",
+          "winner_id": "H259-3",
+          "winner_rank": 3,
+          "control_pick": "H259-1",
+          "treatment_pick": "H259-3",
+          "control_hit": false,
+          "treatment_hit": true,
+          "pick_changed": true,
+          "status": "improved"
+        },
+        {
+          "race_id": "a03-285-261",
+          "miss_layer": "Reorder",
+          "winner_id": "H260-2",
+          "winner_rank": 2,
+          "control_pick": "H260-1",
+          "treatment_pick": "H260-2",
+          "control_hit": false,
+          "treatment_hit": true,
+          "pick_changed": true,
+          "status": "improved"
+        },
+        {
+          "race_id": "a03-285-262",
+          "miss_layer": "Reorder",
+          "winner_id": "H261-2",
+          "winner_rank": 2,
+          "control_pick": "H261-1",
+          "treatment_pick": "H261-2",
+          "control_hit": false,
+          "treatment_hit": true,
+          "pick_changed": true,
+          "status": "improved"
+        },
+        {
+          "race_id": "a03-285-263",
+          "miss_layer": "Reorder",
+          "winner_id": "H262-2",
+          "winner_rank": 2,
+          "control_pick": "H262-1",
+          "treatment_pick": "H262-2",
+          "control_hit": false,
+          "treatment_hit": true,
+          "pick_changed": true,
+          "status": "improved"
+        },
+        {
+          "race_id": "a03-285-264",
+          "miss_layer": "Reorder",
+          "winner_id": "H263-2",
+          "winner_rank": 2,
+          "control_pick": "H263-1",
+          "treatment_pick": "H263-2",
+          "control_hit": false,
+          "treatment_hit": true,
+          "pick_changed": true,
+          "status": "improved"
+        },
+        {
+          "race_id": "a03-285-265",
+          "miss_layer": "Reorder",
+          "winner_id": "H264-2",
+          "winner_rank": 2,
+          "control_pick": "H264-1",
+          "treatment_pick": "H264-2",
+          "control_hit": false,
+          "treatment_hit": true,
+          "pick_changed": true,
+          "status": "improved"
+        },
+        {
+          "race_id": "a03-285-266",
+          "miss_layer": "Reorder",
+          "winner_id": "H265-2",
+          "winner_rank": 2,
+          "control_pick": "H265-1",
+          "treatment_pick": "H265-2",
+          "control_hit": false,
+          "treatment_hit": true,
+          "pick_changed": true,
+          "status": "improved"
+        },
+        {
+          "race_id": "a03-285-267",
+          "miss_layer": "Reorder",
+          "winner_id": "H266-2",
+          "winner_rank": 2,
+          "control_pick": "H266-1",
+          "treatment_pick": "H266-2",
+          "control_hit": false,
+          "treatment_hit": true,
+          "pick_changed": true,
+          "status": "improved"
+        },
+        {
+          "race_id": "a03-285-268",
+          "miss_layer": "Reorder",
+          "winner_id": "H267-2",
+          "winner_rank": 2,
+          "control_pick": "H267-1",
+          "treatment_pick": "H267-2",
+          "control_hit": false,
+          "treatment_hit": true,
+          "pick_changed": true,
+          "status": "improved"
+        },
+        {
+          "race_id": "a03-285-269",
+          "miss_layer": "Reorder",
+          "winner_id": "H268-2",
+          "winner_rank": 2,
+          "control_pick": "H268-1",
+          "treatment_pick": "H268-2",
+          "control_hit": false,
+          "treatment_hit": true,
+          "pick_changed": true,
+          "status": "improved"
+        },
+        {
+          "race_id": "a03-285-270",
+          "miss_layer": "Reorder",
+          "winner_id": "H269-2",
+          "winner_rank": 2,
+          "control_pick": "H269-1",
+          "treatment_pick": "H269-2",
+          "control_hit": false,
+          "treatment_hit": true,
+          "pick_changed": true,
+          "status": "improved"
+        }
+      ],
+      "worsened_races": []
+    },
+    "baseline_v2_plus_a04": {
+      "improved_count": 24,
+      "worsened_count": 0,
+      "unchanged_hit_count": 255,
+      "unchanged_miss_count": 6,
+      "improved_by_layer": {
+        "Boundary": 14,
+        "Reorder": 10
+      },
+      "boundary_improved_count": 14,
+      "reorder_improved_count": 10,
+      "improved_races": [
+        {
+          "race_id": "a03-285-247",
+          "miss_layer": "Boundary",
+          "winner_id": "H246-3",
+          "winner_rank": 3,
+          "control_pick": "H246-1",
+          "treatment_pick": "H246-3",
+          "control_hit": false,
+          "treatment_hit": true,
+          "pick_changed": true,
+          "status": "improved"
+        },
+        {
+          "race_id": "a03-285-248",
+          "miss_layer": "Boundary",
+          "winner_id": "H247-3",
+          "winner_rank": 3,
+          "control_pick": "H247-1",
+          "treatment_pick": "H247-3",
+          "control_hit": false,
+          "treatment_hit": true,
+          "pick_changed": true,
+          "status": "improved"
+        },
+        {
+          "race_id": "a03-285-249",
+          "miss_layer": "Boundary",
+          "winner_id": "H248-3",
+          "winner_rank": 3,
+          "control_pick": "H248-1",
+          "treatment_pick": "H248-3",
+          "control_hit": false,
+          "treatment_hit": true,
+          "pick_changed": true,
+          "status": "improved"
+        },
+        {
+          "race_id": "a03-285-250",
+          "miss_layer": "Boundary",
+          "winner_id": "H249-3",
+          "winner_rank": 3,
+          "control_pick": "H249-1",
+          "treatment_pick": "H249-3",
+          "control_hit": false,
+          "treatment_hit": true,
+          "pick_changed": true,
+          "status": "improved"
+        },
+        {
+          "race_id": "a03-285-251",
+          "miss_layer": "Boundary",
+          "winner_id": "H250-3",
+          "winner_rank": 3,
+          "control_pick": "H250-1",
+          "treatment_pick": "H250-3",
+          "control_hit": false,
+          "treatment_hit": true,
+          "pick_changed": true,
+          "status": "improved"
+        },
+        {
+          "race_id": "a03-285-252",
+          "miss_layer": "Boundary",
+          "winner_id": "H251-3",
+          "winner_rank": 3,
+          "control_pick": "H251-1",
+          "treatment_pick": "H251-3",
+          "control_hit": false,
+          "treatment_hit": true,
+          "pick_changed": true,
+          "status": "improved"
+        },
+        {
+          "race_id": "a03-285-253",
+          "miss_layer": "Boundary",
+          "winner_id": "H252-3",
+          "winner_rank": 3,
+          "control_pick": "H252-1",
+          "treatment_pick": "H252-3",
+          "control_hit": false,
+          "treatment_hit": true,
+          "pick_changed": true,
+          "status": "improved"
+        },
+        {
+          "race_id": "a03-285-254",
+          "miss_layer": "Boundary",
+          "winner_id": "H253-3",
+          "winner_rank": 3,
+          "control_pick": "H253-1",
+          "treatment_pick": "H253-3",
+          "control_hit": false,
+          "treatment_hit": true,
+          "pick_changed": true,
+          "status": "improved"
+        },
+        {
+          "race_id": "a03-285-255",
+          "miss_layer": "Boundary",
+          "winner_id": "H254-3",
+          "winner_rank": 3,
+          "control_pick": "H254-1",
+          "treatment_pick": "H254-3",
+          "control_hit": false,
+          "treatment_hit": true,
+          "pick_changed": true,
+          "status": "improved"
+        },
+        {
+          "race_id": "a03-285-256",
+          "miss_layer": "Boundary",
+          "winner_id": "H255-3",
+          "winner_rank": 3,
+          "control_pick": "H255-1",
+          "treatment_pick": "H255-3",
+          "control_hit": false,
+          "treatment_hit": true,
+          "pick_changed": true,
+          "status": "improved"
+        },
+        {
+          "race_id": "a03-285-257",
+          "miss_layer": "Boundary",
+          "winner_id": "H256-3",
+          "winner_rank": 3,
+          "control_pick": "H256-1",
+          "treatment_pick": "H256-3",
+          "control_hit": false,
+          "treatment_hit": true,
+          "pick_changed": true,
+          "status": "improved"
+        },
+        {
+          "race_id": "a03-285-258",
+          "miss_layer": "Boundary",
+          "winner_id": "H257-3",
+          "winner_rank": 3,
+          "control_pick": "H257-1",
+          "treatment_pick": "H257-3",
+          "control_hit": false,
+          "treatment_hit": true,
+          "pick_changed": true,
+          "status": "improved"
+        },
+        {
+          "race_id": "a03-285-259",
+          "miss_layer": "Boundary",
+          "winner_id": "H258-3",
+          "winner_rank": 3,
+          "control_pick": "H258-1",
+          "treatment_pick": "H258-3",
+          "control_hit": false,
+          "treatment_hit": true,
+          "pick_changed": true,
+          "status": "improved"
+        },
+        {
+          "race_id": "a03-285-260",
+          "miss_layer": "Boundary",
+          "winner_id": "H259-3",
+          "winner_rank": 3,
+          "control_pick": "H259-1",
+          "treatment_pick": "H259-3",
+          "control_hit": false,
+          "treatment_hit": true,
+          "pick_changed": true,
+          "status": "improved"
+        },
+        {
+          "race_id": "a03-285-261",
+          "miss_layer": "Reorder",
+          "winner_id": "H260-2",
+          "winner_rank": 2,
+          "control_pick": "H260-1",
+          "treatment_pick": "H260-2",
+          "control_hit": false,
+          "treatment_hit": true,
+          "pick_changed": true,
+          "status": "improved"
+        },
+        {
+          "race_id": "a03-285-262",
+          "miss_layer": "Reorder",
+          "winner_id": "H261-2",
+          "winner_rank": 2,
+          "control_pick": "H261-1",
+          "treatment_pick": "H261-2",
+          "control_hit": false,
+          "treatment_hit": true,
+          "pick_changed": true,
+          "status": "improved"
+        },
+        {
+          "race_id": "a03-285-263",
+          "miss_layer": "Reorder",
+          "winner_id": "H262-2",
+          "winner_rank": 2,
+          "control_pick": "H262-1",
+          "treatment_pick": "H262-2",
+          "control_hit": false,
+          "treatment_hit": true,
+          "pick_changed": true,
+          "status": "improved"
+        },
+        {
+          "race_id": "a03-285-264",
+          "miss_layer": "Reorder",
+          "winner_id": "H263-2",
+          "winner_rank": 2,
+          "control_pick": "H263-1",
+          "treatment_pick": "H263-2",
+          "control_hit": false,
+          "treatment_hit": true,
+          "pick_changed": true,
+          "status": "improved"
+        },
+        {
+          "race_id": "a03-285-265",
+          "miss_layer": "Reorder",
+          "winner_id": "H264-2",
+          "winner_rank": 2,
+          "control_pick": "H264-1",
+          "treatment_pick": "H264-2",
+          "control_hit": false,
+          "treatment_hit": true,
+          "pick_changed": true,
+          "status": "improved"
+        },
+        {
+          "race_id": "a03-285-266",
+          "miss_layer": "Reorder",
+          "winner_id": "H265-2",
+          "winner_rank": 2,
+          "control_pick": "H265-1",
+          "treatment_pick": "H265-2",
+          "control_hit": false,
+          "treatment_hit": true,
+          "pick_changed": true,
+          "status": "improved"
+        },
+        {
+          "race_id": "a03-285-267",
+          "miss_layer": "Reorder",
+          "winner_id": "H266-2",
+          "winner_rank": 2,
+          "control_pick": "H266-1",
+          "treatment_pick": "H266-2",
+          "control_hit": false,
+          "treatment_hit": true,
+          "pick_changed": true,
+          "status": "improved"
+        },
+        {
+          "race_id": "a03-285-268",
+          "miss_layer": "Reorder",
+          "winner_id": "H267-2",
+          "winner_rank": 2,
+          "control_pick": "H267-1",
+          "treatment_pick": "H267-2",
+          "control_hit": false,
+          "treatment_hit": true,
+          "pick_changed": true,
+          "status": "improved"
+        },
+        {
+          "race_id": "a03-285-269",
+          "miss_layer": "Reorder",
+          "winner_id": "H268-2",
+          "winner_rank": 2,
+          "control_pick": "H268-1",
+          "treatment_pick": "H268-2",
+          "control_hit": false,
+          "treatment_hit": true,
+          "pick_changed": true,
+          "status": "improved"
+        },
+        {
+          "race_id": "a03-285-270",
+          "miss_layer": "Reorder",
+          "winner_id": "H269-2",
+          "winner_rank": 2,
+          "control_pick": "H269-1",
+          "treatment_pick": "H269-2",
+          "control_hit": false,
+          "treatment_hit": true,
+          "pick_changed": true,
+          "status": "improved"
+        }
+      ],
+      "worsened_races": []
+    }
+  },
+  "notes": {
+    "scope": "Validation only — no new Accuracy algorithm",
+    "unchanged": [
+      "Representation",
+      "Admission",
+      "Evaluation",
+      "Purchase",
+      "Version2 Production",
+      "Prediction API",
+      "UI",
+      "Operations",
+      "Explainability"
+    ],
+    "corpus": "Lab synthetic 285R (a03-285-*)",
+    "control_definition": "Lab Baseline v2 (A-01 + A-03)",
+    "treatment_definition": "Baseline v2 + A-04 Selection"
+  }
+}

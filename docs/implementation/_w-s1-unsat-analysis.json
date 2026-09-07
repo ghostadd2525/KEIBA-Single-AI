@@ -1,0 +1,458 @@
+{
+  "n_total": 285,
+  "n_unsatisfied": 176,
+  "rate": 0.6175438596491228,
+  "structure": {
+    "has_must_but_excluded": 104,
+    "all_must_fail": 72
+  },
+  "race_reason_tags_multi": {
+    "Exclusion": 104,
+    "全World_MATCH失敗": 176,
+    "exception_flag欠落": 176,
+    "Must Signal不足": 176,
+    "Forbidden/Exclusion作動": 104,
+    "Signal欠落(restore失敗)": 31
+  },
+  "primary_blocker": {
+    "exception_flag欠落": 127,
+    "Must単一不足:multi_path>=2 OR unexplained_single": 47,
+    "Must単一不足:aptitude_fit↑": 1,
+    "Must単一不足:upper_ability_band↑": 1
+  },
+  "intended_world": {
+    "bug_world": 127,
+    "mixed_world": 47,
+    "midupper_world": 2
+  },
+  "intended_world_gap_breakdown": {
+    "bug_world": {
+      "exception_flag↑": 127
+    },
+    "mixed_world": {
+      "multi_path>=2 OR unexplained_single": 47
+    },
+    "midupper_world": {
+      "aptitude_fit↑": 1,
+      "upper_ability_band↑": 1
+    }
+  },
+  "signal_gap_ranking_all_world_mentions": [
+    [
+      "multi_path>=2 OR unexplained_single",
+      176
+    ],
+    [
+      "exception_flag↑",
+      176
+    ],
+    [
+      "ability_subordinate↑",
+      132
+    ],
+    [
+      "chaos↑",
+      127
+    ],
+    [
+      "top_monopoly↓",
+      116
+    ],
+    [
+      "aptitude_fit↑",
+      85
+    ],
+    [
+      "mid_eval_band_open↑",
+      77
+    ],
+    [
+      "upper_ability_band↑",
+      74
+    ],
+    [
+      "ability_separation↑",
+      71
+    ],
+    [
+      "top_gap↑",
+      43
+    ],
+    [
+      "development_pressure↑",
+      31
+    ],
+    [
+      "pace_conflict↑",
+      31
+    ]
+  ],
+  "signal_gap_ranking_race_level_unique": [
+    [
+      "multi_path>=2 OR unexplained_single",
+      176
+    ],
+    [
+      "exception_flag↑",
+      176
+    ],
+    [
+      "ability_subordinate↑",
+      132
+    ],
+    [
+      "chaos↑",
+      127
+    ],
+    [
+      "top_monopoly↓",
+      116
+    ],
+    [
+      "aptitude_fit↑",
+      85
+    ],
+    [
+      "mid_eval_band_open↑",
+      77
+    ],
+    [
+      "upper_ability_band↑",
+      74
+    ],
+    [
+      "ability_separation↑",
+      71
+    ],
+    [
+      "top_gap↑",
+      43
+    ],
+    [
+      "development_pressure↑",
+      31
+    ],
+    [
+      "pace_conflict↑",
+      31
+    ]
+  ],
+  "world_gap_rank": {
+    "core_world": [
+      [
+        "ability_separation↑",
+        71
+      ],
+      [
+        "top_gap↑",
+        43
+      ]
+    ],
+    "midupper_world": [
+      [
+        "aptitude_fit↑",
+        85
+      ],
+      [
+        "upper_ability_band↑",
+        74
+      ],
+      [
+        "development_pressure↑",
+        31
+      ]
+    ],
+    "midhole_world": [
+      [
+        "top_monopoly↓",
+        116
+      ],
+      [
+        "mid_eval_band_open↑",
+        77
+      ]
+    ],
+    "rank7_world": [
+      [
+        "ability_subordinate↑",
+        132
+      ],
+      [
+        "chaos↑",
+        127
+      ],
+      [
+        "pace_conflict↑",
+        31
+      ]
+    ],
+    "mixed_world": [
+      [
+        "multi_path>=2 OR unexplained_single",
+        176
+      ]
+    ],
+    "bug_world": [
+      [
+        "exception_flag↑",
+        176
+      ]
+    ]
+  },
+  "blocker_logic_top": [
+    [
+      "bug_world:MUST:exception_flag↑",
+      127
+    ],
+    [
+      "mixed_world:MUST:multi_path>=2 OR unexplained_single",
+      47
+    ],
+    [
+      "midupper_world:MUST:aptitude_fit↑",
+      1
+    ],
+    [
+      "midupper_world:MUST:upper_ability_band↑",
+      1
+    ]
+  ],
+  "near_miss_n": 176,
+  "near_miss_by_gap": {
+    "multi_path>=2 OR unexplained_single": 113,
+    "upper_ability_band↑": 14,
+    "top_monopoly↓": 21,
+    "aptitude_fit↑": 7,
+    "top_gap↑": 4,
+    "development_pressure↑": 1,
+    "mid_eval_band_open↑": 10,
+    "ability_separation↑": 6
+  },
+  "near_miss_by_world": {
+    "mixed_world": 113,
+    "midupper_world": 22,
+    "midhole_world": 31,
+    "core_world": 10
+  },
+  "near_miss_sample": [
+    {
+      "race_id": "2024-01-06-京都-10",
+      "near_world": "mixed_world",
+      "missing_must": "multi_path>=2 OR unexplained_single",
+      "legacy_world": "midupper_world",
+      "intended_best": "bug_world"
+    },
+    {
+      "race_id": "2024-01-06-中山-11",
+      "near_world": "midupper_world",
+      "missing_must": "upper_ability_band↑",
+      "legacy_world": "midupper_world",
+      "intended_best": "bug_world"
+    },
+    {
+      "race_id": "2024-01-06-京都-11",
+      "near_world": "mixed_world",
+      "missing_must": "multi_path>=2 OR unexplained_single",
+      "legacy_world": "midupper_world",
+      "intended_best": "mixed_world"
+    },
+    {
+      "race_id": "2024-01-06-中山-09",
+      "near_world": "midhole_world",
+      "missing_must": "top_monopoly↓",
+      "legacy_world": "core_world",
+      "intended_best": "bug_world"
+    },
+    {
+      "race_id": "2024-01-06-中山-10",
+      "near_world": "mixed_world",
+      "missing_must": "multi_path>=2 OR unexplained_single",
+      "legacy_world": "core_world",
+      "intended_best": "bug_world"
+    },
+    {
+      "race_id": "2024-01-07-京都-11",
+      "near_world": "mixed_world",
+      "missing_must": "multi_path>=2 OR unexplained_single",
+      "legacy_world": "mixed_world",
+      "intended_best": "mixed_world"
+    },
+    {
+      "race_id": "2024-01-07-京都-10",
+      "near_world": "mixed_world",
+      "missing_must": "multi_path>=2 OR unexplained_single",
+      "legacy_world": "midupper_world",
+      "intended_best": "bug_world"
+    },
+    {
+      "race_id": "2024-01-14-中山-11",
+      "near_world": "mixed_world",
+      "missing_must": "multi_path>=2 OR unexplained_single",
+      "legacy_world": "midhole_world",
+      "intended_best": "mixed_world"
+    },
+    {
+      "race_id": "2024-01-14-中山-10",
+      "near_world": "mixed_world",
+      "missing_must": "multi_path>=2 OR unexplained_single",
+      "legacy_world": "midupper_world",
+      "intended_best": "bug_world"
+    },
+    {
+      "race_id": "2024-01-14-小倉-11",
+      "near_world": "mixed_world",
+      "missing_must": "multi_path>=2 OR unexplained_single",
+      "legacy_world": "midhole_world",
+      "intended_best": "mixed_world"
+    },
+    {
+      "race_id": "2024-01-14-京都-10",
+      "near_world": "mixed_world",
+      "missing_must": "multi_path>=2 OR unexplained_single",
+      "legacy_world": "core_world",
+      "intended_best": "bug_world"
+    },
+    {
+      "race_id": "2024-01-14-京都-11",
+      "near_world": "mixed_world",
+      "missing_must": "multi_path>=2 OR unexplained_single",
+      "legacy_world": "midupper_world",
+      "intended_best": "bug_world"
+    },
+    {
+      "race_id": "2024-01-21-中山-11",
+      "near_world": "mixed_world",
+      "missing_must": "multi_path>=2 OR unexplained_single",
+      "legacy_world": "core_world",
+      "intended_best": "bug_world"
+    },
+    {
+      "race_id": "2024-01-21-京都-10",
+      "near_world": "mixed_world",
+      "missing_must": "multi_path>=2 OR unexplained_single",
+      "legacy_world": "mixed_world",
+      "intended_best": "mixed_world"
+    },
+    {
+      "race_id": "2024-01-21-京都-11",
+      "near_world": "mixed_world",
+      "missing_must": "multi_path>=2 OR unexplained_single",
+      "legacy_world": "midupper_world",
+      "intended_best": "mixed_world"
+    },
+    {
+      "race_id": "2024-01-21-小倉-11",
+      "near_world": "mixed_world",
+      "missing_must": "multi_path>=2 OR unexplained_single",
+      "legacy_world": "midupper_world",
+      "intended_best": "mixed_world"
+    },
+    {
+      "race_id": "2024-01-28-京都-10",
+      "near_world": "midhole_world",
+      "missing_must": "top_monopoly↓",
+      "legacy_world": "core_world",
+      "intended_best": "bug_world"
+    },
+    {
+      "race_id": "2024-01-28-小倉-11",
+      "near_world": "mixed_world",
+      "missing_must": "multi_path>=2 OR unexplained_single",
+      "legacy_world": "mixed_world",
+      "intended_best": "mixed_world"
+    },
+    {
+      "race_id": "2024-02-04-小倉-11",
+      "near_world": "mixed_world",
+      "missing_must": "multi_path>=2 OR unexplained_single",
+      "legacy_world": "core_world",
+      "intended_best": "bug_world"
+    },
+    {
+      "race_id": "2024-02-11-京都-11",
+      "near_world": "mixed_world",
+      "missing_must": "multi_path>=2 OR unexplained_single",
+      "legacy_world": "core_world",
+      "intended_best": "bug_world"
+    },
+    {
+      "race_id": "2024-02-11-東京-11",
+      "near_world": "mixed_world",
+      "missing_must": "multi_path>=2 OR unexplained_single",
+      "legacy_world": "core_world",
+      "intended_best": "bug_world"
+    },
+    {
+      "race_id": "2024-02-18-京都-10",
+      "near_world": "midhole_world",
+      "missing_must": "top_monopoly↓",
+      "legacy_world": "core_world",
+      "intended_best": "bug_world"
+    },
+    {
+      "race_id": "2024-02-18-京都-11",
+      "near_world": "mixed_world",
+      "missing_must": "multi_path>=2 OR unexplained_single",
+      "legacy_world": "core_world",
+      "intended_best": "bug_world"
+    },
+    {
+      "race_id": "2024-02-18-東京-10",
+      "near_world": "mixed_world",
+      "missing_must": "multi_path>=2 OR unexplained_single",
+      "legacy_world": "core_world",
+      "intended_best": "bug_world"
+    },
+    {
+      "race_id": "2024-02-25-中山-10",
+      "near_world": "midupper_world",
+      "missing_must": "aptitude_fit↑",
+      "legacy_world": "mixed_world",
+      "intended_best": "bug_world"
+    },
+    {
+      "race_id": "2024-02-25-中山-11",
+      "near_world": "mixed_world",
+      "missing_must": "multi_path>=2 OR unexplained_single",
+      "legacy_world": "midupper_world",
+      "intended_best": "mixed_world"
+    },
+    {
+      "race_id": "2024-02-25-阪神-10",
+      "near_world": "mixed_world",
+      "missing_must": "multi_path>=2 OR unexplained_single",
+      "legacy_world": "core_world",
+      "intended_best": "bug_world"
+    },
+    {
+      "race_id": "2024-03-03-中山-10",
+      "near_world": "mixed_world",
+      "missing_must": "multi_path>=2 OR unexplained_single",
+      "legacy_world": "midupper_world",
+      "intended_best": "mixed_world"
+    },
+    {
+      "race_id": "2024-03-03-阪神-10",
+      "near_world": "midupper_world",
+      "missing_must": "aptitude_fit↑",
+      "legacy_world": "midupper_world",
+      "intended_best": "bug_world"
+    },
+    {
+      "race_id": "2024-03-03-阪神-11",
+      "near_world": "mixed_world",
+      "missing_must": "multi_path>=2 OR unexplained_single",
+      "legacy_world": "midupper_world",
+      "intended_best": "mixed_world"
+    }
+  ],
+  "aux_blocks_unsatisfied": 0,
+  "polarity_reverse_explicit_logs": 0,
+  "notes": {
+    "aux": "W-S1 evaluate_v44_logic_form does not fail MATCH on Aux; Aux不足 cannot be a root cause of these 176",
+    "polarity": "Failures appear as Must not True under batch-median polarity; no separate polarity_reverse field",
+    "forbidden": "Recorded when must True and exclude True on any world",
+    "intended": "World with fewest must_gaps among exclude=False; else overall fewest gaps",
+    "near_miss": "exclude=False and exactly one must_gap for some world (Signal追加なしで1軸充足すればMATCH候補)"
+  }
+}

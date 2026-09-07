@@ -30,12 +30,16 @@ compatibility_date = "2026-07-19"
 # Non-secret defaults (override in Dashboard / secrets as needed)
 [vars]
 AUTH_MODE = "stub"
+# Required while AUTH_MODE=stub in production (break-glass). Deploy check fails if missing.
+ALLOW_STUB_AUTH = "1"
 VALIDATE_CONTRACTS = "soft"
 KAOBA_PROVIDER = "auto"
 AI_ENGINE = "real"
 EXPECT_ENV = "production"
 # Version 2 Explainability — BFF mapper（本番 Release）
 EXPLAIN_V2_ENABLED = "true"
+# Version 9.0 Benchmark Layer — Production Standard (◎単勝1点)
+V9_BENCHMARK_LAYER = "true"
 
 # 招待・ユーザー永続化（一時IDログインが isolate またぎで失敗しないように）
 [[kv_namespaces]]

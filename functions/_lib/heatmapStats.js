@@ -62,39 +62,53 @@ export function venuesFromSegmentKeys(segments, segmentsGoing) {
 
 function cellFromSegment(seg, overall) {
   if (!seg || seg.n == null || Number(seg.n) < 1) {
-    return { hit_rate: null, n: 0, band: "unknown", label: "—" };
+    return { hit_rate: null, n: 0, hits: 0, band: "unknown", label: "—" };
   }
   const rate = seg.hit_rate != null ? Number(seg.hit_rate) : overall;
   const band = hitRateBand(rate);
+  const n = Number(seg.n);
+  const hits =
+    seg.hits != null
+      ? Number(seg.hits)
+      : Number.isFinite(rate)
+        ? Math.round((rate > 1 ? rate / 100 : rate) * n)
+        : 0;
   return {
     hit_rate: rate,
-    n: Number(seg.n),
+    n,
+    hits,
     band,
     label: BAND_LABEL[band] || "—",
     pct: hitRatePercent(rate),
   };
 }
 
-/** 芝・ダなど複数セグメントをサンプル数加重平均 */
+/** 芝・ダなど複数セグメントをサンプル数加重平均（hits も合算） */
 function cellFromSegments(segs, overall) {
-  let sum = 0;
+  let hits = 0;
   let n = 0;
   for (const seg of segs || []) {
     if (!seg || seg.n == null || Number(seg.n) < 1) continue;
-    const rate = seg.hit_rate != null ? Number(seg.hit_rate) : overall;
-    if (!Number.isFinite(rate)) continue;
     const w = Number(seg.n);
-    sum += rate * w;
     n += w;
+    if (seg.hits != null) {
+      hits += Number(seg.hits);
+    } else {
+      const rate = seg.hit_rate != null ? Number(seg.hit_rate) : overall;
+      if (Number.isFinite(rate)) {
+        hits += (rate > 1 ? rate / 100 : rate) * w;
+      }
+    }
   }
-  if (n < 1) return { hit_rate: null, n: 0, band: "unknown", label: "—" };
-  return cellFromSegment({ hit_rate: sum / n, n }, overall);
+  if (n < 1) return { hit_rate: null, n: 0, hits: 0, band: "unknown", label: "—" };
+  return cellFromSegment({ hit_rate: hits / n, n, hits: Math.round(hits) }, overall);
 }
 
 export function buildHeatmapPayload(table, venueFilter) {
   const segments = table?.segments || {};
   const segmentsGoing = table?.segments_going || {};
-  const overall = Number(table?.overall_hit_rate) || 218 / 285;
+  const overall = Number(table?.overall_hit_rate);
+  const overallRate = Number.isFinite(overall) ? overall : 0;
   let venues = venuesFromSegmentKeys(segments, segmentsGoing);
   if (venueFilter && venueFilter.length) {
     const allow = new Set(venueFilter);
@@ -108,7 +122,7 @@ export function buildHeatmapPayload(table, venueFilter) {
       venue,
       cells: DISTANCE_COLS.map((c) => {
         const key = `${venue}|${c.surf}|${c.bucket}`;
-        return cellFromSegment(segments[key], overall);
+        return cellFromSegment(segments[key], overallRate);
       }),
     })),
   };
@@ -121,20 +135,25 @@ export function buildHeatmapPayload(table, venueFilter) {
       label: venue,
       cells: GOING_COLS.map((goingCol) => {
         const segs = ["芝", "ダ"].map((surf) => segmentsGoing[`${venue}|${surf}|${goingCol.key}`]);
-        return cellFromSegments(segs, overall);
+        return cellFromSegments(segs, overallRate);
       }),
     })),
   };
 
   return {
     schema_version: HEATMAP_SCHEMA,
-    corpus: table?.corpus || "285R",
+    corpus: table?.corpus || "all_time",
     overall_hit_rate: overall,
-    min_samples: Number(table?.min_samples) || 3,
+    overall_hits: Number(table?.overall_hits) || 0,
+    min_samples: Number(table?.min_samples) || 1,
     updated_at: table?.generated_at || table?.updated_at || null,
     races_evaluated: Number(table?.races_evaluated) || 0,
     distance,
     condition,
     source: table?.source || "segment-hit-rates",
+    scope: table?.scope || "all_time_cumulative",
+    resets: false,
+    formula: table?.formula || "hit_at_1_count / ai_evaluated_race_count",
+    label: table?.label || "AI総合実績",
   };
 }

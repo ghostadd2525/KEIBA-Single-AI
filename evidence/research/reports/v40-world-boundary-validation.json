@@ -1,0 +1,691 @@
+{
+  "schema_version": "expect-world-boundary-validation/1.0",
+  "generated_at": "2026-07-27T23:57:50+00:00",
+  "shadow_only": true,
+  "product_mutation": false,
+  "trigger_unchanged": true,
+  "threshold_unchanged": true,
+  "method": {
+    "signals": "V39 restored signal pack (virtual)",
+    "assignment": "first_match Trigger rules (unchanged)",
+    "fitness": "trigger_proximity_fitness (V26)",
+    "perturbation": [
+      0.02,
+      0.05
+    ],
+    "near_miss_eps": 0.15
+  },
+  "corpus": {
+    "n": 56,
+    "featureloader_loadable": 56
+  },
+  "world_fitness": {
+    "mean_fitness_all_races": {
+      "core_world": 0.19778928571428572,
+      "midupper_world": 0.7294839285714286,
+      "midhole_world": 0.6423249999999999,
+      "rank7_world": 0.6206767857142858,
+      "bug_world": 0.4918625,
+      "mixed_world": 0.2978267857142857
+    },
+    "by_assigned_world": {
+      "core_world": {
+        "n": 42,
+        "mean_own_fitness": 0.26371904761904763,
+        "mean_soft_margin": -0.47256190476190474,
+        "mean_silhouette": -0.6089285714285714,
+        "agree_best_fit_rate": 0.0
+      },
+      "midupper_world": {
+        "n": 3,
+        "mean_own_fitness": 1.0,
+        "mean_soft_margin": 0.10853333333333333,
+        "mean_silhouette": 0.10853333333333333,
+        "agree_best_fit_rate": 1.0
+      },
+      "midhole_world": {
+        "n": 1,
+        "mean_own_fitness": 1.0,
+        "mean_soft_margin": 0.0,
+        "mean_silhouette": 0.0,
+        "agree_best_fit_rate": 1.0
+      },
+      "rank7_world": {
+        "n": 0,
+        "mean_own_fitness": null,
+        "mean_soft_margin": null,
+        "mean_silhouette": null,
+        "agree_best_fit_rate": null
+      },
+      "bug_world": {
+        "n": 0,
+        "mean_own_fitness": null,
+        "mean_soft_margin": null,
+        "mean_silhouette": null,
+        "agree_best_fit_rate": null
+      },
+      "mixed_world": {
+        "n": 10,
+        "mean_own_fitness": 1.0,
+        "mean_soft_margin": 0.00395,
+        "mean_silhouette": 0.00395,
+        "agree_best_fit_rate": 0.4
+      }
+    }
+  },
+  "winner_alignment": {
+    "overall": {
+      "soft": 15,
+      "aligned": 27,
+      "misaligned": 14
+    },
+    "aligned_rate": 0.48214285714285715,
+    "by_world": {
+      "core_world": {
+        "n": 42,
+        "aligned": 17,
+        "soft": 11,
+        "misaligned": 14,
+        "unknown": 0,
+        "aligned_rate": 0.40476190476190477,
+        "mean_winner_rank": 4.380952380952381
+      },
+      "midupper_world": {
+        "n": 3,
+        "aligned": 1,
+        "soft": 2,
+        "misaligned": 0,
+        "unknown": 0,
+        "aligned_rate": 0.3333333333333333,
+        "mean_winner_rank": 6.333333333333333
+      },
+      "midhole_world": {
+        "n": 1,
+        "aligned": 1,
+        "soft": 0,
+        "misaligned": 0,
+        "unknown": 0,
+        "aligned_rate": 1.0,
+        "mean_winner_rank": 9.0
+      },
+      "rank7_world": {
+        "n": 0,
+        "aligned": 0,
+        "soft": 0,
+        "misaligned": 0,
+        "unknown": 0,
+        "aligned_rate": null,
+        "mean_winner_rank": null
+      },
+      "bug_world": {
+        "n": 0,
+        "aligned": 0,
+        "soft": 0,
+        "misaligned": 0,
+        "unknown": 0,
+        "aligned_rate": null,
+        "mean_winner_rank": null
+      },
+      "mixed_world": {
+        "n": 10,
+        "aligned": 8,
+        "soft": 2,
+        "misaligned": 0,
+        "unknown": 0,
+        "aligned_rate": 0.8,
+        "mean_winner_rank": 5.5
+      }
+    }
+  },
+  "boundary_margin": {
+    "by_world_rule_margin": {
+      "core_world": {
+        "n_obs": 0,
+        "mean_margin": null,
+        "pass_rate": null,
+        "near_zero_rate": null,
+        "negative_rate": null
+      },
+      "midupper_world": {
+        "n_obs": 56,
+        "mean_margin": -0.15547351785714286,
+        "pass_rate": 0.05357142857142857,
+        "near_zero_rate": 0.03571428571428571,
+        "negative_rate": 0.9464285714285714
+      },
+      "midhole_world": {
+        "n_obs": 56,
+        "mean_margin": -0.1912180357142857,
+        "pass_rate": 0.03571428571428571,
+        "near_zero_rate": 0.125,
+        "negative_rate": 0.9642857142857143
+      },
+      "rank7_world": {
+        "n_obs": 56,
+        "mean_margin": -0.21264005357142857,
+        "pass_rate": 0.0,
+        "near_zero_rate": 0.0,
+        "negative_rate": 1.0
+      },
+      "bug_world": {
+        "n_obs": 56,
+        "mean_margin": -0.3239159642857143,
+        "pass_rate": 0.0,
+        "near_zero_rate": 0.0,
+        "negative_rate": 1.0
+      },
+      "mixed_world": {
+        "n_obs": 5,
+        "mean_margin": -0.0991446,
+        "pass_rate": 0.0,
+        "near_zero_rate": 0.2,
+        "negative_rate": 1.0
+      }
+    },
+    "ambiguous_race_n": 16,
+    "ambiguous_rate": 0.2857142857142857,
+    "mean_soft_margin": -0.34790178571428576
+  },
+  "near_miss": {
+    "core_assigned_n": 42,
+    "core_near_miss_n": 23,
+    "core_near_miss_rate": 0.5476190476190477,
+    "examples": [
+      {
+        "race_id": "2026-07-25-01-06",
+        "fit_core": 0.0599,
+        "targets": [
+          {
+            "world": "mixed_world",
+            "fitness": 0.0,
+            "gap": 0.0599
+          }
+        ],
+        "best_alt": "midhole_world",
+        "best_alt_fit": 0.9401,
+        "soft_margin": -0.8802,
+        "winner_model_rank": 7
+      },
+      {
+        "race_id": "2026-07-26-01-04",
+        "fit_core": 0.0833,
+        "targets": [
+          {
+            "world": "mixed_world",
+            "fitness": 0.0,
+            "gap": 0.0833
+          }
+        ],
+        "best_alt": "midupper_world",
+        "best_alt_fit": 0.9167,
+        "soft_margin": -0.8334,
+        "winner_model_rank": 3
+      },
+      {
+        "race_id": "2026-07-25-02-02",
+        "fit_core": 0.152,
+        "targets": [
+          {
+            "world": "midhole_world",
+            "fitness": 0.1522,
+            "gap": -0.0002
+          }
+        ],
+        "best_alt": "midupper_world",
+        "best_alt_fit": 0.848,
+        "soft_margin": -0.696,
+        "winner_model_rank": 7
+      },
+      {
+        "race_id": "2026-07-25-02-11",
+        "fit_core": 0.2082,
+        "targets": [
+          {
+            "world": "bug_world",
+            "fitness": 0.3427,
+            "gap": -0.1345
+          }
+        ],
+        "best_alt": "midhole_world",
+        "best_alt_fit": 0.7918,
+        "soft_margin": -0.5836,
+        "winner_model_rank": 5
+      },
+      {
+        "race_id": "2026-07-25-02-08",
+        "fit_core": 0.2108,
+        "targets": [
+          {
+            "world": "bug_world",
+            "fitness": 0.3427,
+            "gap": -0.1319
+          }
+        ],
+        "best_alt": "midhole_world",
+        "best_alt_fit": 0.7892,
+        "soft_margin": -0.5784,
+        "winner_model_rank": 4
+      },
+      {
+        "race_id": "2026-07-26-03-05",
+        "fit_core": 0.25,
+        "targets": [
+          {
+            "world": "midhole_world",
+            "fitness": 0.1481,
+            "gap": 0.1019
+          },
+          {
+            "world": "rank7_world",
+            "fitness": 0.2729,
+            "gap": -0.0229
+          },
+          {
+            "world": "bug_world",
+            "fitness": 0.3,
+            "gap": -0.05
+          }
+        ],
+        "best_alt": "midupper_world",
+        "best_alt_fit": 0.75,
+        "soft_margin": -0.5,
+        "winner_model_rank": 2
+      },
+      {
+        "race_id": "2026-07-25-03-01",
+        "fit_core": 0.2844,
+        "targets": [
+          {
+            "world": "bug_world",
+            "fitness": 0.3565,
+            "gap": -0.0721
+          }
+        ],
+        "best_alt": "midhole_world",
+        "best_alt_fit": 0.7156,
+        "soft_margin": -0.4312,
+        "winner_model_rank": 3
+      },
+      {
+        "race_id": "2026-07-26-03-01",
+        "fit_core": 0.3313,
+        "targets": [
+          {
+            "world": "midhole_world",
+            "fitness": 0.4063,
+            "gap": -0.075
+          }
+        ],
+        "best_alt": "midupper_world",
+        "best_alt_fit": 0.6687,
+        "soft_margin": -0.3374,
+        "winner_model_rank": 1
+      },
+      {
+        "race_id": "2026-07-26-01-02",
+        "fit_core": 0.34,
+        "targets": [
+          {
+            "world": "rank7_world",
+            "fitness": 0.2563,
+            "gap": 0.0837
+          },
+          {
+            "world": "bug_world",
+            "fitness": 0.2959,
+            "gap": 0.0441
+          }
+        ],
+        "best_alt": "midupper_world",
+        "best_alt_fit": 0.66,
+        "soft_margin": -0.32,
+        "winner_model_rank": 4
+      },
+      {
+        "race_id": "2026-07-25-02-10",
+        "fit_core": 0.3496,
+        "targets": [
+          {
+            "world": "bug_world",
+            "fitness": 0.4919,
+            "gap": -0.1423
+          }
+        ],
+        "best_alt": "midhole_world",
+        "best_alt_fit": 0.6504,
+        "soft_margin": -0.3008,
+        "winner_model_rank": 3
+      },
+      {
+        "race_id": "2026-07-26-02-02",
+        "fit_core": 0.352,
+        "targets": [
+          {
+            "world": "rank7_world",
+            "fitness": 0.2062,
+            "gap": 0.1458
+          },
+          {
+            "world": "bug_world",
+            "fitness": 0.2837,
+            "gap": 0.0683
+          }
+        ],
+        "best_alt": "midupper_world",
+        "best_alt_fit": 0.648,
+        "soft_margin": -0.296,
+        "winner_model_rank": 4
+      },
+      {
+        "race_id": "2026-07-25-03-12",
+        "fit_core": 0.3555,
+        "targets": [
+          {
+            "world": "bug_world",
+            "fitness": 0.467,
+            "gap": -0.1115
+          }
+        ],
+        "best_alt": "midhole_world",
+        "best_alt_fit": 0.6445,
+        "soft_margin": -0.289,
+        "winner_model_rank": 1
+      },
+      {
+        "race_id": "2026-07-25-01-05",
+        "fit_core": 0.3589,
+        "targets": [
+          {
+            "world": "bug_world",
+            "fitness": 0.467,
+            "gap": -0.1081
+          }
+        ],
+        "best_alt": "midhole_world",
+        "best_alt_fit": 0.6411,
+        "soft_margin": -0.2822,
+        "winner_model_rank": 5
+      },
+      {
+        "race_id": "2026-07-25-03-02",
+        "fit_core": 0.3756,
+        "targets": [
+          {
+            "world": "midupper_world",
+            "fitness": 0.45,
+            "gap": -0.0744
+          },
+          {
+            "world": "midhole_world",
+            "fitness": 0.4978,
+            "gap": -0.1222
+          },
+          {
+            "world": "bug_world",
+            "fitness": 0.3629,
+            "gap": 0.0127
+          }
+        ],
+        "best_alt": "rank7_world",
+        "best_alt_fit": 0.6244,
+        "soft_margin": -0.2488,
+        "winner_model_rank": 2
+      },
+      {
+        "race_id": "2026-07-26-01-01",
+        "fit_core": 0.3762,
+        "targets": [
+          {
+            "world": "rank7_world",
+            "fitness": 0.4114,
+            "gap": -0.0352
+          },
+          {
+            "world": "bug_world",
+            "fitness": 0.3615,
+            "gap": 0.0147
+          }
+        ],
+        "best_alt": "midupper_world",
+        "best_alt_fit": 0.6238,
+        "soft_margin": -0.2476,
+        "winner_model_rank": 7
+      },
+      {
+        "race_id": "2026-07-25-02-07",
+        "fit_core": 0.3845,
+        "targets": [
+          {
+            "world": "midhole_world",
+            "fitness": 0.5125,
+            "gap": -0.128
+          },
+          {
+            "world": "rank7_world",
+            "fitness": 0.514,
+            "gap": -0.1295
+          },
+          {
+            "world": "bug_world",
+            "fitness": 0.4517,
+            "gap": -0.0672
+          }
+        ],
+        "best_alt": "midupper_world",
+        "best_alt_fit": 0.6155,
+        "soft_margin": -0.231,
+        "winner_model_rank": 7
+      },
+      {
+        "race_id": "2026-07-26-03-04",
+        "fit_core": 0.4027,
+        "targets": [
+          {
+            "world": "rank7_world",
+            "fitness": 0.5396,
+            "gap": -0.1369
+          },
+          {
+            "world": "bug_world",
+            "fitness": 0.4742,
+            "gap": -0.0715
+          }
+        ],
+        "best_alt": "midupper_world",
+        "best_alt_fit": 0.5973,
+        "soft_margin": -0.1946,
+        "winner_model_rank": 6
+      },
+      {
+        "race_id": "2026-07-25-02-01",
+        "fit_core": 0.41,
+        "targets": [
+          {
+            "world": "bug_world",
+            "fitness": 0.3058,
+            "gap": 0.1042
+          }
+        ],
+        "best_alt": "midupper_world",
+        "best_alt_fit": 0.59,
+        "soft_margin": -0.18,
+        "winner_model_rank": 7
+      },
+      {
+        "race_id": "2026-07-26-02-01",
+        "fit_core": 0.41,
+        "targets": [
+          {
+            "world": "bug_world",
+            "fitness": 0.2959,
+            "gap": 0.1141
+          }
+        ],
+        "best_alt": "midupper_world",
+        "best_alt_fit": 0.59,
+        "soft_margin": -0.18,
+        "winner_model_rank": 2
+      },
+      {
+        "race_id": "2026-07-25-01-01",
+        "fit_core": 0.418,
+        "targets": [
+          {
+            "world": "rank7_world",
+            "fitness": 0.422,
+            "gap": -0.004
+          },
+          {
+            "world": "bug_world",
+            "fitness": 0.3708,
+            "gap": 0.0472
+          }
+        ],
+        "best_alt": "midupper_world",
+        "best_alt_fit": 0.582,
+        "soft_margin": -0.164,
+        "winner_model_rank": 1
+      }
+    ],
+    "alt_world_counts": {
+      "mixed_world": 2,
+      "midhole_world": 5,
+      "bug_world": 18,
+      "rank7_world": 8,
+      "midupper_world": 4
+    }
+  },
+  "boundary_stability": {
+    "mean_flip_rate": 0.07589285714285714,
+    "unstable_race_n": 12,
+    "unstable_rate": 0.21428571428571427,
+    "by_world": {
+      "core_world": {
+        "n": 42,
+        "mean_flip_rate": 0.023809523809523808
+      },
+      "midupper_world": {
+        "n": 3,
+        "mean_flip_rate": 0.16666666666666666
+      },
+      "midhole_world": {
+        "n": 1,
+        "mean_flip_rate": 0.5
+      },
+      "mixed_world": {
+        "n": 10,
+        "mean_flip_rate": 0.225
+      }
+    }
+  },
+  "distribution_quality": {
+    "entropy_bits": 1.0850067040621574,
+    "entropy_ratio": 0.4197378893347431,
+    "information_gain_vs_collapse": 1.0850067040621574,
+    "mean_soft_margin": -0.34790178571428576,
+    "mean_silhouette": -0.4501767857142857,
+    "agree_best_fit_rate": 0.14285714285714285,
+    "ambiguous_rate": 0.2857142857142857,
+    "tv_to_design": 0.5285714285714286,
+    "world_share": {
+      "core_world": 0.75,
+      "midupper_world": 0.05357142857142857,
+      "midhole_world": 0.017857142857142856,
+      "rank7_world": 0.0,
+      "bug_world": 0.0,
+      "mixed_world": 0.17857142857142858
+    },
+    "world_counts": {
+      "midupper_world": 3,
+      "core_world": 42,
+      "midhole_world": 1,
+      "mixed_world": 10
+    }
+  },
+  "trigger_diagnosis": {
+    "core_world": {
+      "label": "過剰",
+      "observed_share": 0.75,
+      "design_share": 0.3,
+      "share_ratio_vs_design": 2.5,
+      "inbound_near_miss_n": 0,
+      "outbound_near_miss_n": 23,
+      "mean_own_fitness": 0.26371904761904763,
+      "mean_soft_margin": -0.47256190476190474,
+      "reason": "default sink 75.0% (design 30.0%); agree_best_fit=0.0%"
+    },
+    "midupper_world": {
+      "label": "不足",
+      "observed_share": 0.05357142857142857,
+      "design_share": 0.35,
+      "share_ratio_vs_design": 0.15306122448979592,
+      "inbound_near_miss_n": 15,
+      "outbound_near_miss_n": 3,
+      "mean_own_fitness": 1.0,
+      "mean_soft_margin": 0.10853333333333333,
+      "reason": "share 5.4% vs design 35.0%"
+    },
+    "midhole_world": {
+      "label": "不足",
+      "observed_share": 0.017857142857142856,
+      "design_share": 0.05,
+      "share_ratio_vs_design": 0.3571428571428571,
+      "inbound_near_miss_n": 13,
+      "outbound_near_miss_n": 1,
+      "mean_own_fitness": 1.0,
+      "mean_soft_margin": 0.0,
+      "reason": "share 1.8% vs design 5.0%"
+    },
+    "rank7_world": {
+      "label": "不足",
+      "observed_share": 0.0,
+      "design_share": 0.15,
+      "share_ratio_vs_design": 0.0,
+      "inbound_near_miss_n": 10,
+      "outbound_near_miss_n": 0,
+      "mean_own_fitness": null,
+      "mean_soft_margin": null,
+      "reason": "never assigned but 10 inbound near-miss races"
+    },
+    "bug_world": {
+      "label": "不足",
+      "observed_share": 0.0,
+      "design_share": 0.05,
+      "share_ratio_vs_design": 0.0,
+      "inbound_near_miss_n": 18,
+      "outbound_near_miss_n": 0,
+      "mean_own_fitness": null,
+      "mean_soft_margin": null,
+      "reason": "never assigned but 18 inbound near-miss races"
+    },
+    "mixed_world": {
+      "label": "適正",
+      "observed_share": 0.17857142857142858,
+      "design_share": 0.1,
+      "share_ratio_vs_design": 1.7857142857142856,
+      "inbound_near_miss_n": 4,
+      "outbound_near_miss_n": 10,
+      "mean_own_fitness": 1.0,
+      "mean_soft_margin": 0.00395,
+      "reason": "share near design (17.9% vs 10.0%) with observable assignment"
+    }
+  },
+  "governance": {
+    "verdict": "C",
+    "labels": {
+      "A": "現在の Boundary は妥当",
+      "B": "Boundary が曖昧",
+      "C": "Boundary が過度に偏っている"
+    },
+    "reason": "Boundary over-concentrates (core_share=75.0%, TV_design=0.529, over_worlds=1)",
+    "metrics": {
+      "core_share": 0.75,
+      "tv_to_design": 0.5285714285714286,
+      "ambiguous_rate": 0.2857142857142857,
+      "mean_silhouette": -0.4501767857142857,
+      "mean_flip_rate": 0.07589285714285714,
+      "over_worlds": 1,
+      "under_worlds": 4
+    }
+  }
+}

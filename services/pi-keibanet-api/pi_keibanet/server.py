@@ -52,6 +52,23 @@ class Handler(BaseHTTPRequestHandler):
             self._json(200, {"status": "ok", "service": "pi-keibanet-api"})
             return
 
+        if path == "/v1/ops/cache-metrics":
+            from . import cache_metrics
+
+            self._json(200, cache_metrics.snapshot())
+            return
+
+        if path == "/v1/ops/horse-number-integrity":
+            date = (qs.get("date") or [""])[0].strip()
+            try:
+                payload = svc.get_horse_number_integrity(date=date)
+            except Exception as exc:
+                self._json(500, {"error": "integrity_check_failed", "message": str(exc)})
+                return
+            status = 200 if payload.get("ok") else 503
+            self._json(status, payload)
+            return
+
         # --- Web GUI race catalog ---
         if path == "/v1/races":
             date = (qs.get("date") or [""])[0].strip()
@@ -77,9 +94,41 @@ class Handler(BaseHTTPRequestHandler):
             if not race_id:
                 self._json(400, {"error": "bad_request", "message": "race_id required"})
                 return
+            # /v1/races/{id}/board|entries|history
+            sub = ""
+            if "/" in race_id:
+                race_id, sub = race_id.split("/", 1)
+                race_id = race_id.strip()
+                sub = sub.strip().strip("/")
             enrich = (qs.get("enrich") or ["1"])[0].strip() not in {"0", "false", "no"}
+            include_history = (qs.get("include") or [""])[0].strip().lower() in {
+                "history",
+                "1",
+                "true",
+                "yes",
+            } or (qs.get("history") or [""])[0].strip() in {"1", "true", "yes"}
             try:
-                payload = svc.get_race(race_id, enrich=enrich)
+                if sub in {"board", "entries"}:
+                    payload = svc.get_race_board(
+                        race_id,
+                        include_history=include_history,
+                    )
+                    if sub == "entries":
+                        payload = {
+                            "race_id": payload.get("race_id"),
+                            "entries": payload.get("entries") or [],
+                            "count": payload.get("count") or 0,
+                        }
+                elif sub == "history":
+                    payload = svc.get_race_history(race_id)
+                elif sub in {"odds-series", "odds_series"}:
+                    refresh = (qs.get("refresh") or [""])[0].strip() in {"1", "true", "yes"}
+                    payload = svc.get_odds_series(race_id, refresh=refresh)
+                elif sub == "":
+                    payload = svc.get_race(race_id, enrich=enrich)
+                else:
+                    self._json(404, {"error": "not_found", "path": path})
+                    return
             except ValueError as exc:
                 self._json(400, {"error": "bad_request", "message": str(exc)})
                 return

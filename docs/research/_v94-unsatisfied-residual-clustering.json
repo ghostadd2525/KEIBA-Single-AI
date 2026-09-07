@@ -1,0 +1,1363 @@
+{
+  "schema": "v94-unsatisfied-residual-clustering/1.0",
+  "generated_at": "2026-07-28T12:09:08+00:00",
+  "locks": [
+    "Prediction",
+    "Trigger",
+    "World Meaning",
+    "PE",
+    "Production",
+    "ADR-008 architecture"
+  ],
+  "n_unsatisfied": 176,
+  "n_corpus": 285,
+  "structure_partition": {
+    "exclusion_stop": 104,
+    "all_must_fail": 72,
+    "other": 0
+  },
+  "world_means": {
+    "unsatisfied": {
+      "top_gap": 0.03977443828737492,
+      "ability_separation": 0.07796072582565568,
+      "upper_ability_band": 0.32805779092227544,
+      "mid_eval_band_open": 0.45184315930942026,
+      "top_monopoly": 0.14187940660962972,
+      "ability_subordinate": 0.8011278085631254,
+      "field_size": 13.926136363636363,
+      "distance": 1708.8068181818182,
+      "chaos": 0.40554473548993514,
+      "difficulty": 0.5115534275862069,
+      "winner_model_rank": 4.3977272727272725,
+      "hit_at_1": 0.7272727272727273
+    },
+    "midupper_world": {
+      "top_gap": 0.02019431689461468,
+      "ability_separation": 0.07687342928511967,
+      "upper_ability_band": 0.32712783308947935,
+      "mid_eval_band_open": 0.3860064985300822,
+      "top_monopoly": 0.1291684601993138,
+      "ability_subordinate": 0.8990284155269266,
+      "field_size": 15.666666666666666,
+      "distance": 1833.3333333333333,
+      "chaos": 0.4317148307778815,
+      "difficulty": 0.5383313333333334,
+      "winner_model_rank": 3.3333333333333335,
+      "hit_at_1": 0.8333333333333334
+    },
+    "mixed_world": {
+      "top_gap": 0.013131501859157443,
+      "ability_separation": 0.045122984503415946,
+      "upper_ability_band": 0.27998883351238285,
+      "mid_eval_band_open": 0.4496570918419631,
+      "top_monopoly": 0.10447230411235768,
+      "ability_subordinate": 0.9343424907042127,
+      "field_size": 14.666666666666666,
+      "distance": 1750.0,
+      "chaos": 0.4721538849838298,
+      "difficulty": 0.5174446666666667,
+      "winner_model_rank": 4.833333333333333,
+      "hit_at_1": 0.8333333333333334
+    },
+    "midhole_world": {
+      "top_gap": 0.011994507268709688,
+      "ability_separation": 0.0276260822877868,
+      "upper_ability_band": 0.2511478685953248,
+      "mid_eval_band_open": 0.4746773612821495,
+      "top_monopoly": 0.09426628642374131,
+      "ability_subordinate": 0.9400274636564516,
+      "field_size": 14.458333333333334,
+      "distance": 1754.1666666666667,
+      "chaos": 0.40586474951072443,
+      "difficulty": 0.5316007777777778,
+      "winner_model_rank": 5.458333333333333,
+      "hit_at_1": 0.9166666666666666
+    },
+    "rank7_world": {
+      "top_gap": 0.012465539369203372,
+      "ability_separation": 0.049833699096304626,
+      "upper_ability_band": 0.2712223384507537,
+      "mid_eval_band_open": 0.4058256927635845,
+      "top_monopoly": 0.10419604029803459,
+      "ability_subordinate": 0.9376723031539832,
+      "field_size": 16.107692307692307,
+      "distance": 1623.8461538461538,
+      "chaos": 0.47133730630058535,
+      "difficulty": 0.5740028769230769,
+      "winner_model_rank": 4.707692307692308,
+      "hit_at_1": 0.8
+    },
+    "core_world": {
+      "top_gap": 0.04964415569793044,
+      "ability_separation": 0.07948985830540971,
+      "upper_ability_band": 0.27760905472941116,
+      "mid_eval_band_open": 0.384891473446535,
+      "top_monopoly": 0.13247568942313231,
+      "ability_subordinate": 0.7517792215103478,
+      "field_size": 16.625,
+      "distance": 1812.5,
+      "winner_model_rank": 5.375,
+      "hit_at_1": 0.75
+    }
+  },
+  "structural_profiles": [
+    {
+      "id": "struct:exclusion_stop",
+      "n": 104,
+      "share": 0.5909090909090909,
+      "struct_dist": {
+        "exclusion_stop": 104
+      },
+      "exclusion_world_hits": {
+        "core_world": 81,
+        "midupper_world": 32,
+        "midhole_world": 13,
+        "rank7_world": 1
+      },
+      "intended_ref_dist": {
+        "mixed_world": 90,
+        "midupper_world": 8,
+        "midhole_world": 6
+      },
+      "legacy_world_dist": {
+        "midupper_world": 37,
+        "core_world": 47,
+        "mixed_world": 14,
+        "midhole_world": 6
+      },
+      "hit_at_1": 0.75,
+      "means": {
+        "field_size": 13.201923076923077,
+        "distance": 1720.673076923077,
+        "top_gap": 0.05041062655657995,
+        "ability_separation": 0.08603191160596756,
+        "upper_ability_band": 0.3423921219688785,
+        "mid_eval_band_open": 0.4668890480103238,
+        "top_monopoly": 0.1529587096011435,
+        "ability_subordinate": 0.7479468672171004,
+        "chaos": 0.3962453441147863,
+        "difficulty": 0.5028184387755102,
+        "winner_model_rank": 4.163461538461538,
+        "hit_at_1": 0.75,
+        "restored_ok": 0.9423076923076923,
+        "struct_exclusion": 1.0,
+        "struct_all_must_fail": 0.0,
+        "n_must_true": 1.2211538461538463,
+        "n_exclude_true": 4.105769230769231,
+        "must_core": 0.7788461538461539,
+        "must_midupper": 0.3076923076923077,
+        "must_midhole": 0.125,
+        "must_rank7": 0.009615384615384616,
+        "must_mixed": 0.0
+      },
+      "race_ids_sample": [
+        "2024-01-06-京都-10",
+        "2024-01-06-中山-11",
+        "2024-01-06-京都-11",
+        "2024-01-06-中山-10",
+        "2024-01-07-京都-11",
+        "2024-01-07-京都-10",
+        "2024-01-14-中山-11",
+        "2024-01-14-中山-10"
+      ],
+      "nearest_world": "core_world",
+      "nearest_cosine": 0.9954935405564586,
+      "judgment": {
+        "verdict": "NEAR_MISS_EXISTING_WORLD",
+        "action": "NOT_NEW_WORLD",
+        "reason": "クラスタの 100% が Exclusion 停止で、主に `core_world` 近接。 新 World ではなく既存 World の Exclusion/Threshold 問題。",
+        "related_world": "core_world"
+      }
+    },
+    {
+      "id": "struct:all_must_fail",
+      "n": 72,
+      "share": 0.4090909090909091,
+      "struct_dist": {
+        "all_must_fail": 72
+      },
+      "exclusion_world_hits": {},
+      "intended_ref_dist": {
+        "midhole_world": 25,
+        "mixed_world": 23,
+        "midupper_world": 14,
+        "core_world": 10
+      },
+      "legacy_world_dist": {
+        "core_world": 39,
+        "midupper_world": 17,
+        "mixed_world": 12,
+        "midhole_world": 4
+      },
+      "hit_at_1": 0.6944444444444444,
+      "means": {
+        "field_size": 14.972222222222221,
+        "distance": 1691.6666666666667,
+        "top_gap": 0.024411055231856535,
+        "ability_separation": 0.06630234636520518,
+        "upper_ability_band": 0.30735264607718205,
+        "mid_eval_band_open": 0.43011020896367064,
+        "top_monopoly": 0.125875968955221,
+        "ability_subordinate": 0.8779447238407173,
+        "chaos": 0.4249349558040754,
+        "difficulty": 0.5297668085106383,
+        "winner_model_rank": 4.736111111111111,
+        "hit_at_1": 0.6944444444444444,
+        "restored_ok": 0.6527777777777778,
+        "struct_exclusion": 0.0,
+        "struct_all_must_fail": 1.0,
+        "n_must_true": 0.0,
+        "n_exclude_true": 2.5416666666666665,
+        "must_core": 0.0,
+        "must_midupper": 0.0,
+        "must_midhole": 0.0,
+        "must_rank7": 0.0,
+        "must_mixed": 0.0
+      },
+      "race_ids_sample": [
+        "2024-01-06-中山-09",
+        "2024-01-21-京都-11",
+        "2024-02-11-東京-11",
+        "2024-02-25-中山-10",
+        "2024-03-17-阪神-10",
+        "2024-03-24-中京-10",
+        "2024-04-07-中山-10",
+        "2024-04-07-中山-11"
+      ],
+      "nearest_world": "midupper_world",
+      "nearest_cosine": 0.9986746861028827,
+      "judgment": {
+        "verdict": "DIFFUSE_OR_WEAK_SIGNAL",
+        "action": "KEEP_RESIDUAL",
+        "reason": "規模はあるが既存 World（midupper_world）と概念が近い（cos=0.9986746861028827）。 新 World より Threshold/Signal 充足の方が先。",
+        "related_world": "midupper_world"
+      }
+    }
+  ],
+  "exclusion_subclusters": [
+    {
+      "id": "excl_primary:core_world",
+      "n": 81,
+      "share": 0.4602272727272727,
+      "struct_dist": {
+        "exclusion_stop": 81
+      },
+      "exclusion_world_hits": {
+        "core_world": 81,
+        "midupper_world": 23
+      },
+      "intended_ref_dist": {
+        "mixed_world": 73,
+        "midupper_world": 8
+      },
+      "legacy_world_dist": {
+        "midupper_world": 28,
+        "core_world": 35,
+        "mixed_world": 12,
+        "midhole_world": 6
+      },
+      "hit_at_1": 0.7654320987654321,
+      "means": {
+        "field_size": 13.074074074074074,
+        "distance": 1715.432098765432,
+        "top_gap": 0.05669736770193037,
+        "ability_separation": 0.09308401508588444,
+        "upper_ability_band": 0.35143112499466356,
+        "mid_eval_band_open": 0.46592770205777434,
+        "top_monopoly": 0.16047765841608289,
+        "ability_subordinate": 0.7165131614903482,
+        "chaos": 0.3943864081981544,
+        "difficulty": 0.5014200259740259,
+        "winner_model_rank": 4.0246913580246915,
+        "hit_at_1": 0.7654320987654321,
+        "restored_ok": 0.9506172839506173,
+        "struct_exclusion": 1.0,
+        "struct_all_must_fail": 0.0,
+        "n_must_true": 1.2839506172839505,
+        "n_exclude_true": 4.172839506172839,
+        "must_core": 1.0,
+        "must_midupper": 0.2839506172839506,
+        "must_midhole": 0.0,
+        "must_rank7": 0.0,
+        "must_mixed": 0.0
+      },
+      "race_ids_sample": [
+        "2024-01-06-京都-10",
+        "2024-01-06-中山-11",
+        "2024-01-06-京都-11",
+        "2024-01-06-中山-10",
+        "2024-01-07-京都-11",
+        "2024-01-07-京都-10",
+        "2024-01-14-中山-11",
+        "2024-01-14-中山-10"
+      ],
+      "nearest_world": "core_world",
+      "nearest_cosine": 0.9925961446291727,
+      "judgment": {
+        "verdict": "NEAR_MISS_EXISTING_WORLD",
+        "action": "NOT_NEW_WORLD",
+        "reason": "クラスタの 100% が Exclusion 停止で、主に `core_world` 近接。 新 World ではなく既存 World の Exclusion/Threshold 問題。",
+        "related_world": "core_world"
+      }
+    },
+    {
+      "id": "excl_primary:midhole_world",
+      "n": 13,
+      "share": 0.07386363636363637,
+      "struct_dist": {
+        "exclusion_stop": 13
+      },
+      "exclusion_world_hits": {
+        "midhole_world": 13
+      },
+      "intended_ref_dist": {
+        "mixed_world": 13
+      },
+      "legacy_world_dist": {
+        "core_world": 4,
+        "midupper_world": 7,
+        "mixed_world": 2
+      },
+      "hit_at_1": 0.6153846153846154,
+      "means": {
+        "field_size": 14.538461538461538,
+        "distance": 1669.2307692307693,
+        "top_gap": 0.03346499215984382,
+        "ability_separation": 0.05257418500591852,
+        "upper_ability_band": 0.27368586731384753,
+        "mid_eval_band_open": 0.4577513689418097,
+        "top_monopoly": 0.1160059781741202,
+        "ability_subordinate": 0.8326750392007809,
+        "chaos": 0.4281344069461471,
+        "difficulty": 0.5322046363636364,
+        "winner_model_rank": 5.3076923076923075,
+        "hit_at_1": 0.6153846153846154,
+        "restored_ok": 0.8461538461538461,
+        "struct_exclusion": 1.0,
+        "struct_all_must_fail": 0.0,
+        "n_must_true": 1.0,
+        "n_exclude_true": 4.615384615384615,
+        "must_core": 0.0,
+        "must_midupper": 0.0,
+        "must_midhole": 1.0,
+        "must_rank7": 0.0,
+        "must_mixed": 0.0
+      },
+      "race_ids_sample": [
+        "2024-01-21-中山-11",
+        "2024-02-18-京都-11",
+        "2024-03-03-阪神-11",
+        "2024-03-10-阪神-11",
+        "2024-06-02-東京-10",
+        "2024-07-07-福島-11",
+        "2024-07-14-福島-11",
+        "2024-07-21-小倉-11"
+      ],
+      "nearest_world": "mixed_world",
+      "nearest_cosine": 0.9980398248100514,
+      "judgment": {
+        "verdict": "NEAR_MISS_EXISTING_WORLD",
+        "action": "NOT_NEW_WORLD",
+        "reason": "クラスタの 100% が Exclusion 停止で、主に `midhole_world` 近接。 新 World ではなく既存 World の Exclusion/Threshold 問題。",
+        "related_world": "midhole_world"
+      }
+    },
+    {
+      "id": "excl_primary:midupper_world",
+      "n": 9,
+      "share": 0.05113636363636364,
+      "struct_dist": {
+        "exclusion_stop": 9
+      },
+      "exclusion_world_hits": {
+        "midupper_world": 9
+      },
+      "intended_ref_dist": {
+        "midhole_world": 6,
+        "mixed_world": 3
+      },
+      "legacy_world_dist": {
+        "core_world": 8,
+        "midupper_world": 1
+      },
+      "hit_at_1": 0.7777777777777778,
+      "means": {
+        "field_size": 12.11111111111111,
+        "distance": 1833.3333333333333,
+        "top_gap": 0.02113777518875574,
+        "ability_separation": 0.07593378636061984,
+        "upper_ability_band": 0.3713757438977445,
+        "mid_eval_band_open": 0.49361114279948926,
+        "top_monopoly": 0.1448055247927046,
+        "ability_subordinate": 0.8943111240562214,
+        "chaos": 0.36586084271509506,
+        "difficulty": 0.47221699999999994,
+        "winner_model_rank": 3.888888888888889,
+        "hit_at_1": 0.7777777777777778,
+        "restored_ok": 1.0,
+        "struct_exclusion": 1.0,
+        "struct_all_must_fail": 0.0,
+        "n_must_true": 1.0,
+        "n_exclude_true": 2.6666666666666665,
+        "must_core": 0.0,
+        "must_midupper": 1.0,
+        "must_midhole": 0.0,
+        "must_rank7": 0.0,
+        "must_mixed": 0.0
+      },
+      "race_ids_sample": [
+        "2024-01-28-京都-10",
+        "2024-02-11-京都-11",
+        "2024-02-18-京都-10",
+        "2024-03-10-中山-11",
+        "2024-06-30-福島-11",
+        "2025-12-06-中山-10",
+        "2026-03-08-阪神-11",
+        "2026-04-12-中山-10"
+      ],
+      "nearest_world": "core_world",
+      "nearest_cosine": 0.9981686776463694,
+      "judgment": {
+        "verdict": "NEAR_MISS_EXISTING_WORLD",
+        "action": "NOT_NEW_WORLD",
+        "reason": "クラスタの 100% が Exclusion 停止で、主に `midupper_world` 近接。 新 World ではなく既存 World の Exclusion/Threshold 問題。",
+        "related_world": "midupper_world"
+      }
+    },
+    {
+      "id": "excl_primary:rank7_world",
+      "n": 1,
+      "share": 0.005681818181818182,
+      "struct_dist": {
+        "exclusion_stop": 1
+      },
+      "exclusion_world_hits": {
+        "rank7_world": 1
+      },
+      "intended_ref_dist": {
+        "mixed_world": 1
+      },
+      "legacy_world_dist": {
+        "midupper_world": 1
+      },
+      "hit_at_1": 1.0,
+      "means": {
+        "field_size": 16.0,
+        "distance": 1800.0,
+        "top_gap": 0.024933503251183126,
+        "ability_separation": 0.04064510274146713,
+        "upper_ability_band": 0.24256159003590227,
+        "mid_eval_band_open": 0.4230490449550283,
+        "top_monopoly": 0.09768802741830418,
+        "ability_subordinate": 0.8753324837440843,
+        "chaos": 0.4620642311476967,
+        "difficulty": 0.562661,
+        "winner_model_rank": 3.0,
+        "hit_at_1": 1.0,
+        "restored_ok": 1.0,
+        "struct_exclusion": 1.0,
+        "struct_all_must_fail": 0.0,
+        "n_must_true": 1.0,
+        "n_exclude_true": 5.0,
+        "must_core": 0.0,
+        "must_midupper": 0.0,
+        "must_midhole": 0.0,
+        "must_rank7": 1.0,
+        "must_mixed": 0.0
+      },
+      "race_ids_sample": [
+        "2024-02-25-中山-11"
+      ],
+      "nearest_world": "mixed_world",
+      "nearest_cosine": 0.9997357776953346,
+      "judgment": {
+        "verdict": "NEAR_MISS_EXISTING_WORLD",
+        "action": "NOT_NEW_WORLD",
+        "reason": "クラスタの 100% が Exclusion 停止で、主に `rank7_world` 近接。 新 World ではなく既存 World の Exclusion/Threshold 問題。",
+        "related_world": "rank7_world"
+      }
+    }
+  ],
+  "kmeans": {
+    "k_search": [
+      {
+        "k": 2,
+        "silhouette": 0.24628787414031106,
+        "sizes": {
+          "0": 94,
+          "1": 82
+        }
+      },
+      {
+        "k": 3,
+        "silhouette": 0.22776728779621294,
+        "sizes": {
+          "1": 64,
+          "0": 47,
+          "2": 65
+        }
+      },
+      {
+        "k": 4,
+        "silhouette": 0.23481276281595578,
+        "sizes": {
+          "2": 49,
+          "3": 48,
+          "1": 23,
+          "0": 56
+        }
+      },
+      {
+        "k": 5,
+        "silhouette": 0.24861492544215205,
+        "sizes": {
+          "2": 33,
+          "1": 38,
+          "4": 16,
+          "0": 33,
+          "3": 56
+        }
+      },
+      {
+        "k": 6,
+        "silhouette": 0.2680491204477587,
+        "sizes": {
+          "3": 54,
+          "2": 22,
+          "4": 30,
+          "0": 13,
+          "1": 56,
+          "5": 1
+        }
+      }
+    ],
+    "best_k": 6,
+    "best_silhouette": 0.2680491204477587,
+    "profiles": [
+      {
+        "id": "kmeans_k6_c0",
+        "n": 13,
+        "share": 0.07386363636363637,
+        "struct_dist": {
+          "exclusion_stop": 13
+        },
+        "exclusion_world_hits": {
+          "midhole_world": 13
+        },
+        "intended_ref_dist": {
+          "mixed_world": 13
+        },
+        "legacy_world_dist": {
+          "core_world": 4,
+          "midupper_world": 7,
+          "mixed_world": 2
+        },
+        "hit_at_1": 0.6153846153846154,
+        "means": {
+          "field_size": 14.538461538461538,
+          "distance": 1669.2307692307693,
+          "top_gap": 0.03346499215984382,
+          "ability_separation": 0.05257418500591852,
+          "upper_ability_band": 0.27368586731384753,
+          "mid_eval_band_open": 0.4577513689418097,
+          "top_monopoly": 0.1160059781741202,
+          "ability_subordinate": 0.8326750392007809,
+          "chaos": 0.4281344069461471,
+          "difficulty": 0.5322046363636364,
+          "winner_model_rank": 5.3076923076923075,
+          "hit_at_1": 0.6153846153846154,
+          "restored_ok": 0.8461538461538461,
+          "struct_exclusion": 1.0,
+          "struct_all_must_fail": 0.0,
+          "n_must_true": 1.0,
+          "n_exclude_true": 4.615384615384615,
+          "must_core": 0.0,
+          "must_midupper": 0.0,
+          "must_midhole": 1.0,
+          "must_rank7": 0.0,
+          "must_mixed": 0.0
+        },
+        "race_ids_sample": [
+          "2024-01-21-中山-11",
+          "2024-02-18-京都-11",
+          "2024-03-03-阪神-11",
+          "2024-03-10-阪神-11",
+          "2024-06-02-東京-10",
+          "2024-07-07-福島-11",
+          "2024-07-14-福島-11",
+          "2024-07-21-小倉-11"
+        ],
+        "nearest_world": "mixed_world",
+        "nearest_cosine": 0.9980398248100514,
+        "judgment": {
+          "verdict": "NEAR_MISS_EXISTING_WORLD",
+          "action": "NOT_NEW_WORLD",
+          "reason": "クラスタの 100% が Exclusion 停止で、主に `midhole_world` 近接。 新 World ではなく既存 World の Exclusion/Threshold 問題。",
+          "related_world": "midhole_world"
+        },
+        "top_drivers": [
+          {
+            "feature": "must_midhole",
+            "delta_z": 3.540969011225823
+          },
+          {
+            "feature": "ability_separation",
+            "delta_z": -1.0987545798596834
+          },
+          {
+            "feature": "must_core",
+            "delta_z": -0.9233805168766396
+          },
+          {
+            "feature": "struct_all_must_fail",
+            "delta_z": -0.8320502943378447
+          },
+          {
+            "feature": "struct_exclusion",
+            "delta_z": 0.8320502943378445
+          },
+          {
+            "feature": "top_monopoly",
+            "delta_z": -0.8248056446809728
+          },
+          {
+            "feature": "n_exclude_true",
+            "delta_z": 0.801723306884965
+          },
+          {
+            "feature": "upper_ability_band",
+            "delta_z": -0.7531616724799696
+          }
+        ]
+      },
+      {
+        "id": "kmeans_k6_c1",
+        "n": 56,
+        "share": 0.3181818181818182,
+        "struct_dist": {
+          "all_must_fail": 56
+        },
+        "exclusion_world_hits": {},
+        "intended_ref_dist": {
+          "mixed_world": 19,
+          "midupper_world": 14,
+          "core_world": 10,
+          "midhole_world": 13
+        },
+        "legacy_world_dist": {
+          "midupper_world": 17,
+          "mixed_world": 12,
+          "core_world": 23,
+          "midhole_world": 4
+        },
+        "hit_at_1": 0.6785714285714286,
+        "means": {
+          "field_size": 16.321428571428573,
+          "distance": 1651.7857142857142,
+          "top_gap": 0.02607452603485083,
+          "ability_separation": 0.060296344247409005,
+          "upper_ability_band": 0.2741147736641361,
+          "mid_eval_band_open": 0.39941502499055836,
+          "top_monopoly": 0.11409318342785087,
+          "ability_subordinate": 0.8696273698257458,
+          "chaos": 0.4577236519145282,
+          "difficulty": 0.5688907272727273,
+          "winner_model_rank": 5.017857142857143,
+          "hit_at_1": 0.6785714285714286,
+          "restored_ok": 0.5892857142857143,
+          "struct_exclusion": 0.0,
+          "struct_all_must_fail": 1.0,
+          "n_must_true": 0.0,
+          "n_exclude_true": 2.5535714285714284,
+          "must_core": 0.0,
+          "must_midupper": 0.0,
+          "must_midhole": 0.0,
+          "must_rank7": 0.0,
+          "must_mixed": 0.0
+        },
+        "race_ids_sample": [
+          "2024-01-21-京都-11",
+          "2024-02-25-中山-10",
+          "2024-03-24-中京-10",
+          "2024-04-07-中山-10",
+          "2024-04-07-中山-11",
+          "2024-04-07-阪神-10",
+          "2024-04-07-阪神-11",
+          "2024-04-14-中山-11"
+        ],
+        "nearest_world": "mixed_world",
+        "nearest_cosine": 0.9993279106683824,
+        "judgment": {
+          "verdict": "DIFFUSE_OR_WEAK_SIGNAL",
+          "action": "KEEP_RESIDUAL",
+          "reason": "規模はあるが既存 World（mixed_world）と概念が近い（cos=0.9993279106683824）。 新 World より Threshold/Signal 充足の方が先。",
+          "related_world": "mixed_world"
+        },
+        "top_drivers": [
+          {
+            "feature": "struct_all_must_fail",
+            "delta_z": 1.2018504251546656
+          },
+          {
+            "feature": "struct_exclusion",
+            "delta_z": -1.2018504251546653
+          },
+          {
+            "feature": "n_must_true",
+            "delta_z": -1.0613225123602559
+          },
+          {
+            "feature": "must_core",
+            "delta_z": -0.9233805168766407
+          },
+          {
+            "feature": "top_monopoly",
+            "delta_z": -0.8857826391976256
+          },
+          {
+            "feature": "field_size",
+            "delta_z": 0.8759520398586753
+          },
+          {
+            "feature": "mid_eval_band_open",
+            "delta_z": -0.7860738586627442
+          },
+          {
+            "feature": "ability_separation",
+            "delta_z": -0.7645318949637228
+          }
+        ]
+      },
+      {
+        "id": "kmeans_k6_c2",
+        "n": 22,
+        "share": 0.125,
+        "struct_dist": {
+          "all_must_fail": 16,
+          "exclusion_stop": 6
+        },
+        "exclusion_world_hits": {
+          "midupper_world": 6
+        },
+        "intended_ref_dist": {
+          "midhole_world": 18,
+          "mixed_world": 4
+        },
+        "legacy_world_dist": {
+          "core_world": 22
+        },
+        "hit_at_1": 0.7727272727272727,
+        "means": {
+          "field_size": 10.727272727272727,
+          "distance": 1827.2727272727273,
+          "top_gap": 0.01589989033250407,
+          "ability_separation": 0.08599968782188318,
+          "upper_ability_band": 0.41684775846811173,
+          "mid_eval_band_open": 0.5218550258714575,
+          "top_monopoly": 0.16210966950688813,
+          "ability_subordinate": 0.9205005483374797,
+          "chaos": 0.3555141139560681,
+          "difficulty": 0.44328979999999996,
+          "winner_model_rank": 3.6818181818181817,
+          "hit_at_1": 0.7727272727272727,
+          "restored_ok": 0.9090909090909091,
+          "struct_exclusion": 0.2727272727272727,
+          "struct_all_must_fail": 0.7272727272727273,
+          "n_must_true": 0.2727272727272727,
+          "n_exclude_true": 2.3636363636363638,
+          "must_core": 0.0,
+          "must_midupper": 0.2727272727272727,
+          "must_midhole": 0.0,
+          "must_rank7": 0.0,
+          "must_mixed": 0.0
+        },
+        "race_ids_sample": [
+          "2024-01-06-中山-09",
+          "2024-01-28-京都-10",
+          "2024-02-11-東京-11",
+          "2024-02-18-京都-10",
+          "2024-03-17-阪神-10",
+          "2024-04-21-京都-10",
+          "2024-05-05-京都-10",
+          "2024-06-02-東京-09"
+        ],
+        "nearest_world": "core_world",
+        "nearest_cosine": 0.9966486541967762,
+        "judgment": {
+          "verdict": "MIXED_RESIDUAL",
+          "action": "KEEP_RESIDUAL",
+          "reason": "均質な勝ち筋パターンとしては弱い。Residual 契約を維持。",
+          "related_world": "core_world",
+          "silhouette_context": 0.2680491204477587
+        },
+        "top_drivers": [
+          {
+            "feature": "upper_ability_band",
+            "delta_z": 1.2299215480744672
+          },
+          {
+            "feature": "field_size",
+            "delta_z": -1.1698159908786978
+          },
+          {
+            "feature": "mid_eval_band_open",
+            "delta_z": 1.0497130751570953
+          },
+          {
+            "feature": "difficulty",
+            "delta_z": -0.9801612936299856
+          },
+          {
+            "feature": "top_gap",
+            "delta_z": -0.9414364651583351
+          },
+          {
+            "feature": "ability_subordinate",
+            "delta_z": 0.9414364651583347
+          },
+          {
+            "feature": "must_core",
+            "delta_z": -0.9233805168766399
+          },
+          {
+            "feature": "n_exclude_true",
+            "delta_z": -0.7688008288836052
+          }
+        ]
+      },
+      {
+        "id": "kmeans_k6_c3",
+        "n": 54,
+        "share": 0.3068181818181818,
+        "struct_dist": {
+          "exclusion_stop": 54
+        },
+        "exclusion_world_hits": {
+          "core_world": 51,
+          "midupper_world": 26
+        },
+        "intended_ref_dist": {
+          "mixed_world": 46,
+          "midupper_world": 8
+        },
+        "legacy_world_dist": {
+          "midupper_world": 25,
+          "mixed_world": 12,
+          "midhole_world": 5,
+          "core_world": 12
+        },
+        "hit_at_1": 0.7592592592592593,
+        "means": {
+          "field_size": 14.592592592592593,
+          "distance": 1731.4814814814815,
+          "top_gap": 0.05305874498098541,
+          "ability_separation": 0.08530238311988161,
+          "upper_ability_band": 0.313753972442818,
+          "mid_eval_band_open": 0.42992580479468995,
+          "top_monopoly": 0.14461966697698067,
+          "ability_subordinate": 0.7347062750950729,
+          "chaos": 0.4185874892523684,
+          "difficulty": 0.5387449807692307,
+          "winner_model_rank": 4.166666666666667,
+          "hit_at_1": 0.7592592592592593,
+          "restored_ok": 0.9629629629629629,
+          "struct_exclusion": 1.0,
+          "struct_all_must_fail": 0.0,
+          "n_must_true": 1.4259259259259258,
+          "n_exclude_true": 4.2592592592592595,
+          "must_core": 0.9444444444444444,
+          "must_midupper": 0.48148148148148145,
+          "must_midhole": 0.0,
+          "must_rank7": 0.0,
+          "must_mixed": 0.0
+        },
+        "race_ids_sample": [
+          "2024-01-06-京都-10",
+          "2024-01-06-中山-11",
+          "2024-01-06-京都-11",
+          "2024-01-07-京都-11",
+          "2024-01-14-中山-11",
+          "2024-01-14-中山-10",
+          "2024-01-14-小倉-11",
+          "2024-01-14-京都-10"
+        ],
+        "nearest_world": "core_world",
+        "nearest_cosine": 0.997963865399275,
+        "judgment": {
+          "verdict": "NEAR_MISS_EXISTING_WORLD",
+          "action": "NOT_NEW_WORLD",
+          "reason": "クラスタの 100% が Exclusion 停止で、主に `core_world` 近接。 新 World ではなく既存 World の Exclusion/Threshold 問題。",
+          "related_world": "core_world"
+        },
+        "top_drivers": [
+          {
+            "feature": "n_must_true",
+            "delta_z": 1.0359423881218366
+          },
+          {
+            "feature": "must_core",
+            "delta_z": 0.9715128346287831
+          },
+          {
+            "feature": "struct_all_must_fail",
+            "delta_z": -0.832050294337845
+          },
+          {
+            "feature": "struct_exclusion",
+            "delta_z": 0.8320502943378449
+          },
+          {
+            "feature": "must_midupper",
+            "delta_z": 0.7769444879704035
+          },
+          {
+            "feature": "n_exclude_true",
+            "delta_z": 0.5533369845153097
+          },
+          {
+            "feature": "ability_subordinate",
+            "delta_z": -0.5238352893362471
+          },
+          {
+            "feature": "top_gap",
+            "delta_z": 0.5238352893362471
+          }
+        ]
+      },
+      {
+        "id": "kmeans_k6_c4",
+        "n": 30,
+        "share": 0.17045454545454544,
+        "struct_dist": {
+          "exclusion_stop": 30
+        },
+        "exclusion_world_hits": {
+          "core_world": 30
+        },
+        "intended_ref_dist": {
+          "mixed_world": 30
+        },
+        "legacy_world_dist": {
+          "core_world": 25,
+          "midupper_world": 4,
+          "midhole_world": 1
+        },
+        "hit_at_1": 0.7666666666666667,
+        "means": {
+          "field_size": 10.266666666666667,
+          "distance": 1701.6666666666667,
+          "top_gap": 0.06217264876696279,
+          "ability_separation": 0.10406870463623497,
+          "upper_ability_band": 0.41579669379341017,
+          "mid_eval_band_open": 0.5362177923234274,
+          "top_monopoly": 0.18666389339149408,
+          "ability_subordinate": 0.6891367561651861,
+          "chaos": 0.34466898946647645,
+          "difficulty": 0.4323002142857143,
+          "winner_model_rank": 3.8333333333333335,
+          "hit_at_1": 0.7666666666666667,
+          "restored_ok": 0.9333333333333333,
+          "struct_exclusion": 1.0,
+          "struct_all_must_fail": 0.0,
+          "n_must_true": 1.0,
+          "n_exclude_true": 4.0,
+          "must_core": 1.0,
+          "must_midupper": 0.0,
+          "must_midhole": 0.0,
+          "must_rank7": 0.0,
+          "must_mixed": 0.0
+        },
+        "race_ids_sample": [
+          "2024-01-06-中山-10",
+          "2024-01-07-京都-10",
+          "2024-02-04-小倉-11",
+          "2024-02-18-東京-10",
+          "2024-02-25-阪神-10",
+          "2024-03-17-中山-11",
+          "2024-03-31-阪神-09",
+          "2024-04-14-阪神-10"
+        ],
+        "nearest_world": "core_world",
+        "nearest_cosine": 0.9767228518221366,
+        "judgment": {
+          "verdict": "NEAR_MISS_EXISTING_WORLD",
+          "action": "NOT_NEW_WORLD",
+          "reason": "クラスタの 100% が Exclusion 停止で、主に `core_world` 近接。 新 World ではなく既存 World の Exclusion/Threshold 問題。",
+          "related_world": "core_world"
+        },
+        "top_drivers": [
+          {
+            "feature": "top_monopoly",
+            "delta_z": 1.4276614938717038
+          },
+          {
+            "feature": "field_size",
+            "delta_z": -1.3382584118270096
+          },
+          {
+            "feature": "mid_eval_band_open",
+            "delta_z": 1.265059194042541
+          },
+          {
+            "feature": "upper_ability_band",
+            "delta_z": 1.215362165662619
+          },
+          {
+            "feature": "difficulty",
+            "delta_z": -1.168404942726635
+          },
+          {
+            "feature": "ability_separation",
+            "delta_z": 1.1299791292045978
+          },
+          {
+            "feature": "must_core",
+            "delta_z": 1.0829771494232188
+          },
+          {
+            "feature": "chaos",
+            "delta_z": -0.9531876032900257
+          }
+        ]
+      },
+      {
+        "id": "kmeans_k6_c5",
+        "n": 1,
+        "share": 0.005681818181818182,
+        "struct_dist": {
+          "exclusion_stop": 1
+        },
+        "exclusion_world_hits": {
+          "rank7_world": 1
+        },
+        "intended_ref_dist": {
+          "mixed_world": 1
+        },
+        "legacy_world_dist": {
+          "midupper_world": 1
+        },
+        "hit_at_1": 1.0,
+        "means": {
+          "field_size": 16.0,
+          "distance": 1800.0,
+          "top_gap": 0.024933503251183126,
+          "ability_separation": 0.04064510274146713,
+          "upper_ability_band": 0.24256159003590227,
+          "mid_eval_band_open": 0.4230490449550283,
+          "top_monopoly": 0.09768802741830418,
+          "ability_subordinate": 0.8753324837440843,
+          "chaos": 0.4620642311476967,
+          "difficulty": 0.562661,
+          "winner_model_rank": 3.0,
+          "hit_at_1": 1.0,
+          "restored_ok": 1.0,
+          "struct_exclusion": 1.0,
+          "struct_all_must_fail": 0.0,
+          "n_must_true": 1.0,
+          "n_exclude_true": 5.0,
+          "must_core": 0.0,
+          "must_midupper": 0.0,
+          "must_midhole": 0.0,
+          "must_rank7": 1.0,
+          "must_mixed": 0.0
+        },
+        "race_ids_sample": [
+          "2024-02-25-中山-11"
+        ],
+        "nearest_world": "mixed_world",
+        "nearest_cosine": 0.9997357776953346,
+        "judgment": {
+          "verdict": "NEAR_MISS_EXISTING_WORLD",
+          "action": "NOT_NEW_WORLD",
+          "reason": "クラスタの 100% が Exclusion 停止で、主に `rank7_world` 近接。 新 World ではなく既存 World の Exclusion/Threshold 問題。",
+          "related_world": "rank7_world"
+        },
+        "top_drivers": [
+          {
+            "feature": "must_rank7",
+            "delta_z": 13.228756555323002
+          },
+          {
+            "feature": "ability_separation",
+            "delta_z": -1.6150570514984561
+          },
+          {
+            "feature": "top_monopoly",
+            "delta_z": -1.4087541237178454
+          },
+          {
+            "feature": "upper_ability_band",
+            "delta_z": -1.1842961840747368
+          },
+          {
+            "feature": "n_exclude_true",
+            "delta_z": 1.0699805350441929
+          },
+          {
+            "feature": "must_core",
+            "delta_z": -0.9233805168766399
+          },
+          {
+            "feature": "chaos",
+            "delta_z": 0.8709204288790976
+          },
+          {
+            "feature": "struct_exclusion",
+            "delta_z": 0.8320502943378447
+          }
+        ]
+      }
+    ]
+  },
+  "agglomerative_k3": {
+    "silhouette": 0.2195199429710586,
+    "profiles": [
+      {
+        "id": "agglo_k3_c0",
+        "n": 71,
+        "share": 0.4034090909090909,
+        "struct_dist": {
+          "exclusion_stop": 71
+        },
+        "exclusion_world_hits": {
+          "core_world": 48,
+          "midupper_world": 32,
+          "midhole_world": 13,
+          "rank7_world": 1
+        },
+        "intended_ref_dist": {
+          "mixed_world": 58,
+          "midupper_world": 7,
+          "midhole_world": 6
+        },
+        "legacy_world_dist": {
+          "midupper_world": 33,
+          "mixed_world": 14,
+          "midhole_world": 5,
+          "core_world": 19
+        },
+        "hit_at_1": 0.7464788732394366,
+        "means": {
+          "field_size": 14.450704225352112,
+          "distance": 1728.1690140845071,
+          "top_gap": 0.04698073404229914,
+          "ability_separation": 0.07844876236269396,
+          "upper_ability_band": 0.30965885319729025,
+          "mid_eval_band_open": 0.43847347988507424,
+          "top_monopoly": 0.13907242355803298,
+          "ability_subordinate": 0.7650963297885043,
+          "chaos": 0.41703368307090255,
+          "difficulty": 0.5315300144927536,
+          "winner_model_rank": 4.267605633802817,
+          "hit_at_1": 0.7464788732394366,
+          "restored_ok": 0.971830985915493,
+          "struct_exclusion": 1.0,
+          "struct_all_must_fail": 0.0,
+          "n_must_true": 1.323943661971831,
+          "n_exclude_true": 4.169014084507042,
+          "must_core": 0.676056338028169,
+          "must_midupper": 0.4507042253521127,
+          "must_midhole": 0.18309859154929578,
+          "must_rank7": 0.014084507042253521,
+          "must_mixed": 0.0
+        },
+        "race_ids_sample": [
+          "2024-01-06-京都-10",
+          "2024-01-06-中山-11",
+          "2024-01-06-京都-11",
+          "2024-01-07-京都-11",
+          "2024-01-07-京都-10",
+          "2024-01-14-中山-11",
+          "2024-01-14-中山-10",
+          "2024-01-14-小倉-11"
+        ],
+        "nearest_world": "core_world",
+        "nearest_cosine": 0.9988067786405772,
+        "judgment": {
+          "verdict": "NEAR_MISS_EXISTING_WORLD",
+          "action": "NOT_NEW_WORLD",
+          "reason": "クラスタの 100% が Exclusion 停止で、主に `core_world` 近接。 新 World ではなく既存 World の Exclusion/Threshold 問題。",
+          "related_world": "core_world"
+        }
+      },
+      {
+        "id": "agglo_k3_c1",
+        "n": 59,
+        "share": 0.3352272727272727,
+        "struct_dist": {
+          "all_must_fail": 59
+        },
+        "exclusion_world_hits": {},
+        "intended_ref_dist": {
+          "mixed_world": 19,
+          "midupper_world": 14,
+          "core_world": 10,
+          "midhole_world": 16
+        },
+        "legacy_world_dist": {
+          "midupper_world": 17,
+          "mixed_world": 12,
+          "core_world": 26,
+          "midhole_world": 4
+        },
+        "hit_at_1": 0.6440677966101694,
+        "means": {
+          "field_size": 16.050847457627118,
+          "distance": 1645.7627118644068,
+          "top_gap": 0.02540179218479393,
+          "ability_separation": 0.062251548419080004,
+          "upper_ability_band": 0.28227565417454337,
+          "mid_eval_band_open": 0.404539025902924,
+          "top_monopoly": 0.1169352305721778,
+          "ability_subordinate": 0.8729910390760304,
+          "chaos": 0.4553747009722384,
+          "difficulty": 0.566538,
+          "winner_model_rank": 5.1525423728813555,
+          "hit_at_1": 0.6440677966101694,
+          "restored_ok": 0.576271186440678,
+          "struct_exclusion": 0.0,
+          "struct_all_must_fail": 1.0,
+          "n_must_true": 0.0,
+          "n_exclude_true": 2.5254237288135593,
+          "must_core": 0.0,
+          "must_midupper": 0.0,
+          "must_midhole": 0.0,
+          "must_rank7": 0.0,
+          "must_mixed": 0.0
+        },
+        "race_ids_sample": [
+          "2024-01-21-京都-11",
+          "2024-02-25-中山-10",
+          "2024-03-24-中京-10",
+          "2024-04-07-中山-10",
+          "2024-04-07-中山-11",
+          "2024-04-07-阪神-10",
+          "2024-04-07-阪神-11",
+          "2024-04-14-中山-11"
+        ],
+        "nearest_world": "mixed_world",
+        "nearest_cosine": 0.9992098924583566,
+        "judgment": {
+          "verdict": "DIFFUSE_OR_WEAK_SIGNAL",
+          "action": "KEEP_RESIDUAL",
+          "reason": "規模はあるが既存 World（mixed_world）と概念が近い（cos=0.9992098924583566）。 新 World より Threshold/Signal 充足の方が先。",
+          "related_world": "mixed_world"
+        }
+      },
+      {
+        "id": "agglo_k3_c2",
+        "n": 46,
+        "share": 0.26136363636363635,
+        "struct_dist": {
+          "all_must_fail": 13,
+          "exclusion_stop": 33
+        },
+        "exclusion_world_hits": {
+          "core_world": 33
+        },
+        "intended_ref_dist": {
+          "midhole_world": 9,
+          "mixed_world": 36,
+          "midupper_world": 1
+        },
+        "legacy_world_dist": {
+          "core_world": 41,
+          "midupper_world": 4,
+          "midhole_world": 1
+        },
+        "hit_at_1": 0.8043478260869565,
+        "means": {
+          "field_size": 10.391304347826088,
+          "distance": 1759.7826086956522,
+          "top_gap": 0.04708615831895444,
+          "ability_separation": 0.09735617958344366,
+          "upper_ability_band": 0.415176718022061,
+          "mid_eval_band_open": 0.5331516617031561,
+          "top_monopoly": 0.17820554101991307,
+          "ability_subordinate": 0.7645692084052279,
+          "chaos": 0.3463314924069576,
+          "difficulty": 0.43422342857142854,
+          "winner_model_rank": 3.630434782608696,
+          "hit_at_1": 0.8043478260869565,
+          "restored_ok": 0.9130434782608695,
+          "struct_exclusion": 0.717391304347826,
+          "struct_all_must_fail": 0.2826086956521739,
+          "n_must_true": 0.717391304347826,
+          "n_exclude_true": 3.5869565217391304,
+          "must_core": 0.717391304347826,
+          "must_midupper": 0.0,
+          "must_midhole": 0.0,
+          "must_rank7": 0.0,
+          "must_mixed": 0.0
+        },
+        "race_ids_sample": [
+          "2024-01-06-中山-09",
+          "2024-01-06-中山-10",
+          "2024-02-04-小倉-11",
+          "2024-02-11-東京-11",
+          "2024-02-18-東京-10",
+          "2024-02-25-阪神-10",
+          "2024-03-03-阪神-10",
+          "2024-03-17-中山-11"
+        ],
+        "nearest_world": "core_world",
+        "nearest_cosine": 0.9869769121382919,
+        "judgment": {
+          "verdict": "NEAR_MISS_EXISTING_WORLD",
+          "action": "NOT_NEW_WORLD",
+          "reason": "クラスタの 72% が Exclusion 停止で、主に `core_world` 近接。 新 World ではなく既存 World の Exclusion/Threshold 問題。",
+          "related_world": "core_world"
+        }
+      }
+    ]
+  },
+  "synthesis": {
+    "verdict": "KEEP_AS_RESIDUAL_WITH_NEAR_MISS_TAXONOMY",
+    "reason": "176件の大半は均質な『新勝ち筋』ではなく、Exclusion近接（104）と Must全失敗（72）の2型。 Exclusion側は既存 World（特に core/midupper）の近接失敗。 新 World 追加より Residual 維持＋既存 World の Exclusion/標本問題の方が先。",
+    "world_candidate_count": 0,
+    "near_miss_clusters": [
+      {
+        "id": "excl_primary:core_world",
+        "n": 81,
+        "judgment": {
+          "verdict": "NEAR_MISS_EXISTING_WORLD",
+          "action": "NOT_NEW_WORLD",
+          "reason": "クラスタの 100% が Exclusion 停止で、主に `core_world` 近接。 新 World ではなく既存 World の Exclusion/Threshold 問題。",
+          "related_world": "core_world"
+        }
+      },
+      {
+        "id": "excl_primary:midhole_world",
+        "n": 13,
+        "judgment": {
+          "verdict": "NEAR_MISS_EXISTING_WORLD",
+          "action": "NOT_NEW_WORLD",
+          "reason": "クラスタの 100% が Exclusion 停止で、主に `midhole_world` 近接。 新 World ではなく既存 World の Exclusion/Threshold 問題。",
+          "related_world": "midhole_world"
+        }
+      },
+      {
+        "id": "excl_primary:midupper_world",
+        "n": 9,
+        "judgment": {
+          "verdict": "NEAR_MISS_EXISTING_WORLD",
+          "action": "NOT_NEW_WORLD",
+          "reason": "クラスタの 100% が Exclusion 停止で、主に `midupper_world` 近接。 新 World ではなく既存 World の Exclusion/Threshold 問題。",
+          "related_world": "midupper_world"
+        }
+      },
+      {
+        "id": "excl_primary:rank7_world",
+        "n": 1,
+        "judgment": {
+          "verdict": "NEAR_MISS_EXISTING_WORLD",
+          "action": "NOT_NEW_WORLD",
+          "reason": "クラスタの 100% が Exclusion 停止で、主に `rank7_world` 近接。 新 World ではなく既存 World の Exclusion/Threshold 問題。",
+          "related_world": "rank7_world"
+        }
+      }
+    ],
+    "recommend_new_world": false,
+    "recommend_keep_residual": true
+  }
+}

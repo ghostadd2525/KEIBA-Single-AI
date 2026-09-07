@@ -1,0 +1,397 @@
+{
+  "schema_version": "expect-signal-restoration-sim/1.0",
+  "generated_at": "2026-07-27T23:46:17+00:00",
+  "shadow_only": true,
+  "product_mutation": false,
+  "writes_forbidden": [
+    "Production",
+    "Prediction",
+    "PE",
+    "CE",
+    "AI",
+    "World",
+    "Trigger",
+    "CSV",
+    "FeatureLoader",
+    "Signal Service"
+  ],
+  "method": {
+    "current": "research_world_signals when present; else stable defaults (difficulty=0.5, others 0/null)",
+    "restored": "difficulty=designed reconstruct_leg_upset(L0); chaos/high_pace/late_stop/sustained=Scorer diagnostic means; short_field=calc_short_field_pressure+distance/field proxy; phase=phase_chain_seed if present; World=first_match Trigger rules (unchanged)",
+    "hit_rate_evaluated": false
+  },
+  "corpus": {
+    "meta_races": 337,
+    "featureloader_loadable": 56,
+    "simulated_n": 56,
+    "coverage_note": "Simulation limited to races FeatureLoader can resolve (daily/global pace feature CSV present). Not full 335 corpus."
+  },
+  "design_share": {
+    "core_world": 0.3,
+    "midupper_world": 0.35,
+    "rank7_world": 0.15,
+    "mixed_world": 0.1,
+    "bug_world": 0.05,
+    "midhole_world": 0.05
+  },
+  "current": {
+    "world_counts": {
+      "midupper_world": 56
+    },
+    "world_share": {
+      "core_world": 0.0,
+      "midupper_world": 1.0,
+      "midhole_world": 0.0,
+      "rank7_world": 0.0,
+      "bug_world": 0.0,
+      "mixed_world": 0.0
+    },
+    "subworld_counts": {
+      "unset": 5,
+      "midupper_route": 42,
+      "midupper_spread": 9
+    },
+    "entropy_bits": 0.0,
+    "entropy_ratio": 0.0,
+    "tv_to_design": 0.65,
+    "inactive_worlds": [
+      "core_world",
+      "midhole_world",
+      "rank7_world",
+      "bug_world",
+      "mixed_world"
+    ],
+    "active_worlds": 1
+  },
+  "restored": {
+    "world_counts": {
+      "midupper_world": 3,
+      "core_world": 42,
+      "midhole_world": 1,
+      "mixed_world": 10
+    },
+    "world_share": {
+      "core_world": 0.75,
+      "midupper_world": 0.05357142857142857,
+      "midhole_world": 0.017857142857142856,
+      "rank7_world": 0.0,
+      "bug_world": 0.0,
+      "mixed_world": 0.17857142857142858
+    },
+    "subworld_counts": {
+      "unset": 56
+    },
+    "entropy_bits": 1.0850067040621574,
+    "entropy_ratio": 0.4197378893347431,
+    "tv_to_design": 0.5285714285714286,
+    "inactive_worlds": [
+      "rank7_world",
+      "bug_world"
+    ],
+    "active_worlds": 4,
+    "recovered_worlds": [
+      "core_world",
+      "midhole_world",
+      "mixed_world"
+    ]
+  },
+  "delta": {
+    "entropy_bits": 1.0850067040621574,
+    "tv_to_design": -0.12142857142857144,
+    "active_worlds": 3,
+    "world_count_delta": {
+      "core_world": 42,
+      "midupper_world": -53,
+      "midhole_world": 1,
+      "rank7_world": 0,
+      "bug_world": 0,
+      "mixed_world": 10
+    }
+  },
+  "trigger_recovery": {
+    "rules": [
+      {
+        "rule_id": "R1_mixed_short_field",
+        "world": "mixed_world",
+        "priority": 1,
+        "current_pass_n": 0,
+        "current_pass_rate": 0.0,
+        "restored_pass_n": 10,
+        "restored_pass_rate": 0.17857142857142858
+      },
+      {
+        "rule_id": "R2_midupper_sf_diff",
+        "world": "midupper_world",
+        "priority": 2,
+        "current_pass_n": 0,
+        "current_pass_rate": 0.0,
+        "restored_pass_n": 6,
+        "restored_pass_rate": 0.10714285714285714
+      },
+      {
+        "rule_id": "R3_mixed_phase",
+        "world": "mixed_world",
+        "priority": 3,
+        "current_pass_n": 0,
+        "current_pass_rate": 0.0,
+        "restored_pass_n": 0,
+        "restored_pass_rate": 0.0
+      },
+      {
+        "rule_id": "R4_midhole",
+        "world": "midhole_world",
+        "priority": 4,
+        "current_pass_n": 0,
+        "current_pass_rate": 0.0,
+        "restored_pass_n": 2,
+        "restored_pass_rate": 0.03571428571428571
+      },
+      {
+        "rule_id": "R5_rank7",
+        "world": "rank7_world",
+        "priority": 5,
+        "current_pass_n": 0,
+        "current_pass_rate": 0.0,
+        "restored_pass_n": 0,
+        "restored_pass_rate": 0.0
+      },
+      {
+        "rule_id": "R6_bug",
+        "world": "bug_world",
+        "priority": 6,
+        "current_pass_n": 0,
+        "current_pass_rate": 0.0,
+        "restored_pass_n": 0,
+        "restored_pass_rate": 0.0
+      },
+      {
+        "rule_id": "R7_midupper_diff",
+        "world": "midupper_world",
+        "priority": 7,
+        "current_pass_n": 56,
+        "current_pass_rate": 1.0,
+        "restored_pass_n": 3,
+        "restored_pass_rate": 0.05357142857142857
+      }
+    ],
+    "mean_winning_margin_current": 0.0,
+    "mean_winning_margin_restored": 0.03774278571428572
+  },
+  "signal_variance": {
+    "current": {
+      "difficulty": {
+        "n": 56,
+        "coverage": 1.0,
+        "mean": 0.5,
+        "std": 0.0,
+        "min": 0.5,
+        "max": 0.5,
+        "nunique_rounded": 1,
+        "variance": 0.0
+      },
+      "chaos": {
+        "n": 56,
+        "coverage": 0.0,
+        "mean": null,
+        "std": null,
+        "min": null,
+        "max": null,
+        "nunique_rounded": 0,
+        "variance": null
+      },
+      "phase": {
+        "n": 56,
+        "coverage": 1.0,
+        "mean": 0.0,
+        "std": 0.0,
+        "min": 0.0,
+        "max": 0.0,
+        "nunique_rounded": 1,
+        "variance": 0.0
+      },
+      "late_stop": {
+        "n": 56,
+        "coverage": 1.0,
+        "mean": 0.0,
+        "std": 0.0,
+        "min": 0.0,
+        "max": 0.0,
+        "nunique_rounded": 1,
+        "variance": 0.0
+      },
+      "sustained": {
+        "n": 56,
+        "coverage": 1.0,
+        "mean": 0.0,
+        "std": 0.0,
+        "min": 0.0,
+        "max": 0.0,
+        "nunique_rounded": 1,
+        "variance": 0.0
+      },
+      "high_pace": {
+        "n": 56,
+        "coverage": 1.0,
+        "mean": 0.0,
+        "std": 0.0,
+        "min": 0.0,
+        "max": 0.0,
+        "nunique_rounded": 1,
+        "variance": 0.0
+      },
+      "short_field_pressure": {
+        "n": 56,
+        "coverage": 1.0,
+        "mean": 0.0,
+        "std": 0.0,
+        "min": 0.0,
+        "max": 0.0,
+        "nunique_rounded": 1,
+        "variance": 0.0
+      }
+    },
+    "restored": {
+      "difficulty": {
+        "n": 56,
+        "coverage": 1.0,
+        "mean": 0.34452648214285714,
+        "std": 0.08283632430668648,
+        "min": 0.2125,
+        "max": 0.600738,
+        "nunique_rounded": 44,
+        "variance": 0.006861856624642539
+      },
+      "chaos": {
+        "n": 56,
+        "coverage": 1.0,
+        "mean": 0.36736001422749204,
+        "std": 0.09037181559133227,
+        "min": 0.18721199999999996,
+        "max": 0.5188479456819488,
+        "nunique_rounded": 55,
+        "variance": 0.008167065053273767
+      },
+      "phase": {
+        "n": 56,
+        "coverage": 0.08928571428571429,
+        "mean": 0.5208554000000001,
+        "std": 0.02879696037848438,
+        "min": 0.492831,
+        "max": 0.573066,
+        "nunique_rounded": 5,
+        "variance": 0.0008292649270399991
+      },
+      "late_stop": {
+        "n": 56,
+        "coverage": 1.0,
+        "mean": 0.3852030222626849,
+        "std": 0.1362351932828712,
+        "min": 0.10289999999999999,
+        "max": 0.6004966068019999,
+        "nunique_rounded": 53,
+        "variance": 0.018560027888821277
+      },
+      "sustained": {
+        "n": 56,
+        "coverage": 1.0,
+        "mean": 0.3911930306464309,
+        "std": 0.16549598861935097,
+        "min": 0.07701,
+        "max": 0.5698127005485996,
+        "nunique_rounded": 54,
+        "variance": 0.027388922249096344
+      },
+      "high_pace": {
+        "n": 56,
+        "coverage": 1.0,
+        "mean": 0.4599656089446268,
+        "std": 0.17193883765865475,
+        "min": 0.09899999999999999,
+        "max": 0.7382000000000003,
+        "nunique_rounded": 45,
+        "variance": 0.029562963895409234
+      },
+      "short_field_pressure": {
+        "n": 56,
+        "coverage": 1.0,
+        "mean": 0.18981553325665315,
+        "std": 0.3516513930246809,
+        "min": 0.0,
+        "max": 0.9223447,
+        "nunique_rounded": 14,
+        "variance": 0.1236587022161986
+      }
+    }
+  },
+  "governance": {
+    "verdict": "A",
+    "labels": {
+      "A": "Signal Restoration により World Entropy が有意に改善",
+      "B": "一部改善",
+      "C": "改善なし"
+    },
+    "reason": "World entropy 0.000 → 1.085 bits (+1.085); active Worlds 1 → 4; recovered=['core_world', 'midhole_world', 'mixed_world']",
+    "design_mix_proximity": {
+      "tv_current": 0.65,
+      "tv_restored": 0.5285714285714286,
+      "improved_vs_design": true,
+      "note": "Entropy gate is primary. Design-mix TV is secondary observation."
+    }
+  },
+  "sample_transitions": [
+    {
+      "race_id": "2026-06-28-小倉-11",
+      "current_world": "midupper_world",
+      "restored_world": "core_world",
+      "restored_subworld": null
+    },
+    {
+      "race_id": "2026-06-28-福島-10",
+      "current_world": "midupper_world",
+      "restored_world": "core_world",
+      "restored_subworld": null
+    },
+    {
+      "race_id": "2026-06-28-福島-11",
+      "current_world": "midupper_world",
+      "restored_world": "midhole_world",
+      "restored_subworld": null
+    },
+    {
+      "race_id": "2026-07-25-01-01",
+      "current_world": "midupper_world",
+      "restored_world": "core_world",
+      "restored_subworld": null
+    },
+    {
+      "race_id": "2026-07-25-01-03",
+      "current_world": "midupper_world",
+      "restored_world": "core_world",
+      "restored_subworld": null
+    },
+    {
+      "race_id": "2026-07-25-01-04",
+      "current_world": "midupper_world",
+      "restored_world": "mixed_world",
+      "restored_subworld": null
+    },
+    {
+      "race_id": "2026-07-25-01-05",
+      "current_world": "midupper_world",
+      "restored_world": "core_world",
+      "restored_subworld": null
+    },
+    {
+      "race_id": "2026-07-25-01-06",
+      "current_world": "midupper_world",
+      "restored_world": "core_world",
+      "restored_subworld": null
+    },
+    {
+      "race_id": "2026-07-25-01-07",
+      "current_world": "midupper_world",
+      "restored_world": "mixed_world",
+      "restored_subworld": null
+    }
+  ]
+}

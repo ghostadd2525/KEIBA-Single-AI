@@ -7,8 +7,9 @@
  */
 import { aiFetch } from "../_lib/aiProxy.js";
 import { getEnv, useAiProxy } from "../_lib/env.js";
-import { jsonOk } from "../_lib/errors.js";
+import { jsonError, jsonOk } from "../_lib/errors.js";
 import { piFetchStatus, usePiProxy } from "../_lib/piProxy.js";
+import { evaluateProductionAuthConfig } from "../_lib/productionAuthGuard.js";
 
 async function probePiSummary(context, env) {
   if (!usePiProxy(env)) {
@@ -59,6 +60,17 @@ async function probePiSummary(context, env) {
 
 export async function onRequestGet(context) {
   const env = getEnv(context);
+  const authCfg = evaluateProductionAuthConfig(env);
+  if (authCfg.fatal) {
+    return jsonError(authCfg.code, authCfg.message, 503, {
+      expect_env: authCfg.expect_env,
+      auth_mode: authCfg.auth_mode,
+      allow_stub_auth: authCfg.allow_stub_auth,
+      remediation:
+        "Set ALLOW_STUB_AUTH=1 (break-glass) or migrate AUTH_MODE off stub with a signed verifier",
+    });
+  }
+
   let resultAutomation = null;
   if (useAiProxy(env)) {
     try {
@@ -94,6 +106,8 @@ export async function onRequestGet(context) {
       service: "bff",
       runtime: "cloudflare-pages-functions",
       expect_env: env.EXPECT_ENV || "unknown",
+      auth_mode: env.AUTH_MODE || "stub",
+      allow_stub_auth: String(env.ALLOW_STUB_AUTH || "") === "1",
       ai_proxy_configured: Boolean(env.AI_BASE_URL),
       pi_proxy_configured: Boolean(env.PI_BASE_URL),
       result_automation: resultAutomation,

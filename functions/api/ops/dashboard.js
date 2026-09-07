@@ -3,10 +3,12 @@
  *
  * - 要 Bearer 認証
  * - beta.ui_features.v2_ops_dashboard === true のときのみ有効（Flag OFF → 404）
- * - admin_user_ids 設定時は管理者のみ
+ * - Version8.5.1: ADMIN = profile role または admin_user_ids（fail-closed）
  * - overview / inventory / notifications / runbook 付き alerts
  */
-import { getBearer, verifyStubToken } from "../../_lib/auth.js";
+import { requireAccessSession } from "../../_lib/auth.js";
+import { isAdminUser } from "../../_lib/adminAuth.js";
+import { resolveAuthorization } from "../../_lib/authorization.js";
 import { getBetaConfig } from "../../_lib/betaConfig.js";
 import { buildDashboardPayload, alertIdForCheck } from "../../_lib/opsDashboard.js";
 import { logFailedChecks } from "../../_lib/incidentLog.js";
@@ -15,21 +17,9 @@ import { runAllProbes } from "../../_lib/opsMonitor.js";
 import { dispatchAlerts, slackConfigured } from "../../_lib/opsSlack.js";
 import { UserRepository } from "../../_lib/userRepository.js";
 
-function isAdminUser(beta, session, profile) {
-  const ids = (beta && beta.admin_user_ids) || [];
-  if (!ids.length) return true;
-  const uid = (session && session.id) || "";
-  if (uid && ids.indexOf(uid) >= 0) return true;
-  const role = (profile && profile.role) || (session && session.role) || "";
-  return String(role).toUpperCase() === "ADMIN" || String(role).toUpperCase() === "OPS";
-}
-
 export async function onRequestGet(context) {
-  const token = getBearer(context.request);
-  const session = verifyStubToken(token, { purpose: "access" });
-  if (!session) {
-    return jsonError("UNAUTHORIZED", "login required", 401);
-  }
+  const session = requireAccessSession(context);
+  if (session instanceof Response) return session;
 
   let beta = {};
   try {
@@ -37,6 +27,8 @@ export async function onRequestGet(context) {
   } catch {
     beta = {};
   }
+
+  await resolveAuthorization(context, beta);
 
   const features = (beta && beta.ui_features) || {};
   if (!features.v2_ops_dashboard) {

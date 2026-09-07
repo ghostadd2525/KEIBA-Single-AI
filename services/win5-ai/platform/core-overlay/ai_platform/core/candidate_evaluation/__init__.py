@@ -21,28 +21,97 @@ from ai_platform.core.world import WorldClassifier
 class CandidateEvaluationProjector:
     """Project frozen Rank/Confidence values into CE rows."""
 
+    # 馬の能力寄り特徴量（0–1 想定）。評価内訳用に CE へ透過する。
+    ABILITY_FEATURE_KEYS = (
+        "history_score",
+        "distance_score",
+        "style_confidence",
+        "front_rate",
+        "style_distance_fit_weight",
+        "pace_collapse_risk_v2",
+        "gate_risk_score",
+        "inside_traffic_risk",
+        "style_disadvantage_score",
+    )
+
     def project_candidates(
         self,
         ranking: dict[str, Any],
         confidence: dict[str, Any],
         world: dict[str, Any] | None = None,
+        runners_frame: pd.DataFrame | None = None,
     ) -> list[dict[str, Any]]:
         """Return CandidateEvaluation rows sorted by Rank."""
         world = world or {}
         per_horse = confidence.get("per_horse", {})
-        candidates = [
-            {
-                "CandidateID": row["horse_name"],
+        ability_by_key = self._ability_index(runners_frame)
+        candidates = []
+        for row in ranking.get("ranking", []):
+            horse_name = row["horse_name"]
+            horse_number = row.get("horse_number")
+            ability = self._lookup_ability(ability_by_key, horse_number, horse_name)
+            cand = {
+                "CandidateID": horse_name,
                 "Rank": int(row["rank"]),
-                "Confidence": float(per_horse.get(row["horse_name"], row["score"])),
-                "HorseNumber": row.get("horse_number"),
+                "Confidence": float(per_horse.get(horse_name, row["score"])),
+                "HorseNumber": horse_number,
                 "WorldMeta": world.get("world", ""),
                 "SubWorldMeta": world.get("sub_world", ""),
             }
-            for row in ranking.get("ranking", [])
-        ]
+            if ability:
+                cand["AbilityScores"] = ability
+            candidates.append(cand)
         candidates.sort(key=lambda row: row["Rank"])
         return candidates
+
+    def _ability_index(
+        self, runners_frame: pd.DataFrame | None
+    ) -> dict[str, dict[str, float]]:
+        out: dict[str, dict[str, float]] = {}
+        if runners_frame is None or runners_frame.empty:
+            return out
+        for _, row in runners_frame.iterrows():
+            ability: dict[str, float] = {}
+            for key in self.ABILITY_FEATURE_KEYS:
+                if key not in runners_frame.columns:
+                    continue
+                val = row.get(key)
+                if val is None or (isinstance(val, float) and pd.isna(val)):
+                    continue
+                try:
+                    ability[key] = float(val)
+                except (TypeError, ValueError):
+                    continue
+            if not ability:
+                continue
+            name = str(row.get("horse_name") or "").strip()
+            num = row.get("horse_number")
+            if name:
+                out[f"name:{name}"] = ability
+            if num is not None and str(num) != "" and not (isinstance(num, float) and pd.isna(num)):
+                try:
+                    out[f"num:{int(num)}"] = ability
+                except (TypeError, ValueError):
+                    out[f"num:{num}"] = ability
+        return out
+
+    def _lookup_ability(
+        self,
+        ability_by_key: dict[str, dict[str, float]],
+        horse_number: Any,
+        horse_name: Any,
+    ) -> dict[str, float]:
+        if horse_number is not None and str(horse_number) != "":
+            try:
+                hit = ability_by_key.get(f"num:{int(horse_number)}")
+            except (TypeError, ValueError):
+                hit = ability_by_key.get(f"num:{horse_number}")
+            if hit:
+                return dict(hit)
+        name = str(horse_name or "").strip()
+        if name and f"name:{name}" in ability_by_key:
+            return dict(ability_by_key[f"name:{name}"])
+        return {}
 
 
 class CorePipeline:
@@ -90,7 +159,9 @@ class CorePipeline:
         meta["race_id"] = str(race_id)
         confidence = self.confidence.build_confidence(scores, meta)
         world = self.world.classify_world(confidence, meta)
-        candidates = self.projector.project_candidates(ranking, confidence, world)
+        candidates = self.projector.project_candidates(
+            ranking, confidence, world, runners_frame=scored_frame
+        )
 
         result: dict[str, Any] = {
             "race_id": str(race_id),

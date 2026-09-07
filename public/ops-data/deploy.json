@@ -1,0 +1,12 @@
+{
+  "schema_version": "expect-v881-deploy-publish/1.0",
+  "published_at": "2026-07-27T00:18:38.128Z",
+  "source": "development/weekly/*/sat-deploy",
+  "deploy_queue": null,
+  "accepted_candidates": null,
+  "deploy_note": null,
+  "production_auto_apply": false,
+  "human_deploy_required": null,
+  "latest": null,
+  "notes": []
+}

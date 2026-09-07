@@ -2,8 +2,8 @@
 """
 Conversation Mode 定義（UI 連携契約 · UI 実装は別 Round）。
 
-「KAOBAに◎の理由を聞く」→ Explain Mode
-「KAOBAに相談」        → Review Mode
+「KAOBAに◎の理由を聞く」→ Explain Mode（予想の説明）
+「相談AI」               → Review Mode（買い方・立ち回り相談）
 「マイページ日常会話」  → Chat Mode（KAOBA 非依存 · Personal Chat）
 """
 from __future__ import annotations
@@ -26,7 +26,7 @@ UI_MODE_TRIGGERS = {
         "prompt": "explain",
     },
     MODE_REVIEW: {
-        "label_ja": "KAOBAに相談",
+        "label_ja": "相談AI",
         "intent": "review_prediction",
         "agent": "review",
         "prompt": "review",

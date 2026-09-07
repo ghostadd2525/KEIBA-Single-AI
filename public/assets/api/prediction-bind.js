@@ -1,6 +1,7 @@
 /**
  * Phase1: PredictionBundle → UI バインド（ui-api-mapping.md 準拠）
  * Analysis / Ticket / Kaoba は使わない。
+ * I3: Bundle 供給元は Prediction または SingleDetail（Flag）。レイアウト/描画は非変更。
  */
 (function (global) {
   "use strict";
@@ -84,9 +85,117 @@
   var MARK_ORDER = ["honmei", "taikou", "ana", "chuuken"];
   var MARK_SYMBOL = { honmei: "◎", taikou: "○", ana: "▲", chuuken: "△", none: "—" };
   var MARK_LABEL = { honmei: "本命", taikou: "対抗", ana: "穴", chuuken: "中穴", none: "—" };
-  var BAND_LABEL = { high: "高い", medium: "ふつう", low: "低い", unknown: "不明" };
+  var BAND_LABEL = {
+    high: "高い",
+    rather_high: "やや高い",
+    medium: "ふつう",
+    low: "低い",
+    unknown: "不明",
+  };
+
+  /** UI8: 内部ラベル + score → 4段階 band（ラベル名は UI 非表示） */
+  var CONFIDENCE_BAND_HIGH = 0.75;
+  var CONFIDENCE_BAND_RATHER_HIGH = 0.6;
+  var CONFIDENCE_BAND_MEDIUM = 0.35;
+  var BAND_RANK = { high: 3, rather_high: 2, medium: 1, low: 0 };
+  var RANK_TO_BAND = ["low", "medium", "rather_high", "high"];
+  var LABEL_CEILING_BAND = {
+    normal: "high",
+    near_miss: "rather_high",
+    affinity_residual: "medium",
+    pure_residual: "low",
+  };
   var CONFIDENCE_NOTE = "過去の同条件実績も含めた評価です";
   var FEATURE_LABEL = { db: "DB", daily_csv: "日次CSV", global_csv: "全体CSV" };
+
+  function normalizeConfidenceScore(score) {
+    if (score == null || !Number.isFinite(Number(score))) return null;
+    var s = Number(score);
+    if (s > 1) s = s / 100;
+    return s;
+  }
+
+  function starsFromBand(band) {
+    if (band === "high") return "★★★★★";
+    if (band === "rather_high") return "★★★★☆";
+    if (band === "medium") return "★★★☆☆";
+    if (band === "low") return "★★☆☆☆";
+    return "☆☆☆☆☆";
+  }
+
+  function bandFromNormalizedScore(score) {
+    if (score == null || !Number.isFinite(Number(score))) return "unknown";
+    var s = normalizeConfidenceScore(score);
+    if (s == null) return "unknown";
+    if (s >= CONFIDENCE_BAND_HIGH) return "high";
+    if (s >= CONFIDENCE_BAND_RATHER_HIGH) return "rather_high";
+    if (s >= CONFIDENCE_BAND_MEDIUM) return "medium";
+    return "low";
+  }
+
+  function internalLabelFromScore(score) {
+    var band = bandFromNormalizedScore(score);
+    if (band === "high") return "normal";
+    if (band === "rather_high") return "near_miss";
+    if (band === "medium") return "affinity_residual";
+    return "pure_residual";
+  }
+
+  function internalLabelFromWorld(world, extras) {
+    extras = extras || {};
+    if (extras.near_miss != null && extras.near_miss !== false) return "near_miss";
+    if (extras.affinity != null && extras.affinity !== false) return "affinity_residual";
+    var w = String(world || "")
+      .trim()
+      .toLowerCase();
+    if (!w) return null;
+    if (w === "core_world" || w === "core") return "normal";
+    if (w === "midupper_world" || w === "midupper") return "near_miss";
+    if (w === "midhole_world" || w === "midhole") return "affinity_residual";
+    if (w === "rank7_world" || w === "rank7") return "pure_residual";
+    if (w === "mixed_world" || w === "mixed") return "affinity_residual";
+    if (w === "unsatisfied" || w === "bug_world" || w === "bug") return "pure_residual";
+    return null;
+  }
+
+  function resolveInternalLabel(input) {
+    input = input || {};
+    var fromWorld = internalLabelFromWorld(input.world, {
+      near_miss: input.near_miss,
+      affinity: input.affinity,
+    });
+    if (fromWorld) return fromWorld;
+    return internalLabelFromScore(input.score);
+  }
+
+  function confidenceBandFromLabelAndScore(label, score) {
+    var resolved =
+      label && LABEL_CEILING_BAND[label] ? label : resolveInternalLabel({ score: score });
+    var labelBand = LABEL_CEILING_BAND[resolved] || "low";
+    var scoreBand = bandFromNormalizedScore(score);
+    if (scoreBand === "unknown") scoreBand = "low";
+    var rank = Math.min(BAND_RANK[labelBand] || 0, BAND_RANK[scoreBand] || 0);
+    return RANK_TO_BAND[rank];
+  }
+
+  function displayBandFromBundle(bundle) {
+    var ac = (bundle && bundle.ai_confidence) || {};
+    var score = ac.score;
+    var world =
+      bundle && bundle.evaluation && bundle.evaluation.world != null
+        ? bundle.evaluation.world
+        : null;
+    var label = resolveInternalLabel({ world: world, score: score });
+    return confidenceBandFromLabelAndScore(label, score);
+  }
+
+  function displayBandFromSummary(summary) {
+    if (!summary || !summary.confidence) return "unknown";
+    var confidence = summary.confidence;
+    // BFF が UI8 band を既に計算済みならそれを優先（内部ラベルは summary に載せない）
+    if (confidence.band && BAND_LABEL[confidence.band]) return confidence.band;
+    return bandFromNormalizedScore(confidence.score);
+  }
 
   function runnerByMark(bundle, mark) {
     var runners = (((bundle || {}).evaluation || {}).runners) || [];
@@ -116,22 +225,6 @@
     return bg;
   }
 
-  function starsFromBand(band) {
-    if (band === "high") return "★★★★★";
-    if (band === "medium") return "★★★☆☆";
-    if (band === "low") return "★★☆☆☆";
-    return "☆☆☆☆☆";
-  }
-
-  function bandFromNormalizedScore(score) {
-    if (score == null || !Number.isFinite(Number(score))) return "unknown";
-    var s = Number(score);
-    if (s > 1) s = s / 100;
-    if (s >= 0.6) return "high";
-    if (s >= 0.35) return "medium";
-    return "low";
-  }
-
   /** 一覧カード右側 — 星＋ラベル（% 非表示）の内側 HTML */
   function raceConfidenceSideInner(band, stars) {
     var label = BAND_LABEL[band] || BAND_LABEL.unknown;
@@ -151,7 +244,10 @@
   function raceConfidenceDetailHtml(bundle) {
     var ac = (bundle && bundle.ai_confidence) || {};
     var comp = ac.component_scores || {};
-    var band = ac.band && BAND_LABEL[ac.band] ? ac.band : bandFromNormalizedScore(ac.score);
+    var band = displayBandFromBundle(bundle);
+    if (!BAND_LABEL[band]) {
+      band = ac.band && BAND_LABEL[ac.band] ? ac.band : bandFromNormalizedScore(ac.score);
+    }
     var bandLabel = BAND_LABEL[band] || BAND_LABEL.unknown;
     var stars = starsFromBand(band);
     var modelScore = comp.model_score != null ? comp.model_score : ac.score;
@@ -223,9 +319,16 @@
     var summary = card && card.summary;
     var rid = (card && card.race_id) || "";
     var raceNo = info.race_number != null ? info.race_number : info.race_no;
+    var venueRaw = String(info.venue || "").trim();
+    var venueOk =
+      venueRaw &&
+      venueRaw.toLowerCase() !== "unknown" &&
+      venueRaw !== "不明"
+        ? venueRaw
+        : "";
     var place =
       info.race_label ||
-      (info.venue || "") + (raceNo != null ? " " + raceNo + "R" : "");
+      (venueOk ? venueOk + (raceNo != null ? " " + raceNo + "R" : "") : "");
     var name = shortRaceName(info.race_name || info.class_label || "レース");
     var grade = info.grade || "";
     var post = info.post_time != null ? String(info.post_time) : "";
@@ -253,6 +356,14 @@
     var bg = bgClass(info, raceNo);
     var nameDisp = name;
     var eng = pred.engine_source || "";
+    var isUiTest =
+      (window.ExpectUiTestRace &&
+        ExpectUiTestRace.isUiTestRaceId &&
+        ExpectUiTestRace.isUiTestRaceId(rid)) ||
+      !!((card && card.__ui_test_fixture) || eng === "frontend_ui_test_fixture");
+    var testBadge = isUiTest
+      ? '<span class="race-item-test-badge" aria-label="UIテスト">UIテスト</span>'
+      : "";
 
     var confPct = null;
     var band = null;
@@ -266,7 +377,9 @@
       var honmei = summary.honmei;
       var confidence = summary.confidence;
       confPct = summaryScorePercent(confidence);
-      band = confidence && confidence.band ? confidence.band : null;
+      // UI8: BFF の label+score band を優先（score のみ再計算しない）
+      band = displayBandFromSummary(summary);
+      if (band === "unknown") band = null;
       if (honmei && honmei.horse_name) {
         honmeiNameAttr = String(honmei.horse_name).trim();
       }
@@ -305,6 +418,7 @@
     return (
       '<a class="race-item race-item--bg' +
       bg +
+      (isUiTest ? " race-item--ui-test" : "") +
       '" href="race.html?race_id=' +
       encodeURIComponent(rid) +
       '" data-race-date="' +
@@ -326,6 +440,7 @@
       '"' +
       (band ? ' data-confidence-band="' + escapeHtml(band) + '"' : "") +
       (eng ? ' data-engine-source="' + escapeHtml(eng) + '"' : "") +
+      (isUiTest ? ' data-ui-test-race="1"' : "") +
       ">" +
       '<button type="button" class="fav-btn fav-btn--icon" data-fav-toggle="' +
       escapeHtml(rid) +
@@ -352,6 +467,7 @@
       '<span class="fav-star" aria-hidden="true">★</span></button>' +
       "<div>" +
       '<p class="race-item-place">' +
+      testBadge +
       escapeHtml(place) +
       "</p>" +
       '<p class="race-item-name">' +
@@ -359,9 +475,12 @@
       "</p>" +
       statusNote +
       '<div class="race-item-meta">' +
+      // 発走時間は prediction status に関係なく常時・同位置（基本情報レイヤ）
       (post
-        ? "<span>" + escapeHtml(normalizePostTime(post)) + "出走</span>"
-        : "") +
+        ? '<span class="race-item-time">' +
+          escapeHtml(normalizePostTime(post)) +
+          "出走</span>"
+        : '<span class="race-item-time race-item-time--empty" hidden></span>') +
       (band || confPct != null
         ? ""
         : '<span class="race-stars">' + stars + "</span>") +
@@ -386,15 +505,20 @@
   function raceCardHtml(bundle) {
     var info = (bundle && bundle.race_info) || {};
     var rid = (bundle && bundle.race_id) || info.race_id || "";
+    var venueRaw = String(info.venue || "").trim();
+    var venueOk =
+      venueRaw &&
+      venueRaw.toLowerCase() !== "unknown" &&
+      venueRaw !== "不明"
+        ? venueRaw
+        : "";
     var place =
       info.race_label ||
-      (info.venue || "") + (info.race_no != null ? " " + info.race_no + "R" : "");
+      (venueOk ? venueOk + (info.race_no != null ? " " + info.race_no + "R" : "") : "");
     var name = shortRaceName(info.race_name || info.class_label || "レース");
     var grade = info.grade || "";
     var conf = scorePercent(bundle) || 0;
-    var band = bandFromNormalizedScore(
-      (bundle && bundle.ai_confidence && bundle.ai_confidence.score) || conf / 100
-    );
+    var band = displayBandFromBundle(bundle);
     var stars = starsFromBand(band);
     var dLabel = dateLabel(info);
     var dFull = dateFull(info);
@@ -464,7 +588,7 @@
   }
 
   /** ホーム「今日の本命」カード（当日分は localStorage に固定） */
-  var HOME_HONMEI_CACHE_KEY = "expect_home_honmei_v1";
+  var HOME_HONMEI_CACHE_KEY = "expect_home_honmei_v2";
 
   function homeHonmeiCacheDate() {
     if (global.ExpectRealDataBind && ExpectRealDataBind.resolveHomeDate) {
@@ -478,8 +602,9 @@
       var raw = global.localStorage.getItem(HOME_HONMEI_CACHE_KEY);
       if (!raw) return null;
       var o = JSON.parse(raw);
-      if (!o || !o.race_id) return null;
+      if (!o) return null;
       if (dateKey && o.date && o.date !== dateKey) return null;
+      if (!o.race_id && !o.empty) return null;
       return o;
     } catch (e) {
       return null;
@@ -493,70 +618,131 @@
   }
 
   function applyHomeHonmeiSnapshot(snapshot) {
-    if (!snapshot || !snapshot.race_id) return false;
+    if (!snapshot) return false;
     var card = document.querySelector(".ai-card--predict");
     if (!card) return false;
+    if (snapshot.empty || !snapshot.race_id) {
+      applyHomeHonmeiEmpty(card);
+      return true;
+    }
     card.setAttribute("href", "race.html?race_id=" + encodeURIComponent(snapshot.race_id));
-    var score = snapshot.score != null ? Number(snapshot.score) : 0;
+    var band = snapshot.band && BAND_LABEL[snapshot.band] ? snapshot.band : null;
+    var stars = snapshot.stars || (band ? starsFromBand(band) : "☆☆☆☆☆");
+    var bandLabel = band ? BAND_LABEL[band] : "—";
     var gauge = card.querySelector(".ai-gauge");
     var num = card.querySelector(".ai-gauge-num");
+    var gLabel = card.querySelector(".ai-gauge-label");
     if (gauge) {
+      gauge.classList.add("ai-gauge--stars");
+      var score = snapshot.score != null ? Number(snapshot.score) : 0;
       gauge.style.setProperty("--p", String(score));
-      gauge.setAttribute("aria-label", "AI信頼度 " + score + "%");
+      gauge.setAttribute(
+        "aria-label",
+        "自信度 " + bandLabel + " " + stars
+      );
     }
-    if (num) num.textContent = score + "%";
+    if (num) num.textContent = stars;
+    if (gLabel) gLabel.textContent = bandLabel;
     var desc = card.querySelector(".ai-desc");
     if (desc && snapshot.desc) desc.textContent = snapshot.desc;
     card.classList.add("is-ready");
     card.classList.remove("is-updating");
+    card.classList.remove("is-empty-honmei");
     card.setAttribute("data-honmei-cached", "1");
     return true;
   }
 
+  function homeHonmeiDesc(bundle) {
+    var info = (bundle && bundle.race_info) || {};
+    var venue = info.venue || "";
+    var raceNo = info.race_no != null ? info.race_no : info.race_number;
+    var raceName = shortRaceName(info.race_name || info.class_label || "");
+    var parts = [];
+    if (venue && raceNo != null) parts.push(venue + " " + raceNo + "R");
+    else if (venue) parts.push(String(venue));
+    else if (raceNo != null) parts.push(raceNo + "R");
+    if (raceName) parts.push(raceName);
+    return parts.join(" · ");
+  }
+
   function applyHomeHonmeiCard(bundle) {
-    if (!bundle || !bundle.race_id) return;
     var card = document.querySelector(".ai-card--predict");
     if (!card) return;
-    card.setAttribute("href", "race.html?race_id=" + encodeURIComponent(bundle.race_id));
+    if (!bundle || !bundle.race_id) {
+      applyHomeHonmeiEmpty(card);
+      return;
+    }
+    var band = displayBandFromBundle(bundle);
+    var stars = starsFromBand(band);
+    var bandLabel = BAND_LABEL[band] || BAND_LABEL.unknown;
     var score = scorePercent(bundle) || 0;
+    card.setAttribute("href", "race.html?race_id=" + encodeURIComponent(bundle.race_id));
     var gauge = card.querySelector(".ai-gauge");
     var num = card.querySelector(".ai-gauge-num");
+    var gLabel = card.querySelector(".ai-gauge-label");
     if (gauge) {
+      gauge.classList.add("ai-gauge--stars");
       gauge.style.setProperty("--p", String(score));
-      gauge.setAttribute("aria-label", "AI信頼度 " + score + "%");
+      gauge.setAttribute("aria-label", "自信度 " + bandLabel + " " + stars);
     }
-    if (num) num.textContent = score + "%";
+    if (num) num.textContent = stars;
+    if (gLabel) gLabel.textContent = bandLabel;
     var info = bundle.race_info || {};
-    var h = honmeiRunner(bundle);
     var desc = card.querySelector(".ai-desc");
-    var descText = "";
-    if (desc) {
-      var place =
-        (info.venue || "") + (info.race_no != null ? " " + info.race_no + "R" : "");
-      var horse =
-        h && h.horse_number != null
-          ? h.horse_number + "番 " + horseLabel(h.horse_name, h.horse_number)
-          : "";
-      if (place && horse) descText = place + " · " + horse;
-      else if (horse) descText = "本命 " + horse;
-      else if (place) descText = place + " が本日の注目";
-      if (descText) desc.textContent = descText;
-    }
+    var descText = homeHonmeiDesc(bundle);
+    if (desc && descText) desc.textContent = descText;
     card.classList.add("is-ready");
     card.classList.remove("is-updating");
+    card.classList.remove("is-empty-honmei");
     writeHomeHonmeiCache({
       date: homeHonmeiCacheDate(),
       race_id: bundle.race_id,
       score: score,
+      band: band,
+      stars: stars,
       desc: descText || (desc && desc.textContent) || "",
       venues: info.venue ? [String(info.venue)] : [],
+      empty: false,
+      at: Date.now(),
+    });
+  }
+
+  function applyHomeHonmeiEmpty(card) {
+    card = card || document.querySelector(".ai-card--predict");
+    if (!card) return;
+    card.setAttribute("href", "races.html");
+    var gauge = card.querySelector(".ai-gauge");
+    var num = card.querySelector(".ai-gauge-num");
+    var gLabel = card.querySelector(".ai-gauge-label");
+    if (gauge) {
+      gauge.classList.add("ai-gauge--stars");
+      gauge.style.setProperty("--p", "0");
+      gauge.setAttribute("aria-label", "本日の本命候補なし");
+    }
+    if (num) num.textContent = "☆☆☆☆☆";
+    if (gLabel) gLabel.textContent = "—";
+    var desc = card.querySelector(".ai-desc");
+    var descText = "本日 ★★★★☆ 以上の候補がありません";
+    if (desc) desc.textContent = descText;
+    card.classList.add("is-ready");
+    card.classList.add("is-empty-honmei");
+    card.classList.remove("is-updating");
+    writeHomeHonmeiCache({
+      date: homeHonmeiCacheDate(),
+      race_id: "",
+      score: 0,
+      band: null,
+      stars: "☆☆☆☆☆",
+      desc: descText,
+      venues: [],
+      empty: true,
       at: Date.now(),
     });
   }
 
   function confidenceBandLabel(bundle) {
-    var ac = (bundle && bundle.ai_confidence) || {};
-    return BAND_LABEL[ac.band || "unknown"] || BAND_LABEL.unknown;
+    var band = displayBandFromBundle(bundle);
+    return BAND_LABEL[band] || BAND_LABEL.unknown;
   }
 
   function provenanceHtml(meta, bundle) {
@@ -659,9 +845,6 @@
         "</h4>" +
         '<p class="pick-card-meta">モデル評価順位 #' +
         escapeHtml(String(r.model_rank != null ? r.model_rank : "—")) +
-        (typeof r.win_prob === "number"
-          ? " · 1着確率　" + Math.round(r.win_prob * 1000) / 10 + "%"
-          : "") +
         "</p></article>";
     });
     return html || '<p class="muted">対抗・穴印なし</p>';
@@ -835,11 +1018,28 @@
     if (marksEl) marksEl.innerHTML = marksSectionHtml(bundle);
     var picksEl = document.getElementById("pickCardsBody");
     if (picksEl) picksEl.innerHTML = pickCardsHtml(bundle);
-    var reasonsEl = document.getElementById("reasonsSectionBody");
-    if (reasonsEl) reasonsEl.innerHTML = reasonsSectionHtml(bundle);
     applyPaceDots(bundle);
+    if (global.ExpectExplainUx && ExpectExplainUx.applyToDom) {
+      ExpectExplainUx.applyToDom(bundle, {
+        ctaHtml: explainKaobaCtaHtml({
+          explain: (bundle && bundle.explain) || {},
+          race_id: (bundle && bundle.race_id) || "",
+          bundle: bundle,
+        }),
+      });
+    } else {
+      var reasonsEl = document.getElementById("reasonsSectionBody");
+      if (reasonsEl) reasonsEl.innerHTML = reasonsSectionHtml(bundle);
+      var uxBody = document.getElementById("explainUxBody");
+      if (uxBody) uxBody.innerHTML = reasonsSectionHtml(bundle);
+    }
   }
 
+  /**
+   * prediction_available=false / pending / race_id 切替時:
+   * 印・対抗穴・着順・explain・自信度・本命カードなど予測由来 DOM を全消去。
+   * 過去 Bundle / mock / 別レース残留を残さない。
+   */
   /** "15:10" → "15:10出走" */
   function formatPostTimeLabel(raw) {
     var t = normalizePostTime(raw);
@@ -855,20 +1055,85 @@
   }
 
   function venueOnly(info) {
+    if (global.ExpectCatalogIdentity && ExpectCatalogIdentity.venueOnly) {
+      var cat = ExpectCatalogIdentity.venueOnly(info) || "";
+      if (cat && cat.toLowerCase() !== "unknown" && cat !== "不明") return cat;
+    }
     info = info || {};
     var v = String(info.venue || info.course || "")
       .replace(/\s*\d{1,2}\s*R\s*$/u, "")
       .trim();
-    if (v) return v;
+    if (v && v.toLowerCase() !== "unknown" && v !== "不明") return v;
     var label = String(info.race_label || "");
     var m = label.match(/^(.+?)\s*\d{1,2}\s*R\s*$/u);
     if (m) return m[1].trim();
-    return label.replace(/\s*\d{1,2}\s*R\s*$/u, "").trim() || "レース";
+    var fromLabel = label.replace(/\s*\d{1,2}\s*R\s*$/u, "").trim();
+    if (fromLabel && fromLabel.toLowerCase() !== "unknown") return fromLabel;
+    return "レース";
   }
 
-  function paintRaceMeta(info) {
+  /** Catalog race_id → seed race_info (same race only). */
+  var _catalogRaceInfoById = Object.create(null);
+
+  function setCatalogRaceInfo(raceId, info) {
+    var id = String(raceId || "").trim();
+    if (!id || !info || typeof info !== "object") return false;
+    if (info.race_id && String(info.race_id) !== id) return false;
+    _catalogRaceInfoById[id] = Object.assign({}, info, { race_id: id });
+    return true;
+  }
+
+  function getCatalogRaceInfo(raceId) {
+    var id = String(raceId || "").trim();
+    return id ? _catalogRaceInfoById[id] || null : null;
+  }
+
+  function clearCatalogRaceInfo(raceId) {
+    var id = String(raceId || "").trim();
+    if (id) delete _catalogRaceInfoById[id];
+  }
+
+  function formalNameFromInfo(info) {
+    if (global.ExpectCatalogIdentity && ExpectCatalogIdentity.formalRaceName) {
+      return shortRaceName(ExpectCatalogIdentity.formalRaceName(info));
+    }
+    return shortRaceName((info && info.race_name) || "");
+  }
+
+  function venueRaceHeading(info, raceId) {
+    if (global.ExpectCatalogIdentity && ExpectCatalogIdentity.venueRaceHeading) {
+      return ExpectCatalogIdentity.venueRaceHeading(info, raceId) || venueOnly(info);
+    }
+    var venue = venueOnly(info);
+    var rno =
+      info && (info.race_no != null ? info.race_no : info.race_number);
+    if (venue && rno != null && rno !== "") return venue + " " + Number(rno) + "R";
+    return venue;
+  }
+
+  function mergeDetailRaceInfo(bundleInfo, expectedRaceId) {
+    var seed = getCatalogRaceInfo(expectedRaceId);
+    if (global.ExpectCatalogIdentity && ExpectCatalogIdentity.mergeForRaceId) {
+      return ExpectCatalogIdentity.mergeForRaceId(seed, bundleInfo, expectedRaceId);
+    }
+    if (
+      seed &&
+      String(seed.race_id || "") === String(expectedRaceId || "")
+    ) {
+      var merged = Object.assign({}, seed, bundleInfo || {});
+      if (!merged.race_name) merged.race_name = seed.race_name || "";
+      if (merged.venue == null || merged.venue === "") {
+        merged.venue = seed.venue || seed.course || "";
+      }
+      if (merged.race_no == null) merged.race_no = seed.race_no;
+      return merged;
+    }
+    return Object.assign({}, bundleInfo || {});
+  }
+
+  function paintRaceMeta(info, expectedRaceId) {
     info = info || {};
-    var name = shortRaceName(info.race_name || info.class_label || "");
+    var name = formalNameFromInfo(info);
     var postLabel = formatPostTimeLabel(extractPostTime(info));
     var dateBit = "";
     if (info.date_label) dateBit = String(info.date_label);
@@ -877,12 +1142,14 @@
       dateBit = String(Number(d.slice(5, 7))) + "/" + String(Number(d.slice(8, 10)));
     }
 
+    var heading = venueRaceHeading(info, expectedRaceId || info.race_id);
+    var titleEl = document.getElementById("raceTitle");
+    if (titleEl && heading) titleEl.textContent = heading;
+
     var subEl = document.getElementById("raceSub") || document.querySelector(".brand-sub");
     if (subEl) {
-      var subBits = [];
-      if (name) subBits.push(name);
-      if (postLabel) subBits.push(postLabel);
-      subEl.textContent = subBits.join(" ") || "—";
+      // brand-sub: formal race name only (post time lives in race-meta-line)
+      subEl.textContent = name || "読み込み中…";
     }
 
     var nameEl = document.getElementById("raceMetaName");
@@ -894,6 +1161,14 @@
       if (postLabel) lineBits.push(postLabel);
       lineEl.textContent = lineBits.join("・") || "レース情報を取得中…";
     }
+  }
+
+  /** Catalog-only early header paint (before Prediction). Same race_id only. */
+  function paintRaceDetailHeader(info, expectedRaceId) {
+    if (!info) return;
+    var id = String(expectedRaceId || info.race_id || "").trim();
+    if (info.race_id && id && String(info.race_id) !== id) return;
+    paintRaceMeta(info, id);
   }
 
   /**
@@ -908,19 +1183,14 @@
     meta = meta || bundle.__meta || {};
     applyProvenanceBar(meta, bundle);
     applyMarksAndPicks(bundle);
-    var info = bundle.race_info || {};
+    var expectId = String(expectedRaceId || bundle.race_id || "").trim();
+    var info = mergeDetailRaceInfo(bundle.race_info || {}, expectId);
     var conf = scorePercent(bundle);
     var honmei = honmeiRunner(bundle);
-    var ac = bundle.ai_confidence || {};
-    var band =
-      ac.band && BAND_LABEL[ac.band] ? ac.band : bandFromNormalizedScore(ac.score);
+    var band = displayBandFromBundle(bundle);
     var bandLabel = BAND_LABEL[band] || BAND_LABEL.unknown;
 
-    var titleEl = document.getElementById("raceTitle");
-    if (titleEl) {
-      titleEl.textContent = venueOnly(info);
-    }
-    paintRaceMeta(info);
+    paintRaceMeta(info, expectId);
 
     var card = document.querySelector(".honmei-card");
     if (card && honmei) {
@@ -994,16 +1264,19 @@
       confEl.innerHTML = raceConfidenceDetailHtml(bundle);
     }
 
-    var narrativeEl = document.querySelector(".pace-card p");
-    if (narrativeEl && bundle.explain && bundle.explain.narrative) {
-      narrativeEl.textContent = bundle.explain.narrative;
+    // UI10: 旧 narrative を pace-card に流し込まない（着順ドット専用）
+    var paceHint = document.querySelector(".pace-card > p.pace-card-hint");
+    if (paceHint) {
+      paceHint.textContent =
+        (global.ExpectExplainUx && ExpectExplainUx.PACE_ORDER_HINT) ||
+        "左端が1着予想、右へ行くほど着順が下がります。並んだ馬番は、AIが考えるゴールまでの着順です。";
     }
 
-    var place = venueOnly(info);
+    var place = venueRaceHeading(info, expectId) || venueOnly(info);
     return {
       raceId: bundle.race_id,
       place: place,
-      name: shortRaceName(info.race_name || info.class_label || ""),
+      name: formalNameFromInfo(info),
       badge: info.grade || "",
       postTime: extractPostTime(info) || "",
       dateLabel: dateFull(info),
@@ -1016,6 +1289,23 @@
   function pickTopByConfidence(bundles) {
     if (!bundles || !bundles.length) return null;
     return bundles.slice().sort(function (a, b) {
+      return (scorePercent(b) || 0) - (scorePercent(a) || 0);
+    })[0];
+  }
+
+  /**
+   * UI8 ホーム本命: 表示自信度 ★★★★☆（rather_high）以上のうち score 最大の1件
+   * @param {object[]} bundles
+   * @returns {object | null}
+   */
+  function pickHomeTodaysHonmei(bundles) {
+    if (!bundles || !bundles.length) return null;
+    var eligible = bundles.filter(function (b) {
+      var band = displayBandFromBundle(b);
+      return (BAND_RANK[band] || 0) >= BAND_RANK.rather_high;
+    });
+    if (!eligible.length) return null;
+    return eligible.slice().sort(function (a, b) {
       return (scorePercent(b) || 0) - (scorePercent(a) || 0);
     })[0];
   }
@@ -1053,27 +1343,70 @@
           ? conf.score / 100
           : conf.score
         : null;
-    var band =
-      conf.band && conf.band !== "unknown"
-        ? conf.band
-        : score != null
-          ? bandFromNormalizedScore(score)
-          : null;
+    var band = displayBandFromBundle(bundle);
+    if (!BAND_LABEL[band]) {
+      band =
+        conf.band && conf.band !== "unknown"
+          ? conf.band
+          : score != null
+            ? bandFromNormalizedScore(score)
+            : null;
+    }
     var seedInfo = seedCard.race_info || {};
     var bundleInfo = bundle.race_info || {};
+    var ridForCatalog = bundle.race_id || seedCard.race_id || "";
+    var catalogInfo = getCatalogRaceInfo(ridForCatalog) || {};
     var mergedInfo = Object.assign({}, seedInfo, bundleInfo);
-    // Prediction 側の空文字で Catalog の venue/date を消さない
-    if (!mergedInfo.venue) mergedInfo.venue = seedInfo.venue || bundleInfo.venue || "";
+    function isMissingVenue(v) {
+      var s = String(v == null ? "" : v).trim().toLowerCase();
+      return !s || s === "unknown" || s === "不明";
+    }
+    // Literal "unknown" from BFF coerce must not beat Catalog/seed venue.
+    if (isMissingVenue(mergedInfo.venue)) {
+      mergedInfo.venue =
+        (!isMissingVenue(seedInfo.venue) && seedInfo.venue) ||
+        (!isMissingVenue(catalogInfo.venue) && catalogInfo.venue) ||
+        (!isMissingVenue(bundleInfo.venue) && bundleInfo.venue) ||
+        "";
+    }
+    if (isMissingVenue(mergedInfo.course)) {
+      mergedInfo.course =
+        (!isMissingVenue(seedInfo.course) && seedInfo.course) ||
+        (!isMissingVenue(catalogInfo.course) && catalogInfo.course) ||
+        mergedInfo.venue ||
+        "";
+    }
+    if (
+      isMissingVenue(mergedInfo.venue) &&
+      String(mergedInfo.race_label || "").trim()
+    ) {
+      // Keep race_label; place renderer prefers it over venue+" NR"
+    } else if (isMissingVenue(mergedInfo.venue)) {
+      // Do not invent venue; leave empty rather than "unknown"
+      mergedInfo.venue = "";
+    }
     if (!mergedInfo.date) {
       mergedInfo.date =
         seedInfo.date ||
+        catalogInfo.date ||
         bundleInfo.date ||
         (String(bundle.race_id || seedCard.race_id || "").match(/^(\d{4}-\d{2}-\d{2})/) ||
           [])[1] ||
         "";
     }
-    if (!mergedInfo.race_name) {
-      mergedInfo.race_name = seedInfo.race_name || bundleInfo.race_name || "";
+    if (!String(mergedInfo.race_name || "").trim()) {
+      mergedInfo.race_name =
+        seedInfo.race_name || catalogInfo.race_name || bundleInfo.race_name || "";
+    }
+    // 一覧カード発走時間: Catalog 非空を authority。Prediction null/"" と空 seed でもレジストリから復元
+    if (!String(mergedInfo.post_time || "").trim()) {
+      if (String(seedInfo.post_time || "").trim()) {
+        mergedInfo.post_time = seedInfo.post_time;
+      } else if (String(catalogInfo.post_time || "").trim()) {
+        mergedInfo.post_time = catalogInfo.post_time;
+      } else if (String(bundleInfo.post_time || "").trim()) {
+        mergedInfo.post_time = bundleInfo.post_time;
+      }
     }
     var out = {
       schema_version: "expect-race-card-summary/1.0",
@@ -1113,22 +1446,33 @@
     scorePercent: scorePercent,
     starsFromScore: starsFromScore,
     starsFromBand: starsFromBand,
+    bandFromNormalizedScore: bandFromNormalizedScore,
+    confidenceBandFromLabelAndScore: confidenceBandFromLabelAndScore,
+    resolveInternalLabel: resolveInternalLabel,
+    displayBandFromBundle: displayBandFromBundle,
     dateLabel: dateLabel,
     raceCardHtml: raceCardHtml,
     raceCardSummaryHtml: raceCardSummaryHtml,
     bundleToRaceCardSummary: bundleToRaceCardSummary,
     applyHomeHonmeiCard: applyHomeHonmeiCard,
     applyHomeHonmeiSnapshot: applyHomeHonmeiSnapshot,
+    applyHomeHonmeiEmpty: applyHomeHonmeiEmpty,
     readHomeHonmeiCache: readHomeHonmeiCache,
     homeHonmeiCacheDate: homeHonmeiCacheDate,
     applyRaceDetail: applyRaceDetail,
+    setCatalogRaceInfo: setCatalogRaceInfo,
+    getCatalogRaceInfo: getCatalogRaceInfo,
+    clearCatalogRaceInfo: clearCatalogRaceInfo,
+    paintRaceDetailHeader: paintRaceDetailHeader,
     pickTopByConfidence: pickTopByConfidence,
+    pickHomeTodaysHonmei: pickHomeTodaysHonmei,
     honmeiRunner: honmeiRunner,
     runnerByMark: runnerByMark,
     sortedRunnersByRank: sortedRunnersByRank,
     provenanceHtml: provenanceHtml,
     marksSectionHtml: marksSectionHtml,
     pickCardsHtml: pickCardsHtml,
+    explainKaobaCtaHtml: explainKaobaCtaHtml,
     reasonsSectionHtml: reasonsSectionHtml,
   };
 })(window);

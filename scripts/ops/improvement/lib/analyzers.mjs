@@ -6,11 +6,27 @@
  *   confidence  — 0..1
  *   reason      — human-readable explanation
  *
+ * Version8.1 (Research additive, miss only):
+ *   per_race[] / root_cause_scores / root_cause_confidence /
+ *   root_cause_families (multi) / improvement_priority
+ *
  * Implemented analyzers only:
  *   miss | feature_missing | prediction_failed | result_sync_failed
  */
 import { mkdirSync, writeFileSync } from "node:fs";
-import { join } from "node:path";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
+import {
+  scoreMissEvent,
+  aggregateScores,
+  computeImprovementPriority,
+} from "../../v8/root-cause-score.mjs";
+import {
+  loadCalibration,
+  applyConfidenceCalibration,
+} from "../../v8/analyzer-feedback.mjs";
+
+const REPO_ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "..", "..");
 
 /** @typedef {{ event_type: string, events: object[], run_id: string, output_dir: string }} AnalyzerContext */
 
@@ -85,13 +101,63 @@ export function analyzeMiss(ctx) {
     reason += ` High-confidence misses=${highConfMiss}.`;
   }
 
+  // Version8.1 — multi Root Cause per race + aggregate scores (Research only)
+  const per_race = ctx.events.map((ev) => {
+    const scored = scoreMissEvent(ev.payload || {}, {
+      race_id: ev.race_id ?? ev.payload?.race_id ?? null,
+    });
+    return {
+      race_id: scored.race_id,
+      event_id: ev.event_id ?? null,
+      miss_category: scored.miss_category,
+      root_cause_families: scored.root_cause_families,
+      scores: scored.scores,
+      confidence: scored.confidence,
+      primary_family: scored.primary_family,
+      signals: scored.signals,
+    };
+  });
+  const agg = aggregateScores(per_race);
+  // Version8.3 — gentle confidence calibration from Research feedback (not Production)
+  const calibration = loadCalibration(join(REPO_ROOT, "development"));
+  const rawConfidence = { ...agg.confidence };
+  const calibratedConfidence = applyConfidenceCalibration(
+    rawConfidence,
+    calibration
+  );
+  agg.confidence = calibratedConfidence;
+
+  const improvement_priority = computeImprovementPriority(agg);
+  const familiesSorted = Object.entries(agg.scores)
+    .filter(([, s]) => s > 0)
+    .sort((a, b) => b[1] - a[1])
+    .map(([id, score]) => ({
+      id,
+      score,
+      confidence: agg.confidence[id] || 0,
+      frequency_pct: agg.frequency_pct[id] || 0,
+    }));
+  const root_cause_family = agg.primary_family || "unknown";
+
   return {
     schema_version: "expect-root-cause/1.0",
+    analyzer_version: "v8.3",
     event_type: "miss",
     analysis_id: `miss-${ctx.run_id}`,
     event_count: n,
     status: n ? "ok" : "empty",
     root_cause,
+    root_cause_family,
+    root_cause_families: agg.root_cause_families,
+    root_cause_family_details: familiesSorted,
+    root_cause_scores: agg.scores,
+    root_cause_confidence: calibratedConfidence,
+    root_cause_confidence_raw: rawConfidence,
+    confidence_calibration_bias: calibration.confidence_bias || {},
+    root_cause_frequency_pct: agg.frequency_pct,
+    per_race,
+    improvement_priority,
+    taxonomy_schema: "expect-root-cause-taxonomy/1.0",
     confidence,
     reason,
     findings: {
@@ -99,6 +165,9 @@ export function analyzeMiss(ctx) {
       by_engine_source: byEngine,
       high_confidence_miss_count: highConfMiss,
       dominant_category: dominant,
+      by_root_cause_family: agg.frequency,
+      multi_family_enabled: true,
+      confidence_calibrated: true,
     },
     evidence_refs: evidenceRefs(ctx.events),
     recommendation:

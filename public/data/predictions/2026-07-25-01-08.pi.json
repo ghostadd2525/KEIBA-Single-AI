@@ -1,0 +1,137 @@
+{
+  "race_id": "2026-07-25-01-08",
+  "race_date": "2026-07-25",
+  "course": "新潟",
+  "venue": "新潟",
+  "race_number": 8,
+  "race_no": 8,
+  "race_name": "清津峡特別",
+  "race_label": "新潟8R",
+  "status": "published",
+  "prediction_available": true,
+  "prediction": {
+    "race_id": "2026-07-25-01-08",
+    "candidates": [
+      {
+        "CandidateID": "イリュストル",
+        "Rank": 1,
+        "Confidence": 0.09310947566717243,
+        "HorseNumber": 2,
+        "WorldMeta": "midupper_world",
+        "SubWorldMeta": "midupper_route"
+      },
+      {
+        "CandidateID": "バッカステソーロ",
+        "Rank": 2,
+        "Confidence": 0.08593954384658768,
+        "HorseNumber": 9,
+        "WorldMeta": "midupper_world",
+        "SubWorldMeta": "midupper_route"
+      },
+      {
+        "CandidateID": "ヴィエントデコラ",
+        "Rank": 3,
+        "Confidence": 0.07830925123943824,
+        "HorseNumber": 4,
+        "WorldMeta": "midupper_world",
+        "SubWorldMeta": "midupper_route"
+      },
+      {
+        "CandidateID": "ケルピー",
+        "Rank": 4,
+        "Confidence": 0.07704587320161067,
+        "HorseNumber": 5,
+        "WorldMeta": "midupper_world",
+        "SubWorldMeta": "midupper_route"
+      },
+      {
+        "CandidateID": "ロケットパンチ",
+        "Rank": 5,
+        "Confidence": 0.0754185194263643,
+        "HorseNumber": 14,
+        "WorldMeta": "midupper_world",
+        "SubWorldMeta": "midupper_route"
+      },
+      {
+        "CandidateID": "メトロポリターナ",
+        "Rank": 6,
+        "Confidence": 0.07340921953876806,
+        "HorseNumber": 12,
+        "WorldMeta": "midupper_world",
+        "SubWorldMeta": "midupper_route"
+      },
+      {
+        "CandidateID": "インナーパッション",
+        "Rank": 7,
+        "Confidence": 0.06872888477780438,
+        "HorseNumber": 3,
+        "WorldMeta": "midupper_world",
+        "SubWorldMeta": "midupper_route"
+      },
+      {
+        "CandidateID": "パイオニアスクエア",
+        "Rank": 8,
+        "Confidence": 0.06803827278010921,
+        "HorseNumber": 8,
+        "WorldMeta": "midupper_world",
+        "SubWorldMeta": "midupper_route"
+      },
+      {
+        "CandidateID": "コッレヴェッキオ",
+        "Rank": 9,
+        "Confidence": 0.06634360918739389,
+        "HorseNumber": 6,
+        "WorldMeta": "midupper_world",
+        "SubWorldMeta": "midupper_route"
+      },
+      {
+        "CandidateID": "サトノフェンサー",
+        "Rank": 10,
+        "Confidence": 0.0654483525120917,
+        "HorseNumber": 7,
+        "WorldMeta": "midupper_world",
+        "SubWorldMeta": "midupper_route"
+      },
+      {
+        "CandidateID": "アヴァランチ",
+        "Rank": 11,
+        "Confidence": 0.06451692634661489,
+        "HorseNumber": 1,
+        "WorldMeta": "midupper_world",
+        "SubWorldMeta": "midupper_route"
+      },
+      {
+        "CandidateID": "ライヴスプーン",
+        "Rank": 12,
+        "Confidence": 0.06145253958152512,
+        "HorseNumber": 13,
+        "WorldMeta": "midupper_world",
+        "SubWorldMeta": "midupper_route"
+      },
+      {
+        "CandidateID": "ブレスドナイル",
+        "Rank": 13,
+        "Confidence": 0.06121010358468639,
+        "HorseNumber": 11,
+        "WorldMeta": "midupper_world",
+        "SubWorldMeta": "midupper_route"
+      },
+      {
+        "CandidateID": "ハルノアラシ",
+        "Rank": 14,
+        "Confidence": 0.061029428309833,
+        "HorseNumber": 10,
+        "WorldMeta": "midupper_world",
+        "SubWorldMeta": "midupper_route"
+      }
+    ],
+    "world": "midupper_world",
+    "sub_world": "midupper_route",
+    "overall_confidence": 0.05306109049689221,
+    "core_version": "ai-core-migrated/1.0-phase1",
+    "meta": {
+      "generated_at": "2026-07-25T15:53:09.937628+09:00",
+      "source": "local_core_pipeline"
+    }
+  }
+}

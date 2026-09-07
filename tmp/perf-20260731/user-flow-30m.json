@@ -1,0 +1,799 @@
+{
+  "startedAt": "2026-07-31T06:39:02.344Z",
+  "endedAt": "2026-07-31T07:09:05.039Z",
+  "durationMin": 30,
+  "methodology": {
+    "device": "iPhone 14 emulation",
+    "cpuThrottle": "4x",
+    "auth": "localStorage seed",
+    "maintenance": "auto-maintenance.js aborted + status stubbed",
+    "apiNote": "Most /api/* likely 401 without real token"
+  },
+  "trend": {
+    "heapStart": 1.565,
+    "heapEnd": 4.578,
+    "heapDelta": 3.013,
+    "heapMonotonicUp": false,
+    "nodesStart": 200,
+    "nodesEnd": 148,
+    "nodesDelta": -52,
+    "nodesMonotonicUp": false
+  },
+  "snapshots": [
+    {
+      "index": 0,
+      "reason": "t0",
+      "at": "2026-07-31T06:39:05.408Z",
+      "elapsedMin": 0.05,
+      "transferMB": 2.706,
+      "transferBytes": 2837256,
+      "apiNetworkCount": 10,
+      "apiRecent": [
+        {
+          "u": "/config/beta.json",
+          "t": 1785479943397
+        },
+        {
+          "u": "/api/v1/challenge/monthly?month=2026-07",
+          "t": 1785479943397
+        },
+        {
+          "u": "/api/v1/stats/heatmap",
+          "t": 1785479943397
+        },
+        {
+          "u": "/api/races?date=2026-08-01",
+          "t": 1785479943397
+        },
+        {
+          "u": "/api/races?date=2026-08-02",
+          "t": 1785479943398
+        },
+        {
+          "u": "/api/predictions?date=2026-08-01",
+          "t": 1785479943398
+        },
+        {
+          "u": "/api/data/coverage",
+          "t": 1785479943398
+        },
+        {
+          "u": "/api/v1/history",
+          "t": 1785479943398
+        },
+        {
+          "u": "/api/predictions",
+          "t": 1785479943398
+        },
+        {
+          "u": "/api/data/coverage",
+          "t": 1785479943398
+        }
+      ],
+      "actions": 0,
+      "flowIndex": 0,
+      "href": "https://expect-keiba.com/",
+      "path": "/",
+      "title": "SingleAI v2 — 開催一覧",
+      "nodes": 200,
+      "heap": 1641417,
+      "heapTotal": 2916561,
+      "fps": 57,
+      "fpsSamples": [
+        4,
+        109
+      ],
+      "longTaskCount5m": 3,
+      "longTaskMax5m": 492,
+      "longTaskSum5m": 1068,
+      "fetchApiCalls": 10,
+      "bodyChildren": 24,
+      "heapMB": 1.565,
+      "heapTotalMB": 2.781
+    },
+    {
+      "index": 1,
+      "reason": "t5m",
+      "at": "2026-07-31T06:44:03.022Z",
+      "elapsedMin": 5.01,
+      "transferMB": 127.601,
+      "transferBytes": 133799841,
+      "apiNetworkCount": 368,
+      "apiRecent": [
+        {
+          "u": "/api/v1/history",
+          "t": 1785480233079
+        },
+        {
+          "u": "/api/predictions",
+          "t": 1785480233080
+        },
+        {
+          "u": "/api/data/coverage",
+          "t": 1785480233080
+        },
+        {
+          "u": "/api/v1/challenge/monthly?month=2026-07",
+          "t": 1785480235677
+        },
+        {
+          "u": "/config/beta.json",
+          "t": 1785480236919
+        },
+        {
+          "u": "/api/races?date=2026-08-01",
+          "t": 1785480236975
+        },
+        {
+          "u": "/api/races?date=2026-08-02",
+          "t": 1785480236975
+        },
+        {
+          "u": "/api/race-cards?date=2026-08-01",
+          "t": 1785480237029
+        },
+        {
+          "u": "/api/race-cards?date=2026-08-02",
+          "t": 1785480237029
+        },
+        {
+          "u": "/api/races?date=2026-08-02",
+          "t": 1785480238726
+        },
+        {
+          "u": "/api/race-cards?date=2026-08-02",
+          "t": 1785480238766
+        },
+        {
+          "u": "/api/races?date=2026-08-01",
+          "t": 1785480241717
+        },
+        {
+          "u": "/api/races?date=2026-08-02",
+          "t": 1785480241717
+        },
+        {
+          "u": "/api/race-cards?date=2026-08-01",
+          "t": 1785480241758
+        },
+        {
+          "u": "/api/race-cards?date=2026-08-02",
+          "t": 1785480241758
+        }
+      ],
+      "actions": 86,
+      "flowIndex": 62,
+      "href": "https://expect-keiba.com/races",
+      "path": "/races",
+      "title": "Expect ～ KEIBA AI ～ · レース一覧",
+      "nodes": 148,
+      "heap": 7660141,
+      "heapTotal": 9195873,
+      "fps": 142,
+      "fpsSamples": [
+        83,
+        144,
+        135,
+        144,
+        145,
+        140
+      ],
+      "longTaskCount5m": 2,
+      "longTaskMax5m": 88,
+      "longTaskSum5m": 143,
+      "fetchApiCalls": 11,
+      "bodyChildren": 22,
+      "heapMB": 7.305,
+      "heapTotalMB": 8.77
+    },
+    {
+      "index": 2,
+      "reason": "t10m",
+      "at": "2026-07-31T06:49:07.806Z",
+      "elapsedMin": 10.09,
+      "transferMB": 259.523,
+      "transferBytes": 272129508,
+      "apiNetworkCount": 753,
+      "apiRecent": [
+        {
+          "u": "/api/races?date=2026-08-01",
+          "t": 1785480527463
+        },
+        {
+          "u": "/api/race-cards?date=2026-08-01",
+          "t": 1785480527506
+        },
+        {
+          "u": "/config/beta.json",
+          "t": 1785480529098
+        },
+        {
+          "u": "/api/races/2026-08-01-01-02/board",
+          "t": 1785480529098
+        },
+        {
+          "u": "/api/predictions/2026-08-01-01-02",
+          "t": 1785480529167
+        },
+        {
+          "u": "/api/races/2026-08-01-01-02/board",
+          "t": 1785480531229
+        },
+        {
+          "u": "/api/conversation/chat",
+          "t": 1785480537972
+        },
+        {
+          "u": "/api/kaoba/chat",
+          "t": 1785480538007
+        },
+        {
+          "u": "/api/conversation/chat",
+          "t": 1785480540342
+        },
+        {
+          "u": "/api/kaoba/chat",
+          "t": 1785480540377
+        },
+        {
+          "u": "/config/beta.json",
+          "t": 1785480546849
+        },
+        {
+          "u": "/api/races?date=2026-08-01",
+          "t": 1785480546916
+        },
+        {
+          "u": "/api/races?date=2026-08-02",
+          "t": 1785480546917
+        },
+        {
+          "u": "/api/race-cards?date=2026-08-01",
+          "t": 1785480546991
+        },
+        {
+          "u": "/api/race-cards?date=2026-08-02",
+          "t": 1785480546991
+        }
+      ],
+      "actions": 174,
+      "flowIndex": 125,
+      "href": "https://expect-keiba.com/races",
+      "path": "/races",
+      "title": "Expect ～ KEIBA AI ～ · レース一覧",
+      "nodes": 148,
+      "heap": 10809764,
+      "heapTotal": 18972096,
+      "fps": 89,
+      "fpsSamples": [
+        89
+      ],
+      "longTaskCount5m": 2,
+      "longTaskMax5m": 59,
+      "longTaskSum5m": 113,
+      "fetchApiCalls": 5,
+      "bodyChildren": 22,
+      "heapMB": 10.309,
+      "heapTotalMB": 18.093
+    },
+    {
+      "index": 3,
+      "reason": "t15m",
+      "at": "2026-07-31T06:54:04.542Z",
+      "elapsedMin": 15.04,
+      "transferMB": 386.204,
+      "transferBytes": 404964042,
+      "apiNetworkCount": 1093,
+      "apiRecent": [
+        {
+          "u": "/api/races?date=2026-08-01",
+          "t": 1785480830308
+        },
+        {
+          "u": "/api/races?date=2026-08-02",
+          "t": 1785480830308
+        },
+        {
+          "u": "/api/race-cards?date=2026-08-01",
+          "t": 1785480830347
+        },
+        {
+          "u": "/api/race-cards?date=2026-08-02",
+          "t": 1785480830348
+        },
+        {
+          "u": "/config/beta.json",
+          "t": 1785480831930
+        },
+        {
+          "u": "/api/races/2026-08-01-01-02/board",
+          "t": 1785480831930
+        },
+        {
+          "u": "/api/predictions/2026-08-01-01-02",
+          "t": 1785480831993
+        },
+        {
+          "u": "/api/races/2026-08-01-01-02/board",
+          "t": 1785480833885
+        },
+        {
+          "u": "/api/conversation/chat",
+          "t": 1785480840015
+        },
+        {
+          "u": "/api/kaoba/chat",
+          "t": 1785480840050
+        },
+        {
+          "u": "/config/beta.json",
+          "t": 1785480843762
+        },
+        {
+          "u": "/api/races?date=2026-08-01",
+          "t": 1785480843815
+        },
+        {
+          "u": "/api/races?date=2026-08-02",
+          "t": 1785480843815
+        },
+        {
+          "u": "/api/race-cards?date=2026-08-01",
+          "t": 1785480843864
+        },
+        {
+          "u": "/api/race-cards?date=2026-08-02",
+          "t": 1785480843864
+        }
+      ],
+      "actions": 259,
+      "flowIndex": 185,
+      "href": "https://expect-keiba.com/races",
+      "path": "/races",
+      "title": "Expect ～ KEIBA AI ～ · レース一覧",
+      "nodes": 148,
+      "heap": 11803409,
+      "heapTotal": 13701345,
+      "fps": 86,
+      "fpsSamples": [
+        86
+      ],
+      "longTaskCount5m": 2,
+      "longTaskMax5m": 67,
+      "longTaskSum5m": 123,
+      "fetchApiCalls": 5,
+      "bodyChildren": 22,
+      "heapMB": 11.257,
+      "heapTotalMB": 13.067
+    },
+    {
+      "index": 4,
+      "reason": "t20m",
+      "at": "2026-07-31T06:59:02.795Z",
+      "elapsedMin": 20.01,
+      "transferMB": 519.34,
+      "transferBytes": 544567913,
+      "apiNetworkCount": 1467,
+      "apiRecent": [
+        {
+          "u": "/api/races?date=2026-08-01",
+          "t": 1785481132786
+        },
+        {
+          "u": "/api/races?date=2026-08-02",
+          "t": 1785481132786
+        },
+        {
+          "u": "/api/predictions?date=2026-08-01",
+          "t": 1785481132786
+        },
+        {
+          "u": "/api/data/coverage",
+          "t": 1785481132786
+        },
+        {
+          "u": "/api/v1/history",
+          "t": 1785481132786
+        },
+        {
+          "u": "/api/predictions",
+          "t": 1785481132786
+        },
+        {
+          "u": "/api/data/coverage",
+          "t": 1785481132786
+        },
+        {
+          "u": "/config/beta.json",
+          "t": 1785481133495
+        },
+        {
+          "u": "/api/races?date=2026-08-01",
+          "t": 1785481133573
+        },
+        {
+          "u": "/api/races?date=2026-08-02",
+          "t": 1785481133573
+        },
+        {
+          "u": "/api/race-cards?date=2026-08-01",
+          "t": 1785481133664
+        },
+        {
+          "u": "/api/race-cards?date=2026-08-02",
+          "t": 1785481133664
+        },
+        {
+          "u": "/config/beta.json",
+          "t": 1785481137024
+        },
+        {
+          "u": "/api/races/2026-08-01-01-02/board",
+          "t": 1785481137024
+        },
+        {
+          "u": "/api/predictions/2026-08-01-01-02",
+          "t": 1785481137301
+        }
+      ],
+      "actions": 344,
+      "flowIndex": 249,
+      "href": "https://expect-keiba.com/race?race_id=2026-08-01-01-02",
+      "path": "/race",
+      "title": "Expect ～ KEIBA AI ～ · レース詳細",
+      "nodes": 247,
+      "heap": 12705004,
+      "heapTotal": 13639280,
+      "fps": 144,
+      "fpsSamples": [
+        28,
+        144,
+        144,
+        143,
+        144,
+        144
+      ],
+      "longTaskCount5m": 4,
+      "longTaskMax5m": 236,
+      "longTaskSum5m": 501,
+      "fetchApiCalls": 3,
+      "bodyChildren": 25,
+      "heapMB": 12.116,
+      "heapTotalMB": 13.007
+    },
+    {
+      "index": 5,
+      "reason": "t25m",
+      "at": "2026-07-31T07:04:04.031Z",
+      "elapsedMin": 25.03,
+      "transferMB": 650.868,
+      "transferBytes": 682484360,
+      "apiNetworkCount": 1839,
+      "apiRecent": [
+        {
+          "u": "/api/v1/challenge/monthly?month=2026-07",
+          "t": 1785481437675
+        },
+        {
+          "u": "/api/v1/stats/heatmap",
+          "t": 1785481437675
+        },
+        {
+          "u": "/api/races?date=2026-08-01",
+          "t": 1785481437676
+        },
+        {
+          "u": "/api/races?date=2026-08-02",
+          "t": 1785481437676
+        },
+        {
+          "u": "/api/predictions?date=2026-08-01",
+          "t": 1785481437676
+        },
+        {
+          "u": "/api/data/coverage",
+          "t": 1785481437676
+        },
+        {
+          "u": "/api/v1/history",
+          "t": 1785481437676
+        },
+        {
+          "u": "/api/predictions",
+          "t": 1785481437676
+        },
+        {
+          "u": "/api/data/coverage",
+          "t": 1785481437676
+        },
+        {
+          "u": "/api/v1/challenge/monthly?month=2026-07",
+          "t": 1785481440030
+        },
+        {
+          "u": "/config/beta.json",
+          "t": 1785481441023
+        },
+        {
+          "u": "/api/races?date=2026-08-01",
+          "t": 1785481441077
+        },
+        {
+          "u": "/api/races?date=2026-08-02",
+          "t": 1785481441077
+        },
+        {
+          "u": "/api/race-cards?date=2026-08-01",
+          "t": 1785481441124
+        },
+        {
+          "u": "/api/race-cards?date=2026-08-02",
+          "t": 1785481441124
+        }
+      ],
+      "actions": 431,
+      "flowIndex": 314,
+      "href": "https://expect-keiba.com/races",
+      "path": "/races",
+      "title": "Expect ～ KEIBA AI ～ · レース一覧",
+      "nodes": 148,
+      "heap": 12042250,
+      "heapTotal": 13737846,
+      "fps": 123,
+      "fpsSamples": [
+        82,
+        144,
+        143
+      ],
+      "longTaskCount5m": 2,
+      "longTaskMax5m": 79,
+      "longTaskSum5m": 138,
+      "fetchApiCalls": 5,
+      "bodyChildren": 22,
+      "heapMB": 11.484,
+      "heapTotalMB": 13.101
+    },
+    {
+      "index": 6,
+      "reason": "t30m",
+      "at": "2026-07-31T07:09:05.028Z",
+      "elapsedMin": 30.04,
+      "transferMB": 784.855,
+      "transferBytes": 822980137,
+      "apiNetworkCount": 2221,
+      "apiRecent": [
+        {
+          "u": "/api/predictions?date=2026-08-01",
+          "t": 1785481734884
+        },
+        {
+          "u": "/api/data/coverage",
+          "t": 1785481734884
+        },
+        {
+          "u": "/api/v1/history",
+          "t": 1785481734884
+        },
+        {
+          "u": "/api/predictions",
+          "t": 1785481734884
+        },
+        {
+          "u": "/api/data/coverage",
+          "t": 1785481734884
+        },
+        {
+          "u": "/api/v1/challenge/monthly?month=2026-07",
+          "t": 1785481737064
+        },
+        {
+          "u": "/config/beta.json",
+          "t": 1785481738319
+        },
+        {
+          "u": "/api/races?date=2026-08-01",
+          "t": 1785481738428
+        },
+        {
+          "u": "/api/races?date=2026-08-02",
+          "t": 1785481738428
+        },
+        {
+          "u": "/api/race-cards?date=2026-08-01",
+          "t": 1785481738477
+        },
+        {
+          "u": "/api/race-cards?date=2026-08-02",
+          "t": 1785481738477
+        },
+        {
+          "u": "/api/races?date=2026-08-01",
+          "t": 1785481740828
+        },
+        {
+          "u": "/api/races?date=2026-08-02",
+          "t": 1785481740828
+        },
+        {
+          "u": "/api/race-cards?date=2026-08-01",
+          "t": 1785481740868
+        },
+        {
+          "u": "/api/race-cards?date=2026-08-02",
+          "t": 1785481740868
+        }
+      ],
+      "actions": 518,
+      "flowIndex": 374,
+      "href": "https://expect-keiba.com/races",
+      "path": "/races",
+      "title": "Expect ～ KEIBA AI ～ · レース一覧",
+      "nodes": 148,
+      "heap": 4800186,
+      "heapTotal": 9947102,
+      "fps": 139,
+      "fpsSamples": [
+        82,
+        144,
+        141,
+        144,
+        144,
+        144,
+        122
+      ],
+      "longTaskCount5m": 2,
+      "longTaskMax5m": 74,
+      "longTaskSum5m": 132,
+      "fetchApiCalls": 9,
+      "bodyChildren": 22,
+      "heapMB": 4.578,
+      "heapTotalMB": 9.486
+    },
+    {
+      "index": 7,
+      "reason": "t30m-final",
+      "at": "2026-07-31T07:09:05.038Z",
+      "elapsedMin": 30.04,
+      "transferMB": 784.855,
+      "transferBytes": 822980137,
+      "apiNetworkCount": 2221,
+      "apiRecent": [
+        {
+          "u": "/api/predictions?date=2026-08-01",
+          "t": 1785481734884
+        },
+        {
+          "u": "/api/data/coverage",
+          "t": 1785481734884
+        },
+        {
+          "u": "/api/v1/history",
+          "t": 1785481734884
+        },
+        {
+          "u": "/api/predictions",
+          "t": 1785481734884
+        },
+        {
+          "u": "/api/data/coverage",
+          "t": 1785481734884
+        },
+        {
+          "u": "/api/v1/challenge/monthly?month=2026-07",
+          "t": 1785481737064
+        },
+        {
+          "u": "/config/beta.json",
+          "t": 1785481738319
+        },
+        {
+          "u": "/api/races?date=2026-08-01",
+          "t": 1785481738428
+        },
+        {
+          "u": "/api/races?date=2026-08-02",
+          "t": 1785481738428
+        },
+        {
+          "u": "/api/race-cards?date=2026-08-01",
+          "t": 1785481738477
+        },
+        {
+          "u": "/api/race-cards?date=2026-08-02",
+          "t": 1785481738477
+        },
+        {
+          "u": "/api/races?date=2026-08-01",
+          "t": 1785481740828
+        },
+        {
+          "u": "/api/races?date=2026-08-02",
+          "t": 1785481740828
+        },
+        {
+          "u": "/api/race-cards?date=2026-08-01",
+          "t": 1785481740868
+        },
+        {
+          "u": "/api/race-cards?date=2026-08-02",
+          "t": 1785481740868
+        }
+      ],
+      "actions": 518,
+      "flowIndex": 374,
+      "href": "https://expect-keiba.com/races",
+      "path": "/races",
+      "title": "Expect ～ KEIBA AI ～ · レース一覧",
+      "nodes": 148,
+      "heap": 4800186,
+      "heapTotal": 9947102,
+      "fps": 139,
+      "fpsSamples": [
+        82,
+        144,
+        141,
+        144,
+        144,
+        144,
+        122
+      ],
+      "longTaskCount5m": 2,
+      "longTaskMax5m": 74,
+      "longTaskSum5m": 132,
+      "fetchApiCalls": 9,
+      "bodyChildren": 22,
+      "heapMB": 4.578,
+      "heapTotalMB": 9.486
+    }
+  ],
+  "topApiPaths": [
+    [
+      "/api/races",
+      143
+    ],
+    [
+      "/api/race-cards",
+      71
+    ],
+    [
+      "/config/beta.json",
+      58
+    ],
+    [
+      "/api/predictions",
+      44
+    ],
+    [
+      "/api/data/coverage",
+      44
+    ],
+    [
+      "/api/v1/challenge/monthly",
+      39
+    ],
+    [
+      "/api/races/2026-08-01-01-02/board",
+      24
+    ],
+    [
+      "/api/v1/stats/heatmap",
+      22
+    ],
+    [
+      "/api/v1/history",
+      22
+    ],
+    [
+      "/api/predictions/2026-08-01-01-02",
+      13
+    ],
+    [
+      "/api/conversation/chat",
+      10
+    ],
+    [
+      "/api/kaoba/chat",
+      10
+    ]
+  ]
+}

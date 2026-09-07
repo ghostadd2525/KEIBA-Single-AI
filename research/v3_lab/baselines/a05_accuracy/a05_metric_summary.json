@@ -1,0 +1,39 @@
+{
+  "experiment_id": "v3-a05-favorite-safe-coverage",
+  "decision": "PASS",
+  "hard_gate": {
+    "primary": "offline",
+    "require_worsened_winner_rank1_0": true,
+    "require_delta_hit_gt_0": true,
+    "worsened_winner_rank1": 0,
+    "delta_hit": 7,
+    "churn_hit": 0,
+    "pick_churn": 46,
+    "lab_hit_279_required": false,
+    "pass": true
+  },
+  "lab": {
+    "control_hit": 218,
+    "a03_hit": 227,
+    "a05_hit": 218,
+    "a05_delta_hit": 0,
+    "a05_worsened_rank1": 0,
+    "a05_churn_hit": 0,
+    "a05_purchase": 218,
+    "a05_roi": 1.1418
+  },
+  "offline": {
+    "control_hit": 59,
+    "a03_hit": 42,
+    "a05_hit": 66,
+    "a05_delta_hit": 7,
+    "a05_worsened_rank1": 0,
+    "a05_churn_hit": 0,
+    "a05_pick_churn": 46,
+    "a05_purchase": 66,
+    "a05_roi": 0.5235,
+    "a05_improved_n": 7,
+    "a05_worsened_n": 0
+  },
+  "mutex_ok": true
+}

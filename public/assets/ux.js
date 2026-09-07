@@ -9,7 +9,7 @@
   var DEFAULT_LOADING_MSG = "しばらくお待ちください。";
   var LOAD_AVG_KEY = "expect_ux_load_avg_ms";
   var DEFAULT_EXPECTED_MS = 2800;
-  var LOADING_RUNNER_SRC = "assets/images/mascot-loading-run.png?v=3";
+  var LOADING_RUNNER_SRC = "assets/images/mascot-loading-run.webp?v=3";
   var _loadTimers = [];
 
   function el(html) {
@@ -319,7 +319,7 @@
   function typingRow() {
     return el(
       '<div class="msg msg-ai msg-typing" data-typing="1" aria-label="入力中">' +
-        '<img src="assets/images/mascot-ka0ba.png?v=10" alt="" />' +
+        '<img src="assets/images/mascot-ka0ba.webp?v=10" alt="" />' +
         '<div class="msg-bubble">' +
         '<span class="msg-typing__dot"></span>' +
         '<span class="msg-typing__dot"></span>' +

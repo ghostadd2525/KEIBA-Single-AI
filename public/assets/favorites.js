@@ -54,7 +54,7 @@
       name: "函館記念",
       badge: "GIII",
       postTime: "15:45",
-      image: "assets/images/race-bg-1.png",
+      image: "assets/images/race-bg-1.webp",
       bg: 1,
       ai: { overall: 88, pedigree: 90, pace: 86, jockey: 84, form: 91, odds: 79 }
     },
@@ -66,7 +66,7 @@
       name: "メインレース",
       badge: "GIII",
       postTime: "15:40",
-      image: "assets/images/race-bg-2.png",
+      image: "assets/images/race-bg-2.webp",
       bg: 2,
       ai: { overall: 92, pedigree: 94, pace: 90, jockey: 88, form: 93, odds: 82 }
     },
@@ -78,7 +78,7 @@
       name: "ラジオNIKKEI賞",
       badge: "GIII",
       postTime: "15:25",
-      image: "assets/images/race-bg-3.png",
+      image: "assets/images/race-bg-3.webp",
       bg: 3,
       ai: { overall: 76, pedigree: 78, pace: 74, jockey: 80, form: 72, odds: 70 }
     },
@@ -90,7 +90,7 @@
       name: "函館2歳S",
       badge: "GIII",
       postTime: "15:10",
-      image: "assets/images/race-bg-4.png",
+      image: "assets/images/race-bg-4.webp",
       bg: 4,
       ai: { overall: 81, pedigree: 83, pace: 79, jockey: 77, form: 85, odds: 74 }
     },
@@ -102,7 +102,7 @@
       name: "中山ダート戦",
       badge: "L",
       postTime: "15:30",
-      image: "assets/images/race-bg-1.png",
+      image: "assets/images/race-bg-1.webp",
       bg: 1,
       ai: { overall: 79, pedigree: 76, pace: 82, jockey: 75, form: 80, odds: 78 }
     }
@@ -190,7 +190,7 @@
         name: info.race_name || info.class_label || "",
         badge: info.grade || "",
         postTime: info.post_time || "",
-        image: "assets/images/race-bg-1.png",
+        image: "assets/images/race-bg-1.webp",
         bg: ((Number(raceNo) || 1) % 4) + 1,
       },
       summaryBits
@@ -199,9 +199,28 @@
 
   function aiFromBundle(b) {
     if (global.ExpectAnalysisBind && typeof ExpectAnalysisBind.toAiParams === "function") {
-      return ExpectAnalysisBind.toAiParams(b, null);
+      var mapped = ExpectAnalysisBind.toAiParams(b, null);
+      if (mapped) return mapped;
+      return {
+        overall: null,
+        history: null,
+        distance: null,
+        style_fit: null,
+        front: null,
+        pace_resilience: null,
+      };
     }
-    var overall = scoreFromBundle(b) || 70;
+    var overall = scoreFromBundle(b);
+    if (overall == null) {
+      return {
+        overall: null,
+        history: null,
+        distance: null,
+        style_fit: null,
+        front: null,
+        pace_resilience: null,
+      };
+    }
     return {
       overall: overall,
       history: overall,
@@ -301,12 +320,12 @@
 
   function defaultAi() {
     return {
-      overall: 70,
-      history: 70,
-      distance: 70,
-      style_fit: 70,
-      front: 70,
-      pace_resilience: 70,
+      overall: null,
+      history: null,
+      distance: null,
+      style_fit: null,
+      front: null,
+      pace_resilience: null,
     };
   }
 
@@ -320,8 +339,20 @@
 
   function getAi(id) {
     if (_bundleCache[id]) return aiFromBundle(_bundleCache[id]);
-    var base = allowCatalog() && CATALOG[id] && CATALOG[id].ai;
-    return Object.assign(defaultAi(), base || {});
+    // Analysis ダッシュボードではモック70%を使わない。
+    // カタログは開発モック許可時のみ。
+    if (allowCatalog() && CATALOG[id] && CATALOG[id].ai) {
+      var c = CATALOG[id].ai;
+      return {
+        overall: c.overall != null ? c.overall : null,
+        history: c.form != null ? c.form : c.pedigree != null ? c.pedigree : null,
+        distance: c.pace != null ? c.pace : null,
+        style_fit: c.jockey != null ? c.jockey : null,
+        front: c.form != null ? c.form : null,
+        pace_resilience: c.odds != null ? c.odds : null,
+      };
+    }
+    return defaultAi();
   }
 
   function storage() {
@@ -345,14 +376,18 @@
     }
   }
 
-  function write(list) {
+  function write(list, opts) {
+    opts = opts || {};
     var store = storage();
     if (!store) return false;
     try {
       var key = storageKey();
       migrateLegacyFavorites(store, key);
       store.setItem(key, JSON.stringify(list));
-      scheduleServerSync();
+      // intent 同期は add/remove が enqueue。importFromServer 等は schedule しない。
+      if (opts.scheduleSync !== false && !_suppressSyncSchedule) {
+        scheduleServerSync();
+      }
       return true;
     } catch (e) {
       return false;
@@ -362,6 +397,12 @@
   /** ログイン切替後に UI を当該ユーザーの枠へ載せ替える */
   function bindToCurrentUser(opts) {
     opts = opts || {};
+    // 別ユーザー枠へ載せる前に、未送信 intent を破棄（誤適用防止）
+    _pendingOps = [];
+    if (_syncTimer) {
+      clearTimeout(_syncTimer);
+      _syncTimer = null;
+    }
     var store = storage();
     if (store) migrateLegacyFavorites(store, storageKey());
     if (opts.clearGuest) {
@@ -379,20 +420,24 @@
 
   var _syncTimer = null;
   var _syncing = false;
+  var _pendingOps = [];
+  var _suppressSyncSchedule = false;
 
-  /** サーバー同期用 DTO（expect-favorites/1.0） */
+  function itemToSyncDto(item) {
+    return {
+      race_id: item.id,
+      place: item.place || null,
+      name: item.name || null,
+      badge: item.badge || null,
+      post_time: item.postTime || null,
+      date_label: item.dateLabel || null,
+      added_at: item.addedAt || Date.now(),
+    };
+  }
+
+  /** サーバー同期用 DTO（expect-favorites/1.0）— 表示・login payload 用。PUT 本体には使わない */
   function exportForSync() {
-    var items = list().map(function (item) {
-      return {
-        race_id: item.id,
-        place: item.place || null,
-        name: item.name || null,
-        badge: item.badge || null,
-        post_time: item.postTime || null,
-        date_label: item.dateLabel || null,
-        added_at: item.addedAt || Date.now(),
-      };
-    });
+    var items = list().map(itemToSyncDto);
     return {
       schema_version: "expect-favorites/1.0",
       race_ids: items.map(function (x) {
@@ -401,6 +446,11 @@
       items: items,
       synced_at: null,
     };
+  }
+
+  function enqueueOp(op) {
+    if (!op || !op.op || !op.race_id) return;
+    _pendingOps.push(op);
   }
 
   /**
@@ -447,13 +497,18 @@
         .slice(0, MAX);
     }
 
-    var store = storage();
-    if (store) {
-      try {
-        var key = storageKey();
-        migrateLegacyFavorites(store, key);
-        store.setItem(key, JSON.stringify(next));
-      } catch (e) { /* ignore */ }
+    _suppressSyncSchedule = true;
+    try {
+      var store = storage();
+      if (store) {
+        try {
+          var key = storageKey();
+          migrateLegacyFavorites(store, key);
+          store.setItem(key, JSON.stringify(next));
+        } catch (e) { /* ignore */ }
+      }
+    } finally {
+      _suppressSyncSchedule = false;
     }
     global.dispatchEvent(
       new CustomEvent("expect:favorites-changed", { detail: { list: list(), source: "server" } })
@@ -477,33 +532,51 @@
 
   function scheduleServerSync() {
     if (!canSync()) return;
+    if (!_pendingOps.length) return;
     if (_syncTimer) clearTimeout(_syncTimer);
     _syncTimer = setTimeout(function () {
       syncNow({ reason: "local-change" }).catch(function () { /* ignore */ });
     }, 600);
   }
 
-  /** ログイン後・変更後の push / pull */
+  /**
+   * intent ops をサーバー最新へ適用。pending がなければ pull（login）または noop。
+   * フルリスト PUT は行わない（stale overwrite 防止）。
+   */
   function syncNow(opts) {
     opts = opts || {};
     if (!canSync()) return Promise.resolve({ ok: false, reason: "guest" });
     if (_syncing) return Promise.resolve({ ok: false, reason: "busy" });
-    _syncing = true;
 
-    var push = ExpectApi.Auth.putFavorites(exportForSync())
+    if (!_pendingOps.length) {
+      if (opts.reason === "login" || opts.pullIfEmpty) {
+        return pullFromServer().then(function (r) {
+          return Object.assign({ reason: opts.reason || "pull" }, r);
+        });
+      }
+      return Promise.resolve({ ok: true, reason: "noop", favorites: exportForSync() });
+    }
+
+    _syncing = true;
+    var batch = _pendingOps.slice();
+    _pendingOps = [];
+
+    var body = batch.length === 1 ? batch[0] : { ops: batch };
+
+    return ExpectApi.Auth.putFavorites(body)
       .then(function (fav) {
         if (fav) importFromServer(fav, { merge: false });
-        return { ok: true, favorites: fav, reason: opts.reason || "sync" };
+        return { ok: true, favorites: fav, reason: opts.reason || "sync", ops: batch };
       })
       .catch(function (err) {
+        // 失敗時は未送信 ops を先頭に戻す
+        _pendingOps = batch.concat(_pendingOps);
         return { ok: false, error: err };
       })
       .then(function (result) {
         _syncing = false;
         return result;
       });
-
-    return push;
   }
 
   function pullFromServer() {
@@ -522,7 +595,7 @@
 
   function normalize(entry) {
     var base = getMeta(entry.id, entry);
-    var image = entry.image || base.image || "assets/images/race-bg-1.png";
+    var image = entry.image || base.image || "assets/images/race-bg-1.webp";
     var bg = entry.bg || base.bg || 1;
     if (String(image).indexOf("race-bg-") < 0 && base.image) {
       image = base.image;
@@ -618,6 +691,8 @@
       });
       items.shift();
     }
+    // 明示 ADD のみ送信。ローカル eviction を REMOVE として送ると stale が他端末の race を消す。
+    enqueueOp({ op: "add", race_id: id, item: itemToSyncDto(entry) });
     write(items);
     return { ok: true, added: true, list: list(), evicted: evicted };
   }
@@ -626,6 +701,7 @@
     var next = read().filter(function (item) {
       return item.id !== id;
     });
+    enqueueOp({ op: "remove", race_id: id });
     write(next);
     return { ok: true, added: false, list: list() };
   }
@@ -690,10 +766,7 @@
   var homeEditMode = false;
 
   function cardHtml(item, editing) {
-    var badge = item.badge
-      ? '<span class="fav-badge">' + escapeHtml(item.badge) + "</span>"
-      : "";
-    var bgClass = "fav-card--bg" + (item.bg || 1);
+    var bgClass = "race-item--bg" + (item.bg || 1);
     var time = item.postTime ? String(item.postTime).trim() : "";
     var metaLine = escapeHtml(item.dateLabel || "");
     if (time) {
@@ -709,39 +782,13 @@
         '" aria-label="お気に入りから削除">×</button>'
       : "";
 
-    // Phase 5: summary 投影は v2_race_list_ui ON のときのみ（Flag OFF = v1.1 恒等）
-    var summaryHtml = "";
-    if (v2RaceListUiOn()) {
-      var parts = [];
-      if (item.honmeiNum != null || item.honmei) {
-        parts.push(
-          "◎ " +
-            (item.honmeiNum != null ? String(item.honmeiNum) + " " : "") +
-            escapeHtml(item.honmei || "")
-        );
-      }
-      if (item.confPct != null) {
-        parts.push(String(item.confPct) + "%");
-      }
-      if (parts.length) {
-        summaryHtml =
-          '<p class="fav-summary">' + parts.join('<span class="fav-meta-sep"> · </span>') + "</p>";
-      }
-    }
-
     return (
       '<a class="fav-card ' +
       bgClass +
       (editing ? " is-editing" : "") +
       '" href="race.html?race_id=' +
-      encodeURIComponent(
-        global.ExpectRaceIdMeta && ExpectRaceIdMeta.normalizeRaceIdYear
-          ? ExpectRaceIdMeta.normalizeRaceIdYear(item.id)
-          : item.id
-      ) +
-      '" style="background-image:url(\'' +
-      escapeAttr(item.image) +
-      "')\">" +
+      encodeURIComponent(item.id) +
+      '">' +
       removeBtn +
       '<div class="fav-card-shade" aria-hidden="true"></div>' +
       '<div class="fav-card-text">' +
@@ -754,8 +801,6 @@
       '<p class="fav-name">' +
       escapeHtml(item.name) +
       "</p>" +
-      summaryHtml +
-      badge +
       "</div>" +
       "</a>"
     );
@@ -1055,6 +1100,9 @@
     syncNow: syncNow,
     pullFromServer: pullFromServer,
     canSync: canSync,
+    pendingOps: function () {
+      return _pendingOps.slice();
+    },
     bindToCurrentUser: bindToCurrentUser,
     storageKey: storageKey,
     cacheBundles: cacheBundles,

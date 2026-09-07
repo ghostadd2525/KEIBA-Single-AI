@@ -1,0 +1,404 @@
+{
+  "freeze_id": "v3-lab-freeze/1.0",
+  "baseline_id": "v3-lab-baseline-p5-v1",
+  "freeze_date": "2026-07-24",
+  "generated_on": "2026-07-24",
+  "control": {
+    "name": "V2 Final (PE-V2-A)",
+    "hit": 218,
+    "corpus_size": 285,
+    "miss": 67
+  },
+  "pipeline": {
+    "frozen": true,
+    "stages": [
+      "representation",
+      "admission",
+      "selection",
+      "evaluation",
+      "purchase"
+    ],
+    "implemented": [
+      "representation",
+      "admission",
+      "selection"
+    ],
+    "stubs": [
+      "evaluation",
+      "purchase"
+    ]
+  },
+  "contracts": {
+    "frozen": true,
+    "ids": {
+      "representation": "v3-lab-representation/2.0",
+      "admission": "v3-lab-admission/2.0",
+      "selection": "v3-lab-selection/2.0",
+      "evaluation": "v3-lab-evaluation/2.0",
+      "purchase": "v3-lab-purchase/1.0",
+      "pipeline": "v3-lab-pipeline/1.0"
+    }
+  },
+  "feature_flags": {
+    "all_default_off": true,
+    "any_stage_on": false,
+    "identity_when_all_off": true,
+    "flags": [
+      {
+        "flag": "F_V3_REPRESENTATION",
+        "default": false,
+        "role": "canonical_stage",
+        "value": false
+      },
+      {
+        "flag": "F_V3_ADMISSION",
+        "default": false,
+        "role": "canonical_stage",
+        "value": false
+      },
+      {
+        "flag": "F_V3_SELECTION",
+        "default": false,
+        "role": "canonical_stage",
+        "value": false
+      },
+      {
+        "flag": "F_V3_REPRESENTATION_ENABLED",
+        "default": false,
+        "role": "alias",
+        "value": false
+      },
+      {
+        "flag": "F_V3_ADMISSION_ENABLED",
+        "default": false,
+        "role": "alias",
+        "value": false
+      },
+      {
+        "flag": "F_V3_SELECTION_ENABLED",
+        "default": false,
+        "role": "alias",
+        "value": false
+      },
+      {
+        "flag": "F_V3_LAB_ENABLED",
+        "default": false,
+        "role": "reserved_or_legacy",
+        "value": false
+      },
+      {
+        "flag": "F_V3_EVALUATION_ENABLED",
+        "default": false,
+        "role": "reserved_or_legacy",
+        "value": false
+      },
+      {
+        "flag": "F_V3_PURCHASE_ENABLED",
+        "default": false,
+        "role": "reserved_or_legacy",
+        "value": false
+      },
+      {
+        "flag": "F_V3_RANK_D1_ENABLED",
+        "default": false,
+        "role": "reserved_or_legacy",
+        "value": false
+      },
+      {
+        "flag": "F_V3_RANK_D2_ENABLED",
+        "default": false,
+        "role": "reserved_or_legacy",
+        "value": false
+      },
+      {
+        "flag": "F_V3_AP_BANDED_ENABLED",
+        "default": false,
+        "role": "reserved_or_legacy",
+        "value": false
+      },
+      {
+        "flag": "F_V3_AP_COVERAGE_ENABLED",
+        "default": false,
+        "role": "reserved_or_legacy",
+        "value": false
+      },
+      {
+        "flag": "F_V3_SEL_REORDER_ENABLED",
+        "default": false,
+        "role": "reserved_or_legacy",
+        "value": false
+      }
+    ]
+  },
+  "experiment_registry": {
+    "frozen": true,
+    "count": 16,
+    "experiments": [
+      {
+        "experiment_id": "v3-p1-lab-harness",
+        "phase": "P1",
+        "flag": "F_V3_LAB_ENABLED",
+        "status": "complete",
+        "accuracy_intervention": false,
+        "alias_of": null
+      },
+      {
+        "experiment_id": "v3-p2-representation",
+        "phase": "P2",
+        "flag": "F_V3_REPRESENTATION",
+        "status": "complete",
+        "accuracy_intervention": false,
+        "alias_of": null
+      },
+      {
+        "experiment_id": "v3-p3-admission",
+        "phase": "P3",
+        "flag": "F_V3_ADMISSION",
+        "status": "complete",
+        "accuracy_intervention": false,
+        "alias_of": null
+      },
+      {
+        "experiment_id": "v3-p4-selection",
+        "phase": "P4",
+        "flag": "F_V3_SELECTION",
+        "status": "complete",
+        "accuracy_intervention": false,
+        "alias_of": null
+      },
+      {
+        "experiment_id": "v3-p5-freeze",
+        "phase": "P5",
+        "flag": null,
+        "status": "complete",
+        "accuracy_intervention": false,
+        "alias_of": null
+      },
+      {
+        "experiment_id": "v3-rank-d1-recal-285r-ab",
+        "phase": "A-01",
+        "flag": "F_V3_RANK_D1_ENABLED",
+        "status": "lab_primary_candidate",
+        "accuracy_intervention": true,
+        "alias_of": "v3-a01-d1-recal"
+      },
+      {
+        "experiment_id": "v3-a01-d1-recal",
+        "phase": "A-01",
+        "flag": "F_V3_RANK_D1_ENABLED",
+        "status": "lab_primary_candidate",
+        "accuracy_intervention": true,
+        "alias_of": null
+      },
+      {
+        "experiment_id": "v3-rank-d2-rerank-285r-ab",
+        "phase": "A-02",
+        "flag": "F_V3_RANK_D2_ENABLED",
+        "status": "lab_secondary_candidate",
+        "accuracy_intervention": true,
+        "alias_of": "v3-a02-d2-rerank"
+      },
+      {
+        "experiment_id": "v3-a02-d2-rerank",
+        "phase": "A-02",
+        "flag": "F_V3_RANK_D2_ENABLED",
+        "status": "lab_secondary_candidate",
+        "accuracy_intervention": true,
+        "alias_of": null
+      },
+      {
+        "experiment_id": "v3-accuracy-candidate-review",
+        "phase": "Accuracy Phase 1",
+        "flag": null,
+        "status": "complete",
+        "accuracy_intervention": false,
+        "alias_of": null
+      },
+      {
+        "experiment_id": "v3-accuracy-phase1-close",
+        "phase": "Accuracy Phase 1",
+        "flag": null,
+        "status": "complete",
+        "accuracy_intervention": false,
+        "alias_of": null
+      },
+      {
+        "experiment_id": "v3-accuracy-phase2-research-design",
+        "phase": "Accuracy Phase 2",
+        "flag": null,
+        "status": "design_complete",
+        "accuracy_intervention": false,
+        "alias_of": null
+      },
+      {
+        "experiment_id": "v3-a03-pool-coverage",
+        "phase": "A-03",
+        "flag": "F_V3_A03_POOL_ADMIT_ENABLED",
+        "status": "active_lab",
+        "accuracy_intervention": true,
+        "alias_of": null
+      },
+      {
+        "experiment_id": "v3-ap-banded-deep-285r-ab",
+        "phase": "P3",
+        "flag": "F_V3_ADMISSION",
+        "status": "implemented_via_v3-p3-admission",
+        "accuracy_intervention": false,
+        "alias_of": "v3-p3-admission"
+      },
+      {
+        "experiment_id": "v3-ap-coverage-285r-ab",
+        "phase": "P3",
+        "flag": "F_V3_AP_COVERAGE_ENABLED",
+        "status": "reserved",
+        "accuracy_intervention": true,
+        "alias_of": null
+      },
+      {
+        "experiment_id": "v3-sel-reorder-285r-ab",
+        "phase": "P4",
+        "flag": "F_V3_SELECTION",
+        "status": "implemented_via_v3-p4-selection",
+        "accuracy_intervention": false,
+        "alias_of": "v3-p4-selection"
+      }
+    ]
+  },
+  "metrics_points": [
+    "lab.pipeline.start",
+    "lab.pipeline.end",
+    "lab.stage.representation",
+    "lab.stage.admission",
+    "lab.stage.selection",
+    "lab.stage.evaluation",
+    "lab.stage.purchase",
+    "lab.identity",
+    "lab.representation.enabled",
+    "lab.representation.feature_count",
+    "lab.representation.embedding_dim",
+    "lab.representation.runner_count",
+    "lab.admission.enabled",
+    "lab.admission.pool_size",
+    "lab.admission.capacity_max",
+    "lab.admission.admitted_count",
+    "lab.admission.rejected_count",
+    "lab.admission.deep_extra",
+    "lab.selection.enabled",
+    "lab.selection.selected_size",
+    "lab.selection.pool_size",
+    "lab.selection.swap_count",
+    "lab.selection.size_invariant",
+    "lab.selection.pool_external_adds",
+    "lab.evaluation.enabled",
+    "lab.evaluation.ranked_size",
+    "lab.evaluation.policy_id",
+    "lab.ab.control_hit",
+    "lab.ab.treatment_hit",
+    "lab.ab.churn_hit",
+    "lab.ab.a02.hit"
+  ],
+  "taxonomy": {
+    "control_hit": 218,
+    "corpus_size": 285,
+    "control_miss": 67,
+    "layers": [
+      "Eval",
+      "Boundary",
+      "Reorder",
+      "Pool",
+      "Delete"
+    ],
+    "counts": {
+      "Eval": 28,
+      "Boundary": 14,
+      "Reorder": 10,
+      "Pool": 9,
+      "Delete": 6
+    },
+    "counts_sum": 67,
+    "locked": true,
+    "note": "P1 lock scaffold — attach 285R labels in offline ops; no Accuracy intervention"
+  },
+  "taxonomy_lock_errors": [],
+  "design_alignment": [
+    {
+      "design": "Representation → Admission → Selection → Evaluation → Purchase",
+      "impl": "research/v3_lab/pipeline.py + stages.py",
+      "status": "aligned"
+    },
+    {
+      "design": "Feature Contract / Representation First (柱 I)",
+      "impl": "feature_generator.py · F_V3_REPRESENTATION · contract 2.0",
+      "status": "aligned"
+    },
+    {
+      "design": "Admission Policy AP-V3-A Banded Deep (柱 II)",
+      "impl": "admission_policy.py · F_V3_ADMISSION · contract 2.0",
+      "status": "aligned"
+    },
+    {
+      "design": "Selection Reorder-only SEL-V3-RO (柱 III · Rescue 禁止)",
+      "impl": "selection_policy.py · F_V3_SELECTION · contract 2.0",
+      "status": "aligned"
+    },
+    {
+      "design": "Evaluation Ranking D1/D2 · Purchase Mapper",
+      "impl": "stages stubs only (1.0 contracts)",
+      "status": "stub_deferred"
+    },
+    {
+      "design": "V2 Production non-interference · Flag OFF identity",
+      "impl": "all F_V3_* default OFF · package not wired to production",
+      "status": "aligned"
+    }
+  ],
+  "ab_harness": {
+    "control_identity": {
+      "experiment_id": "control-identity",
+      "flag": null,
+      "control_hit": 218,
+      "treatment_hit": 218,
+      "churn_hit": 0,
+      "control_reproduces_218": true,
+      "hard_gate_pass": false
+    },
+    "p2_representation": {
+      "experiment_id": "v3-p2-representation",
+      "flag": "F_V3_REPRESENTATION",
+      "control_hit": 218,
+      "treatment_hit": 218,
+      "churn_hit": 0,
+      "control_reproduces_218": true,
+      "hard_gate_pass": false
+    },
+    "p3_admission": {
+      "experiment_id": "v3-p3-admission",
+      "flag": "F_V3_ADMISSION",
+      "control_hit": 218,
+      "treatment_hit": 218,
+      "churn_hit": 0,
+      "control_reproduces_218": true,
+      "hard_gate_pass": false
+    },
+    "p4_selection": {
+      "experiment_id": "v3-p4-selection",
+      "flag": "F_V3_SELECTION",
+      "control_hit": 218,
+      "treatment_hit": 218,
+      "churn_hit": 0,
+      "control_reproduces_218": true,
+      "hard_gate_pass": false
+    },
+    "parity_all_pass": true,
+    "hard_gate_none_claimed": true
+  },
+  "boundaries": {
+    "v2_production_unchanged": true,
+    "no_prediction_api_wiring": true,
+    "no_ui_ops_explain_changes": true,
+    "no_accuracy_algorithm_added_in_p5": true,
+    "evaluation_not_started": true
+  },
+  "ready_for_accuracy_experiments": true,
+  "note": "P5 Freeze — Lab foundation fixed; Evaluation / Accuracy AB require separate approval"
+}

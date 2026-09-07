@@ -1,0 +1,244 @@
+{
+  "a03_solo": {
+    "improved_count": 9,
+    "worsened_count": 0,
+    "unchanged_hit_count": 218,
+    "unchanged_miss_count": 58,
+    "improved_by_layer": {
+      "Pool": 9
+    },
+    "pool_improved_count": 9,
+    "improved_races": [
+      {
+        "race_id": "a03-285-271",
+        "miss_layer": "Pool",
+        "winner_id": "H270-8",
+        "winner_rank": 8,
+        "control_pick": "H270-1",
+        "treatment_pick": "H270-8",
+        "control_hit": false,
+        "treatment_hit": true,
+        "pick_changed": true,
+        "status": "improved"
+      },
+      {
+        "race_id": "a03-285-272",
+        "miss_layer": "Pool",
+        "winner_id": "H271-9",
+        "winner_rank": 9,
+        "control_pick": "H271-1",
+        "treatment_pick": "H271-9",
+        "control_hit": false,
+        "treatment_hit": true,
+        "pick_changed": true,
+        "status": "improved"
+      },
+      {
+        "race_id": "a03-285-273",
+        "miss_layer": "Pool",
+        "winner_id": "H272-10",
+        "winner_rank": 10,
+        "control_pick": "H272-1",
+        "treatment_pick": "H272-10",
+        "control_hit": false,
+        "treatment_hit": true,
+        "pick_changed": true,
+        "status": "improved"
+      },
+      {
+        "race_id": "a03-285-274",
+        "miss_layer": "Pool",
+        "winner_id": "H273-8",
+        "winner_rank": 8,
+        "control_pick": "H273-1",
+        "treatment_pick": "H273-8",
+        "control_hit": false,
+        "treatment_hit": true,
+        "pick_changed": true,
+        "status": "improved"
+      },
+      {
+        "race_id": "a03-285-275",
+        "miss_layer": "Pool",
+        "winner_id": "H274-9",
+        "winner_rank": 9,
+        "control_pick": "H274-1",
+        "treatment_pick": "H274-9",
+        "control_hit": false,
+        "treatment_hit": true,
+        "pick_changed": true,
+        "status": "improved"
+      },
+      {
+        "race_id": "a03-285-276",
+        "miss_layer": "Pool",
+        "winner_id": "H275-10",
+        "winner_rank": 10,
+        "control_pick": "H275-1",
+        "treatment_pick": "H275-10",
+        "control_hit": false,
+        "treatment_hit": true,
+        "pick_changed": true,
+        "status": "improved"
+      },
+      {
+        "race_id": "a03-285-277",
+        "miss_layer": "Pool",
+        "winner_id": "H276-8",
+        "winner_rank": 8,
+        "control_pick": "H276-1",
+        "treatment_pick": "H276-8",
+        "control_hit": false,
+        "treatment_hit": true,
+        "pick_changed": true,
+        "status": "improved"
+      },
+      {
+        "race_id": "a03-285-278",
+        "miss_layer": "Pool",
+        "winner_id": "H277-9",
+        "winner_rank": 9,
+        "control_pick": "H277-1",
+        "treatment_pick": "H277-9",
+        "control_hit": false,
+        "treatment_hit": true,
+        "pick_changed": true,
+        "status": "improved"
+      },
+      {
+        "race_id": "a03-285-279",
+        "miss_layer": "Pool",
+        "winner_id": "H278-10",
+        "winner_rank": 10,
+        "control_pick": "H278-1",
+        "treatment_pick": "H278-10",
+        "control_hit": false,
+        "treatment_hit": true,
+        "pick_changed": true,
+        "status": "improved"
+      }
+    ],
+    "worsened_races": []
+  },
+  "a01_plus_a03": {
+    "improved_count": 9,
+    "worsened_count": 0,
+    "unchanged_hit_count": 246,
+    "unchanged_miss_count": 30,
+    "improved_by_layer": {
+      "Pool": 9
+    },
+    "pool_improved_count": 9,
+    "improved_races": [
+      {
+        "race_id": "a03-285-271",
+        "miss_layer": "Pool",
+        "winner_id": "H270-8",
+        "winner_rank": 8,
+        "control_pick": "H270-1",
+        "treatment_pick": "H270-8",
+        "control_hit": false,
+        "treatment_hit": true,
+        "pick_changed": true,
+        "status": "improved"
+      },
+      {
+        "race_id": "a03-285-272",
+        "miss_layer": "Pool",
+        "winner_id": "H271-9",
+        "winner_rank": 9,
+        "control_pick": "H271-1",
+        "treatment_pick": "H271-9",
+        "control_hit": false,
+        "treatment_hit": true,
+        "pick_changed": true,
+        "status": "improved"
+      },
+      {
+        "race_id": "a03-285-273",
+        "miss_layer": "Pool",
+        "winner_id": "H272-10",
+        "winner_rank": 10,
+        "control_pick": "H272-1",
+        "treatment_pick": "H272-10",
+        "control_hit": false,
+        "treatment_hit": true,
+        "pick_changed": true,
+        "status": "improved"
+      },
+      {
+        "race_id": "a03-285-274",
+        "miss_layer": "Pool",
+        "winner_id": "H273-8",
+        "winner_rank": 8,
+        "control_pick": "H273-1",
+        "treatment_pick": "H273-8",
+        "control_hit": false,
+        "treatment_hit": true,
+        "pick_changed": true,
+        "status": "improved"
+      },
+      {
+        "race_id": "a03-285-275",
+        "miss_layer": "Pool",
+        "winner_id": "H274-9",
+        "winner_rank": 9,
+        "control_pick": "H274-1",
+        "treatment_pick": "H274-9",
+        "control_hit": false,
+        "treatment_hit": true,
+        "pick_changed": true,
+        "status": "improved"
+      },
+      {
+        "race_id": "a03-285-276",
+        "miss_layer": "Pool",
+        "winner_id": "H275-10",
+        "winner_rank": 10,
+        "control_pick": "H275-1",
+        "treatment_pick": "H275-10",
+        "control_hit": false,
+        "treatment_hit": true,
+        "pick_changed": true,
+        "status": "improved"
+      },
+      {
+        "race_id": "a03-285-277",
+        "miss_layer": "Pool",
+        "winner_id": "H276-8",
+        "winner_rank": 8,
+        "control_pick": "H276-1",
+        "treatment_pick": "H276-8",
+        "control_hit": false,
+        "treatment_hit": true,
+        "pick_changed": true,
+        "status": "improved"
+      },
+      {
+        "race_id": "a03-285-278",
+        "miss_layer": "Pool",
+        "winner_id": "H277-9",
+        "winner_rank": 9,
+        "control_pick": "H277-1",
+        "treatment_pick": "H277-9",
+        "control_hit": false,
+        "treatment_hit": true,
+        "pick_changed": true,
+        "status": "improved"
+      },
+      {
+        "race_id": "a03-285-279",
+        "miss_layer": "Pool",
+        "winner_id": "H278-10",
+        "winner_rank": 10,
+        "control_pick": "H278-1",
+        "treatment_pick": "H278-10",
+        "control_hit": false,
+        "treatment_hit": true,
+        "pick_changed": true,
+        "status": "improved"
+      }
+    ],
+    "worsened_races": []
+  }
+}

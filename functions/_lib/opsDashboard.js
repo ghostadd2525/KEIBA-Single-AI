@@ -21,6 +21,9 @@ export const ALERT_BY_CHECK = {
   python_api: "ALT-E01",
   conversation_api: "ALT-C02",
   conversation_health: "ALT-C04",
+  horse_number_integrity: "ALT-E10",
+  pi_horse_number_integrity: "ALT-E10",
+  single_detail_ops: "ALT-SD03",
 };
 
 export const ALERT_SEVERITY = {
@@ -31,10 +34,16 @@ export const ALERT_SEVERITY = {
   "ALT-E05": "critical",
   "ALT-E08": "warning",
   "ALT-E09": "warning",
+  "ALT-E10": "warning",
   "ALT-C01": "warning",
   "ALT-C02": "critical",
   "ALT-C03": "warning",
   "ALT-C04": "critical",
+  "ALT-SD01": "warning",
+  "ALT-SD02": "critical",
+  "ALT-SD03": "critical",
+  "ALT-SD04": "warning",
+  "ALT-SD05": "warning",
 };
 
 /** Alert → Runbook アンカー */
@@ -46,10 +55,16 @@ export const ALERT_RUNBOOK = {
   "ALT-E05": "docs/ops/v2-operations-runbook.md#alt-e05",
   "ALT-E08": "docs/ops/v2-operations-runbook.md#alt-e08",
   "ALT-E09": "docs/ops/v2-operations-runbook.md#alt-e09",
+  "ALT-E10": "docs/ops/v2-operations-race-refresh-addendum.md#horse-number-integrity",
   "ALT-C01": "docs/ops/conversation-observability-runbook.md#alt-c01",
   "ALT-C02": "docs/ops/conversation-observability-runbook.md#alt-c02",
   "ALT-C03": "docs/ops/conversation-observability-runbook.md#alt-c03",
   "ALT-C04": "docs/ops/conversation-observability-runbook.md#alt-c04",
+  "ALT-SD01": "docs/ops/single-detail-runbook.md#alt-sd01",
+  "ALT-SD02": "docs/ops/single-detail-runbook.md#alt-sd02",
+  "ALT-SD03": "docs/ops/single-detail-runbook.md#alt-sd03",
+  "ALT-SD04": "docs/ops/single-detail-runbook.md#alt-sd04",
+  "ALT-SD05": "docs/ops/single-detail-runbook.md#alt-sd05",
 };
 
 export const MONITOR_INVENTORY = [
@@ -64,7 +79,9 @@ export const MONITOR_INVENTORY = [
   { id: "MET-J07", layer: "Metrics", status: "wired", via: "incidents.jsonl" },
   { id: "ALT-E02", layer: "Alert", status: "wired", via: "pi_health → Slack SLK-N01" },
   { id: "ALT-E05", layer: "Alert", status: "wired", via: "pi_systemd → Slack SLK-N01" },
+  { id: "ALT-E10", layer: "Alert", status: "wired", via: "horse_number_integrity" },
   { id: "SLK-N01", layer: "Notification", status: "wired", via: "OPS_SLACK_WEBHOOK_URL" },
+  { id: "HN-I01", layer: "PI", status: "wired", via: "GET /v1/ops/horse-number-integrity" },
   { id: "SLK-N02", layer: "Notification", status: "wired", via: "warning webhook / shared" },
   { id: "CONV-H01", layer: "Conversation", status: "wired", via: "GET /v1/conversation/health" },
   { id: "CONV-M01", layer: "Conversation", status: "wired", via: "GET /v1/ops/conversation/metrics" },
@@ -73,6 +90,13 @@ export const MONITOR_INVENTORY = [
   { id: "ALT-C02", layer: "Alert", status: "wired", via: "Conversation error rate / conversation_api" },
   { id: "ALT-C03", layer: "Alert", status: "wired", via: "Knowledge Runtime failure" },
   { id: "ALT-C04", layer: "Alert", status: "wired", via: "conversation_health NG" },
+  { id: "SD-M01", layer: "Metrics", status: "wired", via: "singleDetailObservability + /api/ops/single-detail" },
+  { id: "SD-H01", layer: "Health", status: "wired", via: "/v1/site/health via single_detail_ops probe" },
+  { id: "ALT-SD01", layer: "Alert", status: "wired", via: "latency p95" },
+  { id: "ALT-SD02", layer: "Alert", status: "wired", via: "timeout rate" },
+  { id: "ALT-SD03", layer: "Alert", status: "wired", via: "5xx count" },
+  { id: "ALT-SD04", layer: "Alert", status: "wired", via: "error fallback of attempted" },
+  { id: "ALT-SD05", layer: "Alert", status: "wired", via: "http error rate" },
 ];
 
 /**

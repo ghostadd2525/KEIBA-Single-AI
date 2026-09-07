@@ -89,6 +89,7 @@ export function projectExplainForPick(explain) {
 
 /**
  * Kaoba 向け reply 文字列を組み立て
+ * 内部ステージ名は出さない。ユーザー向けは平易な理由文のみ。
  * @param {ReturnType<typeof projectExplainForPick>} projection
  * @param {{ place?: string }} [opts]
  */
@@ -102,23 +103,37 @@ export function formatExplainPickReply(projection, opts = {}) {
   const dk = projection.decision_key || {};
   const lines = [];
   lines.push(`${place}${horse}を◎にした理由を説明するね。`);
-  if (dk.label) {
-    lines.push(`決定打は「${dk.label}」${dk.text ? `（${dk.text}）` : ""}だよ。`);
+  if (dk.label && !/ステージ|candidate|pool|entry|repick/i.test(String(dk.label))) {
+    const text = String(dk.text || "")
+      .replace(/candidate_pool|entry|repick|near[_\s-]?miss|\bNM\b|World|圧倒的上位/gi, "")
+      .replace(/\s{2,}/g, " ")
+      .trim();
+    lines.push(
+      text
+        ? `いちばん効いたのは「${dk.label}」だよ。${text}`
+        : `いちばん効いたのは「${dk.label}」だよ。`
+    );
   }
   if (projection.summary) {
-    lines.push(projection.summary);
+    const summary = String(projection.summary)
+      .replace(/candidate_pool|entry|repick|総合評価の分離|再現性の安定|圧倒的上位/gi, "")
+      .replace(/\s{2,}/g, " ")
+      .trim();
+    if (summary) lines.push(summary);
   }
   if (projection.factor_lines && projection.factor_lines.length) {
-    lines.push("要点:");
-    projection.factor_lines.forEach((f) => lines.push(`・${f}`));
+    lines.push("ポイント:");
+    projection.factor_lines.forEach((f) => {
+      const cleaned = String(f)
+        .replace(/candidate_pool|entry|repick/gi, "")
+        .trim();
+      if (cleaned) lines.push(`・${cleaned}`);
+    });
   }
   if (projection.confidence_summary) {
-    lines.push(`信頼度: ${projection.confidence_summary}`);
+    lines.push(`自信の目安: ${projection.confidence_summary}`);
   }
-  if (projection.trace_lines && projection.trace_lines.length) {
-    lines.push("判断トレース:");
-    projection.trace_lines.forEach((t) => lines.push(`・${t}`));
-  }
+  // 判断トレース（ステージ名）はユーザー向けに出さない
   return lines.filter(Boolean).join("\n");
 }
 

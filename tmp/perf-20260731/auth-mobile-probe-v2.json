@@ -1,0 +1,2839 @@
+{
+  "measuredAt": "2026-07-31T06:29:35.414Z",
+  "results": [
+    {
+      "name": "home",
+      "seed": {
+        "auth": true,
+        "token": true,
+        "terms": "{\"version\":\"2026-07-19\",\"accepted\":true,\"at\":1785479241364}"
+      },
+      "finalHref": "https://expect-keiba.com/login",
+      "path": "/login",
+      "redirectedToLogin": true,
+      "title": "Expect ～ KEIBA AI ～ · ログイン",
+      "transferMB": {
+        "js": 0.08,
+        "css": 0.04,
+        "img": 1.87,
+        "api": 0.01,
+        "font": 0.34,
+        "other": 0.02,
+        "total": 2.37
+      },
+      "transferBytes": {
+        "js": 82960,
+        "css": 36787,
+        "img": 1965087,
+        "api": 15657,
+        "font": 361508,
+        "doc": 14112,
+        "other": 9178,
+        "total": 2485289
+      },
+      "reqCount": 137,
+      "vitals": {
+        "fcp": 280,
+        "lcp": null,
+        "cls": 0,
+        "dcl": 276,
+        "load": 278
+      },
+      "longTasks": [],
+      "memory": {
+        "heapAfterLoadMB": 2.76,
+        "heapLaterMB": 2.78,
+        "nodesAfterLoad": 96,
+        "nodesLater": 96,
+        "heapDeltaMB": 0.01,
+        "nodeDelta": 0
+      },
+      "apiCalls": [
+        {
+          "url": "/config/beta.json",
+          "cat": "api",
+          "kb": 1,
+          "status": 200,
+          "cached": false,
+          "type": "Fetch",
+          "ms": 472
+        },
+        {
+          "url": "/config/beta.json",
+          "cat": "api",
+          "kb": 1,
+          "status": 200,
+          "cached": false,
+          "type": "Fetch",
+          "ms": 454
+        },
+        {
+          "url": "/api/predictions",
+          "cat": "api",
+          "kb": 1,
+          "status": 401,
+          "cached": false,
+          "type": "Fetch",
+          "ms": 214
+        },
+        {
+          "url": "/api/data/coverage",
+          "cat": "api",
+          "kb": 1,
+          "status": 401,
+          "cached": false,
+          "type": "Fetch",
+          "ms": 214
+        },
+        {
+          "url": "/api/predictions?date=2026-08-01",
+          "cat": "api",
+          "kb": 1,
+          "status": 401,
+          "cached": false,
+          "type": "Fetch",
+          "ms": 213
+        },
+        {
+          "url": "/api/v1/history",
+          "cat": "api",
+          "kb": 1,
+          "status": 401,
+          "cached": false,
+          "type": "Fetch",
+          "ms": 213
+        },
+        {
+          "url": "/api/data/coverage",
+          "cat": "api",
+          "kb": 1,
+          "status": 401,
+          "cached": false,
+          "type": "Fetch",
+          "ms": 212
+        },
+        {
+          "url": "/api/races?date=2026-08-01",
+          "cat": "api",
+          "kb": 1,
+          "status": 503,
+          "cached": false,
+          "type": "Fetch",
+          "ms": 211
+        },
+        {
+          "url": "/api/races?date=2026-08-02",
+          "cat": "api",
+          "kb": 1,
+          "status": 503,
+          "cached": false,
+          "type": "Fetch",
+          "ms": 211
+        },
+        {
+          "url": "/api/v1/stats/heatmap",
+          "cat": "api",
+          "kb": 1,
+          "status": 401,
+          "cached": false,
+          "type": "Fetch",
+          "ms": 210
+        },
+        {
+          "url": "/api/v1/challenge/monthly?month=2026-07",
+          "cat": "api",
+          "kb": 1,
+          "status": 401,
+          "cached": false,
+          "type": "Fetch",
+          "ms": 209
+        },
+        {
+          "url": "/config/beta.json",
+          "cat": "api",
+          "kb": 1,
+          "status": 200,
+          "cached": false,
+          "type": "Fetch",
+          "ms": 209
+        },
+        {
+          "url": "/api/system/status",
+          "cat": "api",
+          "kb": 1,
+          "status": 200,
+          "cached": false,
+          "type": "Fetch",
+          "ms": 40
+        },
+        {
+          "url": "/config/beta.json",
+          "cat": "api",
+          "kb": 1,
+          "status": 200,
+          "cached": false,
+          "type": "Fetch",
+          "ms": 39
+        },
+        {
+          "url": "/config/beta.json",
+          "cat": "api",
+          "kb": 1,
+          "status": 200,
+          "cached": false,
+          "type": "Fetch",
+          "ms": 37
+        },
+        {
+          "url": "/api/auth/logout",
+          "cat": "api",
+          "kb": 1,
+          "status": 200,
+          "cached": false,
+          "type": "Fetch",
+          "ms": 34
+        },
+        {
+          "url": "/api/system/status",
+          "cat": "api",
+          "kb": 1,
+          "status": 200,
+          "cached": false,
+          "type": "Fetch",
+          "ms": 32
+        },
+        {
+          "url": "/api/system/status",
+          "cat": "api",
+          "kb": 1,
+          "status": 200,
+          "cached": false,
+          "type": "Fetch",
+          "ms": 28
+        },
+        {
+          "url": "/config/beta.json",
+          "cat": "api",
+          "kb": 1,
+          "status": 200,
+          "cached": false,
+          "ms": null
+        }
+      ],
+      "dups": [
+        {
+          "u": "/config/beta.json",
+          "c": 6
+        },
+        {
+          "u": "https://fonts.gstatic.com/s/notosansjp/v56/-F62fjtqLzI2JPCgQBnw7HFYwQgP-FVthw.woff2",
+          "c": 3
+        },
+        {
+          "u": "https://fonts.gstatic.com/s/notosansjp/v56/-F62fjtqLzI2JPCgQBnw7HFowwII2lcnk-AFfrgQrvWXpdFg3KXxAMsKMbdN.115.woff2",
+          "c": 3
+        },
+        {
+          "u": "https://fonts.gstatic.com/s/notosansjp/v56/-F62fjtqLzI2JPCgQBnw7HFowwII2lcnk-AFfrgQrvWXpdFg3KXxAMsKMbdN.117.woff2",
+          "c": 3
+        },
+        {
+          "u": "/api/system/status",
+          "c": 3
+        },
+        {
+          "u": "https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Noto+Sans+JP:wght@400;500;600;700&display=swap",
+          "c": 2
+        },
+        {
+          "u": "/assets/api/calendar-weekend.js?v=14",
+          "c": 2
+        },
+        {
+          "u": "/assets/auto-maintenance.js?v=12.4",
+          "c": 2
+        },
+        {
+          "u": "/assets/auth.js?v=6",
+          "c": 2
+        },
+        {
+          "u": "https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496",
+          "c": 2
+        },
+        {
+          "u": "/assets/components/mascot.css",
+          "c": 2
+        },
+        {
+          "u": "https://fonts.gstatic.com/s/notosansjp/v56/-F62fjtqLzI2JPCgQBnw7HFowwII2lcnk-AFfrgQrvWXpdFg3KXxAMsKMbdN.89.woff2",
+          "c": 2
+        },
+        {
+          "u": "https://fonts.gstatic.com/s/notosansjp/v56/-F62fjtqLzI2JPCgQBnw7HFowwII2lcnk-AFfrgQrvWXpdFg3KXxAMsKMbdN.106.woff2",
+          "c": 2
+        },
+        {
+          "u": "https://fonts.gstatic.com/s/notosansjp/v56/-F62fjtqLzI2JPCgQBnw7HFowwII2lcnk-AFfrgQrvWXpdFg3KXxAMsKMbdN.107.woff2",
+          "c": 2
+        },
+        {
+          "u": "https://fonts.gstatic.com/s/notosansjp/v56/-F62fjtqLzI2JPCgQBnw7HFowwII2lcnk-AFfrgQrvWXpdFg3KXxAMsKMbdN.110.woff2",
+          "c": 2
+        },
+        {
+          "u": "https://fonts.gstatic.com/s/notosansjp/v56/-F62fjtqLzI2JPCgQBnw7HFowwII2lcnk-AFfrgQrvWXpdFg3KXxAMsKMbdN.111.woff2",
+          "c": 2
+        },
+        {
+          "u": "https://fonts.gstatic.com/s/notosansjp/v56/-F62fjtqLzI2JPCgQBnw7HFowwII2lcnk-AFfrgQrvWXpdFg3KXxAMsKMbdN.113.woff2",
+          "c": 2
+        },
+        {
+          "u": "https://fonts.gstatic.com/s/notosansjp/v56/-F62fjtqLzI2JPCgQBnw7HFowwII2lcnk-AFfrgQrvWXpdFg3KXxAMsKMbdN.116.woff2",
+          "c": 2
+        },
+        {
+          "u": "https://fonts.gstatic.com/s/cormorantgaramond/v21/co3bmX5slCNuHLi8bLeY9MK7whWMhyjYqXtKky2F7g.woff2",
+          "c": 2
+        },
+        {
+          "u": "https://fonts.gstatic.com/s/notosansjp/v56/-F62fjtqLzI2JPCgQBnw7HFowwII2lcnk-AFfrgQrvWXpdFg3KXxAMsKMbdN.119.woff2",
+          "c": 2
+        },
+        {
+          "u": "https://fonts.gstatic.com/s/notosansjp/v56/-F62fjtqLzI2JPCgQBnw7HFowwII2lcnk-AFfrgQrvWXpdFg3KXxAMsKMbdN.112.woff2",
+          "c": 2
+        },
+        {
+          "u": "https://fonts.gstatic.com/s/notosansjp/v56/-F62fjtqLzI2JPCgQBnw7HFowwII2lcnk-AFfrgQrvWXpdFg3KXxAMsKMbdN.108.woff2",
+          "c": 2
+        },
+        {
+          "u": "https://fonts.gstatic.com/s/notosansjp/v56/-F62fjtqLzI2JPCgQBnw7HFowwII2lcnk-AFfrgQrvWXpdFg3KXxAMsKMbdN.118.woff2",
+          "c": 2
+        },
+        {
+          "u": "https://fonts.gstatic.com/s/notosansjp/v56/-F62fjtqLzI2JPCgQBnw7HFowwII2lcnk-AFfrgQrvWXpdFg3KXxAMsKMbdN.105.woff2",
+          "c": 2
+        },
+        {
+          "u": "https://fonts.gstatic.com/s/notosansjp/v56/-F62fjtqLzI2JPCgQBnw7HFowwII2lcnk-AFfrgQrvWXpdFg3KXxAMsKMbdN.104.woff2",
+          "c": 2
+        },
+        {
+          "u": "https://fonts.gstatic.com/s/notosansjp/v56/-F62fjtqLzI2JPCgQBnw7HFowwII2lcnk-AFfrgQrvWXpdFg3KXxAMsKMbdN.114.woff2",
+          "c": 2
+        },
+        {
+          "u": "https://fonts.gstatic.com/s/notosansjp/v56/-F62fjtqLzI2JPCgQBnw7HFowwII2lcnk-AFfrgQrvWXpdFg3KXxAMsKMbdN.102.woff2",
+          "c": 2
+        },
+        {
+          "u": "https://fonts.gstatic.com/s/notosansjp/v56/-F62fjtqLzI2JPCgQBnw7HFowwII2lcnk-AFfrgQrvWXpdFg3KXxAMsKMbdN.95.woff2",
+          "c": 2
+        },
+        {
+          "u": "https://fonts.gstatic.com/s/notosansjp/v56/-F62fjtqLzI2JPCgQBnw7HFowwII2lcnk-AFfrgQrvWXpdFg3KXxAMsKMbdN.103.woff2",
+          "c": 2
+        },
+        {
+          "u": "https://fonts.gstatic.com/s/notosansjp/v56/-F62fjtqLzI2JPCgQBnw7HFowwII2lcnk-AFfrgQrvWXpdFg3KXxAMsKMbdN.109.woff2",
+          "c": 2
+        },
+        {
+          "u": "https://fonts.gstatic.com/s/notosansjp/v56/-F62fjtqLzI2JPCgQBnw7HFowwII2lcnk-AFfrgQrvWXpdFg3KXxAMsKMbdN.97.woff2",
+          "c": 2
+        },
+        {
+          "u": "https://fonts.gstatic.com/s/notosansjp/v56/-F62fjtqLzI2JPCgQBnw7HFowwII2lcnk-AFfrgQrvWXpdFg3KXxAMsKMbdN.93.woff2",
+          "c": 2
+        },
+        {
+          "u": "https://fonts.gstatic.com/s/notosansjp/v56/-F62fjtqLzI2JPCgQBnw7HFowwII2lcnk-AFfrgQrvWXpdFg3KXxAMsKMbdN.96.woff2",
+          "c": 2
+        },
+        {
+          "u": "https://fonts.gstatic.com/s/notosansjp/v56/-F62fjtqLzI2JPCgQBnw7HFowwII2lcnk-AFfrgQrvWXpdFg3KXxAMsKMbdN.88.woff2",
+          "c": 2
+        },
+        {
+          "u": "https://fonts.gstatic.com/s/notosansjp/v56/-F62fjtqLzI2JPCgQBnw7HFowwII2lcnk-AFfrgQrvWXpdFg3KXxAMsKMbdN.26.woff2",
+          "c": 2
+        },
+        {
+          "u": "https://fonts.gstatic.com/s/notosansjp/v56/-F62fjtqLzI2JPCgQBnw7HFowwII2lcnk-AFfrgQrvWXpdFg3KXxAMsKMbdN.94.woff2",
+          "c": 2
+        },
+        {
+          "u": "/api/data/coverage",
+          "c": 2
+        },
+        {
+          "u": "/cdn-cgi/rum?",
+          "c": 2
+        },
+        {
+          "u": "/favicon.ico",
+          "c": 2
+        }
+      ],
+      "topImg": [
+        {
+          "url": "/assets/images/ai-card-bg-honmei.png?v=2",
+          "cat": "img",
+          "kb": 618,
+          "status": 200,
+          "cached": false,
+          "type": "Image",
+          "ms": 47
+        },
+        {
+          "url": "/assets/images/mascot-ka0ba.png?v=10",
+          "cat": "img",
+          "kb": 346,
+          "status": 200,
+          "cached": false,
+          "type": "Image",
+          "ms": 186
+        },
+        {
+          "url": "/assets/images/ai-card-bg-pedigree.png?v=2",
+          "cat": "img",
+          "kb": 327,
+          "status": 200,
+          "cached": false,
+          "type": "Image",
+          "ms": 181
+        },
+        {
+          "url": "/assets/images/ai-card-bg-odds.png?v=2",
+          "cat": "img",
+          "kb": 316,
+          "status": 200,
+          "cached": false,
+          "type": "Image",
+          "ms": 117
+        },
+        {
+          "url": "/assets/images/mascot-loading-run.png?v=3",
+          "cat": "img",
+          "kb": 310,
+          "status": 200,
+          "cached": false,
+          "type": "Image",
+          "ms": 81
+        },
+        {
+          "url": "/assets/icons/icon-info.svg",
+          "cat": "img",
+          "kb": 1,
+          "status": 200,
+          "cached": false,
+          "type": "Image",
+          "ms": 82
+        },
+        {
+          "url": "/assets/icons/icon-brain.svg",
+          "cat": "img",
+          "kb": 1,
+          "status": 200,
+          "cached": false,
+          "type": "Image",
+          "ms": 90
+        },
+        {
+          "url": "/assets/icons/icon-bars.svg",
+          "cat": "img",
+          "kb": 1,
+          "status": 200,
+          "cached": false,
+          "type": "Image",
+          "ms": 126
+        },
+        {
+          "url": "/assets/icons/icon-dna.svg",
+          "cat": "img",
+          "kb": 1,
+          "status": 200,
+          "cached": false,
+          "type": "Image",
+          "ms": 178
+        },
+        {
+          "url": "/assets/images/mascot-ka0ba-login.png?v=6",
+          "cat": "img",
+          "kb": 0,
+          "status": 200,
+          "cached": false,
+          "type": "Image",
+          "ms": null
+        },
+        {
+          "url": "/assets/images/bg-fav-1.png",
+          "cat": "img",
+          "kb": 0,
+          "status": 200,
+          "cached": false,
+          "type": "Image",
+          "ms": null
+        }
+      ],
+      "topJs": [
+        {
+          "url": "/assets/api/prediction-bind.js?v=52",
+          "cat": "js",
+          "kb": 13,
+          "status": 200,
+          "cached": false,
+          "type": "Script",
+          "ms": 212
+        },
+        {
+          "url": "/assets/favorites.js?v=7",
+          "cat": "js",
+          "kb": 9,
+          "status": 200,
+          "cached": false,
+          "type": "Script",
+          "ms": 202
+        },
+        {
+          "url": "/assets/api/real-data-bind.js?v=17",
+          "cat": "js",
+          "kb": 9,
+          "status": 200,
+          "cached": false,
+          "type": "Script",
+          "ms": 214
+        },
+        {
+          "url": "/assets/app.js",
+          "cat": "js",
+          "kb": 6,
+          "status": 200,
+          "cached": false,
+          "type": "Script",
+          "ms": 204
+        },
+        {
+          "url": "/assets/api/challenge-dashboard.js?v=2",
+          "cat": "js",
+          "kb": 6,
+          "status": 200,
+          "cached": false,
+          "type": "Script",
+          "ms": 209
+        },
+        {
+          "url": "/assets/ux.js?v=21",
+          "cat": "js",
+          "kb": 5,
+          "status": 200,
+          "cached": false,
+          "type": "Script",
+          "ms": 208
+        },
+        {
+          "url": "/assets/api/prediction.js?v=11",
+          "cat": "js",
+          "kb": 4,
+          "status": 200,
+          "cached": false,
+          "type": "Script",
+          "ms": 194
+        },
+        {
+          "url": "/assets/reminders.js?v=2",
+          "cat": "js",
+          "kb": 4,
+          "status": 200,
+          "cached": false,
+          "type": "Script",
+          "ms": 213
+        },
+        {
+          "url": "/assets/shell.js",
+          "cat": "js",
+          "kb": 4,
+          "status": 200,
+          "cached": false,
+          "type": "Script",
+          "ms": 214
+        },
+        {
+          "url": "/assets/api/contract-guard.js",
+          "cat": "js",
+          "kb": 3,
+          "status": 200,
+          "cached": false,
+          "type": "Script",
+          "ms": 200
+        },
+        {
+          "url": "/assets/onboarding.js",
+          "cat": "js",
+          "kb": 3,
+          "status": 200,
+          "cached": false,
+          "type": "Script",
+          "ms": 205
+        },
+        {
+          "url": "/assets/v11.js?v=12",
+          "cat": "js",
+          "kb": 3,
+          "status": 200,
+          "cached": false,
+          "type": "Script",
+          "ms": 207
+        },
+        {
+          "url": "/assets/api/auth.js",
+          "cat": "js",
+          "kb": 2,
+          "status": 200,
+          "cached": false,
+          "type": "Script",
+          "ms": 195
+        },
+        {
+          "url": "/assets/api/user.js?v=7",
+          "cat": "js",
+          "kb": 2,
+          "status": 200,
+          "cached": false,
+          "type": "Script",
+          "ms": 202
+        },
+        {
+          "url": "/assets/api/ui-features.js?v=11",
+          "cat": "js",
+          "kb": 2,
+          "status": 200,
+          "cached": false,
+          "type": "Script",
+          "ms": 203
+        }
+      ]
+    },
+    {
+      "name": "races",
+      "seed": {
+        "auth": true,
+        "token": true,
+        "terms": "{\"version\":\"2026-07-19\",\"accepted\":true,\"at\":1785479264262}"
+      },
+      "finalHref": "https://expect-keiba.com/login",
+      "path": "/login",
+      "redirectedToLogin": true,
+      "title": "Expect ～ KEIBA AI ～ · ログイン",
+      "transferMB": {
+        "js": 0.08,
+        "css": 0.03,
+        "img": 0.64,
+        "api": 0.01,
+        "font": 0.1,
+        "other": 0.03,
+        "total": 0.88
+      },
+      "transferBytes": {
+        "js": 80153,
+        "css": 35317,
+        "img": 671191,
+        "api": 11463,
+        "font": 100346,
+        "doc": 18492,
+        "other": 9183,
+        "total": 926145
+      },
+      "reqCount": 100,
+      "vitals": {
+        "fcp": 180,
+        "lcp": null,
+        "cls": 0,
+        "dcl": 172,
+        "load": 175
+      },
+      "longTasks": [],
+      "memory": {
+        "heapAfterLoadMB": 2.77,
+        "heapLaterMB": 2.79,
+        "nodesAfterLoad": 96,
+        "nodesLater": 96,
+        "heapDeltaMB": 0.01,
+        "nodeDelta": 0
+      },
+      "apiCalls": [
+        {
+          "url": "/config/beta.json",
+          "cat": "api",
+          "kb": 1,
+          "status": 200,
+          "cached": false,
+          "type": "Fetch",
+          "ms": 114
+        },
+        {
+          "url": "/config/beta.json",
+          "cat": "api",
+          "kb": 1,
+          "status": 200,
+          "cached": false,
+          "type": "Fetch",
+          "ms": 71
+        },
+        {
+          "url": "/api/system/status",
+          "cat": "api",
+          "kb": 1,
+          "status": 200,
+          "cached": false,
+          "type": "Fetch",
+          "ms": 58
+        },
+        {
+          "url": "/api/system/status",
+          "cat": "api",
+          "kb": 1,
+          "status": 200,
+          "cached": false,
+          "type": "Fetch",
+          "ms": 53
+        },
+        {
+          "url": "/api/races?date=2026-08-01",
+          "cat": "api",
+          "kb": 1,
+          "status": 401,
+          "cached": false,
+          "type": "Fetch",
+          "ms": 43
+        },
+        {
+          "url": "/api/races?date=2026-08-02",
+          "cat": "api",
+          "kb": 1,
+          "status": 401,
+          "cached": false,
+          "type": "Fetch",
+          "ms": 43
+        },
+        {
+          "url": "/config/beta.json",
+          "cat": "api",
+          "kb": 1,
+          "status": 200,
+          "cached": false,
+          "type": "Fetch",
+          "ms": 40
+        },
+        {
+          "url": "/config/beta.json",
+          "cat": "api",
+          "kb": 1,
+          "status": 200,
+          "cached": false,
+          "type": "Fetch",
+          "ms": 34
+        },
+        {
+          "url": "/api/race-cards?date=2026-08-02",
+          "cat": "api",
+          "kb": 1,
+          "status": 401,
+          "cached": false,
+          "type": "Fetch",
+          "ms": 33
+        },
+        {
+          "url": "/api/race-cards?date=2026-08-01",
+          "cat": "api",
+          "kb": 1,
+          "status": 401,
+          "cached": false,
+          "type": "Fetch",
+          "ms": 32
+        },
+        {
+          "url": "/config/beta.json",
+          "cat": "api",
+          "kb": 1,
+          "status": 200,
+          "cached": false,
+          "type": "Fetch",
+          "ms": 29
+        },
+        {
+          "url": "/api/auth/logout",
+          "cat": "api",
+          "kb": 1,
+          "status": 200,
+          "cached": false,
+          "type": "Fetch",
+          "ms": 26
+        },
+        {
+          "url": "/api/system/status",
+          "cat": "api",
+          "kb": 1,
+          "status": 200,
+          "cached": false,
+          "type": "Fetch",
+          "ms": 26
+        }
+      ],
+      "dups": [
+        {
+          "u": "/config/beta.json",
+          "c": 5
+        },
+        {
+          "u": "https://fonts.gstatic.com/s/notosansjp/v56/-F62fjtqLzI2JPCgQBnw7HFowwII2lcnk-AFfrgQrvWXpdFg3KXxAMsKMbdN.107.woff2",
+          "c": 3
+        },
+        {
+          "u": "/api/system/status",
+          "c": 3
+        },
+        {
+          "u": "https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Noto+Sans+JP:wght@400;500;600;700&display=swap",
+          "c": 2
+        },
+        {
+          "u": "/assets/auto-maintenance.js?v=12.4",
+          "c": 2
+        },
+        {
+          "u": "/assets/auth.js?v=6",
+          "c": 2
+        },
+        {
+          "u": "https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496",
+          "c": 2
+        },
+        {
+          "u": "/assets/components/mascot.css",
+          "c": 2
+        },
+        {
+          "u": "https://fonts.gstatic.com/s/cormorantgaramond/v21/co3bmX5slCNuHLi8bLeY9MK7whWMhyjYqXtKky2F7g.woff2",
+          "c": 2
+        },
+        {
+          "u": "https://fonts.gstatic.com/s/notosansjp/v56/-F62fjtqLzI2JPCgQBnw7HFowwII2lcnk-AFfrgQrvWXpdFg3KXxAMsKMbdN.89.woff2",
+          "c": 2
+        },
+        {
+          "u": "https://fonts.gstatic.com/s/notosansjp/v56/-F62fjtqLzI2JPCgQBnw7HFowwII2lcnk-AFfrgQrvWXpdFg3KXxAMsKMbdN.106.woff2",
+          "c": 2
+        },
+        {
+          "u": "https://fonts.gstatic.com/s/notosansjp/v56/-F62fjtqLzI2JPCgQBnw7HFowwII2lcnk-AFfrgQrvWXpdFg3KXxAMsKMbdN.110.woff2",
+          "c": 2
+        },
+        {
+          "u": "https://fonts.gstatic.com/s/notosansjp/v56/-F62fjtqLzI2JPCgQBnw7HFowwII2lcnk-AFfrgQrvWXpdFg3KXxAMsKMbdN.111.woff2",
+          "c": 2
+        },
+        {
+          "u": "https://fonts.gstatic.com/s/notosansjp/v56/-F62fjtqLzI2JPCgQBnw7HFowwII2lcnk-AFfrgQrvWXpdFg3KXxAMsKMbdN.112.woff2",
+          "c": 2
+        },
+        {
+          "u": "https://fonts.gstatic.com/s/notosansjp/v56/-F62fjtqLzI2JPCgQBnw7HFowwII2lcnk-AFfrgQrvWXpdFg3KXxAMsKMbdN.113.woff2",
+          "c": 2
+        },
+        {
+          "u": "https://fonts.gstatic.com/s/notosansjp/v56/-F62fjtqLzI2JPCgQBnw7HFowwII2lcnk-AFfrgQrvWXpdFg3KXxAMsKMbdN.115.woff2",
+          "c": 2
+        },
+        {
+          "u": "https://fonts.gstatic.com/s/notosansjp/v56/-F62fjtqLzI2JPCgQBnw7HFowwII2lcnk-AFfrgQrvWXpdFg3KXxAMsKMbdN.116.woff2",
+          "c": 2
+        },
+        {
+          "u": "https://fonts.gstatic.com/s/notosansjp/v56/-F62fjtqLzI2JPCgQBnw7HFowwII2lcnk-AFfrgQrvWXpdFg3KXxAMsKMbdN.117.woff2",
+          "c": 2
+        },
+        {
+          "u": "https://fonts.gstatic.com/s/notosansjp/v56/-F62fjtqLzI2JPCgQBnw7HFowwII2lcnk-AFfrgQrvWXpdFg3KXxAMsKMbdN.119.woff2",
+          "c": 2
+        },
+        {
+          "u": "https://fonts.gstatic.com/s/notosansjp/v56/-F62fjtqLzI2JPCgQBnw7HFYwQgP-FVthw.woff2",
+          "c": 2
+        },
+        {
+          "u": "https://fonts.gstatic.com/s/notosansjp/v56/-F62fjtqLzI2JPCgQBnw7HFowwII2lcnk-AFfrgQrvWXpdFg3KXxAMsKMbdN.108.woff2",
+          "c": 2
+        },
+        {
+          "u": "https://fonts.gstatic.com/s/notosansjp/v56/-F62fjtqLzI2JPCgQBnw7HFowwII2lcnk-AFfrgQrvWXpdFg3KXxAMsKMbdN.109.woff2",
+          "c": 2
+        },
+        {
+          "u": "https://fonts.gstatic.com/s/notosansjp/v56/-F62fjtqLzI2JPCgQBnw7HFowwII2lcnk-AFfrgQrvWXpdFg3KXxAMsKMbdN.95.woff2",
+          "c": 2
+        },
+        {
+          "u": "https://fonts.gstatic.com/s/notosansjp/v56/-F62fjtqLzI2JPCgQBnw7HFowwII2lcnk-AFfrgQrvWXpdFg3KXxAMsKMbdN.114.woff2",
+          "c": 2
+        },
+        {
+          "u": "https://fonts.gstatic.com/s/notosansjp/v56/-F62fjtqLzI2JPCgQBnw7HFowwII2lcnk-AFfrgQrvWXpdFg3KXxAMsKMbdN.94.woff2",
+          "c": 2
+        },
+        {
+          "u": "/cdn-cgi/rum?",
+          "c": 2
+        },
+        {
+          "u": "/favicon.ico",
+          "c": 2
+        }
+      ],
+      "topImg": [
+        {
+          "url": "/assets/images/mascot-ka0ba.png?v=10",
+          "cat": "img",
+          "kb": 346,
+          "status": 200,
+          "cached": false,
+          "type": "Image",
+          "ms": 55
+        },
+        {
+          "url": "/assets/images/mascot-loading-run.png?v=3",
+          "cat": "img",
+          "kb": 310,
+          "status": 200,
+          "cached": false,
+          "type": "Image",
+          "ms": 99
+        },
+        {
+          "url": "/assets/images/mascot-ka0ba-login.png?v=6",
+          "cat": "img",
+          "kb": 0,
+          "status": 200,
+          "cached": false,
+          "type": "Image",
+          "ms": 1
+        },
+        {
+          "url": "/assets/images/bg-fav-1.png",
+          "cat": "img",
+          "kb": 0,
+          "status": 200,
+          "cached": false,
+          "type": "Image",
+          "ms": null
+        }
+      ],
+      "topJs": [
+        {
+          "url": "/assets/api/prediction-bind.js?v=52",
+          "cat": "js",
+          "kb": 13,
+          "status": 200,
+          "cached": false,
+          "type": "Script",
+          "ms": 163
+        },
+        {
+          "url": "/assets/favorites.js?v=7",
+          "cat": "js",
+          "kb": 9,
+          "status": 200,
+          "cached": false,
+          "type": "Script",
+          "ms": 103
+        },
+        {
+          "url": "/assets/api/real-data-bind.js?v=16",
+          "cat": "js",
+          "kb": 9,
+          "status": 200,
+          "cached": false,
+          "type": "Script",
+          "ms": 111
+        },
+        {
+          "url": "/assets/ux.js?v=21",
+          "cat": "js",
+          "kb": 5,
+          "status": 200,
+          "cached": false,
+          "type": "Script",
+          "ms": 102
+        },
+        {
+          "url": "/assets/api/race-prefetch.js?v=1",
+          "cat": "js",
+          "kb": 5,
+          "status": 200,
+          "cached": false,
+          "type": "Script",
+          "ms": 105
+        },
+        {
+          "url": "/assets/shell.js",
+          "cat": "js",
+          "kb": 4,
+          "status": 200,
+          "cached": false,
+          "type": "Script",
+          "ms": 103
+        },
+        {
+          "url": "/assets/reminders.js",
+          "cat": "js",
+          "kb": 4,
+          "status": 200,
+          "cached": false,
+          "type": "Script",
+          "ms": 110
+        },
+        {
+          "url": "/assets/api/prediction.js?v=15",
+          "cat": "js",
+          "kb": 4,
+          "status": 200,
+          "cached": false,
+          "type": "Script",
+          "ms": 154
+        },
+        {
+          "url": "/assets/api/contract-guard.js",
+          "cat": "js",
+          "kb": 3,
+          "status": 200,
+          "cached": false,
+          "type": "Script",
+          "ms": 110
+        },
+        {
+          "url": "/assets/api/race.js?v=15",
+          "cat": "js",
+          "kb": 3,
+          "status": 200,
+          "cached": false,
+          "type": "Script",
+          "ms": 159
+        },
+        {
+          "url": "/assets/v11.js?v=11",
+          "cat": "js",
+          "kb": 3,
+          "status": 200,
+          "cached": false,
+          "type": "Script",
+          "ms": 162
+        },
+        {
+          "url": "/assets/api/race-search.js?v=15",
+          "cat": "js",
+          "kb": 3,
+          "status": 200,
+          "cached": false,
+          "type": "Script",
+          "ms": 165
+        },
+        {
+          "url": "/assets/api/calendar-weekend.js?v=15",
+          "cat": "js",
+          "kb": 2,
+          "status": 200,
+          "cached": false,
+          "type": "Script",
+          "ms": 36
+        },
+        {
+          "url": "/assets/api/auth.js",
+          "cat": "js",
+          "kb": 2,
+          "status": 200,
+          "cached": false,
+          "type": "Script",
+          "ms": 101
+        },
+        {
+          "url": "/assets/api/race-cards.js?v=15",
+          "cat": "js",
+          "kb": 2,
+          "status": 200,
+          "cached": false,
+          "type": "Script",
+          "ms": 105
+        }
+      ]
+    },
+    {
+      "name": "detail",
+      "seed": {
+        "auth": true,
+        "token": true,
+        "terms": "{\"version\":\"2026-07-19\",\"accepted\":true,\"at\":1785479286413}"
+      },
+      "finalHref": "https://expect-keiba.com/login",
+      "path": "/login",
+      "redirectedToLogin": true,
+      "title": "Expect ～ KEIBA AI ～ · ログイン",
+      "transferMB": {
+        "js": 0.08,
+        "css": 0.03,
+        "img": 0.34,
+        "api": 0.01,
+        "font": 0.25,
+        "other": 0.02,
+        "total": 0.73
+      },
+      "transferBytes": {
+        "js": 82008,
+        "css": 35319,
+        "img": 354131,
+        "api": 11616,
+        "font": 260685,
+        "doc": 14378,
+        "other": 9199,
+        "total": 767336
+      },
+      "reqCount": 119,
+      "vitals": {
+        "fcp": 264,
+        "lcp": null,
+        "cls": 0,
+        "dcl": 256,
+        "load": 258
+      },
+      "longTasks": [],
+      "memory": {
+        "heapAfterLoadMB": 3.44,
+        "heapLaterMB": 3.46,
+        "nodesAfterLoad": 96,
+        "nodesLater": 96,
+        "heapDeltaMB": 0.01,
+        "nodeDelta": 0
+      },
+      "apiCalls": [
+        {
+          "url": "/config/beta.json",
+          "cat": "api",
+          "kb": 1,
+          "status": 200,
+          "cached": false,
+          "type": "Fetch",
+          "ms": 444
+        },
+        {
+          "url": "/api/system/status",
+          "cat": "api",
+          "kb": 1,
+          "status": 200,
+          "cached": false,
+          "type": "Fetch",
+          "ms": 69
+        },
+        {
+          "url": "/api/system/status",
+          "cat": "api",
+          "kb": 1,
+          "status": 200,
+          "cached": false,
+          "type": "Fetch",
+          "ms": 69
+        },
+        {
+          "url": "/config/beta.json",
+          "cat": "api",
+          "kb": 1,
+          "status": 200,
+          "cached": false,
+          "type": "Fetch",
+          "ms": 56
+        },
+        {
+          "url": "/config/beta.json",
+          "cat": "api",
+          "kb": 1,
+          "status": 200,
+          "cached": false,
+          "type": "Fetch",
+          "ms": 56
+        },
+        {
+          "url": "/api/races/2026-08-01-01-02/board",
+          "cat": "api",
+          "kb": 1,
+          "status": 401,
+          "cached": false,
+          "type": "Fetch",
+          "ms": 55
+        },
+        {
+          "url": "/config/beta.json",
+          "cat": "api",
+          "kb": 1,
+          "status": 200,
+          "cached": false,
+          "type": "Fetch",
+          "ms": 35
+        },
+        {
+          "url": "/config/beta.json",
+          "cat": "api",
+          "kb": 1,
+          "status": 200,
+          "cached": false,
+          "type": "Fetch",
+          "ms": 29
+        },
+        {
+          "url": "/api/auth/logout",
+          "cat": "api",
+          "kb": 1,
+          "status": 200,
+          "cached": false,
+          "type": "Fetch",
+          "ms": 28
+        },
+        {
+          "url": "/api/predictions/2026-08-01-01-02",
+          "cat": "api",
+          "kb": 1,
+          "status": 401,
+          "cached": false,
+          "type": "Fetch",
+          "ms": 27
+        },
+        {
+          "url": "/api/system/status",
+          "cat": "api",
+          "kb": 1,
+          "status": 200,
+          "cached": false,
+          "type": "Fetch",
+          "ms": 25
+        },
+        {
+          "url": "/config/beta.json",
+          "cat": "api",
+          "kb": 1,
+          "status": 200,
+          "cached": false,
+          "ms": null
+        }
+      ],
+      "dups": [
+        {
+          "u": "/config/beta.json",
+          "c": 6
+        },
+        {
+          "u": "https://fonts.gstatic.com/s/notosansjp/v56/-F62fjtqLzI2JPCgQBnw7HFowwII2lcnk-AFfrgQrvWXpdFg3KXxAMsKMbdN.89.woff2",
+          "c": 3
+        },
+        {
+          "u": "/api/system/status",
+          "c": 3
+        },
+        {
+          "u": "https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Noto+Sans+JP:wght@400;500;600;700&display=swap",
+          "c": 2
+        },
+        {
+          "u": "/assets/auto-maintenance.js?v=12.4",
+          "c": 2
+        },
+        {
+          "u": "/assets/auth.js?v=6",
+          "c": 2
+        },
+        {
+          "u": "/assets/favorites.js?v=4",
+          "c": 2
+        },
+        {
+          "u": "https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496",
+          "c": 2
+        },
+        {
+          "u": "/assets/components/mascot.css",
+          "c": 2
+        },
+        {
+          "u": "https://fonts.gstatic.com/s/cormorantgaramond/v21/co3bmX5slCNuHLi8bLeY9MK7whWMhyjYqXtKky2F7g.woff2",
+          "c": 2
+        },
+        {
+          "u": "https://fonts.gstatic.com/s/notosansjp/v56/-F62fjtqLzI2JPCgQBnw7HFowwII2lcnk-AFfrgQrvWXpdFg3KXxAMsKMbdN.106.woff2",
+          "c": 2
+        },
+        {
+          "u": "https://fonts.gstatic.com/s/notosansjp/v56/-F62fjtqLzI2JPCgQBnw7HFowwII2lcnk-AFfrgQrvWXpdFg3KXxAMsKMbdN.107.woff2",
+          "c": 2
+        },
+        {
+          "u": "https://fonts.gstatic.com/s/notosansjp/v56/-F62fjtqLzI2JPCgQBnw7HFowwII2lcnk-AFfrgQrvWXpdFg3KXxAMsKMbdN.110.woff2",
+          "c": 2
+        },
+        {
+          "u": "https://fonts.gstatic.com/s/notosansjp/v56/-F62fjtqLzI2JPCgQBnw7HFowwII2lcnk-AFfrgQrvWXpdFg3KXxAMsKMbdN.111.woff2",
+          "c": 2
+        },
+        {
+          "u": "https://fonts.gstatic.com/s/notosansjp/v56/-F62fjtqLzI2JPCgQBnw7HFowwII2lcnk-AFfrgQrvWXpdFg3KXxAMsKMbdN.112.woff2",
+          "c": 2
+        },
+        {
+          "u": "https://fonts.gstatic.com/s/notosansjp/v56/-F62fjtqLzI2JPCgQBnw7HFowwII2lcnk-AFfrgQrvWXpdFg3KXxAMsKMbdN.113.woff2",
+          "c": 2
+        },
+        {
+          "u": "https://fonts.gstatic.com/s/notosansjp/v56/-F62fjtqLzI2JPCgQBnw7HFowwII2lcnk-AFfrgQrvWXpdFg3KXxAMsKMbdN.115.woff2",
+          "c": 2
+        },
+        {
+          "u": "https://fonts.gstatic.com/s/notosansjp/v56/-F62fjtqLzI2JPCgQBnw7HFowwII2lcnk-AFfrgQrvWXpdFg3KXxAMsKMbdN.116.woff2",
+          "c": 2
+        },
+        {
+          "u": "https://fonts.gstatic.com/s/notosansjp/v56/-F62fjtqLzI2JPCgQBnw7HFowwII2lcnk-AFfrgQrvWXpdFg3KXxAMsKMbdN.117.woff2",
+          "c": 2
+        },
+        {
+          "u": "https://fonts.gstatic.com/s/notosansjp/v56/-F62fjtqLzI2JPCgQBnw7HFowwII2lcnk-AFfrgQrvWXpdFg3KXxAMsKMbdN.119.woff2",
+          "c": 2
+        },
+        {
+          "u": "https://fonts.gstatic.com/s/notosansjp/v56/-F62fjtqLzI2JPCgQBnw7HFYwQgP-FVthw.woff2",
+          "c": 2
+        },
+        {
+          "u": "https://fonts.gstatic.com/s/notosansjp/v56/-F62fjtqLzI2JPCgQBnw7HFowwII2lcnk-AFfrgQrvWXpdFg3KXxAMsKMbdN.108.woff2",
+          "c": 2
+        },
+        {
+          "u": "https://fonts.gstatic.com/s/notosansjp/v56/-F62fjtqLzI2JPCgQBnw7HFowwII2lcnk-AFfrgQrvWXpdFg3KXxAMsKMbdN.114.woff2",
+          "c": 2
+        },
+        {
+          "u": "https://fonts.gstatic.com/s/notosansjp/v56/-F62fjtqLzI2JPCgQBnw7HFowwII2lcnk-AFfrgQrvWXpdFg3KXxAMsKMbdN.96.woff2",
+          "c": 2
+        },
+        {
+          "u": "https://fonts.gstatic.com/s/notosansjp/v56/-F62fjtqLzI2JPCgQBnw7HFowwII2lcnk-AFfrgQrvWXpdFg3KXxAMsKMbdN.92.woff2",
+          "c": 2
+        },
+        {
+          "u": "https://fonts.gstatic.com/s/notosansjp/v56/-F62fjtqLzI2JPCgQBnw7HFowwII2lcnk-AFfrgQrvWXpdFg3KXxAMsKMbdN.104.woff2",
+          "c": 2
+        },
+        {
+          "u": "https://fonts.gstatic.com/s/notosansjp/v56/-F62fjtqLzI2JPCgQBnw7HFowwII2lcnk-AFfrgQrvWXpdFg3KXxAMsKMbdN.103.woff2",
+          "c": 2
+        },
+        {
+          "u": "https://fonts.gstatic.com/s/notosansjp/v56/-F62fjtqLzI2JPCgQBnw7HFowwII2lcnk-AFfrgQrvWXpdFg3KXxAMsKMbdN.105.woff2",
+          "c": 2
+        },
+        {
+          "u": "https://fonts.gstatic.com/s/notosansjp/v56/-F62fjtqLzI2JPCgQBnw7HFowwII2lcnk-AFfrgQrvWXpdFg3KXxAMsKMbdN.109.woff2",
+          "c": 2
+        },
+        {
+          "u": "https://fonts.gstatic.com/s/notosansjp/v56/-F62fjtqLzI2JPCgQBnw7HFowwII2lcnk-AFfrgQrvWXpdFg3KXxAMsKMbdN.99.woff2",
+          "c": 2
+        },
+        {
+          "u": "https://fonts.gstatic.com/s/notosansjp/v56/-F62fjtqLzI2JPCgQBnw7HFowwII2lcnk-AFfrgQrvWXpdFg3KXxAMsKMbdN.101.woff2",
+          "c": 2
+        },
+        {
+          "u": "https://fonts.gstatic.com/s/notosansjp/v56/-F62fjtqLzI2JPCgQBnw7HFowwII2lcnk-AFfrgQrvWXpdFg3KXxAMsKMbdN.87.woff2",
+          "c": 2
+        },
+        {
+          "u": "https://fonts.gstatic.com/s/notosansjp/v56/-F62fjtqLzI2JPCgQBnw7HFowwII2lcnk-AFfrgQrvWXpdFg3KXxAMsKMbdN.93.woff2",
+          "c": 2
+        },
+        {
+          "u": "https://fonts.gstatic.com/s/notosansjp/v56/-F62fjtqLzI2JPCgQBnw7HFowwII2lcnk-AFfrgQrvWXpdFg3KXxAMsKMbdN.95.woff2",
+          "c": 2
+        },
+        {
+          "u": "https://fonts.gstatic.com/s/notosansjp/v56/-F62fjtqLzI2JPCgQBnw7HFowwII2lcnk-AFfrgQrvWXpdFg3KXxAMsKMbdN.102.woff2",
+          "c": 2
+        },
+        {
+          "u": "/cdn-cgi/rum?",
+          "c": 2
+        },
+        {
+          "u": "/favicon.ico",
+          "c": 2
+        }
+      ],
+      "topImg": [
+        {
+          "url": "/assets/images/mascot-ka0ba.png?v=10",
+          "cat": "img",
+          "kb": 346,
+          "status": 200,
+          "cached": false,
+          "type": "Image",
+          "ms": 19
+        },
+        {
+          "url": "/assets/images/mascot-ka0ba-login.png?v=6",
+          "cat": "img",
+          "kb": 0,
+          "status": 200,
+          "cached": false,
+          "type": "Image",
+          "ms": null
+        },
+        {
+          "url": "/assets/images/bg-fav-1.png",
+          "cat": "img",
+          "kb": 0,
+          "status": 200,
+          "cached": false,
+          "type": "Image",
+          "ms": null
+        }
+      ],
+      "topJs": [
+        {
+          "url": "/assets/api/prediction-bind.js?v=52",
+          "cat": "js",
+          "kb": 13,
+          "status": 200,
+          "cached": false,
+          "type": "Script",
+          "ms": 312
+        },
+        {
+          "url": "/assets/api/race-detail-tabs.js?v=16",
+          "cat": "js",
+          "kb": 8,
+          "status": 200,
+          "cached": false,
+          "type": "Script",
+          "ms": 325
+        },
+        {
+          "url": "/assets/api/explain-ux.js?v=3",
+          "cat": "js",
+          "kb": 7,
+          "status": 200,
+          "cached": false,
+          "type": "Script",
+          "ms": 333
+        },
+        {
+          "url": "/assets/ux.js?v=20",
+          "cat": "js",
+          "kb": 5,
+          "status": 200,
+          "cached": false,
+          "type": "Script",
+          "ms": 320
+        },
+        {
+          "url": "/assets/api/race-prefetch.js?v=1",
+          "cat": "js",
+          "kb": 5,
+          "status": 200,
+          "cached": false,
+          "type": "Script",
+          "ms": 330
+        },
+        {
+          "url": "/assets/reminders.js?v=2",
+          "cat": "js",
+          "kb": 4,
+          "status": 200,
+          "cached": false,
+          "type": "Script",
+          "ms": 298
+        },
+        {
+          "url": "/assets/shell.js",
+          "cat": "js",
+          "kb": 4,
+          "status": 200,
+          "cached": false,
+          "type": "Script",
+          "ms": 298
+        },
+        {
+          "url": "/assets/api/prediction.js?v=10",
+          "cat": "js",
+          "kb": 4,
+          "status": 200,
+          "cached": false,
+          "type": "Script",
+          "ms": 303
+        },
+        {
+          "url": "/assets/v11.js?v=11",
+          "cat": "js",
+          "kb": 3,
+          "status": 200,
+          "cached": false,
+          "type": "Script",
+          "ms": 296
+        },
+        {
+          "url": "/assets/api/conversation-ui.js?v=7",
+          "cat": "js",
+          "kb": 3,
+          "status": 200,
+          "cached": false,
+          "type": "Script",
+          "ms": 314
+        },
+        {
+          "url": "/assets/api/contract-guard.js",
+          "cat": "js",
+          "kb": 3,
+          "status": 200,
+          "cached": false,
+          "type": "Script",
+          "ms": 316
+        },
+        {
+          "url": "/assets/api/analysis-bind.js?v=30",
+          "cat": "js",
+          "kb": 3,
+          "status": 200,
+          "cached": false,
+          "type": "Script",
+          "ms": 335
+        },
+        {
+          "url": "/assets/api/calendar-weekend.js?v=15",
+          "cat": "js",
+          "kb": 2,
+          "status": 200,
+          "cached": false,
+          "type": "Script",
+          "ms": 33
+        },
+        {
+          "url": "/assets/api/auth.js",
+          "cat": "js",
+          "kb": 2,
+          "status": 200,
+          "cached": false,
+          "type": "Script",
+          "ms": 294
+        },
+        {
+          "url": "/assets/api/race-id-meta.js?v=2",
+          "cat": "js",
+          "kb": 2,
+          "status": 200,
+          "cached": false,
+          "type": "Script",
+          "ms": 300
+        }
+      ]
+    },
+    {
+      "name": "analysis",
+      "seed": {
+        "auth": true,
+        "token": true,
+        "terms": "{\"version\":\"2026-07-19\",\"accepted\":true,\"at\":1785479308973}"
+      },
+      "finalHref": "https://expect-keiba.com/login",
+      "path": "/login",
+      "redirectedToLogin": true,
+      "title": "Expect ～ KEIBA AI ～ · ログイン",
+      "transferMB": {
+        "js": 0.04,
+        "css": 0.03,
+        "img": 0.64,
+        "api": 0.01,
+        "font": 0.26,
+        "other": 0.02,
+        "total": 1
+      },
+      "transferBytes": {
+        "js": 37866,
+        "css": 32482,
+        "img": 671182,
+        "api": 9305,
+        "font": 274980,
+        "doc": 11136,
+        "other": 9186,
+        "total": 1046137
+      },
+      "reqCount": 93,
+      "vitals": {
+        "fcp": 192,
+        "lcp": null,
+        "cls": 0,
+        "dcl": 188,
+        "load": 190
+      },
+      "longTasks": [],
+      "memory": {
+        "heapAfterLoadMB": 2.52,
+        "heapLaterMB": 2.54,
+        "nodesAfterLoad": 96,
+        "nodesLater": 96,
+        "heapDeltaMB": 0.01,
+        "nodeDelta": 0
+      },
+      "apiCalls": [
+        {
+          "url": "/config/beta.json",
+          "cat": "api",
+          "kb": 1,
+          "status": 200,
+          "cached": false,
+          "type": "Fetch",
+          "ms": 152
+        },
+        {
+          "url": "/config/beta.json",
+          "cat": "api",
+          "kb": 1,
+          "status": 200,
+          "cached": false,
+          "type": "Fetch",
+          "ms": 120
+        },
+        {
+          "url": "/config/beta.json",
+          "cat": "api",
+          "kb": 1,
+          "status": 200,
+          "cached": false,
+          "type": "Fetch",
+          "ms": 47
+        },
+        {
+          "url": "/config/beta.json",
+          "cat": "api",
+          "kb": 1,
+          "status": 200,
+          "cached": false,
+          "type": "Fetch",
+          "ms": 41
+        },
+        {
+          "url": "/api/system/status",
+          "cat": "api",
+          "kb": 1,
+          "status": 200,
+          "cached": false,
+          "type": "Fetch",
+          "ms": 40
+        },
+        {
+          "url": "/api/auth/logout",
+          "cat": "api",
+          "kb": 1,
+          "status": 200,
+          "cached": false,
+          "type": "Fetch",
+          "ms": 36
+        },
+        {
+          "url": "/config/beta.json",
+          "cat": "api",
+          "kb": 1,
+          "status": 200,
+          "cached": false,
+          "type": "Fetch",
+          "ms": 36
+        },
+        {
+          "url": "/api/system/status",
+          "cat": "api",
+          "kb": 1,
+          "status": 200,
+          "cached": false,
+          "type": "Fetch",
+          "ms": 33
+        },
+        {
+          "url": "/api/system/status",
+          "cat": "api",
+          "kb": 1,
+          "status": 200,
+          "cached": false,
+          "type": "Fetch",
+          "ms": 32
+        }
+      ],
+      "dups": [
+        {
+          "u": "/config/beta.json",
+          "c": 5
+        },
+        {
+          "u": "https://fonts.gstatic.com/s/notosansjp/v56/-F62fjtqLzI2JPCgQBnw7HFowwII2lcnk-AFfrgQrvWXpdFg3KXxAMsKMbdN.89.woff2",
+          "c": 3
+        },
+        {
+          "u": "https://fonts.gstatic.com/s/notosansjp/v56/-F62fjtqLzI2JPCgQBnw7HFowwII2lcnk-AFfrgQrvWXpdFg3KXxAMsKMbdN.116.woff2",
+          "c": 3
+        },
+        {
+          "u": "https://fonts.gstatic.com/s/notosansjp/v56/-F62fjtqLzI2JPCgQBnw7HFowwII2lcnk-AFfrgQrvWXpdFg3KXxAMsKMbdN.106.woff2",
+          "c": 3
+        },
+        {
+          "u": "https://fonts.gstatic.com/s/notosansjp/v56/-F62fjtqLzI2JPCgQBnw7HFowwII2lcnk-AFfrgQrvWXpdFg3KXxAMsKMbdN.112.woff2",
+          "c": 3
+        },
+        {
+          "u": "https://fonts.gstatic.com/s/notosansjp/v56/-F62fjtqLzI2JPCgQBnw7HFowwII2lcnk-AFfrgQrvWXpdFg3KXxAMsKMbdN.117.woff2",
+          "c": 3
+        },
+        {
+          "u": "https://fonts.gstatic.com/s/notosansjp/v56/-F62fjtqLzI2JPCgQBnw7HFowwII2lcnk-AFfrgQrvWXpdFg3KXxAMsKMbdN.115.woff2",
+          "c": 3
+        },
+        {
+          "u": "https://fonts.gstatic.com/s/notosansjp/v56/-F62fjtqLzI2JPCgQBnw7HFowwII2lcnk-AFfrgQrvWXpdFg3KXxAMsKMbdN.110.woff2",
+          "c": 3
+        },
+        {
+          "u": "https://fonts.gstatic.com/s/notosansjp/v56/-F62fjtqLzI2JPCgQBnw7HFowwII2lcnk-AFfrgQrvWXpdFg3KXxAMsKMbdN.113.woff2",
+          "c": 3
+        },
+        {
+          "u": "https://fonts.gstatic.com/s/notosansjp/v56/-F62fjtqLzI2JPCgQBnw7HFowwII2lcnk-AFfrgQrvWXpdFg3KXxAMsKMbdN.107.woff2",
+          "c": 3
+        },
+        {
+          "u": "https://fonts.gstatic.com/s/notosansjp/v56/-F62fjtqLzI2JPCgQBnw7HFowwII2lcnk-AFfrgQrvWXpdFg3KXxAMsKMbdN.111.woff2",
+          "c": 3
+        },
+        {
+          "u": "https://fonts.gstatic.com/s/notosansjp/v56/-F62fjtqLzI2JPCgQBnw7HFYwQgP-FVthw.woff2",
+          "c": 3
+        },
+        {
+          "u": "https://fonts.gstatic.com/s/cormorantgaramond/v21/co3bmX5slCNuHLi8bLeY9MK7whWMhyjYqXtKky2F7g.woff2",
+          "c": 3
+        },
+        {
+          "u": "/api/system/status",
+          "c": 3
+        },
+        {
+          "u": "https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Noto+Sans+JP:wght@400;500;600;700&display=swap",
+          "c": 2
+        },
+        {
+          "u": "/assets/api/calendar-weekend.js?v=14",
+          "c": 2
+        },
+        {
+          "u": "/assets/auto-maintenance.js?v=12.4",
+          "c": 2
+        },
+        {
+          "u": "/assets/auth.js?v=6",
+          "c": 2
+        },
+        {
+          "u": "https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496",
+          "c": 2
+        },
+        {
+          "u": "/assets/components/mascot.css",
+          "c": 2
+        },
+        {
+          "u": "https://fonts.gstatic.com/s/notosansjp/v56/-F62fjtqLzI2JPCgQBnw7HFowwII2lcnk-AFfrgQrvWXpdFg3KXxAMsKMbdN.119.woff2",
+          "c": 2
+        },
+        {
+          "u": "https://fonts.gstatic.com/s/notosansjp/v56/-F62fjtqLzI2JPCgQBnw7HFowwII2lcnk-AFfrgQrvWXpdFg3KXxAMsKMbdN.94.woff2",
+          "c": 2
+        },
+        {
+          "u": "https://fonts.gstatic.com/s/notosansjp/v56/-F62fjtqLzI2JPCgQBnw7HFowwII2lcnk-AFfrgQrvWXpdFg3KXxAMsKMbdN.114.woff2",
+          "c": 2
+        },
+        {
+          "u": "https://fonts.gstatic.com/s/notosansjp/v56/-F62fjtqLzI2JPCgQBnw7HFowwII2lcnk-AFfrgQrvWXpdFg3KXxAMsKMbdN.95.woff2",
+          "c": 2
+        },
+        {
+          "u": "/cdn-cgi/rum?",
+          "c": 2
+        },
+        {
+          "u": "/favicon.ico",
+          "c": 2
+        }
+      ],
+      "topImg": [
+        {
+          "url": "/assets/images/mascot-ka0ba.png?v=10",
+          "cat": "img",
+          "kb": 346,
+          "status": 200,
+          "cached": false,
+          "type": "Image",
+          "ms": 47
+        },
+        {
+          "url": "/assets/images/mascot-loading-run.png?v=3",
+          "cat": "img",
+          "kb": 310,
+          "status": 200,
+          "cached": false,
+          "type": "Image",
+          "ms": 136
+        },
+        {
+          "url": "/assets/images/mascot-ka0ba-login.png?v=6",
+          "cat": "img",
+          "kb": 0,
+          "status": 200,
+          "cached": false,
+          "type": "Image",
+          "ms": null
+        },
+        {
+          "url": "/assets/images/bg-fav-1.png",
+          "cat": "img",
+          "kb": 0,
+          "status": 200,
+          "cached": false,
+          "type": "Image",
+          "ms": null
+        }
+      ],
+      "topJs": [
+        {
+          "url": "/assets/favorites.js?v=7",
+          "cat": "js",
+          "kb": 9,
+          "status": 200,
+          "cached": false,
+          "type": "Script",
+          "ms": 144
+        },
+        {
+          "url": "/assets/ux.js?v=15",
+          "cat": "js",
+          "kb": 5,
+          "status": 200,
+          "cached": false,
+          "type": "Script",
+          "ms": 145
+        },
+        {
+          "url": "/assets/reminders.js",
+          "cat": "js",
+          "kb": 4,
+          "status": 200,
+          "cached": false,
+          "type": "Script",
+          "ms": 141
+        },
+        {
+          "url": "/assets/api/prediction.js",
+          "cat": "js",
+          "kb": 4,
+          "status": 200,
+          "cached": false,
+          "type": "Script",
+          "ms": 143
+        },
+        {
+          "url": "/assets/shell.js",
+          "cat": "js",
+          "kb": 4,
+          "status": 200,
+          "cached": false,
+          "type": "Script",
+          "ms": 145
+        },
+        {
+          "url": "/assets/api/contract-guard.js",
+          "cat": "js",
+          "kb": 3,
+          "status": 200,
+          "cached": false,
+          "type": "Script",
+          "ms": 142
+        },
+        {
+          "url": "/assets/api/analysis-bind.js?v=31",
+          "cat": "js",
+          "kb": 3,
+          "status": 200,
+          "cached": false,
+          "type": "Script",
+          "ms": 148
+        },
+        {
+          "url": "/assets/api/auth.js",
+          "cat": "js",
+          "kb": 2,
+          "status": 200,
+          "cached": false,
+          "type": "Script",
+          "ms": 138
+        },
+        {
+          "url": "/assets/api/mock-gate.js",
+          "cat": "js",
+          "kb": 1,
+          "status": 200,
+          "cached": false,
+          "type": "Script",
+          "ms": 20
+        },
+        {
+          "url": "/assets/partials-nav.js",
+          "cat": "js",
+          "kb": 1,
+          "status": 200,
+          "cached": false,
+          "type": "Script",
+          "ms": 139
+        },
+        {
+          "url": "/assets/api/calendar-weekend.js?v=14",
+          "cat": "js",
+          "kb": 0,
+          "status": 200,
+          "cached": false,
+          "type": "Script",
+          "ms": null
+        },
+        {
+          "url": "/assets/auto-maintenance.js?v=12.4",
+          "cat": "js",
+          "kb": 0,
+          "status": 200,
+          "cached": false,
+          "type": "Script",
+          "ms": 1
+        },
+        {
+          "url": "/assets/auth.js?v=6",
+          "cat": "js",
+          "kb": 0,
+          "status": 200,
+          "cached": false,
+          "type": "Script",
+          "ms": null
+        },
+        {
+          "url": "https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496",
+          "cat": "js",
+          "kb": 0,
+          "status": 200,
+          "cached": false,
+          "type": "Script",
+          "ms": null
+        },
+        {
+          "url": "/assets/api/calendar-weekend.js?v=14",
+          "cat": "js",
+          "kb": 0,
+          "status": 200,
+          "cached": false,
+          "type": "Script",
+          "ms": null
+        }
+      ]
+    },
+    {
+      "name": "fortune",
+      "seed": {
+        "auth": true,
+        "token": true,
+        "terms": "{\"version\":\"2026-07-19\",\"accepted\":true,\"at\":1785479331150}"
+      },
+      "finalHref": "https://expect-keiba.com/login",
+      "path": "/login",
+      "redirectedToLogin": true,
+      "title": "Expect ～ KEIBA AI ～ · ログイン",
+      "transferMB": {
+        "js": 0.03,
+        "css": 0.02,
+        "img": 0.54,
+        "api": 0.01,
+        "font": 0.4,
+        "other": 0.02,
+        "total": 1.02
+      },
+      "transferBytes": {
+        "js": 27380,
+        "css": 24882,
+        "img": 571233,
+        "api": 10354,
+        "font": 414224,
+        "doc": 15036,
+        "other": 9189,
+        "total": 1072298
+      },
+      "reqCount": 108,
+      "vitals": {
+        "fcp": 208,
+        "lcp": null,
+        "cls": 0,
+        "dcl": 207,
+        "load": 209
+      },
+      "longTasks": [],
+      "memory": {
+        "heapAfterLoadMB": 3.2,
+        "heapLaterMB": 3.22,
+        "nodesAfterLoad": 96,
+        "nodesLater": 96,
+        "heapDeltaMB": 0.01,
+        "nodeDelta": 0
+      },
+      "apiCalls": [
+        {
+          "url": "/config/beta.json",
+          "cat": "api",
+          "kb": 1,
+          "status": 200,
+          "cached": false,
+          "type": "Fetch",
+          "ms": 159
+        },
+        {
+          "url": "/config/beta.json",
+          "cat": "api",
+          "kb": 1,
+          "status": 200,
+          "cached": false,
+          "type": "Fetch",
+          "ms": 60
+        },
+        {
+          "url": "/api/races?date=2026-08-02",
+          "cat": "api",
+          "kb": 1,
+          "status": 401,
+          "cached": false,
+          "type": "Fetch",
+          "ms": 59
+        },
+        {
+          "url": "/api/races?date=2026-08-01",
+          "cat": "api",
+          "kb": 1,
+          "status": 401,
+          "cached": false,
+          "type": "Fetch",
+          "ms": 58
+        },
+        {
+          "url": "/config/beta.json",
+          "cat": "api",
+          "kb": 1,
+          "status": 200,
+          "cached": false,
+          "type": "Fetch",
+          "ms": 58
+        },
+        {
+          "url": "/config/beta.json",
+          "cat": "api",
+          "kb": 1,
+          "status": 200,
+          "cached": false,
+          "type": "Fetch",
+          "ms": 42
+        },
+        {
+          "url": "/config/beta.json",
+          "cat": "api",
+          "kb": 1,
+          "status": 200,
+          "cached": false,
+          "type": "Fetch",
+          "ms": 42
+        },
+        {
+          "url": "/api/system/status",
+          "cat": "api",
+          "kb": 1,
+          "status": 200,
+          "cached": false,
+          "type": "Fetch",
+          "ms": 39
+        },
+        {
+          "url": "/api/system/status",
+          "cat": "api",
+          "kb": 1,
+          "status": 200,
+          "cached": false,
+          "type": "Fetch",
+          "ms": 35
+        },
+        {
+          "url": "/api/system/status",
+          "cat": "api",
+          "kb": 1,
+          "status": 200,
+          "cached": false,
+          "type": "Fetch",
+          "ms": 32
+        },
+        {
+          "url": "/api/auth/logout",
+          "cat": "api",
+          "kb": 1,
+          "status": 200,
+          "cached": false,
+          "type": "Fetch",
+          "ms": 28
+        }
+      ],
+      "dups": [
+        {
+          "u": "/config/beta.json",
+          "c": 5
+        },
+        {
+          "u": "https://fonts.gstatic.com/s/notosansjp/v56/-F62fjtqLzI2JPCgQBnw7HFowwII2lcnk-AFfrgQrvWXpdFg3KXxAMsKMbdN.111.woff2",
+          "c": 3
+        },
+        {
+          "u": "https://fonts.gstatic.com/s/notosansjp/v56/-F62fjtqLzI2JPCgQBnw7HFowwII2lcnk-AFfrgQrvWXpdFg3KXxAMsKMbdN.89.woff2",
+          "c": 3
+        },
+        {
+          "u": "https://fonts.gstatic.com/s/notosansjp/v56/-F62fjtqLzI2JPCgQBnw7HFowwII2lcnk-AFfrgQrvWXpdFg3KXxAMsKMbdN.116.woff2",
+          "c": 3
+        },
+        {
+          "u": "https://fonts.gstatic.com/s/notosansjp/v56/-F62fjtqLzI2JPCgQBnw7HFowwII2lcnk-AFfrgQrvWXpdFg3KXxAMsKMbdN.106.woff2",
+          "c": 3
+        },
+        {
+          "u": "https://fonts.gstatic.com/s/notosansjp/v56/-F62fjtqLzI2JPCgQBnw7HFowwII2lcnk-AFfrgQrvWXpdFg3KXxAMsKMbdN.112.woff2",
+          "c": 3
+        },
+        {
+          "u": "https://fonts.gstatic.com/s/notosansjp/v56/-F62fjtqLzI2JPCgQBnw7HFowwII2lcnk-AFfrgQrvWXpdFg3KXxAMsKMbdN.115.woff2",
+          "c": 3
+        },
+        {
+          "u": "https://fonts.gstatic.com/s/notosansjp/v56/-F62fjtqLzI2JPCgQBnw7HFYwQgP-FVthw.woff2",
+          "c": 3
+        },
+        {
+          "u": "https://fonts.gstatic.com/s/notosansjp/v56/-F62fjtqLzI2JPCgQBnw7HFowwII2lcnk-AFfrgQrvWXpdFg3KXxAMsKMbdN.117.woff2",
+          "c": 3
+        },
+        {
+          "u": "https://fonts.gstatic.com/s/notosansjp/v56/-F62fjtqLzI2JPCgQBnw7HFowwII2lcnk-AFfrgQrvWXpdFg3KXxAMsKMbdN.110.woff2",
+          "c": 3
+        },
+        {
+          "u": "https://fonts.gstatic.com/s/notosansjp/v56/-F62fjtqLzI2JPCgQBnw7HFowwII2lcnk-AFfrgQrvWXpdFg3KXxAMsKMbdN.113.woff2",
+          "c": 3
+        },
+        {
+          "u": "https://fonts.gstatic.com/s/notosansjp/v56/-F62fjtqLzI2JPCgQBnw7HFowwII2lcnk-AFfrgQrvWXpdFg3KXxAMsKMbdN.107.woff2",
+          "c": 3
+        },
+        {
+          "u": "https://fonts.gstatic.com/s/cormorantgaramond/v21/co3bmX5slCNuHLi8bLeY9MK7whWMhyjYqXtKky2F7g.woff2",
+          "c": 3
+        },
+        {
+          "u": "/api/system/status",
+          "c": 3
+        },
+        {
+          "u": "https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Noto+Sans+JP:wght@400;500;600;700&display=swap",
+          "c": 2
+        },
+        {
+          "u": "/assets/api/calendar-weekend.js?v=14",
+          "c": 2
+        },
+        {
+          "u": "/assets/auto-maintenance.js?v=12.4",
+          "c": 2
+        },
+        {
+          "u": "/assets/auth.js?v=6",
+          "c": 2
+        },
+        {
+          "u": "/assets/favorites.js?v=4",
+          "c": 2
+        },
+        {
+          "u": "https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496",
+          "c": 2
+        },
+        {
+          "u": "/assets/components/mascot.css",
+          "c": 2
+        },
+        {
+          "u": "https://fonts.gstatic.com/s/notosansjp/v56/-F62fjtqLzI2JPCgQBnw7HFowwII2lcnk-AFfrgQrvWXpdFg3KXxAMsKMbdN.119.woff2",
+          "c": 2
+        },
+        {
+          "u": "https://fonts.gstatic.com/s/notosansjp/v56/-F62fjtqLzI2JPCgQBnw7HFowwII2lcnk-AFfrgQrvWXpdFg3KXxAMsKMbdN.118.woff2",
+          "c": 2
+        },
+        {
+          "u": "https://fonts.gstatic.com/s/notosansjp/v56/-F62fjtqLzI2JPCgQBnw7HFowwII2lcnk-AFfrgQrvWXpdFg3KXxAMsKMbdN.97.woff2",
+          "c": 2
+        },
+        {
+          "u": "https://fonts.gstatic.com/s/notosansjp/v56/-F62fjtqLzI2JPCgQBnw7HFowwII2lcnk-AFfrgQrvWXpdFg3KXxAMsKMbdN.114.woff2",
+          "c": 2
+        },
+        {
+          "u": "https://fonts.gstatic.com/s/notosansjp/v56/-F62fjtqLzI2JPCgQBnw7HFowwII2lcnk-AFfrgQrvWXpdFg3KXxAMsKMbdN.103.woff2",
+          "c": 2
+        },
+        {
+          "u": "https://fonts.gstatic.com/s/notosansjp/v56/-F62fjtqLzI2JPCgQBnw7HFowwII2lcnk-AFfrgQrvWXpdFg3KXxAMsKMbdN.96.woff2",
+          "c": 2
+        },
+        {
+          "u": "https://fonts.gstatic.com/s/notosansjp/v56/-F62fjtqLzI2JPCgQBnw7HFowwII2lcnk-AFfrgQrvWXpdFg3KXxAMsKMbdN.102.woff2",
+          "c": 2
+        },
+        {
+          "u": "https://fonts.gstatic.com/s/notosansjp/v56/-F62fjtqLzI2JPCgQBnw7HFowwII2lcnk-AFfrgQrvWXpdFg3KXxAMsKMbdN.109.woff2",
+          "c": 2
+        },
+        {
+          "u": "https://fonts.gstatic.com/s/notosansjp/v56/-F62fjtqLzI2JPCgQBnw7HFowwII2lcnk-AFfrgQrvWXpdFg3KXxAMsKMbdN.95.woff2",
+          "c": 2
+        },
+        {
+          "u": "https://fonts.gstatic.com/s/notosansjp/v56/-F62fjtqLzI2JPCgQBnw7HFowwII2lcnk-AFfrgQrvWXpdFg3KXxAMsKMbdN.99.woff2",
+          "c": 2
+        },
+        {
+          "u": "https://fonts.gstatic.com/s/notosansjp/v56/-F62fjtqLzI2JPCgQBnw7HFowwII2lcnk-AFfrgQrvWXpdFg3KXxAMsKMbdN.70.woff2",
+          "c": 2
+        },
+        {
+          "u": "https://fonts.gstatic.com/s/notosansjp/v56/-F62fjtqLzI2JPCgQBnw7HFowwII2lcnk-AFfrgQrvWXpdFg3KXxAMsKMbdN.101.woff2",
+          "c": 2
+        },
+        {
+          "u": "/cdn-cgi/rum?",
+          "c": 2
+        },
+        {
+          "u": "/favicon.ico",
+          "c": 2
+        }
+      ],
+      "topImg": [
+        {
+          "url": "/assets/images/mascot-ka0ba.png?v=10",
+          "cat": "img",
+          "kb": 346,
+          "status": 200,
+          "cached": false,
+          "type": "Image",
+          "ms": 52
+        },
+        {
+          "url": "/assets/images/kaoba-emotion-joy.png?v=3",
+          "cat": "img",
+          "kb": 212,
+          "status": 200,
+          "cached": false,
+          "type": "Image",
+          "ms": 41
+        },
+        {
+          "url": "/assets/images/mascot-ka0ba-login.png?v=6",
+          "cat": "img",
+          "kb": 0,
+          "status": 200,
+          "cached": false,
+          "type": "Image",
+          "ms": null
+        },
+        {
+          "url": "/assets/images/bg-fav-1.png",
+          "cat": "img",
+          "kb": 0,
+          "status": 200,
+          "cached": false,
+          "type": "Image",
+          "ms": null
+        }
+      ],
+      "topJs": [
+        {
+          "url": "/assets/api/real-data-bind.js",
+          "cat": "js",
+          "kb": 9,
+          "status": 200,
+          "cached": false,
+          "type": "Script",
+          "ms": 183
+        },
+        {
+          "url": "/assets/shell.js",
+          "cat": "js",
+          "kb": 4,
+          "status": 200,
+          "cached": false,
+          "type": "Script",
+          "ms": 175
+        },
+        {
+          "url": "/assets/reminders.js",
+          "cat": "js",
+          "kb": 4,
+          "status": 200,
+          "cached": false,
+          "type": "Script",
+          "ms": 178
+        },
+        {
+          "url": "/assets/api/race.js",
+          "cat": "js",
+          "kb": 3,
+          "status": 200,
+          "cached": false,
+          "type": "Script",
+          "ms": 177
+        },
+        {
+          "url": "/assets/api/auth.js",
+          "cat": "js",
+          "kb": 2,
+          "status": 200,
+          "cached": false,
+          "type": "Script",
+          "ms": 176
+        },
+        {
+          "url": "/assets/api/race-list-url.js?v=12",
+          "cat": "js",
+          "kb": 2,
+          "status": 200,
+          "cached": false,
+          "type": "Script",
+          "ms": 182
+        },
+        {
+          "url": "/assets/api/mock-gate.js",
+          "cat": "js",
+          "kb": 1,
+          "status": 200,
+          "cached": false,
+          "type": "Script",
+          "ms": 172
+        },
+        {
+          "url": "/assets/partials-nav.js",
+          "cat": "js",
+          "kb": 1,
+          "status": 200,
+          "cached": false,
+          "type": "Script",
+          "ms": 176
+        },
+        {
+          "url": "/assets/api/calendar-weekend.js?v=14",
+          "cat": "js",
+          "kb": 0,
+          "status": 200,
+          "cached": false,
+          "type": "Script",
+          "ms": null
+        },
+        {
+          "url": "/assets/auto-maintenance.js?v=12.4",
+          "cat": "js",
+          "kb": 0,
+          "status": 200,
+          "cached": false,
+          "type": "Script",
+          "ms": null
+        },
+        {
+          "url": "/assets/auth.js?v=6",
+          "cat": "js",
+          "kb": 0,
+          "status": 200,
+          "cached": false,
+          "type": "Script",
+          "ms": null
+        },
+        {
+          "url": "/assets/favorites.js?v=4",
+          "cat": "js",
+          "kb": 0,
+          "status": 200,
+          "cached": false,
+          "type": "Script",
+          "ms": null
+        },
+        {
+          "url": "https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496",
+          "cat": "js",
+          "kb": 0,
+          "status": 200,
+          "cached": false,
+          "type": "Script",
+          "ms": null
+        },
+        {
+          "url": "/assets/api/calendar-weekend.js?v=14",
+          "cat": "js",
+          "kb": 0,
+          "status": 200,
+          "cached": false,
+          "type": "Script",
+          "ms": null
+        },
+        {
+          "url": "/assets/auto-maintenance.js?v=12.4",
+          "cat": "js",
+          "kb": 0,
+          "status": 200,
+          "cached": false,
+          "type": "Script",
+          "ms": null
+        }
+      ]
+    },
+    {
+      "name": "consult",
+      "seed": {
+        "auth": true,
+        "token": true,
+        "terms": "{\"version\":\"2026-07-19\",\"accepted\":true,\"at\":1785479353493}"
+      },
+      "finalHref": "https://expect-keiba.com/login",
+      "path": "/login",
+      "redirectedToLogin": true,
+      "title": "Expect ～ KEIBA AI ～ · ログイン",
+      "transferMB": {
+        "js": 0.02,
+        "css": 0.02,
+        "img": 0.34,
+        "api": 0.01,
+        "font": 0.25,
+        "other": 0.02,
+        "total": 0.66
+      },
+      "transferBytes": {
+        "js": 23728,
+        "css": 23015,
+        "img": 354128,
+        "api": 9320,
+        "font": 258253,
+        "doc": 12221,
+        "other": 9191,
+        "total": 689856
+      },
+      "reqCount": 92,
+      "vitals": {
+        "fcp": 192,
+        "lcp": null,
+        "cls": 0,
+        "dcl": 188,
+        "load": 190
+      },
+      "longTasks": [],
+      "memory": {
+        "heapAfterLoadMB": 2.46,
+        "heapLaterMB": 2.48,
+        "nodesAfterLoad": 96,
+        "nodesLater": 96,
+        "heapDeltaMB": 0.01,
+        "nodeDelta": 0
+      },
+      "apiCalls": [
+        {
+          "url": "/config/beta.json",
+          "cat": "api",
+          "kb": 1,
+          "status": 200,
+          "cached": false,
+          "type": "Fetch",
+          "ms": 144
+        },
+        {
+          "url": "/config/beta.json",
+          "cat": "api",
+          "kb": 1,
+          "status": 200,
+          "cached": false,
+          "type": "Fetch",
+          "ms": 44
+        },
+        {
+          "url": "/config/beta.json",
+          "cat": "api",
+          "kb": 1,
+          "status": 200,
+          "cached": false,
+          "type": "Fetch",
+          "ms": 42
+        },
+        {
+          "url": "/api/system/status",
+          "cat": "api",
+          "kb": 1,
+          "status": 200,
+          "cached": false,
+          "type": "Fetch",
+          "ms": 42
+        },
+        {
+          "url": "/config/beta.json",
+          "cat": "api",
+          "kb": 1,
+          "status": 200,
+          "cached": false,
+          "type": "Fetch",
+          "ms": 41
+        },
+        {
+          "url": "/api/auth/logout",
+          "cat": "api",
+          "kb": 1,
+          "status": 200,
+          "cached": false,
+          "type": "Fetch",
+          "ms": 34
+        },
+        {
+          "url": "/api/system/status",
+          "cat": "api",
+          "kb": 1,
+          "status": 200,
+          "cached": false,
+          "type": "Fetch",
+          "ms": 33
+        },
+        {
+          "url": "/api/system/status",
+          "cat": "api",
+          "kb": 1,
+          "status": 200,
+          "cached": false,
+          "type": "Fetch",
+          "ms": 33
+        },
+        {
+          "url": "/config/beta.json",
+          "cat": "api",
+          "kb": 1,
+          "status": 200,
+          "cached": false,
+          "type": "Fetch",
+          "ms": 32
+        }
+      ],
+      "dups": [
+        {
+          "u": "/config/beta.json",
+          "c": 5
+        },
+        {
+          "u": "https://fonts.gstatic.com/s/notosansjp/v56/-F62fjtqLzI2JPCgQBnw7HFowwII2lcnk-AFfrgQrvWXpdFg3KXxAMsKMbdN.117.woff2",
+          "c": 3
+        },
+        {
+          "u": "https://fonts.gstatic.com/s/notosansjp/v56/-F62fjtqLzI2JPCgQBnw7HFowwII2lcnk-AFfrgQrvWXpdFg3KXxAMsKMbdN.110.woff2",
+          "c": 3
+        },
+        {
+          "u": "https://fonts.gstatic.com/s/notosansjp/v56/-F62fjtqLzI2JPCgQBnw7HFYwQgP-FVthw.woff2",
+          "c": 3
+        },
+        {
+          "u": "https://fonts.gstatic.com/s/notosansjp/v56/-F62fjtqLzI2JPCgQBnw7HFowwII2lcnk-AFfrgQrvWXpdFg3KXxAMsKMbdN.115.woff2",
+          "c": 3
+        },
+        {
+          "u": "https://fonts.gstatic.com/s/notosansjp/v56/-F62fjtqLzI2JPCgQBnw7HFowwII2lcnk-AFfrgQrvWXpdFg3KXxAMsKMbdN.111.woff2",
+          "c": 3
+        },
+        {
+          "u": "https://fonts.gstatic.com/s/notosansjp/v56/-F62fjtqLzI2JPCgQBnw7HFowwII2lcnk-AFfrgQrvWXpdFg3KXxAMsKMbdN.116.woff2",
+          "c": 3
+        },
+        {
+          "u": "https://fonts.gstatic.com/s/notosansjp/v56/-F62fjtqLzI2JPCgQBnw7HFowwII2lcnk-AFfrgQrvWXpdFg3KXxAMsKMbdN.112.woff2",
+          "c": 3
+        },
+        {
+          "u": "https://fonts.gstatic.com/s/notosansjp/v56/-F62fjtqLzI2JPCgQBnw7HFowwII2lcnk-AFfrgQrvWXpdFg3KXxAMsKMbdN.107.woff2",
+          "c": 3
+        },
+        {
+          "u": "https://fonts.gstatic.com/s/notosansjp/v56/-F62fjtqLzI2JPCgQBnw7HFowwII2lcnk-AFfrgQrvWXpdFg3KXxAMsKMbdN.113.woff2",
+          "c": 3
+        },
+        {
+          "u": "https://fonts.gstatic.com/s/notosansjp/v56/-F62fjtqLzI2JPCgQBnw7HFowwII2lcnk-AFfrgQrvWXpdFg3KXxAMsKMbdN.89.woff2",
+          "c": 3
+        },
+        {
+          "u": "https://fonts.gstatic.com/s/notosansjp/v56/-F62fjtqLzI2JPCgQBnw7HFowwII2lcnk-AFfrgQrvWXpdFg3KXxAMsKMbdN.106.woff2",
+          "c": 3
+        },
+        {
+          "u": "/api/system/status",
+          "c": 3
+        },
+        {
+          "u": "https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Noto+Sans+JP:wght@400;500;600;700&display=swap",
+          "c": 2
+        },
+        {
+          "u": "/assets/styles.css",
+          "c": 2
+        },
+        {
+          "u": "/assets/api/calendar-weekend.js?v=14",
+          "c": 2
+        },
+        {
+          "u": "/assets/auto-maintenance.js?v=12.4",
+          "c": 2
+        },
+        {
+          "u": "/assets/auth.js?v=6",
+          "c": 2
+        },
+        {
+          "u": "/assets/favorites.js?v=4",
+          "c": 2
+        },
+        {
+          "u": "https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496",
+          "c": 2
+        },
+        {
+          "u": "/assets/components/mascot.css",
+          "c": 2
+        },
+        {
+          "u": "https://fonts.gstatic.com/s/cormorantgaramond/v21/co3bmX5slCNuHLi8bLeY9MK7whWMhyjYqXtKky2F7g.woff2",
+          "c": 2
+        },
+        {
+          "u": "https://fonts.gstatic.com/s/notosansjp/v56/-F62fjtqLzI2JPCgQBnw7HFowwII2lcnk-AFfrgQrvWXpdFg3KXxAMsKMbdN.119.woff2",
+          "c": 2
+        },
+        {
+          "u": "https://fonts.gstatic.com/s/notosansjp/v56/-F62fjtqLzI2JPCgQBnw7HFowwII2lcnk-AFfrgQrvWXpdFg3KXxAMsKMbdN.114.woff2",
+          "c": 2
+        },
+        {
+          "u": "https://fonts.gstatic.com/s/notosansjp/v56/-F62fjtqLzI2JPCgQBnw7HFowwII2lcnk-AFfrgQrvWXpdFg3KXxAMsKMbdN.100.woff2",
+          "c": 2
+        },
+        {
+          "u": "https://fonts.gstatic.com/s/notosansjp/v56/-F62fjtqLzI2JPCgQBnw7HFowwII2lcnk-AFfrgQrvWXpdFg3KXxAMsKMbdN.98.woff2",
+          "c": 2
+        },
+        {
+          "u": "https://fonts.gstatic.com/s/notosansjp/v56/-F62fjtqLzI2JPCgQBnw7HFowwII2lcnk-AFfrgQrvWXpdFg3KXxAMsKMbdN.105.woff2",
+          "c": 2
+        },
+        {
+          "u": "/cdn-cgi/rum?",
+          "c": 2
+        },
+        {
+          "u": "/favicon.ico",
+          "c": 2
+        }
+      ],
+      "topImg": [
+        {
+          "url": "/assets/images/mascot-ka0ba.png?v=10",
+          "cat": "img",
+          "kb": 346,
+          "status": 200,
+          "cached": false,
+          "type": "Image",
+          "ms": 25
+        },
+        {
+          "url": "/assets/images/mascot-ka0ba-login.png?v=6",
+          "cat": "img",
+          "kb": 0,
+          "status": 200,
+          "cached": false,
+          "type": "Image",
+          "ms": null
+        },
+        {
+          "url": "/assets/images/bg-fav-1.png",
+          "cat": "img",
+          "kb": 0,
+          "status": 200,
+          "cached": false,
+          "type": "Image",
+          "ms": null
+        }
+      ],
+      "topJs": [
+        {
+          "url": "/assets/ux.js?v=14",
+          "cat": "js",
+          "kb": 5,
+          "status": 200,
+          "cached": false,
+          "type": "Script",
+          "ms": 191
+        },
+        {
+          "url": "/assets/shell.js",
+          "cat": "js",
+          "kb": 4,
+          "status": 200,
+          "cached": false,
+          "type": "Script",
+          "ms": 188
+        },
+        {
+          "url": "/assets/reminders.js",
+          "cat": "js",
+          "kb": 4,
+          "status": 200,
+          "cached": false,
+          "type": "Script",
+          "ms": 189
+        },
+        {
+          "url": "/assets/api/conversation-ui.js?v=7",
+          "cat": "js",
+          "kb": 3,
+          "status": 200,
+          "cached": false,
+          "type": "Script",
+          "ms": 187
+        },
+        {
+          "url": "/assets/api/auth.js",
+          "cat": "js",
+          "kb": 2,
+          "status": 200,
+          "cached": false,
+          "type": "Script",
+          "ms": 56
+        },
+        {
+          "url": "/assets/api/conversation.js?v=8",
+          "cat": "js",
+          "kb": 2,
+          "status": 200,
+          "cached": false,
+          "type": "Script",
+          "ms": 184
+        },
+        {
+          "url": "/assets/api/kaoba.js",
+          "cat": "js",
+          "kb": 2,
+          "status": 200,
+          "cached": false,
+          "type": "Script",
+          "ms": 191
+        },
+        {
+          "url": "/assets/api/mock-gate.js",
+          "cat": "js",
+          "kb": 1,
+          "status": 200,
+          "cached": false,
+          "type": "Script",
+          "ms": 33
+        },
+        {
+          "url": "/assets/api/calendar-weekend.js?v=14",
+          "cat": "js",
+          "kb": 0,
+          "status": 200,
+          "cached": false,
+          "type": "Script",
+          "ms": null
+        },
+        {
+          "url": "/assets/auto-maintenance.js?v=12.4",
+          "cat": "js",
+          "kb": 0,
+          "status": 200,
+          "cached": false,
+          "type": "Script",
+          "ms": null
+        },
+        {
+          "url": "/assets/auth.js?v=6",
+          "cat": "js",
+          "kb": 0,
+          "status": 200,
+          "cached": false,
+          "type": "Script",
+          "ms": null
+        },
+        {
+          "url": "/assets/favorites.js?v=4",
+          "cat": "js",
+          "kb": 0,
+          "status": 200,
+          "cached": false,
+          "type": "Script",
+          "ms": null
+        },
+        {
+          "url": "https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496",
+          "cat": "js",
+          "kb": 0,
+          "status": 200,
+          "cached": false,
+          "type": "Script",
+          "ms": null
+        },
+        {
+          "url": "/assets/api/calendar-weekend.js?v=14",
+          "cat": "js",
+          "kb": 0,
+          "status": 200,
+          "cached": false,
+          "type": "Script",
+          "ms": null
+        },
+        {
+          "url": "/assets/auto-maintenance.js?v=12.4",
+          "cat": "js",
+          "kb": 0,
+          "status": 200,
+          "cached": false,
+          "type": "Script",
+          "ms": 1
+        }
+      ]
+    }
+  ]
+}

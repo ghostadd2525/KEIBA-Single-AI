@@ -102,6 +102,82 @@
     history: function () {
       return request("/api/v1/history", { timeoutMs: 8000 });
     },
+    monthlyRaceResults: function (month) {
+      var q = month ? "?month=" + encodeURIComponent(month) : "";
+      return request("/api/v1/user-race-results" + q, { timeoutMs: 12000 });
+    },
+    purchaseHistory: function () {
+      return request("/api/v1/user-race-results?view=history", { timeoutMs: 15000 });
+    },
+    getRaceResult: function (raceId) {
+      return request(
+        "/api/v1/user-race-results/" + encodeURIComponent(raceId),
+        { timeoutMs: 10000 }
+      );
+    },
+    saveRaceResult: function (body) {
+      return request("/api/v1/user-race-results", {
+        method: "POST",
+        body: body || {},
+        timeoutMs: 10000,
+      });
+    },
+    settleRaceResult: function (raceId, body) {
+      return request(
+        "/api/v1/user-race-results/" + encodeURIComponent(raceId) + "/settle",
+        {
+          method: "POST",
+          body: body || {},
+          timeoutMs: 15000,
+        }
+      );
+    },
+    settlePendingRaceResults: function () {
+      return request("/api/v1/user-race-results/settle-pending", {
+        method: "POST",
+        body: {},
+        timeoutMs: 20000,
+      });
+    },
+    registerPurchase: function (body) {
+      var payload = Object.assign({ action: "purchase" }, body || {});
+      return request("/api/v1/user-race-results", {
+        method: "POST",
+        body: payload,
+        timeoutMs: 12000,
+      });
+    },
+    progress: function () {
+      return request("/api/v1/user/progress", { timeoutMs: 8000 });
+    },
+    challengeMonthly: function (month) {
+      var q = month ? "?month=" + encodeURIComponent(month) : "";
+      return request("/api/v1/challenge/monthly" + q, { timeoutMs: 25000 });
+    },
+    challengeActive: function () {
+      return request("/api/v1/challenge/active", { timeoutMs: 15000 });
+    },
+    challengeLifecycleViewed: function (raceId, body) {
+      return request(
+        "/api/v1/challenge/lifecycle/" + encodeURIComponent(raceId) + "/viewed",
+        {
+          method: "POST",
+          body: body || { reveal_completed: true },
+          timeoutMs: 15000,
+        }
+      );
+    },
+    notifications: function (limit) {
+      var q =
+        limit != null ? "?limit=" + encodeURIComponent(String(limit)) : "";
+      return request("/api/v1/notifications" + q, { timeoutMs: 12000 });
+    },
+    notificationMarkRead: function (id) {
+      return request(
+        "/api/v1/notifications/" + encodeURIComponent(id) + "/read",
+        { method: "POST", body: {}, timeoutMs: 10000 }
+      );
+    },
     chat: function (sessionId) {
       var q = sessionId ? "?session_id=" + encodeURIComponent(sessionId) : "";
       return request("/api/v1/chat" + q, { timeoutMs: 8000 });

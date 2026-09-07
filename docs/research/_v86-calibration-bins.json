@@ -1,0 +1,1984 @@
+{
+  "test_all": {
+    "base": [
+      {
+        "lo": 0.0,
+        "hi": 0.1,
+        "n": 32,
+        "conf": 0.08489825105896993,
+        "acc": 0.78125,
+        "gap": 0.69635174894103
+      },
+      {
+        "lo": 0.1,
+        "hi": 0.2,
+        "n": 106,
+        "conf": 0.1365833775295059,
+        "acc": 0.7547169811320755,
+        "gap": 0.6181336036025696
+      },
+      {
+        "lo": 0.2,
+        "hi": 0.30000000000000004,
+        "n": 5,
+        "conf": 0.22063288249649635,
+        "acc": 0.6,
+        "gap": 0.3793671175035036
+      },
+      {
+        "lo": 0.30000000000000004,
+        "hi": 0.4,
+        "n": 0,
+        "conf": null,
+        "acc": null,
+        "gap": null
+      },
+      {
+        "lo": 0.4,
+        "hi": 0.5,
+        "n": 0,
+        "conf": null,
+        "acc": null,
+        "gap": null
+      },
+      {
+        "lo": 0.5,
+        "hi": 0.6000000000000001,
+        "n": 0,
+        "conf": null,
+        "acc": null,
+        "gap": null
+      },
+      {
+        "lo": 0.6000000000000001,
+        "hi": 0.7000000000000001,
+        "n": 0,
+        "conf": null,
+        "acc": null,
+        "gap": null
+      },
+      {
+        "lo": 0.7000000000000001,
+        "hi": 0.8,
+        "n": 0,
+        "conf": null,
+        "acc": null,
+        "gap": null
+      },
+      {
+        "lo": 0.8,
+        "hi": 0.9,
+        "n": 0,
+        "conf": null,
+        "acc": null,
+        "gap": null
+      },
+      {
+        "lo": 0.9,
+        "hi": 1.0,
+        "n": 0,
+        "conf": null,
+        "acc": null,
+        "gap": null
+      }
+    ],
+    "c3": [
+      {
+        "lo": 0.0,
+        "hi": 0.1,
+        "n": 0,
+        "conf": null,
+        "acc": null,
+        "gap": null
+      },
+      {
+        "lo": 0.1,
+        "hi": 0.2,
+        "n": 0,
+        "conf": null,
+        "acc": null,
+        "gap": null
+      },
+      {
+        "lo": 0.2,
+        "hi": 0.30000000000000004,
+        "n": 0,
+        "conf": null,
+        "acc": null,
+        "gap": null
+      },
+      {
+        "lo": 0.30000000000000004,
+        "hi": 0.4,
+        "n": 0,
+        "conf": null,
+        "acc": null,
+        "gap": null
+      },
+      {
+        "lo": 0.4,
+        "hi": 0.5,
+        "n": 0,
+        "conf": null,
+        "acc": null,
+        "gap": null
+      },
+      {
+        "lo": 0.5,
+        "hi": 0.6000000000000001,
+        "n": 0,
+        "conf": null,
+        "acc": null,
+        "gap": null
+      },
+      {
+        "lo": 0.6000000000000001,
+        "hi": 0.7000000000000001,
+        "n": 3,
+        "conf": 0.6666666666666666,
+        "acc": 1.0,
+        "gap": 0.33333333333333337
+      },
+      {
+        "lo": 0.7000000000000001,
+        "hi": 0.8,
+        "n": 129,
+        "conf": 0.7602573846075898,
+        "acc": 0.7364341085271318,
+        "gap": 0.02382327608045809
+      },
+      {
+        "lo": 0.8,
+        "hi": 0.9,
+        "n": 1,
+        "conf": 0.8,
+        "acc": 1.0,
+        "gap": 0.19999999999999996
+      },
+      {
+        "lo": 0.9,
+        "hi": 1.0,
+        "n": 10,
+        "conf": 0.9285714285714286,
+        "acc": 0.9,
+        "gap": 0.02857142857142858
+      }
+    ],
+    "c7c": [
+      {
+        "lo": 0.0,
+        "hi": 0.1,
+        "n": 0,
+        "conf": null,
+        "acc": null,
+        "gap": null
+      },
+      {
+        "lo": 0.1,
+        "hi": 0.2,
+        "n": 0,
+        "conf": null,
+        "acc": null,
+        "gap": null
+      },
+      {
+        "lo": 0.2,
+        "hi": 0.30000000000000004,
+        "n": 0,
+        "conf": null,
+        "acc": null,
+        "gap": null
+      },
+      {
+        "lo": 0.30000000000000004,
+        "hi": 0.4,
+        "n": 0,
+        "conf": null,
+        "acc": null,
+        "gap": null
+      },
+      {
+        "lo": 0.4,
+        "hi": 0.5,
+        "n": 0,
+        "conf": null,
+        "acc": null,
+        "gap": null
+      },
+      {
+        "lo": 0.5,
+        "hi": 0.6000000000000001,
+        "n": 0,
+        "conf": null,
+        "acc": null,
+        "gap": null
+      },
+      {
+        "lo": 0.6000000000000001,
+        "hi": 0.7000000000000001,
+        "n": 93,
+        "conf": 0.6891747014529902,
+        "acc": 0.7204301075268817,
+        "gap": 0.031255406073891545
+      },
+      {
+        "lo": 0.7000000000000001,
+        "hi": 0.8,
+        "n": 40,
+        "conf": 0.7107760003529803,
+        "acc": 0.8,
+        "gap": 0.08922399964701977
+      },
+      {
+        "lo": 0.8,
+        "hi": 0.9,
+        "n": 10,
+        "conf": 0.8448512607286451,
+        "acc": 0.9,
+        "gap": 0.055148739271354885
+      },
+      {
+        "lo": 0.9,
+        "hi": 1.0,
+        "n": 0,
+        "conf": null,
+        "acc": null,
+        "gap": null
+      }
+    ],
+    "const_shift": [
+      {
+        "lo": 0.0,
+        "hi": 0.1,
+        "n": 0,
+        "conf": null,
+        "acc": null,
+        "gap": null
+      },
+      {
+        "lo": 0.1,
+        "hi": 0.2,
+        "n": 0,
+        "conf": null,
+        "acc": null,
+        "gap": null
+      },
+      {
+        "lo": 0.2,
+        "hi": 0.30000000000000004,
+        "n": 0,
+        "conf": null,
+        "acc": null,
+        "gap": null
+      },
+      {
+        "lo": 0.30000000000000004,
+        "hi": 0.4,
+        "n": 0,
+        "conf": null,
+        "acc": null,
+        "gap": null
+      },
+      {
+        "lo": 0.4,
+        "hi": 0.5,
+        "n": 0,
+        "conf": null,
+        "acc": null,
+        "gap": null
+      },
+      {
+        "lo": 0.5,
+        "hi": 0.6000000000000001,
+        "n": 0,
+        "conf": null,
+        "acc": null,
+        "gap": null
+      },
+      {
+        "lo": 0.6000000000000001,
+        "hi": 0.7000000000000001,
+        "n": 0,
+        "conf": null,
+        "acc": null,
+        "gap": null
+      },
+      {
+        "lo": 0.7000000000000001,
+        "hi": 0.8,
+        "n": 143,
+        "conf": 0.7099787254897991,
+        "acc": 0.7552447552447552,
+        "gap": 0.04526602975495608
+      },
+      {
+        "lo": 0.8,
+        "hi": 0.9,
+        "n": 0,
+        "conf": null,
+        "acc": null,
+        "gap": null
+      },
+      {
+        "lo": 0.9,
+        "hi": 1.0,
+        "n": 0,
+        "conf": null,
+        "acc": null,
+        "gap": null
+      }
+    ]
+  },
+  "world_test": {
+    "rank7_world": {
+      "base": [
+        {
+          "lo": 0.0,
+          "hi": 0.1,
+          "n": 18,
+          "conf": 0.08356060736647342,
+          "acc": 0.7777777777777778,
+          "gap": 0.6942171704113044
+        },
+        {
+          "lo": 0.1,
+          "hi": 0.2,
+          "n": 20,
+          "conf": 0.12201568020327261,
+          "acc": 0.85,
+          "gap": 0.7279843197967274
+        },
+        {
+          "lo": 0.2,
+          "hi": 0.30000000000000004,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        },
+        {
+          "lo": 0.30000000000000004,
+          "hi": 0.4,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        },
+        {
+          "lo": 0.4,
+          "hi": 0.5,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        },
+        {
+          "lo": 0.5,
+          "hi": 0.6000000000000001,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        },
+        {
+          "lo": 0.6000000000000001,
+          "hi": 0.7000000000000001,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        },
+        {
+          "lo": 0.7000000000000001,
+          "hi": 0.8,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        },
+        {
+          "lo": 0.8,
+          "hi": 0.9,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        },
+        {
+          "lo": 0.9,
+          "hi": 1.0,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        }
+      ],
+      "c3": [
+        {
+          "lo": 0.0,
+          "hi": 0.1,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        },
+        {
+          "lo": 0.1,
+          "hi": 0.2,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        },
+        {
+          "lo": 0.2,
+          "hi": 0.30000000000000004,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        },
+        {
+          "lo": 0.30000000000000004,
+          "hi": 0.4,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        },
+        {
+          "lo": 0.4,
+          "hi": 0.5,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        },
+        {
+          "lo": 0.5,
+          "hi": 0.6000000000000001,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        },
+        {
+          "lo": 0.6000000000000001,
+          "hi": 0.7000000000000001,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        },
+        {
+          "lo": 0.7000000000000001,
+          "hi": 0.8,
+          "n": 38,
+          "conf": 0.7777777777777779,
+          "acc": 0.8157894736842105,
+          "gap": 0.03801169590643261
+        },
+        {
+          "lo": 0.8,
+          "hi": 0.9,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        },
+        {
+          "lo": 0.9,
+          "hi": 1.0,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        }
+      ],
+      "c7c": [
+        {
+          "lo": 0.0,
+          "hi": 0.1,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        },
+        {
+          "lo": 0.1,
+          "hi": 0.2,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        },
+        {
+          "lo": 0.2,
+          "hi": 0.30000000000000004,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        },
+        {
+          "lo": 0.30000000000000004,
+          "hi": 0.4,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        },
+        {
+          "lo": 0.4,
+          "hi": 0.5,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        },
+        {
+          "lo": 0.5,
+          "hi": 0.6000000000000001,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        },
+        {
+          "lo": 0.6000000000000001,
+          "hi": 0.7000000000000001,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        },
+        {
+          "lo": 0.7000000000000001,
+          "hi": 0.8,
+          "n": 38,
+          "conf": 0.7103800119385844,
+          "acc": 0.8157894736842105,
+          "gap": 0.10540946174562615
+        },
+        {
+          "lo": 0.8,
+          "hi": 0.9,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        },
+        {
+          "lo": 0.9,
+          "hi": 1.0,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        }
+      ],
+      "const_shift": [
+        {
+          "lo": 0.0,
+          "hi": 0.1,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        },
+        {
+          "lo": 0.1,
+          "hi": 0.2,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        },
+        {
+          "lo": 0.2,
+          "hi": 0.30000000000000004,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        },
+        {
+          "lo": 0.30000000000000004,
+          "hi": 0.4,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        },
+        {
+          "lo": 0.4,
+          "hi": 0.5,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        },
+        {
+          "lo": 0.5,
+          "hi": 0.6000000000000001,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        },
+        {
+          "lo": 0.6000000000000001,
+          "hi": 0.7000000000000001,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        },
+        {
+          "lo": 0.7000000000000001,
+          "hi": 0.8,
+          "n": 38,
+          "conf": 0.7075631105301333,
+          "acc": 0.8157894736842105,
+          "gap": 0.10822636315407719
+        },
+        {
+          "lo": 0.8,
+          "hi": 0.9,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        },
+        {
+          "lo": 0.9,
+          "hi": 1.0,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        }
+      ]
+    },
+    "midhole_world": {
+      "base": [
+        {
+          "lo": 0.0,
+          "hi": 0.1,
+          "n": 7,
+          "conf": 0.08253087259431714,
+          "acc": 0.8571428571428571,
+          "gap": 0.77461198454854
+        },
+        {
+          "lo": 0.1,
+          "hi": 0.2,
+          "n": 3,
+          "conf": 0.11199379775857234,
+          "acc": 1.0,
+          "gap": 0.8880062022414277
+        },
+        {
+          "lo": 0.2,
+          "hi": 0.30000000000000004,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        },
+        {
+          "lo": 0.30000000000000004,
+          "hi": 0.4,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        },
+        {
+          "lo": 0.4,
+          "hi": 0.5,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        },
+        {
+          "lo": 0.5,
+          "hi": 0.6000000000000001,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        },
+        {
+          "lo": 0.6000000000000001,
+          "hi": 0.7000000000000001,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        },
+        {
+          "lo": 0.7000000000000001,
+          "hi": 0.8,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        },
+        {
+          "lo": 0.8,
+          "hi": 0.9,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        },
+        {
+          "lo": 0.9,
+          "hi": 1.0,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        }
+      ],
+      "c3": [
+        {
+          "lo": 0.0,
+          "hi": 0.1,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        },
+        {
+          "lo": 0.1,
+          "hi": 0.2,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        },
+        {
+          "lo": 0.2,
+          "hi": 0.30000000000000004,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        },
+        {
+          "lo": 0.30000000000000004,
+          "hi": 0.4,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        },
+        {
+          "lo": 0.4,
+          "hi": 0.5,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        },
+        {
+          "lo": 0.5,
+          "hi": 0.6000000000000001,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        },
+        {
+          "lo": 0.6000000000000001,
+          "hi": 0.7000000000000001,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        },
+        {
+          "lo": 0.7000000000000001,
+          "hi": 0.8,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        },
+        {
+          "lo": 0.8,
+          "hi": 0.9,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        },
+        {
+          "lo": 0.9,
+          "hi": 1.0,
+          "n": 10,
+          "conf": 0.9285714285714286,
+          "acc": 0.9,
+          "gap": 0.02857142857142858
+        }
+      ],
+      "c7c": [
+        {
+          "lo": 0.0,
+          "hi": 0.1,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        },
+        {
+          "lo": 0.1,
+          "hi": 0.2,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        },
+        {
+          "lo": 0.2,
+          "hi": 0.30000000000000004,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        },
+        {
+          "lo": 0.30000000000000004,
+          "hi": 0.4,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        },
+        {
+          "lo": 0.4,
+          "hi": 0.5,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        },
+        {
+          "lo": 0.5,
+          "hi": 0.6000000000000001,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        },
+        {
+          "lo": 0.6000000000000001,
+          "hi": 0.7000000000000001,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        },
+        {
+          "lo": 0.7000000000000001,
+          "hi": 0.8,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        },
+        {
+          "lo": 0.8,
+          "hi": 0.9,
+          "n": 10,
+          "conf": 0.8448512607286451,
+          "acc": 0.9,
+          "gap": 0.055148739271354885
+        },
+        {
+          "lo": 0.9,
+          "hi": 1.0,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        }
+      ],
+      "const_shift": [
+        {
+          "lo": 0.0,
+          "hi": 0.1,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        },
+        {
+          "lo": 0.1,
+          "hi": 0.2,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        },
+        {
+          "lo": 0.2,
+          "hi": 0.30000000000000004,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        },
+        {
+          "lo": 0.30000000000000004,
+          "hi": 0.4,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        },
+        {
+          "lo": 0.4,
+          "hi": 0.5,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        },
+        {
+          "lo": 0.5,
+          "hi": 0.6000000000000001,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        },
+        {
+          "lo": 0.6000000000000001,
+          "hi": 0.7000000000000001,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        },
+        {
+          "lo": 0.7000000000000001,
+          "hi": 0.8,
+          "n": 10,
+          "conf": 0.7063200736059085,
+          "acc": 0.9,
+          "gap": 0.19367992639409148
+        },
+        {
+          "lo": 0.8,
+          "hi": 0.9,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        },
+        {
+          "lo": 0.9,
+          "hi": 1.0,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        }
+      ]
+    },
+    "unsatisfied": {
+      "base": [
+        {
+          "lo": 0.0,
+          "hi": 0.1,
+          "n": 6,
+          "conf": 0.08951799959532476,
+          "acc": 0.6666666666666666,
+          "gap": 0.5771486670713418
+        },
+        {
+          "lo": 0.1,
+          "hi": 0.2,
+          "n": 80,
+          "conf": 0.14151349616219086,
+          "acc": 0.7125,
+          "gap": 0.5709865038378091
+        },
+        {
+          "lo": 0.2,
+          "hi": 0.30000000000000004,
+          "n": 5,
+          "conf": 0.22063288249649635,
+          "acc": 0.6,
+          "gap": 0.3793671175035036
+        },
+        {
+          "lo": 0.30000000000000004,
+          "hi": 0.4,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        },
+        {
+          "lo": 0.4,
+          "hi": 0.5,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        },
+        {
+          "lo": 0.5,
+          "hi": 0.6000000000000001,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        },
+        {
+          "lo": 0.6000000000000001,
+          "hi": 0.7000000000000001,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        },
+        {
+          "lo": 0.7000000000000001,
+          "hi": 0.8,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        },
+        {
+          "lo": 0.8,
+          "hi": 0.9,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        },
+        {
+          "lo": 0.9,
+          "hi": 1.0,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        }
+      ],
+      "c3": [
+        {
+          "lo": 0.0,
+          "hi": 0.1,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        },
+        {
+          "lo": 0.1,
+          "hi": 0.2,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        },
+        {
+          "lo": 0.2,
+          "hi": 0.30000000000000004,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        },
+        {
+          "lo": 0.30000000000000004,
+          "hi": 0.4,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        },
+        {
+          "lo": 0.4,
+          "hi": 0.5,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        },
+        {
+          "lo": 0.5,
+          "hi": 0.6000000000000001,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        },
+        {
+          "lo": 0.6000000000000001,
+          "hi": 0.7000000000000001,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        },
+        {
+          "lo": 0.7000000000000001,
+          "hi": 0.8,
+          "n": 91,
+          "conf": 0.7529411764705881,
+          "acc": 0.7032967032967034,
+          "gap": 0.04964447317388476
+        },
+        {
+          "lo": 0.8,
+          "hi": 0.9,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        },
+        {
+          "lo": 0.9,
+          "hi": 1.0,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        }
+      ],
+      "c7c": [
+        {
+          "lo": 0.0,
+          "hi": 0.1,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        },
+        {
+          "lo": 0.1,
+          "hi": 0.2,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        },
+        {
+          "lo": 0.2,
+          "hi": 0.30000000000000004,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        },
+        {
+          "lo": 0.30000000000000004,
+          "hi": 0.4,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        },
+        {
+          "lo": 0.4,
+          "hi": 0.5,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        },
+        {
+          "lo": 0.5,
+          "hi": 0.6000000000000001,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        },
+        {
+          "lo": 0.6000000000000001,
+          "hi": 0.7000000000000001,
+          "n": 90,
+          "conf": 0.6917677590464042,
+          "acc": 0.7111111111111111,
+          "gap": 0.019343352064706942
+        },
+        {
+          "lo": 0.7000000000000001,
+          "hi": 0.8,
+          "n": 1,
+          "conf": 0.7029192490677597,
+          "acc": 0.0,
+          "gap": 0.7029192490677597
+        },
+        {
+          "lo": 0.8,
+          "hi": 0.9,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        },
+        {
+          "lo": 0.9,
+          "hi": 1.0,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        }
+      ],
+      "const_shift": [
+        {
+          "lo": 0.0,
+          "hi": 0.1,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        },
+        {
+          "lo": 0.1,
+          "hi": 0.2,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        },
+        {
+          "lo": 0.2,
+          "hi": 0.30000000000000004,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        },
+        {
+          "lo": 0.30000000000000004,
+          "hi": 0.4,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        },
+        {
+          "lo": 0.4,
+          "hi": 0.5,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        },
+        {
+          "lo": 0.5,
+          "hi": 0.6000000000000001,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        },
+        {
+          "lo": 0.6000000000000001,
+          "hi": 0.7000000000000001,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        },
+        {
+          "lo": 0.7000000000000001,
+          "hi": 0.8,
+          "n": 91,
+          "conf": 0.7114263426608125,
+          "acc": 0.7032967032967034,
+          "gap": 0.008129639364109154
+        },
+        {
+          "lo": 0.8,
+          "hi": 0.9,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        },
+        {
+          "lo": 0.9,
+          "hi": 1.0,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        }
+      ]
+    },
+    "midupper_world": {
+      "base": [
+        {
+          "lo": 0.0,
+          "hi": 0.1,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        },
+        {
+          "lo": 0.1,
+          "hi": 0.2,
+          "n": 1,
+          "conf": 0.1368031138525071,
+          "acc": 1.0,
+          "gap": 0.8631968861474929
+        },
+        {
+          "lo": 0.2,
+          "hi": 0.30000000000000004,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        },
+        {
+          "lo": 0.30000000000000004,
+          "hi": 0.4,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        },
+        {
+          "lo": 0.4,
+          "hi": 0.5,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        },
+        {
+          "lo": 0.5,
+          "hi": 0.6000000000000001,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        },
+        {
+          "lo": 0.6000000000000001,
+          "hi": 0.7000000000000001,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        },
+        {
+          "lo": 0.7000000000000001,
+          "hi": 0.8,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        },
+        {
+          "lo": 0.8,
+          "hi": 0.9,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        },
+        {
+          "lo": 0.9,
+          "hi": 1.0,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        }
+      ],
+      "c3": [
+        {
+          "lo": 0.0,
+          "hi": 0.1,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        },
+        {
+          "lo": 0.1,
+          "hi": 0.2,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        },
+        {
+          "lo": 0.2,
+          "hi": 0.30000000000000004,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        },
+        {
+          "lo": 0.30000000000000004,
+          "hi": 0.4,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        },
+        {
+          "lo": 0.4,
+          "hi": 0.5,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        },
+        {
+          "lo": 0.5,
+          "hi": 0.6000000000000001,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        },
+        {
+          "lo": 0.6000000000000001,
+          "hi": 0.7000000000000001,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        },
+        {
+          "lo": 0.7000000000000001,
+          "hi": 0.8,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        },
+        {
+          "lo": 0.8,
+          "hi": 0.9,
+          "n": 1,
+          "conf": 0.8,
+          "acc": 1.0,
+          "gap": 0.19999999999999996
+        },
+        {
+          "lo": 0.9,
+          "hi": 1.0,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        }
+      ],
+      "c7c": [
+        {
+          "lo": 0.0,
+          "hi": 0.1,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        },
+        {
+          "lo": 0.1,
+          "hi": 0.2,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        },
+        {
+          "lo": 0.2,
+          "hi": 0.30000000000000004,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        },
+        {
+          "lo": 0.30000000000000004,
+          "hi": 0.4,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        },
+        {
+          "lo": 0.4,
+          "hi": 0.5,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        },
+        {
+          "lo": 0.5,
+          "hi": 0.6000000000000001,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        },
+        {
+          "lo": 0.6000000000000001,
+          "hi": 0.7000000000000001,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        },
+        {
+          "lo": 0.7000000000000001,
+          "hi": 0.8,
+          "n": 1,
+          "conf": 0.7336803113852508,
+          "acc": 1.0,
+          "gap": 0.2663196886147492
+        },
+        {
+          "lo": 0.8,
+          "hi": 0.9,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        },
+        {
+          "lo": 0.9,
+          "hi": 1.0,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        }
+      ],
+      "const_shift": [
+        {
+          "lo": 0.0,
+          "hi": 0.1,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        },
+        {
+          "lo": 0.1,
+          "hi": 0.2,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        },
+        {
+          "lo": 0.2,
+          "hi": 0.30000000000000004,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        },
+        {
+          "lo": 0.30000000000000004,
+          "hi": 0.4,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        },
+        {
+          "lo": 0.4,
+          "hi": 0.5,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        },
+        {
+          "lo": 0.5,
+          "hi": 0.6000000000000001,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        },
+        {
+          "lo": 0.6000000000000001,
+          "hi": 0.7000000000000001,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        },
+        {
+          "lo": 0.7000000000000001,
+          "hi": 0.8,
+          "n": 1,
+          "conf": 0.7108634099768,
+          "acc": 1.0,
+          "gap": 0.2891365900232
+        },
+        {
+          "lo": 0.8,
+          "hi": 0.9,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        },
+        {
+          "lo": 0.9,
+          "hi": 1.0,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        }
+      ]
+    },
+    "mixed_world": {
+      "base": [
+        {
+          "lo": 0.0,
+          "hi": 0.1,
+          "n": 1,
+          "conf": 0.0978289955583484,
+          "acc": 1.0,
+          "gap": 0.9021710044416515
+        },
+        {
+          "lo": 0.1,
+          "hi": 0.2,
+          "n": 2,
+          "conf": 0.12183010697933977,
+          "acc": 1.0,
+          "gap": 0.8781698930206603
+        },
+        {
+          "lo": 0.2,
+          "hi": 0.30000000000000004,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        },
+        {
+          "lo": 0.30000000000000004,
+          "hi": 0.4,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        },
+        {
+          "lo": 0.4,
+          "hi": 0.5,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        },
+        {
+          "lo": 0.5,
+          "hi": 0.6000000000000001,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        },
+        {
+          "lo": 0.6000000000000001,
+          "hi": 0.7000000000000001,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        },
+        {
+          "lo": 0.7000000000000001,
+          "hi": 0.8,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        },
+        {
+          "lo": 0.8,
+          "hi": 0.9,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        },
+        {
+          "lo": 0.9,
+          "hi": 1.0,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        }
+      ],
+      "c3": [
+        {
+          "lo": 0.0,
+          "hi": 0.1,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        },
+        {
+          "lo": 0.1,
+          "hi": 0.2,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        },
+        {
+          "lo": 0.2,
+          "hi": 0.30000000000000004,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        },
+        {
+          "lo": 0.30000000000000004,
+          "hi": 0.4,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        },
+        {
+          "lo": 0.4,
+          "hi": 0.5,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        },
+        {
+          "lo": 0.5,
+          "hi": 0.6000000000000001,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        },
+        {
+          "lo": 0.6000000000000001,
+          "hi": 0.7000000000000001,
+          "n": 3,
+          "conf": 0.6666666666666666,
+          "acc": 1.0,
+          "gap": 0.33333333333333337
+        },
+        {
+          "lo": 0.7000000000000001,
+          "hi": 0.8,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        },
+        {
+          "lo": 0.8,
+          "hi": 0.9,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        },
+        {
+          "lo": 0.9,
+          "hi": 1.0,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        }
+      ],
+      "c7c": [
+        {
+          "lo": 0.0,
+          "hi": 0.1,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        },
+        {
+          "lo": 0.1,
+          "hi": 0.2,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        },
+        {
+          "lo": 0.2,
+          "hi": 0.30000000000000004,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        },
+        {
+          "lo": 0.30000000000000004,
+          "hi": 0.4,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        },
+        {
+          "lo": 0.4,
+          "hi": 0.5,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        },
+        {
+          "lo": 0.5,
+          "hi": 0.6000000000000001,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        },
+        {
+          "lo": 0.6000000000000001,
+          "hi": 0.7000000000000001,
+          "n": 3,
+          "conf": 0.6113829736505676,
+          "acc": 1.0,
+          "gap": 0.3886170263494324
+        },
+        {
+          "lo": 0.7000000000000001,
+          "hi": 0.8,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        },
+        {
+          "lo": 0.8,
+          "hi": 0.9,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        },
+        {
+          "lo": 0.9,
+          "hi": 1.0,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        }
+      ],
+      "const_shift": [
+        {
+          "lo": 0.0,
+          "hi": 0.1,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        },
+        {
+          "lo": 0.1,
+          "hi": 0.2,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        },
+        {
+          "lo": 0.2,
+          "hi": 0.30000000000000004,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        },
+        {
+          "lo": 0.30000000000000004,
+          "hi": 0.4,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        },
+        {
+          "lo": 0.4,
+          "hi": 0.5,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        },
+        {
+          "lo": 0.5,
+          "hi": 0.6000000000000001,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        },
+        {
+          "lo": 0.6000000000000001,
+          "hi": 0.7000000000000001,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        },
+        {
+          "lo": 0.7000000000000001,
+          "hi": 0.8,
+          "n": 3,
+          "conf": 0.7085660722421169,
+          "acc": 1.0,
+          "gap": 0.2914339277578831
+        },
+        {
+          "lo": 0.8,
+          "hi": 0.9,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        },
+        {
+          "lo": 0.9,
+          "hi": 1.0,
+          "n": 0,
+          "conf": null,
+          "acc": null,
+          "gap": null
+        }
+      ]
+    }
+  }
+}

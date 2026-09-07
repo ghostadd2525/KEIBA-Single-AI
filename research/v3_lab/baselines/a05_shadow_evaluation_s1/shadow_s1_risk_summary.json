@@ -1,0 +1,58 @@
+{
+  "production_decision_changed": false,
+  "shadow_purchase_executed": false,
+  "flag_default_changed": false,
+  "shadow_error_n": 0,
+  "shadow_error_rate": 0.0,
+  "worsened_winner_rank1_full": 0,
+  "worsened_winner_rank1_recent14": 0,
+  "data_quality": {
+    "n_races": 285,
+    "n_unique_race_days": 57,
+    "date_min": "2024-01-06",
+    "date_max": "2026-06-28",
+    "quality_status": {
+      "ok": 268,
+      "degraded": 17
+    },
+    "quality_issues": {
+      "odds_le_1_present": 17
+    },
+    "races_missing_winner": 0,
+    "races_with_odds_le_1": 17,
+    "runners_blank_style_total": 0,
+    "h4_calendar_days_ge_14": true,
+    "h4_labeled_n_ge_285": true,
+    "pass": true
+  },
+  "stability": {
+    "full_pass": true,
+    "recent_14_wr1_and_churn_safe": true,
+    "recent_14_delta_hit": 2,
+    "recent_14_n": 70,
+    "recent_14_days": [
+      "2026-02-15",
+      "2026-02-22",
+      "2026-03-01",
+      "2026-03-08",
+      "2026-03-15",
+      "2026-03-22",
+      "2026-03-29",
+      "2026-04-05",
+      "2026-04-12",
+      "2026-04-19",
+      "2026-04-25",
+      "2026-04-26",
+      "2026-05-02",
+      "2026-06-28"
+    ]
+  },
+  "residual_risks": [
+    "Live Prediction API ingress still not connected (batch operational corpus)",
+    "Control purchase not executed against real purchase API in this Lab evaluation",
+    "PRR HOLD — Flag ON / Canary not authorized"
+  ],
+  "risk_level": "low",
+  "production_readiness_recommendation": "HOLD",
+  "production_readiness_reason": "S1 Shadow PASS but PRR remains HOLD: Prediction API unwired, Feature Flag default OFF required, no Production Rollout approval"
+}

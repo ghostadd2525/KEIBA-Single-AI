@@ -1,0 +1,273 @@
+{
+  "schema": "v104-world-semantic-validation/1.0",
+  "generated_at": "2026-07-28T13:33:50+00:00",
+  "purpose": "World Semantic Fidelity (思想忠実度) — not Completeness / Hit / ROI",
+  "adr": [
+    "ADR-009",
+    "ADR-010",
+    "V103"
+  ],
+  "n_races": 285,
+  "medians_ref": {
+    "top_gap": 0.024933503251183126,
+    "ability_separation": 0.07197029287695846,
+    "upper_ability_band": 0.2964199217447646,
+    "mid_eval_band_open": 0.42425318716366545,
+    "top_monopoly": 0.1259969518064152,
+    "ability_subordinate": 0.8753324837440843,
+    "chaos": 0.4483038906524579
+  },
+  "world_fidelity": {
+    "core_world": {
+      "world": "core_world",
+      "n": 8,
+      "goal": "能力決着。上位能力差に沿って勝ち切る。残余DEFAULTではない。",
+      "contract_match_clear_rate": 1.0,
+      "must_rate": 1.0,
+      "match_rate": 1.0,
+      "required_signal_direction_rate": 1.0,
+      "anti_forbidden_high_rate": null,
+      "semantic_fidelity": 1.0,
+      "fidelity_grade": "HIGH",
+      "concept_means": {
+        "top_gap": 0.04964415569793044,
+        "ability_separation": 0.07948985830540971,
+        "upper_ability_band": 0.27760905472941116,
+        "mid_eval_band_open": 0.384891473446535,
+        "top_monopoly": 0.13247568942313231,
+        "ability_subordinate": 0.7517792215103478,
+        "chaos": null
+      }
+    },
+    "midhole_world": {
+      "world": "midhole_world",
+      "n": 24,
+      "goal": "中位帯まで勝ち筋が開く。上位独占が弱い。",
+      "contract_match_clear_rate": 1.0,
+      "must_rate": 1.0,
+      "match_rate": 1.0,
+      "required_signal_direction_rate": 1.0,
+      "anti_forbidden_high_rate": 1.0,
+      "semantic_fidelity": 1.0,
+      "fidelity_grade": "HIGH",
+      "concept_means": {
+        "top_gap": 0.011994507268709688,
+        "ability_separation": 0.0276260822877868,
+        "upper_ability_band": 0.2511478685953248,
+        "mid_eval_band_open": 0.4746773612821495,
+        "top_monopoly": 0.09426628642374131,
+        "ability_subordinate": 0.9400274636564516,
+        "chaos": 0.40586474951072443
+      }
+    },
+    "midupper_world": {
+      "world": "midupper_world",
+      "n": 6,
+      "goal": "上位能力＋展開＋適性。能力一本でも混戦でも中位穴でもない。",
+      "contract_match_clear_rate": 1.0,
+      "must_rate": 1.0,
+      "match_rate": 1.0,
+      "required_signal_direction_rate": 1.0,
+      "anti_forbidden_high_rate": null,
+      "semantic_fidelity": 1.0,
+      "fidelity_grade": "HIGH",
+      "concept_means": {
+        "top_gap": 0.02019431689461468,
+        "ability_separation": 0.07687342928511967,
+        "upper_ability_band": 0.32712783308947935,
+        "mid_eval_band_open": 0.3860064985300822,
+        "top_monopoly": 0.1291684601993138,
+        "ability_subordinate": 0.8990284155269266,
+        "chaos": 0.4317148307778815
+      }
+    },
+    "mixed_world": {
+      "world": "mixed_world",
+      "n": 6,
+      "goal": "複数勝ち筋共存。単一方針禁止。",
+      "contract_match_clear_rate": 1.0,
+      "must_rate": 1.0,
+      "match_rate": 1.0,
+      "required_signal_direction_rate": null,
+      "anti_forbidden_high_rate": null,
+      "semantic_fidelity": 1.0,
+      "fidelity_grade": "HIGH",
+      "concept_means": {
+        "top_gap": 0.013131501859157443,
+        "ability_separation": 0.045122984503415946,
+        "upper_ability_band": 0.27998883351238285,
+        "mid_eval_band_open": 0.4496570918419631,
+        "top_monopoly": 0.10447230411235768,
+        "ability_subordinate": 0.9343424907042127,
+        "chaos": 0.4721538849838298
+      }
+    },
+    "rank7_world": {
+      "world": "rank7_world",
+      "n": 65,
+      "goal": "展開・混戦。能力一本を過信しない。",
+      "contract_match_clear_rate": 1.0,
+      "must_rate": 1.0,
+      "match_rate": 1.0,
+      "required_signal_direction_rate": 1.0,
+      "anti_forbidden_high_rate": 1.0,
+      "semantic_fidelity": 1.0,
+      "fidelity_grade": "HIGH",
+      "concept_means": {
+        "top_gap": 0.012465539369203372,
+        "ability_separation": 0.049833699096304626,
+        "upper_ability_band": 0.2712223384507537,
+        "mid_eval_band_open": 0.4058256927635845,
+        "top_monopoly": 0.10419604029803459,
+        "ability_subordinate": 0.9376723031539832,
+        "chaos": 0.47133730630058535
+      }
+    },
+    "unsatisfied": {
+      "world": "unsatisfied",
+      "n": 176,
+      "goal": "残余。勝ち筋主張をしない。",
+      "semantic_fidelity": 1.0,
+      "fidelity_grade": "HIGH",
+      "residual_no_positive_match_rate": 1.0,
+      "contract_match_clear_rate": null,
+      "required_signal_direction_rate": null,
+      "anti_forbidden_high_rate": null,
+      "concept_means": {
+        "top_gap": 0.03977443828737492,
+        "ability_separation": 0.07796072582565568,
+        "upper_ability_band": 0.32805779092227544,
+        "mid_eval_band_open": 0.45184315930942026,
+        "top_monopoly": 0.14187940660962972,
+        "ability_subordinate": 0.8011278085631254
+      }
+    }
+  },
+  "separation": {
+    "pairwise_cosine": [
+      {
+        "a": "core_world",
+        "b": "midhole_world",
+        "cosine": 0.9917909703564883,
+        "separated": false
+      },
+      {
+        "a": "core_world",
+        "b": "midupper_world",
+        "cosine": 0.9969756168960263,
+        "separated": false
+      },
+      {
+        "a": "core_world",
+        "b": "mixed_world",
+        "cosine": 0.9950292277175967,
+        "separated": false
+      },
+      {
+        "a": "core_world",
+        "b": "rank7_world",
+        "cosine": 0.9934577195696567,
+        "separated": false
+      },
+      {
+        "a": "midhole_world",
+        "b": "midupper_world",
+        "cosine": 0.99247707290634,
+        "separated": false
+      },
+      {
+        "a": "midhole_world",
+        "b": "mixed_world",
+        "cosine": 0.9992109984886538,
+        "separated": false
+      },
+      {
+        "a": "midhole_world",
+        "b": "rank7_world",
+        "cosine": 0.9977589682399879,
+        "separated": false
+      },
+      {
+        "a": "midupper_world",
+        "b": "mixed_world",
+        "cosine": 0.996542521279726,
+        "separated": false
+      },
+      {
+        "a": "midupper_world",
+        "b": "rank7_world",
+        "cosine": 0.9972967477768225,
+        "separated": false
+      },
+      {
+        "a": "mixed_world",
+        "b": "rank7_world",
+        "cosine": 0.9992364771726272,
+        "separated": false
+      }
+    ],
+    "mean_pairwise_cosine": 0.9959776320403926,
+    "vs_unsatisfied_cosine": {
+      "core_world": 0.9988298173275424,
+      "midhole_world": 0.989788824542444,
+      "midupper_world": 0.994310487021118,
+      "mixed_world": 0.9928788927460197,
+      "rank7_world": 0.9897273623405372
+    },
+    "separation_note": "Lower cosine ⇒ stronger concept-profile separation. CEW assigns one label; separation here is semantic profile distinctness."
+  },
+  "near_miss_fidelity": {
+    "n_near_miss": 104,
+    "overall_near_miss_fidelity": 1.0,
+    "by_near_world": {
+      "core_world": {
+        "n": 81,
+        "struct_ok_rate": 1.0,
+        "affinity_ok_rate": 1.0,
+        "profile_aligned_rate": 1.0,
+        "mean_fidelity": 1.0,
+        "mean_intent_direction": 1.0
+      },
+      "midhole_world": {
+        "n": 13,
+        "struct_ok_rate": 1.0,
+        "affinity_ok_rate": 1.0,
+        "profile_aligned_rate": 1.0,
+        "mean_fidelity": 1.0,
+        "mean_intent_direction": 1.0
+      },
+      "midupper_world": {
+        "n": 9,
+        "struct_ok_rate": 1.0,
+        "affinity_ok_rate": 1.0,
+        "profile_aligned_rate": 1.0,
+        "mean_fidelity": 1.0,
+        "mean_intent_direction": 1.0
+      },
+      "rank7_world": {
+        "n": 1,
+        "struct_ok_rate": 1.0,
+        "affinity_ok_rate": 1.0,
+        "profile_aligned_rate": 1.0,
+        "mean_fidelity": 1.0,
+        "mean_intent_direction": 1.0
+      }
+    },
+    "note": "Near Miss fidelity = struct(must∧exclude) + affinity=1 + profile vs positive World mean"
+  },
+  "explainability_fidelity": {
+    "explainability_fidelity_rate": 1.0,
+    "n": 285,
+    "definition": "Fraction of races whose design membership can be stated using Affinity (if unsat) + Exclusion reasons/flags + trace completeness proxy for EC — without Hit/ROI/new Features."
+  },
+  "synthesis": {
+    "mean_positive_world_fidelity": 1.0,
+    "unsatisfied_residual_fidelity": 1.0,
+    "near_miss_fidelity": 1.0,
+    "explainability_fidelity": 1.0,
+    "mean_pairwise_separation_cosine": 0.9959776320403926,
+    "verdict": "FIDELITY_ACCEPTABLE_SEPARATION_WEAK",
+    "reason": "Positive World / Near Miss / Explainability fidelity は高いが、概念プロファイルの World 間分離は弱い（cosine≈0.996）。区別は Trace Must/Exclusion に依存。",
+    "separation_grade": "WEAK"
+  }
+}

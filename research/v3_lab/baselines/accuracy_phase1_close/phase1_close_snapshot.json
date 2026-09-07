@@ -1,0 +1,252 @@
+{
+  "close_id": "v3-accuracy-phase1-close/1.0",
+  "close_date": "2026-07-24",
+  "phase": "Accuracy Phase 1",
+  "status": "CLOSED",
+  "candidate_registry": {
+    "registry_id": "v3-accuracy-candidate-registry/1.0",
+    "phase": "Accuracy Phase 1",
+    "closed": true,
+    "close_id": "v3-accuracy-phase1-close/1.0",
+    "close_date": "2026-07-24",
+    "baseline": {
+      "id": "v3-lab-baseline-p5-v1",
+      "path": "research/v3_lab/baselines/lab_baseline_p5.json",
+      "control_hit": 218,
+      "updated": false,
+      "note": "P5 Lab Baseline unchanged at Phase 1 Close"
+    },
+    "decision": {
+      "simultaneous_on": false,
+      "production_wiring": false,
+      "stack_both": false
+    },
+    "primary": {
+      "rank": 1,
+      "candidate_id": "A-01",
+      "experiment_id": "v3-a01-d1-recal",
+      "alias": "v3-rank-d1-recal-285r-ab",
+      "policy_id": "D1-Recalibrator",
+      "evaluation_id": "v3-eval-a01-d1",
+      "flag": "F_V3_RANK_D1_ENABLED",
+      "flag_default": false,
+      "lab_hit": 246,
+      "churn_hit": 0,
+      "status": "lab_primary_candidate",
+      "validation": "PASS",
+      "contract": "v3-lab-evaluation/2.0",
+      "frozen_logic": true
+    },
+    "secondary": {
+      "rank": 2,
+      "candidate_id": "A-02",
+      "experiment_id": "v3-a02-d2-rerank",
+      "alias": "v3-rank-d2-rerank-285r-ab",
+      "policy_id": "D2-Reranker",
+      "evaluation_id": "v3-eval-a02-d2",
+      "flag": "F_V3_RANK_D2_ENABLED",
+      "flag_default": false,
+      "lab_hit": 242,
+      "churn_hit": 0,
+      "status": "lab_secondary_candidate",
+      "validation": "Lab PASS only",
+      "contract": "v3-lab-evaluation/2.1",
+      "frozen_logic": true
+    },
+    "review_ref": "docs/releases/v3-accuracy-candidate-review.md"
+  },
+  "feature_flag_inventory": [
+    {
+      "flag": "F_V3_REPRESENTATION",
+      "default": false,
+      "role": "canonical_stage",
+      "phase": "P2",
+      "status": "frozen"
+    },
+    {
+      "flag": "F_V3_ADMISSION",
+      "default": false,
+      "role": "canonical_stage",
+      "phase": "P3",
+      "status": "frozen"
+    },
+    {
+      "flag": "F_V3_SELECTION",
+      "default": false,
+      "role": "canonical_stage",
+      "phase": "P4",
+      "status": "frozen"
+    },
+    {
+      "flag": "F_V3_REPRESENTATION_ENABLED",
+      "default": false,
+      "role": "alias",
+      "phase": "P2",
+      "status": "frozen"
+    },
+    {
+      "flag": "F_V3_ADMISSION_ENABLED",
+      "default": false,
+      "role": "alias",
+      "phase": "P3",
+      "status": "frozen"
+    },
+    {
+      "flag": "F_V3_SELECTION_ENABLED",
+      "default": false,
+      "role": "alias",
+      "phase": "P4",
+      "status": "frozen"
+    },
+    {
+      "flag": "F_V3_LAB_ENABLED",
+      "default": false,
+      "role": "legacy_reserved",
+      "phase": "P1",
+      "status": "reserved"
+    },
+    {
+      "flag": "F_V3_EVALUATION_ENABLED",
+      "default": false,
+      "role": "legacy_alias",
+      "phase": "A-01",
+      "status": "alias_to_d1_path"
+    },
+    {
+      "flag": "F_V3_PURCHASE_ENABLED",
+      "default": false,
+      "role": "reserved",
+      "phase": "P1",
+      "status": "reserved"
+    },
+    {
+      "flag": "F_V3_RANK_D1_ENABLED",
+      "default": false,
+      "role": "accuracy_primary_candidate",
+      "phase": "A-01",
+      "status": "lab_primary_candidate",
+      "env_alias": "WIN5_V3_RANK_D1_ENABLED",
+      "production_wiring": false
+    },
+    {
+      "flag": "F_V3_RANK_D2_ENABLED",
+      "default": false,
+      "role": "accuracy_secondary_candidate",
+      "phase": "A-02",
+      "status": "lab_secondary_candidate",
+      "env_alias": "WIN5_V3_RANK_D2_ENABLED",
+      "production_wiring": false
+    },
+    {
+      "flag": "F_V3_AP_BANDED_ENABLED",
+      "default": false,
+      "role": "reserved",
+      "phase": "P3",
+      "status": "reserved"
+    },
+    {
+      "flag": "F_V3_AP_COVERAGE_ENABLED",
+      "default": false,
+      "role": "reserved",
+      "phase": "P3",
+      "status": "reserved"
+    },
+    {
+      "flag": "F_V3_SEL_REORDER_ENABLED",
+      "default": false,
+      "role": "reserved",
+      "phase": "P4",
+      "status": "reserved"
+    }
+  ],
+  "experiment_status": [
+    {
+      "experiment_id": "v3-p1-lab-harness",
+      "phase": "P1",
+      "status": "complete",
+      "frozen": true
+    },
+    {
+      "experiment_id": "v3-p2-representation",
+      "phase": "P2",
+      "status": "complete",
+      "frozen": true
+    },
+    {
+      "experiment_id": "v3-p3-admission",
+      "phase": "P3",
+      "status": "complete",
+      "frozen": true
+    },
+    {
+      "experiment_id": "v3-p4-selection",
+      "phase": "P4",
+      "status": "complete",
+      "frozen": true
+    },
+    {
+      "experiment_id": "v3-p5-freeze",
+      "phase": "P5",
+      "status": "complete",
+      "frozen": true
+    },
+    {
+      "experiment_id": "v3-a01-d1-recal",
+      "phase": "A-01",
+      "status": "lab_primary_candidate",
+      "frozen": true,
+      "lab_hit": 246,
+      "validation": "PASS"
+    },
+    {
+      "experiment_id": "v3-a02-d2-rerank",
+      "phase": "A-02",
+      "status": "lab_secondary_candidate",
+      "frozen": true,
+      "lab_hit": 242,
+      "validation": "Lab PASS only"
+    },
+    {
+      "experiment_id": "v3-accuracy-candidate-review",
+      "phase": "Accuracy Phase 1",
+      "status": "complete",
+      "frozen": true,
+      "decision": "A-01 > A-02"
+    },
+    {
+      "experiment_id": "v3-accuracy-phase1-close",
+      "phase": "Accuracy Phase 1",
+      "status": "complete",
+      "frozen": true
+    },
+    {
+      "experiment_id": "v3-feat-contract-roi",
+      "phase": "Accuracy Phase 2+",
+      "status": "reserved",
+      "frozen": true
+    },
+    {
+      "experiment_id": "v3-ap-coverage-285r-ab",
+      "phase": "P3",
+      "status": "reserved",
+      "frozen": true
+    }
+  ],
+  "baseline": {
+    "id": "v3-lab-baseline-p5-v1",
+    "path": "research/v3_lab/baselines/lab_baseline_p5.json",
+    "control_hit": 218,
+    "updated": false,
+    "note": "P5 Lab Baseline unchanged at Phase 1 Close"
+  },
+  "next_phase": {
+    "name": "Accuracy Phase 2",
+    "status": "not_started",
+    "note": "New algorithms require separate approval; Phase 1 Close does not start Phase 2"
+  },
+  "constraints": {
+    "simultaneous_d1_d2_on": false,
+    "production_wiring": false,
+    "evaluation_logic_frozen": true
+  }
+}

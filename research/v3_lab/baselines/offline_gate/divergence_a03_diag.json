@@ -1,0 +1,919 @@
+{
+  "summary": {
+    "worsened_a03": {
+      "promote_n": 27,
+      "promoted_is_winner_n": 0,
+      "treatment_is_promoted_n": 26,
+      "rarity_n": 28,
+      "mean_coverage": 97.74,
+      "style_of_best": {
+        "差し": 5,
+        "追込": 18,
+        "先行": 3,
+        "逃げ": 3
+      }
+    },
+    "improved_a03": {
+      "promote_n": 11,
+      "promoted_is_winner_n": 11,
+      "treatment_is_promoted_n": 11,
+      "rarity_n": 11,
+      "mean_coverage": 92.96,
+      "style_of_best": {
+        "追込": 5,
+        "先行": 2,
+        "逃げ": 3,
+        "差し": 2
+      }
+    },
+    "lab_synthetic_promote_by_layer": {
+      "Hit": {
+        "n": 218,
+        "promote": 0
+      },
+      "Eval": {
+        "n": 28,
+        "promote": 0
+      },
+      "Boundary": {
+        "n": 14,
+        "promote": 0
+      },
+      "Reorder": {
+        "n": 10,
+        "promote": 0
+      },
+      "Pool": {
+        "n": 9,
+        "promote": 9
+      },
+      "Delete": {
+        "n": 6,
+        "promote": 0
+      }
+    },
+    "real_full_corpus": {
+      "n": 285,
+      "a03_promote_n": 151,
+      "promote_rate": 0.5298,
+      "promote_when_winner_rank1": 29
+    }
+  },
+  "worsened": [
+    {
+      "race_id": "2024-01-06-京都-10",
+      "field": 13,
+      "field_ge_12": true,
+      "deep_n": 7,
+      "core_styles": [
+        "先行",
+        "追込",
+        "逃げ"
+      ],
+      "best_style": "差し",
+      "best_rank": 10,
+      "rarity": 1.0,
+      "coverage_score": 100.9836,
+      "promote": true,
+      "promoted_id": "2016104635",
+      "winner_id": "2019104091",
+      "promoted_is_winner": false,
+      "treatment_pick": "2016104635",
+      "treatment_is_promoted": true
+    },
+    {
+      "race_id": "2024-01-06-中山-11",
+      "field": 17,
+      "field_ge_12": true,
+      "deep_n": 11,
+      "core_styles": [
+        "先行",
+        "差し",
+        "逃げ"
+      ],
+      "best_style": "追込",
+      "best_rank": 8,
+      "rarity": 1.0,
+      "coverage_score": 101.1217,
+      "promote": true,
+      "promoted_id": "2019102879",
+      "winner_id": "2019103823",
+      "promoted_is_winner": false,
+      "treatment_pick": "2019102879",
+      "treatment_is_promoted": true
+    },
+    {
+      "race_id": "2024-01-06-京都-11",
+      "field": 18,
+      "field_ge_12": true,
+      "deep_n": 12,
+      "core_styles": [
+        "先行",
+        "追込",
+        "逃げ"
+      ],
+      "best_style": "差し",
+      "best_rank": 9,
+      "rarity": 1.0,
+      "coverage_score": 101.1337,
+      "promote": true,
+      "promoted_id": "2018103929",
+      "winner_id": "2020103043",
+      "promoted_is_winner": false,
+      "treatment_pick": "2018103929",
+      "treatment_is_promoted": true
+    },
+    {
+      "race_id": "2024-01-07-京都-11",
+      "field": 15,
+      "field_ge_12": true,
+      "deep_n": 9,
+      "core_styles": [
+        "先行",
+        "逃げ"
+      ],
+      "best_style": "追込",
+      "best_rank": 12,
+      "rarity": 1.0,
+      "coverage_score": 101.202,
+      "promote": true,
+      "promoted_id": "2018101984",
+      "winner_id": "2019103472",
+      "promoted_is_winner": false,
+      "treatment_pick": "2018101984",
+      "treatment_is_promoted": true
+    },
+    {
+      "race_id": "2024-01-14-小倉-11",
+      "field": 16,
+      "field_ge_12": true,
+      "deep_n": 10,
+      "core_styles": [
+        "先行",
+        "差し",
+        "逃げ"
+      ],
+      "best_style": "追込",
+      "best_rank": 8,
+      "rarity": 1.0,
+      "coverage_score": 101.132,
+      "promote": true,
+      "promoted_id": "2019104194",
+      "winner_id": "2018105164",
+      "promoted_is_winner": false,
+      "treatment_pick": "2019104194",
+      "treatment_is_promoted": true
+    },
+    {
+      "race_id": "2024-01-28-東京-11",
+      "field": 16,
+      "field_ge_12": true,
+      "deep_n": 10,
+      "core_styles": [
+        "差し",
+        "追込",
+        "逃げ"
+      ],
+      "best_style": "先行",
+      "best_rank": 7,
+      "rarity": 1.0,
+      "coverage_score": 101.3903,
+      "promote": true,
+      "promoted_id": "2020100484",
+      "winner_id": "2020101547",
+      "promoted_is_winner": false,
+      "treatment_pick": "2020100484",
+      "treatment_is_promoted": true
+    },
+    {
+      "race_id": "2024-02-04-東京-10",
+      "field": 16,
+      "field_ge_12": true,
+      "deep_n": 10,
+      "core_styles": [
+        "先行",
+        "追込",
+        "逃げ"
+      ],
+      "best_style": "差し",
+      "best_rank": 7,
+      "rarity": 1.0,
+      "coverage_score": 101.2704,
+      "promote": true,
+      "promoted_id": "2019101741",
+      "winner_id": "2020103307",
+      "promoted_is_winner": false,
+      "treatment_pick": "2019101741",
+      "treatment_is_promoted": true
+    },
+    {
+      "race_id": "2024-03-03-中山-10",
+      "field": 15,
+      "field_ge_12": true,
+      "deep_n": 9,
+      "core_styles": [
+        "先行",
+        "差し",
+        "逃げ"
+      ],
+      "best_style": "追込",
+      "best_rank": 14,
+      "rarity": 1.0,
+      "coverage_score": 100.9199,
+      "promote": true,
+      "promoted_id": "2019101908",
+      "winner_id": "2018102195",
+      "promoted_is_winner": false,
+      "treatment_pick": "2019101908",
+      "treatment_is_promoted": true
+    },
+    {
+      "race_id": "2024-03-03-阪神-10",
+      "field": 14,
+      "field_ge_12": true,
+      "deep_n": 8,
+      "core_styles": [
+        "差し",
+        "逃げ"
+      ],
+      "best_style": "追込",
+      "best_rank": 10,
+      "rarity": 1.0,
+      "coverage_score": 101.2598,
+      "promote": true,
+      "promoted_id": "2019110040",
+      "winner_id": "2020110155",
+      "promoted_is_winner": false,
+      "treatment_pick": "2019110040",
+      "treatment_is_promoted": true
+    },
+    {
+      "race_id": "2024-03-03-阪神-11",
+      "field": 15,
+      "field_ge_12": true,
+      "deep_n": 9,
+      "core_styles": [
+        "差し",
+        "逃げ"
+      ],
+      "best_style": "先行",
+      "best_rank": 13,
+      "rarity": 1.0,
+      "coverage_score": 101.0612,
+      "promote": true,
+      "promoted_id": "2016100763",
+      "winner_id": "2018104980",
+      "promoted_is_winner": false,
+      "treatment_pick": "2016100763",
+      "treatment_is_promoted": true
+    },
+    {
+      "race_id": "2024-03-17-阪神-11",
+      "field": 15,
+      "field_ge_12": true,
+      "deep_n": 9,
+      "core_styles": [
+        "先行",
+        "差し",
+        "逃げ"
+      ],
+      "best_style": "追込",
+      "best_rank": 7,
+      "rarity": 1.0,
+      "coverage_score": 101.4111,
+      "promote": true,
+      "promoted_id": "2019104091",
+      "winner_id": "2018106545",
+      "promoted_is_winner": false,
+      "treatment_pick": "2019104091",
+      "treatment_is_promoted": true
+    },
+    {
+      "race_id": "2024-03-31-中山-11",
+      "field": 15,
+      "field_ge_12": true,
+      "deep_n": 9,
+      "core_styles": [
+        "先行",
+        "差し",
+        "逃げ"
+      ],
+      "best_style": "追込",
+      "best_rank": 15,
+      "rarity": 1.0,
+      "coverage_score": 100.9557,
+      "promote": true,
+      "promoted_id": "2019105398",
+      "winner_id": "2019104828",
+      "promoted_is_winner": false,
+      "treatment_pick": "2019105398",
+      "treatment_is_promoted": true
+    },
+    {
+      "race_id": "2024-04-14-中山-11",
+      "field": 18,
+      "field_ge_12": true,
+      "deep_n": 12,
+      "core_styles": [
+        "先行",
+        "差し",
+        "逃げ"
+      ],
+      "best_style": "追込",
+      "best_rank": 14,
+      "rarity": 1.0,
+      "coverage_score": 101.1429,
+      "promote": true,
+      "promoted_id": "2021100953",
+      "winner_id": "2021105795",
+      "promoted_is_winner": false,
+      "treatment_pick": "2021100953",
+      "treatment_is_promoted": true
+    },
+    {
+      "race_id": "2024-04-14-阪神-11",
+      "field": 16,
+      "field_ge_12": true,
+      "deep_n": 10,
+      "core_styles": [
+        "先行",
+        "差し",
+        "逃げ"
+      ],
+      "best_style": "追込",
+      "best_rank": 12,
+      "rarity": 1.0,
+      "coverage_score": 101.2438,
+      "promote": true,
+      "promoted_id": "2019105746",
+      "winner_id": "2018105431",
+      "promoted_is_winner": false,
+      "treatment_pick": "2019105746",
+      "treatment_is_promoted": true
+    },
+    {
+      "race_id": "2024-04-28-京都-11",
+      "field": 18,
+      "field_ge_12": true,
+      "deep_n": 12,
+      "core_styles": [
+        "先行",
+        "差し"
+      ],
+      "best_style": "追込",
+      "best_rank": 15,
+      "rarity": 1.0,
+      "coverage_score": 101.1399,
+      "promote": true,
+      "promoted_id": "2018103499",
+      "winner_id": "2018106545",
+      "promoted_is_winner": false,
+      "treatment_pick": "2018103499",
+      "treatment_is_promoted": true
+    },
+    {
+      "race_id": "2024-05-05-東京-11",
+      "field": 18,
+      "field_ge_12": true,
+      "deep_n": 12,
+      "core_styles": [
+        "先行",
+        "差し",
+        "逃げ"
+      ],
+      "best_style": "追込",
+      "best_rank": 17,
+      "rarity": 1.0,
+      "coverage_score": 100.8748,
+      "promote": true,
+      "promoted_id": "2021100953",
+      "winner_id": "2021107171",
+      "promoted_is_winner": false,
+      "treatment_pick": "2021100953",
+      "treatment_is_promoted": true
+    },
+    {
+      "race_id": "2024-05-19-東京-11",
+      "field": 18,
+      "field_ge_12": true,
+      "deep_n": 12,
+      "core_styles": [
+        "差し",
+        "追込",
+        "逃げ"
+      ],
+      "best_style": "先行",
+      "best_rank": 8,
+      "rarity": 1.0,
+      "coverage_score": 101.4385,
+      "promote": true,
+      "promoted_id": "2021106823",
+      "winner_id": "2021105643",
+      "promoted_is_winner": false,
+      "treatment_pick": "2021106823",
+      "treatment_is_promoted": true
+    },
+    {
+      "race_id": "2024-07-07-小倉-11",
+      "field": 16,
+      "field_ge_12": true,
+      "deep_n": 10,
+      "core_styles": [
+        "先行",
+        "差し",
+        "逃げ"
+      ],
+      "best_style": "追込",
+      "best_rank": 15,
+      "rarity": 1.0,
+      "coverage_score": 100.9611,
+      "promote": true,
+      "promoted_id": "2017105789",
+      "winner_id": "2020105599",
+      "promoted_is_winner": false,
+      "treatment_pick": "2017105789",
+      "treatment_is_promoted": true
+    },
+    {
+      "race_id": "2025-12-13-中京-10",
+      "field": 16,
+      "field_ge_12": true,
+      "deep_n": 10,
+      "core_styles": [
+        "先行",
+        "差し",
+        "逃げ"
+      ],
+      "best_style": "追込",
+      "best_rank": 13,
+      "rarity": 1.0,
+      "coverage_score": 101.1304,
+      "promote": true,
+      "promoted_id": "2021106164",
+      "winner_id": "2021107192",
+      "promoted_is_winner": false,
+      "treatment_pick": "2022100736",
+      "treatment_is_promoted": false
+    },
+    {
+      "race_id": "2025-12-21-中山-10",
+      "field": 15,
+      "field_ge_12": true,
+      "deep_n": 9,
+      "core_styles": [
+        "先行",
+        "差し",
+        "追込",
+        "逃げ"
+      ],
+      "best_style": "逃げ",
+      "best_rank": 7,
+      "rarity": 0.0,
+      "coverage_score": 1.4011,
+      "promote": false,
+      "promoted_id": null,
+      "winner_id": "2022104983",
+      "promoted_is_winner": false,
+      "treatment_pick": "2020104567",
+      "treatment_is_promoted": false
+    },
+    {
+      "race_id": "2025-12-27-阪神-10",
+      "field": 16,
+      "field_ge_12": true,
+      "deep_n": 10,
+      "core_styles": [
+        "先行",
+        "逃げ"
+      ],
+      "best_style": "追込",
+      "best_rank": 8,
+      "rarity": 1.0,
+      "coverage_score": 101.2527,
+      "promote": true,
+      "promoted_id": "2020110026",
+      "winner_id": "2022102874",
+      "promoted_is_winner": false,
+      "treatment_pick": "2020110026",
+      "treatment_is_promoted": true
+    },
+    {
+      "race_id": "2026-01-04-中山-09",
+      "field": 11,
+      "field_ge_12": false,
+      "deep_n": 5,
+      "core_styles": [
+        "先行",
+        "追込"
+      ],
+      "best_style": "逃げ",
+      "best_rank": 7,
+      "rarity": 1.0,
+      "coverage_score": 101.4309,
+      "promote": false,
+      "promoted_id": null,
+      "winner_id": "2021104824",
+      "promoted_is_winner": false,
+      "treatment_pick": "2019104805",
+      "treatment_is_promoted": false
+    },
+    {
+      "race_id": "2026-01-11-中山-09",
+      "field": 13,
+      "field_ge_12": true,
+      "deep_n": 7,
+      "core_styles": [
+        "先行",
+        "逃げ"
+      ],
+      "best_style": "差し",
+      "best_rank": 7,
+      "rarity": 1.0,
+      "coverage_score": 101.3627,
+      "promote": true,
+      "promoted_id": "2021103533",
+      "winner_id": "2022100201",
+      "promoted_is_winner": false,
+      "treatment_pick": "2021103533",
+      "treatment_is_promoted": true
+    },
+    {
+      "race_id": "2026-02-01-東京-11",
+      "field": 16,
+      "field_ge_12": true,
+      "deep_n": 10,
+      "core_styles": [
+        "先行",
+        "差し",
+        "逃げ"
+      ],
+      "best_style": "追込",
+      "best_rank": 12,
+      "rarity": 1.0,
+      "coverage_score": 101.2211,
+      "promote": true,
+      "promoted_id": "2021103868",
+      "winner_id": "2020100145",
+      "promoted_is_winner": false,
+      "treatment_pick": "2021103868",
+      "treatment_is_promoted": true
+    },
+    {
+      "race_id": "2026-03-15-阪神-10",
+      "field": 14,
+      "field_ge_12": true,
+      "deep_n": 8,
+      "core_styles": [
+        "先行",
+        "差し",
+        "逃げ"
+      ],
+      "best_style": "追込",
+      "best_rank": 7,
+      "rarity": 1.0,
+      "coverage_score": 101.3257,
+      "promote": true,
+      "promoted_id": "2020106635",
+      "winner_id": "2022103686",
+      "promoted_is_winner": false,
+      "treatment_pick": "2020106635",
+      "treatment_is_promoted": true
+    },
+    {
+      "race_id": "2026-03-22-中山-11",
+      "field": 16,
+      "field_ge_12": true,
+      "deep_n": 10,
+      "core_styles": [
+        "先行",
+        "逃げ"
+      ],
+      "best_style": "差し",
+      "best_rank": 8,
+      "rarity": 1.0,
+      "coverage_score": 101.3681,
+      "promote": true,
+      "promoted_id": "2021100653",
+      "winner_id": "2022110137",
+      "promoted_is_winner": false,
+      "treatment_pick": "2021100653",
+      "treatment_is_promoted": true
+    },
+    {
+      "race_id": "2026-04-05-中山-10",
+      "field": 16,
+      "field_ge_12": true,
+      "deep_n": 10,
+      "core_styles": [
+        "先行",
+        "差し",
+        "逃げ"
+      ],
+      "best_style": "追込",
+      "best_rank": 12,
+      "rarity": 1.0,
+      "coverage_score": 101.1284,
+      "promote": true,
+      "promoted_id": "2020110100",
+      "winner_id": "2022100394",
+      "promoted_is_winner": false,
+      "treatment_pick": "2020110100",
+      "treatment_is_promoted": true
+    },
+    {
+      "race_id": "2026-04-05-阪神-10",
+      "field": 18,
+      "field_ge_12": true,
+      "deep_n": 12,
+      "core_styles": [
+        "先行",
+        "差し",
+        "追込"
+      ],
+      "best_style": "逃げ",
+      "best_rank": 7,
+      "rarity": 1.0,
+      "coverage_score": 101.1522,
+      "promote": true,
+      "promoted_id": "2020105354",
+      "winner_id": "2022104053",
+      "promoted_is_winner": false,
+      "treatment_pick": "2020105354",
+      "treatment_is_promoted": true
+    },
+    {
+      "race_id": "2026-05-02-新潟-11",
+      "field": 15,
+      "field_ge_12": true,
+      "deep_n": 9,
+      "core_styles": [
+        "先行",
+        "差し",
+        "逃げ"
+      ],
+      "best_style": "追込",
+      "best_rank": 14,
+      "rarity": 1.0,
+      "coverage_score": 100.9969,
+      "promote": true,
+      "promoted_id": "2020102317",
+      "winner_id": "2022100159",
+      "promoted_is_winner": false,
+      "treatment_pick": "2020102317",
+      "treatment_is_promoted": true
+    }
+  ],
+  "improved": [
+    {
+      "race_id": "2024-02-11-東京-10",
+      "field": 16,
+      "field_ge_12": true,
+      "deep_n": 10,
+      "core_styles": [
+        "先行",
+        "差し",
+        "逃げ"
+      ],
+      "best_style": "追込",
+      "best_rank": 8,
+      "rarity": 1.0,
+      "coverage_score": 101.354,
+      "promote": true,
+      "promoted_id": "2015104714",
+      "winner_id": "2015104714",
+      "promoted_is_winner": true,
+      "treatment_pick": "2015104714",
+      "treatment_is_promoted": true
+    },
+    {
+      "race_id": "2024-04-21-東京-10",
+      "field": 15,
+      "field_ge_12": true,
+      "deep_n": 9,
+      "core_styles": [
+        "先行",
+        "差し",
+        "逃げ"
+      ],
+      "best_style": "追込",
+      "best_rank": 7,
+      "rarity": 1.0,
+      "coverage_score": 101.2089,
+      "promote": true,
+      "promoted_id": "2019104116",
+      "winner_id": "2019104116",
+      "promoted_is_winner": true,
+      "treatment_pick": "2019104116",
+      "treatment_is_promoted": true
+    },
+    {
+      "race_id": "2024-04-28-東京-10",
+      "field": 16,
+      "field_ge_12": true,
+      "deep_n": 10,
+      "core_styles": [
+        "差し",
+        "追込",
+        "逃げ"
+      ],
+      "best_style": "先行",
+      "best_rank": 7,
+      "rarity": 1.0,
+      "coverage_score": 101.4074,
+      "promote": true,
+      "promoted_id": "2018106571",
+      "winner_id": "2018106571",
+      "promoted_is_winner": true,
+      "treatment_pick": "2018106571",
+      "treatment_is_promoted": true
+    },
+    {
+      "race_id": "2024-06-02-京都-10",
+      "field": 13,
+      "field_ge_12": true,
+      "deep_n": 7,
+      "core_styles": [
+        "先行",
+        "差し",
+        "追込"
+      ],
+      "best_style": "逃げ",
+      "best_rank": 10,
+      "rarity": 1.0,
+      "coverage_score": 101.335,
+      "promote": true,
+      "promoted_id": "2019103430",
+      "winner_id": "2019103430",
+      "promoted_is_winner": true,
+      "treatment_pick": "2019103430",
+      "treatment_is_promoted": true
+    },
+    {
+      "race_id": "2024-06-30-小倉-10",
+      "field": 16,
+      "field_ge_12": true,
+      "deep_n": 10,
+      "core_styles": [
+        "先行",
+        "逃げ"
+      ],
+      "best_style": "差し",
+      "best_rank": 11,
+      "rarity": 1.0,
+      "coverage_score": 101.1606,
+      "promote": true,
+      "promoted_id": "2019104729",
+      "winner_id": "2019104729",
+      "promoted_is_winner": true,
+      "treatment_pick": "2019104729",
+      "treatment_is_promoted": true
+    },
+    {
+      "race_id": "2025-12-27-中山-09",
+      "field": 16,
+      "field_ge_12": true,
+      "deep_n": 10,
+      "core_styles": [
+        "先行",
+        "差し",
+        "逃げ"
+      ],
+      "best_style": "追込",
+      "best_rank": 13,
+      "rarity": 1.0,
+      "coverage_score": 101.2175,
+      "promote": true,
+      "promoted_id": "2020102140",
+      "winner_id": "2020102140",
+      "promoted_is_winner": true,
+      "treatment_pick": "2020102140",
+      "treatment_is_promoted": true
+    },
+    {
+      "race_id": "2025-12-28-中山-10",
+      "field": 16,
+      "field_ge_12": true,
+      "deep_n": 10,
+      "core_styles": [
+        "先行",
+        "差し",
+        "逃げ"
+      ],
+      "best_style": "追込",
+      "best_rank": 10,
+      "rarity": 1.0,
+      "coverage_score": 101.2331,
+      "promote": true,
+      "promoted_id": "2019104385",
+      "winner_id": "2019104385",
+      "promoted_is_winner": true,
+      "treatment_pick": "2019104385",
+      "treatment_is_promoted": true
+    },
+    {
+      "race_id": "2026-02-15-京都-11",
+      "field": 12,
+      "field_ge_12": true,
+      "deep_n": 6,
+      "core_styles": [
+        "先行",
+        "差し",
+        "逃げ"
+      ],
+      "best_style": "追込",
+      "best_rank": 7,
+      "rarity": 1.0,
+      "coverage_score": 101.4308,
+      "promote": true,
+      "promoted_id": "2021100913",
+      "winner_id": "2021100913",
+      "promoted_is_winner": true,
+      "treatment_pick": "2021100913",
+      "treatment_is_promoted": true
+    },
+    {
+      "race_id": "2026-03-22-中京-11",
+      "field": 18,
+      "field_ge_12": true,
+      "deep_n": 12,
+      "core_styles": [
+        "先行",
+        "差し",
+        "追込"
+      ],
+      "best_style": "逃げ",
+      "best_rank": 11,
+      "rarity": 1.0,
+      "coverage_score": 101.2529,
+      "promote": true,
+      "promoted_id": "2022103875",
+      "winner_id": "2022103875",
+      "promoted_is_winner": true,
+      "treatment_pick": "2022103875",
+      "treatment_is_promoted": true
+    },
+    {
+      "race_id": "2026-03-29-中山-11",
+      "field": 16,
+      "field_ge_12": true,
+      "deep_n": 10,
+      "core_styles": [
+        "差し",
+        "追込"
+      ],
+      "best_style": "先行",
+      "best_rank": 7,
+      "rarity": 1.0,
+      "coverage_score": 101.4121,
+      "promote": true,
+      "promoted_id": "2020104136",
+      "winner_id": "2020104136",
+      "promoted_is_winner": true,
+      "treatment_pick": "2020104136",
+      "treatment_is_promoted": true
+    },
+    {
+      "race_id": "2026-04-19-中山-10",
+      "field": 15,
+      "field_ge_12": true,
+      "deep_n": 9,
+      "core_styles": [
+        "先行",
+        "差し",
+        "追込"
+      ],
+      "best_style": "逃げ",
+      "best_rank": 8,
+      "rarity": 1.0,
+      "coverage_score": 101.1417,
+      "promote": true,
+      "promoted_id": "2019101975",
+      "winner_id": "2019101975",
+      "promoted_is_winner": true,
+      "treatment_pick": "2019101975",
+      "treatment_is_promoted": true
+    },
+    {
+      "race_id": "2026-04-26-東京-10",
+      "field": 16,
+      "field_ge_12": true,
+      "deep_n": 10,
+      "core_styles": [
+        "先行",
+        "差し",
+        "追込",
+        "逃げ"
+      ],
+      "best_style": "差し",
+      "best_rank": 8,
+      "rarity": 0.0,
+      "coverage_score": 1.4124,
+      "promote": false,
+      "promoted_id": null,
+      "winner_id": "2022106942",
+      "promoted_is_winner": false,
+      "treatment_pick": "2022106942",
+      "treatment_is_promoted": false
+    }
+  ]
+}

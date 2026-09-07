@@ -1,0 +1,12 @@
+priority_rank,tier,feature_id,composite_score,soft_to_strict_improve_rate,lift,mutual_information,permutation_importance,coverage
+1,S,trainer,0.478926,0.4,1.254355,0.534944,0.162963,1.0
+2,S,owner,0.383592,0.2,0.470383,0.534944,0.044444,1.0
+3,S,win_odds,0.315682,0.2,0.418118,0.091216,-0.003704,1.0
+4,S,popularity,0.315441,0.2,0.418118,0.086008,0.003704,1.0
+5,S,expected_popularity,0.314848,0.2,0.418118,0.086008,-0.02963,1.0
+6,A,damsire,0.273702,0.0,0.0,0.418971,-0.074074,1.0
+7,A,sire,0.268174,0.0,0.0,0.467751,-0.081481,1.0
+8,A,breeder,0.24126,0.0,0.0,0.299542,-0.092593,1.0
+9,B,sale_price,0.21517,0.0,0.0,0.394895,,0.319871
+10,C,oikiri_time,0.017124,0.0,,,,0.171244
+11,C,oikiri_rating,0.017124,0.0,,,,0.171244

@@ -50,6 +50,14 @@ body.v11-mobile .expect-btn {
   min-height: 44px;
 }
 
+body.v11-mobile .race-item .fav-btn,
+body.v11-mobile .race-item .fav-btn.fav-btn--icon {
+  min-width: 30px;
+  min-height: 30px;
+  width: 30px;
+  height: 30px;
+}
+
 body.v11-mobile .favorites-rail {
   -webkit-overflow-scrolling: touch;
   scroll-snap-type: x proximity;
@@ -360,4 +368,64 @@ body.v11-confidence .v11-conf-meter > i {
 
 .page-ops .ops-denied {
   padding: 24px 16px;
+}
+
+/* —— Version8.7 Operations Portal —— */
+.page-ops .ops-portal-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 12px;
+  margin-bottom: 8px;
+}
+
+.page-ops .ops-portal-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.page-ops .ops-readonly-banner {
+  margin: 0 0 14px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(193, 162, 109, 0.35);
+  background: rgba(40, 32, 18, 0.55);
+  color: #d4c19a;
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.page-ops .ops-portal-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0 0 16px;
+}
+
+.page-ops .ops-portal-tab {
+  appearance: none;
+  border: 1px solid rgba(193, 162, 109, 0.35);
+  background: rgba(16, 18, 24, 0.65);
+  color: #cbb892;
+  border-radius: 999px;
+  padding: 8px 14px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  cursor: pointer;
+}
+
+.page-ops .ops-portal-tab.is-active {
+  border-color: rgba(229, 199, 143, 0.7);
+  color: #f3e6c4;
+  background: rgba(80, 60, 28, 0.55);
+}
+
+.page-ops .ops-card-note {
+  margin: 6px 0 0;
+  font-size: 11px;
+  color: #9a8b6e;
+  line-height: 1.35;
 }

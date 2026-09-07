@@ -1,8 +1,8 @@
 {
   "schema_version": "expect-canary-result/1.0",
-  "result_id": "CAN-IMP-20260719-miss-001-2026-07-21T13-18-09Z",
+  "result_id": "CAN-IMP-20260719-miss-001-2026-07-22T07-39-10Z",
   "proposal_id": "IMP-20260719-miss-001",
-  "run_id": "2026-07-21T13-18-09Z",
+  "run_id": "2026-07-22T07-39-10Z",
   "verdict": null,
   "evaluation_status": "pending_human_review",
   "gates": {},

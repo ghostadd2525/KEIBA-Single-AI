@@ -1,0 +1,37 @@
+{
+  "control": {
+    "n": 285,
+    "hit": 218,
+    "miss": 67,
+    "purchase": 218,
+    "rank710": 9,
+    "rank46": 6,
+    "other": 52,
+    "roi": 1.1418,
+    "stake_total": 28500.0,
+    "return_total": 61040.0
+  },
+  "treatment": {
+    "n": 285,
+    "hit": 246,
+    "miss": 39,
+    "purchase": 246,
+    "rank710": 9,
+    "rank46": 6,
+    "other": 24,
+    "roi": 1.4463,
+    "stake_total": 28500.0,
+    "return_total": 69720.0
+  },
+  "delta": {
+    "hit": 28,
+    "purchase": 28,
+    "rank710": 0,
+    "rank46": 0,
+    "other": -28,
+    "roi": 0.3045
+  },
+  "churn_hit": 0,
+  "churn_races": [],
+  "roi_def": "flat 100yen/race on top pick; ROI=(return-stake)/stake"
+}

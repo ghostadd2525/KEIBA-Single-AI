@@ -54,6 +54,13 @@ async function buildCardForRace(context, race) {
   });
 }
 
+function raceCardsCacheKey(date) {
+  // v5: catalog post_time（出走時刻）を含む
+  return new Request("https://expect-internal.cache/race-cards/v5/" + date, {
+    method: "GET",
+  });
+}
+
 export async function onRequestGet(context) {
   const enabled = await isV2RaceCardsEnabled(context);
   if (!enabled) {
@@ -76,6 +83,19 @@ export async function onRequestGet(context) {
     return jsonError("DATE_REQUIRED", "date query parameter is required (YYYY-MM-DD)", 400);
   }
 
+  const bypassCache =
+    url.searchParams.get("fresh") === "1" ||
+    url.searchParams.get("nocache") === "1";
+
+  try {
+    if (!bypassCache && typeof caches !== "undefined" && caches.default) {
+      const hit = await caches.default.match(raceCardsCacheKey(date));
+      if (hit) return hit;
+    }
+  } catch {
+    /* cache optional */
+  }
+
   const qs = new URLSearchParams({ date });
   const catalogProxied = await piFetch(context, "/v1/races?" + qs.toString());
   if (catalogProxied instanceof Response) return catalogProxied;
@@ -93,7 +113,7 @@ export async function onRequestGet(context) {
     (race) => buildCardForRace(context, race)
   );
 
-  return jsonOk(
+  const response = jsonOk(
     {
       schema_version: RACE_CARDS_LIST_SCHEMA,
       date,
@@ -104,8 +124,26 @@ export async function onRequestGet(context) {
       source: catalogProxied.source || "pi-keibanet-api",
       service: "RaceCardSummary",
       feature: "v2_race_cards",
-      cache: "public, max-age=60",
+      cache: "edge-120",
     },
     { cacheControl: "public, max-age=60" }
   );
+
+  try {
+    if (!bypassCache && typeof caches !== "undefined" && caches.default) {
+      const store = response.clone();
+      const headers = new Headers(store.headers);
+      headers.set("cache-control", "public, max-age=120");
+      const cached = new Response(store.body, {
+        status: store.status,
+        statusText: store.statusText,
+        headers,
+      });
+      context.waitUntil(caches.default.put(raceCardsCacheKey(date), cached));
+    }
+  } catch {
+    /* ignore */
+  }
+
+  return response;
 }

@@ -1,0 +1,6 @@
+{
+  "schema_version": "expect-v83-analyzer-calibration/1.0",
+  "confidence_bias": {},
+  "updated_at": null,
+  "note": "Research-only confidence biases. Updated by v8:feedback."
+}

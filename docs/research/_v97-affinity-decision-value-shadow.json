@@ -1,0 +1,485 @@
+{
+  "schema": "v97-affinity-decision-value-shadow/1.0",
+  "generated_at": "2026-07-28T12:27:45+00:00",
+  "purpose": "Evaluate whether Near Miss Affinity has statistical Decision value",
+  "locks": [
+    "Prediction",
+    "Trigger",
+    "CEW",
+    "World",
+    "product Decision impl"
+  ],
+  "scope": {
+    "population": "Near Miss only",
+    "n_unsatisfied": 176,
+    "n_near_miss": 104,
+    "n_pure_residual_excluded": 72
+  },
+  "policies": {
+    "baseline": "unsatisfied conservative BUY Top1 UNIT",
+    "affinity_aware": {
+      "core_world/midupper_world": "SKIP (high_suppress)",
+      "midhole_world/rank7_world": "BUY stake=0.5×UNIT (mid_suppress)",
+      "forbidden": "Positive World Ticket Strategy copy"
+    }
+  },
+  "baseline": {
+    "n_races": 104,
+    "n_purchase": 104,
+    "n_skip": 0,
+    "ticket_roi": 0.39807692307692305,
+    "ticket_pnl": 4140.0,
+    "total_stake": 10400.0,
+    "purchase_hit_rate": 0.25961538461538464,
+    "coverage_rate": 0.25961538461538464,
+    "buy_rate": 1.0,
+    "skip_rate": 0.0,
+    "explainability_rate": 1.0,
+    "mean_pool_size": 1.0,
+    "decision_distribution": {
+      "BUY": 104,
+      "SKIP": 0
+    }
+  },
+  "affinity_aware": {
+    "n_races": 104,
+    "n_purchase": 14,
+    "n_skip": 90,
+    "ticket_roi": -0.45,
+    "ticket_pnl": -315.0,
+    "total_stake": 700.0,
+    "purchase_hit_rate": 0.07142857142857142,
+    "coverage_rate": 0.25961538461538464,
+    "buy_rate": 0.1346153846153846,
+    "skip_rate": 0.8653846153846154,
+    "explainability_rate": 1.0,
+    "mean_pool_size": 1.0,
+    "decision_distribution": {
+      "BUY": 14,
+      "SKIP": 90
+    }
+  },
+  "deltas": {
+    "delta_ticket_roi": -0.8480769230769231,
+    "delta_ticket_pnl": -4455.0,
+    "delta_purchase_hit": -0.1881868131868132,
+    "delta_coverage": 0.0,
+    "delta_buy_rate": -0.8653846153846154
+  },
+  "bootstrap": {
+    "roi": {
+      "n_boot": 2000,
+      "delta_roi_mean": -0.8329291766490584,
+      "delta_roi_ci95": [
+        -1.8174038461538462,
+        0.4404326923076921
+      ],
+      "ci_excludes_0_positive": false,
+      "ci_excludes_0_negative": false,
+      "note": "If shadow all-skip in a draw, delta uses avoided-loss vs baseline stake"
+    },
+    "purchase_hit": {
+      "metric": "purchase_hit_rate",
+      "delta_mean": -0.18849161070409826,
+      "ci95": [
+        -0.3173076923076923,
+        -0.019162087912088274
+      ],
+      "ci_excludes_0_positive": false,
+      "ci_excludes_0_negative": true
+    },
+    "coverage": {
+      "metric": "coverage_rate",
+      "delta_mean": 0.0,
+      "ci95": [
+        0.0,
+        0.0
+      ],
+      "ci_excludes_0_positive": false,
+      "ci_excludes_0_negative": false
+    },
+    "buy_rate": {
+      "metric": "buy_rate",
+      "delta_mean": -0.8649807692307693,
+      "ci95": [
+        -0.9326923076923077,
+        -0.7980769230769231
+      ],
+      "ci_excludes_0_positive": false,
+      "ci_excludes_0_negative": true
+    }
+  },
+  "by_near_world": {
+    "core_world": {
+      "n": 81,
+      "baseline": {
+        "n_races": 81,
+        "n_purchase": 81,
+        "n_skip": 0,
+        "ticket_roi": 0.5617283950617284,
+        "ticket_pnl": 4550.0,
+        "total_stake": 8100.0,
+        "purchase_hit_rate": 0.30864197530864196,
+        "coverage_rate": 0.30864197530864196,
+        "buy_rate": 1.0,
+        "skip_rate": 0.0,
+        "explainability_rate": 1.0,
+        "mean_pool_size": 1.0,
+        "decision_distribution": {
+          "BUY": 81,
+          "SKIP": 0
+        }
+      },
+      "affinity_aware": {
+        "n_races": 81,
+        "n_purchase": 0,
+        "n_skip": 81,
+        "ticket_roi": null,
+        "ticket_pnl": 0.0,
+        "total_stake": 0,
+        "purchase_hit_rate": null,
+        "coverage_rate": 0.30864197530864196,
+        "buy_rate": 0.0,
+        "skip_rate": 1.0,
+        "explainability_rate": 1.0,
+        "mean_pool_size": 1.0,
+        "decision_distribution": {
+          "BUY": 0,
+          "SKIP": 81
+        }
+      },
+      "delta_roi": null,
+      "delta_pnl": -4550.0,
+      "delta_buy_rate": -1.0,
+      "delta_purchase_hit": null
+    },
+    "midhole_world": {
+      "n": 13,
+      "baseline": {
+        "n_races": 13,
+        "n_purchase": 13,
+        "n_skip": 0,
+        "ticket_roi": -0.4076923076923077,
+        "ticket_pnl": -530.0,
+        "total_stake": 1300.0,
+        "purchase_hit_rate": 0.07692307692307693,
+        "coverage_rate": 0.07692307692307693,
+        "buy_rate": 1.0,
+        "skip_rate": 0.0,
+        "explainability_rate": 1.0,
+        "mean_pool_size": 1.0,
+        "decision_distribution": {
+          "BUY": 13,
+          "SKIP": 0
+        }
+      },
+      "affinity_aware": {
+        "n_races": 13,
+        "n_purchase": 13,
+        "n_skip": 0,
+        "ticket_roi": -0.4076923076923077,
+        "ticket_pnl": -265.0,
+        "total_stake": 650.0,
+        "purchase_hit_rate": 0.07692307692307693,
+        "coverage_rate": 0.07692307692307693,
+        "buy_rate": 1.0,
+        "skip_rate": 0.0,
+        "explainability_rate": 1.0,
+        "mean_pool_size": 1.0,
+        "decision_distribution": {
+          "BUY": 13,
+          "SKIP": 0
+        }
+      },
+      "delta_roi": 0.0,
+      "delta_pnl": 265.0,
+      "delta_buy_rate": 0.0,
+      "delta_purchase_hit": 0.0
+    },
+    "midupper_world": {
+      "n": 9,
+      "baseline": {
+        "n_races": 9,
+        "n_purchase": 9,
+        "n_skip": 0,
+        "ticket_roi": 0.24444444444444444,
+        "ticket_pnl": 220.0,
+        "total_stake": 900.0,
+        "purchase_hit_rate": 0.1111111111111111,
+        "coverage_rate": 0.1111111111111111,
+        "buy_rate": 1.0,
+        "skip_rate": 0.0,
+        "explainability_rate": 1.0,
+        "mean_pool_size": 1.0,
+        "decision_distribution": {
+          "BUY": 9,
+          "SKIP": 0
+        }
+      },
+      "affinity_aware": {
+        "n_races": 9,
+        "n_purchase": 0,
+        "n_skip": 9,
+        "ticket_roi": null,
+        "ticket_pnl": 0.0,
+        "total_stake": 0,
+        "purchase_hit_rate": null,
+        "coverage_rate": 0.1111111111111111,
+        "buy_rate": 0.0,
+        "skip_rate": 1.0,
+        "explainability_rate": 1.0,
+        "mean_pool_size": 1.0,
+        "decision_distribution": {
+          "BUY": 0,
+          "SKIP": 9
+        }
+      },
+      "delta_roi": null,
+      "delta_pnl": -220.0,
+      "delta_buy_rate": -1.0,
+      "delta_purchase_hit": null
+    },
+    "rank7_world": {
+      "n": 1,
+      "baseline": {
+        "n_races": 1,
+        "n_purchase": 1,
+        "n_skip": 0,
+        "ticket_roi": -1.0,
+        "ticket_pnl": -100.0,
+        "total_stake": 100.0,
+        "purchase_hit_rate": 0.0,
+        "coverage_rate": 0.0,
+        "buy_rate": 1.0,
+        "skip_rate": 0.0,
+        "explainability_rate": 1.0,
+        "mean_pool_size": 1.0,
+        "decision_distribution": {
+          "BUY": 1,
+          "SKIP": 0
+        }
+      },
+      "affinity_aware": {
+        "n_races": 1,
+        "n_purchase": 1,
+        "n_skip": 0,
+        "ticket_roi": -1.0,
+        "ticket_pnl": -50.0,
+        "total_stake": 50.0,
+        "purchase_hit_rate": 0.0,
+        "coverage_rate": 0.0,
+        "buy_rate": 1.0,
+        "skip_rate": 0.0,
+        "explainability_rate": 1.0,
+        "mean_pool_size": 1.0,
+        "decision_distribution": {
+          "BUY": 1,
+          "SKIP": 0
+        }
+      },
+      "delta_roi": 0.0,
+      "delta_pnl": 50.0,
+      "delta_buy_rate": 0.0,
+      "delta_purchase_hit": 0.0
+    }
+  },
+  "decision_stability": {
+    "n_near_miss": 104,
+    "prediction_fingerprint_identical": true,
+    "action_agreement_rate": 0.1346153846153846,
+    "template_change_rate": 1.0,
+    "action_transitions": {
+      "BUY->SKIP": 90
+    },
+    "decision_stability_note": "低 action_agreement は Risk 抑制が効いていることを示す。 Prediction 安定（fingerprint）が Decision Stability の必須条件。"
+  },
+  "verdict": {
+    "verdict": "NO_VALUE",
+    "affinity_has_decision_value": false,
+    "reason": "Affinity Risk 抑制は Buy を大きく減らすが、残購入の Purchase Hit が有意に悪化し Ticket PnL も悪化。 Near Miss Affinity の高抑制 SKIP は本コーパスで Decision 価値を示さない。",
+    "delta_pnl": -4455.0,
+    "delta_roi_point": -0.8480769230769231
+  },
+  "per_race_sample": [
+    {
+      "race_id": "2024-01-06-京都-10",
+      "near_world": "core_world",
+      "affinity": {
+        "core_world": 1.0,
+        "midupper_world": 1.0,
+        "midhole_world": 0.5,
+        "rank7_world": 0.3333333333333333
+      },
+      "baseline_action": "BUY",
+      "shadow_action": "SKIP",
+      "baseline_pnl": 520.0,
+      "shadow_pnl": 0.0,
+      "fp_ok": true
+    },
+    {
+      "race_id": "2024-01-06-中山-11",
+      "near_world": "core_world",
+      "affinity": {
+        "core_world": 1.0,
+        "midupper_world": 0.6666666666666666,
+        "midhole_world": 0.0,
+        "rank7_world": 0.3333333333333333
+      },
+      "baseline_action": "BUY",
+      "shadow_action": "SKIP",
+      "baseline_pnl": 680.0,
+      "shadow_pnl": 0.0,
+      "fp_ok": true
+    },
+    {
+      "race_id": "2024-01-06-京都-11",
+      "near_world": "core_world",
+      "affinity": {
+        "core_world": 1.0,
+        "midupper_world": 0.6666666666666666,
+        "midhole_world": 0.0,
+        "rank7_world": 0.6666666666666666
+      },
+      "baseline_action": "BUY",
+      "shadow_action": "SKIP",
+      "baseline_pnl": 1550.0,
+      "shadow_pnl": 0.0,
+      "fp_ok": true
+    },
+    {
+      "race_id": "2024-01-06-中山-10",
+      "near_world": "core_world",
+      "affinity": {
+        "core_world": 1.0,
+        "midupper_world": 0.6666666666666666,
+        "midhole_world": 0.5,
+        "rank7_world": 0.3333333333333333
+      },
+      "baseline_action": "BUY",
+      "shadow_action": "SKIP",
+      "baseline_pnl": 280.0,
+      "shadow_pnl": 0.0,
+      "fp_ok": true
+    },
+    {
+      "race_id": "2024-01-07-京都-11",
+      "near_world": "core_world",
+      "affinity": {
+        "core_world": 1.0,
+        "midupper_world": 0.3333333333333333,
+        "midhole_world": 0.5,
+        "rank7_world": 0.6666666666666666
+      },
+      "baseline_action": "BUY",
+      "shadow_action": "SKIP",
+      "baseline_pnl": 1020.0,
+      "shadow_pnl": 0.0,
+      "fp_ok": true
+    },
+    {
+      "race_id": "2024-01-07-京都-10",
+      "near_world": "core_world",
+      "affinity": {
+        "core_world": 1.0,
+        "midupper_world": 0.6666666666666666,
+        "midhole_world": 0.5,
+        "rank7_world": 0.3333333333333333
+      },
+      "baseline_action": "BUY",
+      "shadow_action": "SKIP",
+      "baseline_pnl": 350.0,
+      "shadow_pnl": 0.0,
+      "fp_ok": true
+    },
+    {
+      "race_id": "2024-01-14-中山-11",
+      "near_world": "core_world",
+      "affinity": {
+        "core_world": 1.0,
+        "midupper_world": 0.6666666666666666,
+        "midhole_world": 0.5,
+        "rank7_world": 0.6666666666666666
+      },
+      "baseline_action": "BUY",
+      "shadow_action": "SKIP",
+      "baseline_pnl": 1050.0,
+      "shadow_pnl": 0.0,
+      "fp_ok": true
+    },
+    {
+      "race_id": "2024-01-14-中山-10",
+      "near_world": "core_world",
+      "affinity": {
+        "core_world": 1.0,
+        "midupper_world": 0.6666666666666666,
+        "midhole_world": 0.5,
+        "rank7_world": 0.3333333333333333
+      },
+      "baseline_action": "BUY",
+      "shadow_action": "SKIP",
+      "baseline_pnl": 540.0,
+      "shadow_pnl": 0.0,
+      "fp_ok": true
+    },
+    {
+      "race_id": "2024-01-14-小倉-11",
+      "near_world": "core_world",
+      "affinity": {
+        "core_world": 1.0,
+        "midupper_world": 0.6666666666666666,
+        "midhole_world": 0.0,
+        "rank7_world": 0.6666666666666666
+      },
+      "baseline_action": "BUY",
+      "shadow_action": "SKIP",
+      "baseline_pnl": 390.00000000000006,
+      "shadow_pnl": 0.0,
+      "fp_ok": true
+    },
+    {
+      "race_id": "2024-01-14-京都-10",
+      "near_world": "core_world",
+      "affinity": {
+        "core_world": 1.0,
+        "midupper_world": 1.0,
+        "midhole_world": 0.5,
+        "rank7_world": 0.3333333333333333
+      },
+      "baseline_action": "BUY",
+      "shadow_action": "SKIP",
+      "baseline_pnl": 30.0,
+      "shadow_pnl": 0.0,
+      "fp_ok": true
+    },
+    {
+      "race_id": "2024-01-14-京都-11",
+      "near_world": "core_world",
+      "affinity": {
+        "core_world": 1.0,
+        "midupper_world": 1.0,
+        "midhole_world": 0.5,
+        "rank7_world": 0.3333333333333333
+      },
+      "baseline_action": "BUY",
+      "shadow_action": "SKIP",
+      "baseline_pnl": 309.99999999999994,
+      "shadow_pnl": 0.0,
+      "fp_ok": true
+    },
+    {
+      "race_id": "2024-01-21-中山-11",
+      "near_world": "midhole_world",
+      "affinity": {
+        "core_world": 0.5,
+        "midupper_world": 0.6666666666666666,
+        "midhole_world": 1.0,
+        "rank7_world": 0.3333333333333333
+      },
+      "baseline_action": "BUY",
+      "shadow_action": "BUY",
+      "baseline_pnl": -100.0,
+      "shadow_pnl": -50.0,
+      "fp_ok": true
+    }
+  ]
+}

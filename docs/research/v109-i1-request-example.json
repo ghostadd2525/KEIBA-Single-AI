@@ -1,0 +1,30 @@
+{
+  "race_id": "20260719_hanshin_11",
+  "core_payload": {
+    "schema": "core-semantic-payload/v1",
+    "race_id": "20260719_hanshin_11",
+    "world_id": "rank7_world",
+    "prediction": {
+      "ranks": ["A", "B", "C"],
+      "scores": [0.4, 0.3, 0.2],
+      "top1": "A"
+    },
+    "decision_trace": {},
+    "transition": null,
+    "near_miss": null,
+    "affinity": null,
+    "exclusion_reasons": {},
+    "explanation_confidence": null,
+    "expected_strategy_ref": {
+      "registry": "v75-expected-strategy",
+      "key": "rank7_world"
+    }
+  },
+  "options": {
+    "include_tickets": false,
+    "include_presentation": false,
+    "locale": "ja"
+  },
+  "force": true,
+  "timeout_ms": 12000
+}

@@ -1,0 +1,14 @@
+{
+  "shadow_runtime_enabled": true,
+  "phase": "S0",
+  "log_dir": "C:\\win5-ai\\KEIBA-Single-AI\\research\\v3_lab\\baselines\\a05_shadow\\logs",
+  "stake_yen": 100.0,
+  "min_window_days": 14,
+  "min_labeled_races": 285,
+  "max_shadow_error_rate": 0.05,
+  "max_input_mismatch_rate": 0.0,
+  "purchase_forbidden": true,
+  "fail_open": true,
+  "forbid_a03_with_a05": true,
+  "promote_rate_warn_max": 0.25
+}

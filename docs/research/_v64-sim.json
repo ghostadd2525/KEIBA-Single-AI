@@ -1,0 +1,1859 @@
+{
+  "schema": "v64-world-strategy-discovery/1.0",
+  "corpus": "real_285r",
+  "n_races": 285,
+  "method": {
+    "horse_features": "within-race z / percentile from 285R runners (win_prob, history_score, odds; popularity only if valid)",
+    "race_concepts": "derived from win_prob distribution (W-S1 ranking_concepts)",
+    "labels": "hybrid: legacy_world for core/midupper/midhole/mixed; v44_world for rank7/bug",
+    "importance": "winner_mean - loser_mean on oriented features; field_hit_rate",
+    "popularity_note": "240/285 races lack varying popularity; excluded unless valid",
+    "no_weighting": true,
+    "no_pe_mutation": true
+  },
+  "sample_sizes": {
+    "hybrid": {
+      "core_world": 104,
+      "midupper_world": 110,
+      "midhole_world": 15,
+      "rank7_world": 65,
+      "mixed_world": 56,
+      "bug_world": 0
+    },
+    "legacy": {
+      "core_world": 104,
+      "midupper_world": 110,
+      "midhole_world": 15,
+      "rank7_world": 0,
+      "mixed_world": 56,
+      "bug_world": 0
+    },
+    "v44": {
+      "core_world": 8,
+      "midupper_world": 6,
+      "midhole_world": 24,
+      "rank7_world": 65,
+      "mixed_world": 6,
+      "bug_world": 0
+    }
+  },
+  "by_world": {
+    "core_world": {
+      "n": 104,
+      "status": "ok",
+      "importance": [
+        {
+          "feature": "popularity_z",
+          "winner_mean": -0.9210395969871867,
+          "loser_mean": 0.06436549596249891,
+          "effect": 0.9854050929496856,
+          "abs_effect": 0.9854050929496856,
+          "field_hit_rate": 0.30952380952380953,
+          "field_hit_n": 13,
+          "field_hit_den": 42
+        },
+        {
+          "feature": "win_prob_z",
+          "winner_mean": 0.7005866550790957,
+          "loser_mean": -0.05923659522619989,
+          "effect": 0.7598232503052955,
+          "abs_effect": 0.7598232503052955,
+          "field_hit_rate": 0.21153846153846154,
+          "field_hit_n": 22,
+          "field_hit_den": 104
+        },
+        {
+          "feature": "odds_z",
+          "winner_mean": -0.592364753636775,
+          "loser_mean": 0.05008612551075169,
+          "effect": 0.6424508791475266,
+          "abs_effect": 0.6424508791475266,
+          "field_hit_rate": 0.3269230769230769,
+          "field_hit_n": 34,
+          "field_hit_den": 104
+        },
+        {
+          "feature": "history_z",
+          "winner_mean": 0.5670396856220168,
+          "loser_mean": -0.04794481894690219,
+          "effect": 0.614984504568919,
+          "abs_effect": 0.614984504568919,
+          "field_hit_rate": 0.19230769230769232,
+          "field_hit_n": 20,
+          "field_hit_den": 104
+        },
+        {
+          "feature": "odds_pct_low",
+          "winner_mean": 0.7925316992271179,
+          "loser_mean": 0.47526561242307297,
+          "effect": 0.3172660868040449,
+          "abs_effect": 0.3172660868040449,
+          "field_hit_rate": 0.3269230769230769,
+          "field_hit_n": 34,
+          "field_hit_den": 104
+        },
+        {
+          "feature": "popularity_pct_low",
+          "winner_mean": 0.7836872044855238,
+          "loser_mean": 0.48017493745691847,
+          "effect": 0.3035122670286053,
+          "abs_effect": 0.3035122670286053,
+          "field_hit_rate": 0.30952380952380953,
+          "field_hit_n": 13,
+          "field_hit_den": 42
+        },
+        {
+          "feature": "win_prob_pct",
+          "winner_mean": 0.7091843190118077,
+          "loser_mean": 0.4823128705876195,
+          "effect": 0.22687144842418816,
+          "abs_effect": 0.22687144842418816,
+          "field_hit_rate": 0.21153846153846154,
+          "field_hit_n": 22,
+          "field_hit_den": 104
+        },
+        {
+          "feature": "history_pct",
+          "winner_mean": 0.6855643256944162,
+          "loser_mean": 0.4843100082339681,
+          "effect": 0.20125431746044808,
+          "abs_effect": 0.20125431746044808,
+          "field_hit_rate": 0.19230769230769232,
+          "field_hit_n": 20,
+          "field_hit_den": 104
+        }
+      ],
+      "top10": [
+        {
+          "feature": "popularity_z",
+          "winner_mean": -0.9210395969871867,
+          "loser_mean": 0.06436549596249891,
+          "effect": 0.9854050929496856,
+          "abs_effect": 0.9854050929496856,
+          "field_hit_rate": 0.30952380952380953,
+          "field_hit_n": 13,
+          "field_hit_den": 42
+        },
+        {
+          "feature": "win_prob_z",
+          "winner_mean": 0.7005866550790957,
+          "loser_mean": -0.05923659522619989,
+          "effect": 0.7598232503052955,
+          "abs_effect": 0.7598232503052955,
+          "field_hit_rate": 0.21153846153846154,
+          "field_hit_n": 22,
+          "field_hit_den": 104
+        },
+        {
+          "feature": "odds_z",
+          "winner_mean": -0.592364753636775,
+          "loser_mean": 0.05008612551075169,
+          "effect": 0.6424508791475266,
+          "abs_effect": 0.6424508791475266,
+          "field_hit_rate": 0.3269230769230769,
+          "field_hit_n": 34,
+          "field_hit_den": 104
+        },
+        {
+          "feature": "history_z",
+          "winner_mean": 0.5670396856220168,
+          "loser_mean": -0.04794481894690219,
+          "effect": 0.614984504568919,
+          "abs_effect": 0.614984504568919,
+          "field_hit_rate": 0.19230769230769232,
+          "field_hit_n": 20,
+          "field_hit_den": 104
+        },
+        {
+          "feature": "odds_pct_low",
+          "winner_mean": 0.7925316992271179,
+          "loser_mean": 0.47526561242307297,
+          "effect": 0.3172660868040449,
+          "abs_effect": 0.3172660868040449,
+          "field_hit_rate": 0.3269230769230769,
+          "field_hit_n": 34,
+          "field_hit_den": 104
+        },
+        {
+          "feature": "popularity_pct_low",
+          "winner_mean": 0.7836872044855238,
+          "loser_mean": 0.48017493745691847,
+          "effect": 0.3035122670286053,
+          "abs_effect": 0.3035122670286053,
+          "field_hit_rate": 0.30952380952380953,
+          "field_hit_n": 13,
+          "field_hit_den": 42
+        },
+        {
+          "feature": "win_prob_pct",
+          "winner_mean": 0.7091843190118077,
+          "loser_mean": 0.4823128705876195,
+          "effect": 0.22687144842418816,
+          "abs_effect": 0.22687144842418816,
+          "field_hit_rate": 0.21153846153846154,
+          "field_hit_n": 22,
+          "field_hit_den": 104
+        },
+        {
+          "feature": "history_pct",
+          "winner_mean": 0.6855643256944162,
+          "loser_mean": 0.4843100082339681,
+          "effect": 0.20125431746044808,
+          "abs_effect": 0.20125431746044808,
+          "field_hit_rate": 0.19230769230769232,
+          "field_hit_n": 20,
+          "field_hit_den": 104
+        }
+      ],
+      "losing_features": [
+        {
+          "feature": "history_pct",
+          "loser_vs_winner_gap": -0.20125431746044808,
+          "loser_mean": 0.4843100082339681,
+          "winner_mean": 0.6855643256944162
+        },
+        {
+          "feature": "win_prob_pct",
+          "loser_vs_winner_gap": -0.22687144842418816,
+          "loser_mean": 0.4823128705876195,
+          "winner_mean": 0.7091843190118077
+        },
+        {
+          "feature": "popularity_pct_low",
+          "loser_vs_winner_gap": -0.3035122670286053,
+          "loser_mean": 0.48017493745691847,
+          "winner_mean": 0.7836872044855238
+        },
+        {
+          "feature": "odds_pct_low",
+          "loser_vs_winner_gap": -0.3172660868040449,
+          "loser_mean": 0.47526561242307297,
+          "winner_mean": 0.7925316992271179
+        },
+        {
+          "feature": "history_z",
+          "loser_vs_winner_gap": -0.614984504568919,
+          "loser_mean": -0.04794481894690219,
+          "winner_mean": 0.5670396856220168
+        },
+        {
+          "feature": "odds_z",
+          "loser_vs_winner_gap": -0.6424508791475266,
+          "loser_mean": 0.05008612551075169,
+          "winner_mean": -0.592364753636775
+        },
+        {
+          "feature": "win_prob_z",
+          "loser_vs_winner_gap": -0.7598232503052955,
+          "loser_mean": -0.05923659522619989,
+          "winner_mean": 0.7005866550790957
+        },
+        {
+          "feature": "popularity_z",
+          "loser_vs_winner_gap": -0.9854050929496856,
+          "loser_mean": 0.06436549596249891,
+          "winner_mean": -0.9210395969871867
+        }
+      ],
+      "style_lift": [
+        {
+          "style": "逃げ",
+          "winner_share": 0.34615384615384615,
+          "loser_share": 0.2040650406504065,
+          "lift": 0.14208880550343964
+        },
+        {
+          "style": "先行",
+          "winner_share": 0.3557692307692308,
+          "loser_share": 0.2959349593495935,
+          "lift": 0.059834271419637264
+        },
+        {
+          "style": "差し",
+          "winner_share": 0.25,
+          "loser_share": 0.3382113821138211,
+          "lift": -0.08821138211382112
+        },
+        {
+          "style": "追込",
+          "winner_share": 0.04807692307692308,
+          "loser_share": 0.16178861788617885,
+          "lift": -0.11371169480925578
+        }
+      ],
+      "context_profile": {
+        "top_gap": {
+          "mean": 0.03520278761481124,
+          "n": 104
+        },
+        "ability_separation": {
+          "mean": 0.07928814263380445,
+          "n": 104
+        },
+        "upper_ability_band": {
+          "mean": 0.35383847427198717,
+          "n": 104
+        },
+        "mid_eval_band_open": {
+          "mean": 0.48114701583136515,
+          "n": 104
+        },
+        "top_monopoly": {
+          "mean": 0.14861249831843112,
+          "n": 104
+        },
+        "ability_subordinate": {
+          "mean": 0.8239860619259438,
+          "n": 104
+        },
+        "field_size": {
+          "mean": 12.826923076923077,
+          "n": 104
+        },
+        "distance": {
+          "mean": 1749.0384615384614,
+          "n": 104
+        }
+      },
+      "surface_dist": {
+        "芝": 73,
+        "ダ": 31
+      },
+      "stable_features": [
+        {
+          "feature": "win_prob_z",
+          "effect_low_top_gap": 0.5803011291969654,
+          "effect_high_top_gap": 0.9477719093353222,
+          "split": "top_gap_median"
+        },
+        {
+          "feature": "history_z",
+          "effect_low_top_gap": 0.6056834120805015,
+          "effect_high_top_gap": 0.6248644868113256,
+          "split": "top_gap_median"
+        },
+        {
+          "feature": "odds_z",
+          "effect_low_top_gap": 0.6170030794737705,
+          "effect_high_top_gap": 0.6692253690700392,
+          "split": "top_gap_median"
+        },
+        {
+          "feature": "odds_pct_low",
+          "effect_low_top_gap": 0.29592410769915495,
+          "effect_high_top_gap": 0.3396659359347637,
+          "split": "top_gap_median"
+        },
+        {
+          "feature": "win_prob_pct",
+          "effect_low_top_gap": 0.2390083353483342,
+          "effect_high_top_gap": 0.21423366024933288,
+          "split": "top_gap_median"
+        },
+        {
+          "feature": "history_pct",
+          "effect_low_top_gap": 0.2014950539832147,
+          "effect_high_top_gap": 0.2010522885268458,
+          "split": "top_gap_median"
+        },
+        {
+          "feature": "popularity_z",
+          "effect_low_top_gap": 0.9979688382667463,
+          "effect_high_top_gap": 0.9649894590192034,
+          "split": "top_gap_median"
+        },
+        {
+          "feature": "popularity_pct_low",
+          "effect_low_top_gap": 0.3070307168139602,
+          "effect_high_top_gap": 0.29779491288529947,
+          "split": "top_gap_median"
+        }
+      ],
+      "context_features": [],
+      "winner_model_rank": {
+        "mean": 4.3076923076923075,
+        "median": 4,
+        "p25": 2,
+        "p75": 6
+      },
+      "label_source": "legacy"
+    },
+    "midupper_world": {
+      "n": 110,
+      "status": "ok",
+      "importance": [
+        {
+          "feature": "win_prob_z",
+          "winner_mean": 0.7786715196228069,
+          "loser_mean": -0.05438340771968804,
+          "effect": 0.833054927342495,
+          "abs_effect": 0.833054927342495,
+          "field_hit_rate": 0.22727272727272727,
+          "field_hit_n": 25,
+          "field_hit_den": 110
+        },
+        {
+          "feature": "odds_z",
+          "winner_mean": -0.6702373474050164,
+          "loser_mean": 0.046810227437810666,
+          "effect": 0.7170475748428271,
+          "abs_effect": 0.7170475748428271,
+          "field_hit_rate": 0.2545454545454545,
+          "field_hit_n": 28,
+          "field_hit_den": 110
+        },
+        {
+          "feature": "history_z",
+          "winner_mean": 0.5610814169186501,
+          "loser_mean": -0.039186638641937416,
+          "effect": 0.6002680555605875,
+          "abs_effect": 0.6002680555605875,
+          "field_hit_rate": 0.14545454545454545,
+          "field_hit_n": 16,
+          "field_hit_den": 110
+        },
+        {
+          "feature": "odds_pct_low",
+          "winner_mean": 0.7998510802922567,
+          "loser_mean": 0.47905801978911217,
+          "effect": 0.32079306050314454,
+          "abs_effect": 0.32079306050314454,
+          "field_hit_rate": 0.2545454545454545,
+          "field_hit_n": 28,
+          "field_hit_den": 110
+        },
+        {
+          "feature": "win_prob_pct",
+          "winner_mean": 0.7597275474080287,
+          "loser_mean": 0.4818602982762647,
+          "effect": 0.277867249131764,
+          "abs_effect": 0.277867249131764,
+          "field_hit_rate": 0.22727272727272727,
+          "field_hit_n": 25,
+          "field_hit_den": 110
+        },
+        {
+          "feature": "history_pct",
+          "winner_mean": 0.667525222104099,
+          "loser_mean": 0.48829982575780895,
+          "effect": 0.1792253963462901,
+          "abs_effect": 0.1792253963462901,
+          "field_hit_rate": 0.14545454545454545,
+          "field_hit_n": 16,
+          "field_hit_den": 110
+        }
+      ],
+      "top10": [
+        {
+          "feature": "win_prob_z",
+          "winner_mean": 0.7786715196228069,
+          "loser_mean": -0.05438340771968804,
+          "effect": 0.833054927342495,
+          "abs_effect": 0.833054927342495,
+          "field_hit_rate": 0.22727272727272727,
+          "field_hit_n": 25,
+          "field_hit_den": 110
+        },
+        {
+          "feature": "odds_z",
+          "winner_mean": -0.6702373474050164,
+          "loser_mean": 0.046810227437810666,
+          "effect": 0.7170475748428271,
+          "abs_effect": 0.7170475748428271,
+          "field_hit_rate": 0.2545454545454545,
+          "field_hit_n": 28,
+          "field_hit_den": 110
+        },
+        {
+          "feature": "history_z",
+          "winner_mean": 0.5610814169186501,
+          "loser_mean": -0.039186638641937416,
+          "effect": 0.6002680555605875,
+          "abs_effect": 0.6002680555605875,
+          "field_hit_rate": 0.14545454545454545,
+          "field_hit_n": 16,
+          "field_hit_den": 110
+        },
+        {
+          "feature": "odds_pct_low",
+          "winner_mean": 0.7998510802922567,
+          "loser_mean": 0.47905801978911217,
+          "effect": 0.32079306050314454,
+          "abs_effect": 0.32079306050314454,
+          "field_hit_rate": 0.2545454545454545,
+          "field_hit_n": 28,
+          "field_hit_den": 110
+        },
+        {
+          "feature": "win_prob_pct",
+          "winner_mean": 0.7597275474080287,
+          "loser_mean": 0.4818602982762647,
+          "effect": 0.277867249131764,
+          "abs_effect": 0.277867249131764,
+          "field_hit_rate": 0.22727272727272727,
+          "field_hit_n": 25,
+          "field_hit_den": 110
+        },
+        {
+          "feature": "history_pct",
+          "winner_mean": 0.667525222104099,
+          "loser_mean": 0.48829982575780895,
+          "effect": 0.1792253963462901,
+          "abs_effect": 0.1792253963462901,
+          "field_hit_rate": 0.14545454545454545,
+          "field_hit_n": 16,
+          "field_hit_den": 110
+        }
+      ],
+      "losing_features": [
+        {
+          "feature": "history_pct",
+          "loser_vs_winner_gap": -0.1792253963462901,
+          "loser_mean": 0.48829982575780895,
+          "winner_mean": 0.667525222104099
+        },
+        {
+          "feature": "win_prob_pct",
+          "loser_vs_winner_gap": -0.277867249131764,
+          "loser_mean": 0.4818602982762647,
+          "winner_mean": 0.7597275474080287
+        },
+        {
+          "feature": "odds_pct_low",
+          "loser_vs_winner_gap": -0.32079306050314454,
+          "loser_mean": 0.47905801978911217,
+          "winner_mean": 0.7998510802922567
+        },
+        {
+          "feature": "history_z",
+          "loser_vs_winner_gap": -0.6002680555605875,
+          "loser_mean": -0.039186638641937416,
+          "winner_mean": 0.5610814169186501
+        },
+        {
+          "feature": "odds_z",
+          "loser_vs_winner_gap": -0.7170475748428271,
+          "loser_mean": 0.046810227437810666,
+          "winner_mean": -0.6702373474050164
+        },
+        {
+          "feature": "win_prob_z",
+          "loser_vs_winner_gap": -0.833054927342495,
+          "loser_mean": -0.05438340771968804,
+          "winner_mean": 0.7786715196228069
+        }
+      ],
+      "style_lift": [
+        {
+          "style": "先行",
+          "winner_share": 0.35454545454545455,
+          "loser_share": 0.27555555555555555,
+          "lift": 0.078989898989899
+        },
+        {
+          "style": "逃げ",
+          "winner_share": 0.24545454545454545,
+          "loser_share": 0.18476190476190477,
+          "lift": 0.06069264069264069
+        },
+        {
+          "style": "追込",
+          "winner_share": 0.11818181818181818,
+          "loser_share": 0.18095238095238095,
+          "lift": -0.06277056277056277
+        },
+        {
+          "style": "差し",
+          "winner_share": 0.2818181818181818,
+          "loser_share": 0.35873015873015873,
+          "lift": -0.07691197691197693
+        }
+      ],
+      "context_profile": {
+        "top_gap": {
+          "mean": 0.027871949614746563,
+          "n": 110
+        },
+        "ability_separation": {
+          "mean": 0.06005461972697035,
+          "n": 110
+        },
+        "upper_ability_band": {
+          "mean": 0.2838223178420928,
+          "n": 110
+        },
+        "mid_eval_band_open": {
+          "mean": 0.4239624121758596,
+          "n": 110
+        },
+        "top_monopoly": {
+          "mean": 0.11784021931519514,
+          "n": 110
+        },
+        "ability_subordinate": {
+          "mean": 0.8606402519262671,
+          "n": 110
+        },
+        "field_size": {
+          "mean": 15.318181818181818,
+          "n": 110
+        },
+        "distance": {
+          "mean": 1850.4545454545455,
+          "n": 110
+        }
+      },
+      "surface_dist": {
+        "芝": 65,
+        "ダ": 45
+      },
+      "stable_features": [
+        {
+          "feature": "history_z",
+          "effect_low_top_gap": 0.6787041304538702,
+          "effect_high_top_gap": 0.5186624436483539,
+          "split": "top_gap_median"
+        },
+        {
+          "feature": "win_prob_z",
+          "effect_low_top_gap": 0.6831597078407192,
+          "effect_high_top_gap": 0.9892601091909131,
+          "split": "top_gap_median"
+        },
+        {
+          "feature": "odds_z",
+          "effect_low_top_gap": 0.7204561738035269,
+          "effect_high_top_gap": 0.7135894552825336,
+          "split": "top_gap_median"
+        },
+        {
+          "feature": "odds_pct_low",
+          "effect_low_top_gap": 0.3448125316771673,
+          "effect_high_top_gap": 0.29582047027260405,
+          "split": "top_gap_median"
+        },
+        {
+          "feature": "win_prob_pct",
+          "effect_low_top_gap": 0.2788235988400569,
+          "effect_high_top_gap": 0.2769067961987643,
+          "split": "top_gap_median"
+        },
+        {
+          "feature": "history_pct",
+          "effect_low_top_gap": 0.2030119202247916,
+          "effect_high_top_gap": 0.1544773196727428,
+          "split": "top_gap_median"
+        }
+      ],
+      "context_features": [],
+      "winner_model_rank": {
+        "mean": 4.409090909090909,
+        "median": 4,
+        "p25": 2,
+        "p75": 6
+      },
+      "label_source": "legacy"
+    },
+    "midhole_world": {
+      "n": 15,
+      "status": "ok",
+      "importance": [
+        {
+          "feature": "win_prob_z",
+          "winner_mean": 1.281858643067399,
+          "loser_mean": -0.09112739168725573,
+          "effect": 1.3729860347546547,
+          "abs_effect": 1.3729860347546547,
+          "field_hit_rate": 0.3333333333333333,
+          "field_hit_n": 5,
+          "field_hit_den": 15
+        },
+        {
+          "feature": "odds_z",
+          "winner_mean": -0.7320056125039491,
+          "loser_mean": 0.052038313685114905,
+          "effect": 0.784043926189064,
+          "abs_effect": 0.784043926189064,
+          "field_hit_rate": 0.26666666666666666,
+          "field_hit_n": 4,
+          "field_hit_den": 15
+        },
+        {
+          "feature": "history_z",
+          "winner_mean": 0.5052055791857061,
+          "loser_mean": -0.03591508856770408,
+          "effect": 0.5411206677534102,
+          "abs_effect": 0.5411206677534102,
+          "field_hit_rate": 0.3333333333333333,
+          "field_hit_n": 5,
+          "field_hit_den": 15
+        },
+        {
+          "feature": "odds_pct_low",
+          "winner_mean": 0.8225253178194355,
+          "loser_mean": 0.47707165987065625,
+          "effect": 0.34545365794877925,
+          "abs_effect": 0.34545365794877925,
+          "field_hit_rate": 0.26666666666666666,
+          "field_hit_n": 4,
+          "field_hit_den": 15
+        },
+        {
+          "feature": "win_prob_pct",
+          "winner_mean": 0.7236098541980895,
+          "loser_mean": 0.4841035648674344,
+          "effect": 0.23950628933065515,
+          "abs_effect": 0.23950628933065515,
+          "field_hit_rate": 0.3333333333333333,
+          "field_hit_n": 5,
+          "field_hit_den": 15
+        },
+        {
+          "feature": "history_pct",
+          "winner_mean": 0.668363140127846,
+          "loser_mean": 0.48803105638901567,
+          "effect": 0.18033208373883036,
+          "abs_effect": 0.18033208373883036,
+          "field_hit_rate": 0.3333333333333333,
+          "field_hit_n": 5,
+          "field_hit_den": 15
+        }
+      ],
+      "top10": [
+        {
+          "feature": "win_prob_z",
+          "winner_mean": 1.281858643067399,
+          "loser_mean": -0.09112739168725573,
+          "effect": 1.3729860347546547,
+          "abs_effect": 1.3729860347546547,
+          "field_hit_rate": 0.3333333333333333,
+          "field_hit_n": 5,
+          "field_hit_den": 15
+        },
+        {
+          "feature": "odds_z",
+          "winner_mean": -0.7320056125039491,
+          "loser_mean": 0.052038313685114905,
+          "effect": 0.784043926189064,
+          "abs_effect": 0.784043926189064,
+          "field_hit_rate": 0.26666666666666666,
+          "field_hit_n": 4,
+          "field_hit_den": 15
+        },
+        {
+          "feature": "history_z",
+          "winner_mean": 0.5052055791857061,
+          "loser_mean": -0.03591508856770408,
+          "effect": 0.5411206677534102,
+          "abs_effect": 0.5411206677534102,
+          "field_hit_rate": 0.3333333333333333,
+          "field_hit_n": 5,
+          "field_hit_den": 15
+        },
+        {
+          "feature": "odds_pct_low",
+          "winner_mean": 0.8225253178194355,
+          "loser_mean": 0.47707165987065625,
+          "effect": 0.34545365794877925,
+          "abs_effect": 0.34545365794877925,
+          "field_hit_rate": 0.26666666666666666,
+          "field_hit_n": 4,
+          "field_hit_den": 15
+        },
+        {
+          "feature": "win_prob_pct",
+          "winner_mean": 0.7236098541980895,
+          "loser_mean": 0.4841035648674344,
+          "effect": 0.23950628933065515,
+          "abs_effect": 0.23950628933065515,
+          "field_hit_rate": 0.3333333333333333,
+          "field_hit_n": 5,
+          "field_hit_den": 15
+        },
+        {
+          "feature": "history_pct",
+          "winner_mean": 0.668363140127846,
+          "loser_mean": 0.48803105638901567,
+          "effect": 0.18033208373883036,
+          "abs_effect": 0.18033208373883036,
+          "field_hit_rate": 0.3333333333333333,
+          "field_hit_n": 5,
+          "field_hit_den": 15
+        }
+      ],
+      "losing_features": [
+        {
+          "feature": "history_pct",
+          "loser_vs_winner_gap": -0.18033208373883036,
+          "loser_mean": 0.48803105638901567,
+          "winner_mean": 0.668363140127846
+        },
+        {
+          "feature": "win_prob_pct",
+          "loser_vs_winner_gap": -0.23950628933065515,
+          "loser_mean": 0.4841035648674344,
+          "winner_mean": 0.7236098541980895
+        },
+        {
+          "feature": "odds_pct_low",
+          "loser_vs_winner_gap": -0.34545365794877925,
+          "loser_mean": 0.47707165987065625,
+          "winner_mean": 0.8225253178194355
+        },
+        {
+          "feature": "history_z",
+          "loser_vs_winner_gap": -0.5411206677534102,
+          "loser_mean": -0.03591508856770408,
+          "winner_mean": 0.5052055791857061
+        },
+        {
+          "feature": "odds_z",
+          "loser_vs_winner_gap": -0.784043926189064,
+          "loser_mean": 0.052038313685114905,
+          "winner_mean": -0.7320056125039491
+        },
+        {
+          "feature": "win_prob_z",
+          "loser_vs_winner_gap": -1.3729860347546547,
+          "loser_mean": -0.09112739168725573,
+          "winner_mean": 1.281858643067399
+        }
+      ],
+      "style_lift": [
+        {
+          "style": "差し",
+          "winner_share": 0.2,
+          "loser_share": 0.12322274881516587,
+          "lift": 0.07677725118483414
+        },
+        {
+          "style": "先行",
+          "winner_share": 0.4666666666666667,
+          "loser_share": 0.45023696682464454,
+          "lift": 0.01642969984202214
+        },
+        {
+          "style": "逃げ",
+          "winner_share": 0.3333333333333333,
+          "loser_share": 0.3744075829383886,
+          "lift": -0.04107424960505529
+        },
+        {
+          "style": "追込",
+          "winner_share": 0.0,
+          "loser_share": 0.052132701421800945,
+          "lift": -0.052132701421800945
+        }
+      ],
+      "context_profile": {
+        "top_gap": {
+          "mean": 0.038064952853093366,
+          "n": 15
+        },
+        "ability_separation": {
+          "mean": 0.06924522636004281,
+          "n": 15
+        },
+        "upper_ability_band": {
+          "mean": 0.29440512706614225,
+          "n": 15
+        },
+        "mid_eval_band_open": {
+          "mean": 0.42124076905287816,
+          "n": 15
+        },
+        "top_monopoly": {
+          "mean": 0.12740205650682043,
+          "n": 15
+        },
+        "ability_subordinate": {
+          "mean": 0.8096752357345331,
+          "n": 15
+        },
+        "field_size": {
+          "mean": 15.066666666666666,
+          "n": 15
+        },
+        "distance": {
+          "mean": 1853.3333333333333,
+          "n": 15
+        }
+      },
+      "surface_dist": {
+        "芝": 11,
+        "ダ": 4
+      },
+      "stable_features": [
+        {
+          "feature": "history_z",
+          "effect_low_top_gap": 0.527194704521613,
+          "effect_high_top_gap": 0.557026751844814,
+          "split": "top_gap_median"
+        },
+        {
+          "feature": "win_prob_z",
+          "effect_low_top_gap": 1.670530901705426,
+          "effect_high_top_gap": 1.0341241496737263,
+          "split": "top_gap_median"
+        },
+        {
+          "feature": "odds_z",
+          "effect_low_top_gap": 0.709861582147399,
+          "effect_high_top_gap": 0.8686134792386802,
+          "split": "top_gap_median"
+        },
+        {
+          "feature": "odds_pct_low",
+          "effect_low_top_gap": 0.3122113670643082,
+          "effect_high_top_gap": 0.38335017175186914,
+          "split": "top_gap_median"
+        },
+        {
+          "feature": "win_prob_pct",
+          "effect_low_top_gap": 0.2242129439188263,
+          "effect_high_top_gap": 0.256947013382657,
+          "split": "top_gap_median"
+        },
+        {
+          "feature": "history_pct",
+          "effect_low_top_gap": 0.20297682709447418,
+          "effect_high_top_gap": 0.15454870447798308,
+          "split": "top_gap_median"
+        }
+      ],
+      "context_features": [],
+      "winner_model_rank": {
+        "mean": 4.866666666666666,
+        "median": 3,
+        "p25": 1,
+        "p75": 8
+      },
+      "label_source": "legacy"
+    },
+    "rank7_world": {
+      "n": 65,
+      "status": "ok",
+      "importance": [
+        {
+          "feature": "history_z",
+          "winner_mean": 0.6634509573723942,
+          "loser_mean": -0.04391477823748025,
+          "effect": 0.7073657356098745,
+          "abs_effect": 0.7073657356098745,
+          "field_hit_rate": 0.2,
+          "field_hit_n": 13,
+          "field_hit_den": 65
+        },
+        {
+          "feature": "win_prob_z",
+          "winner_mean": 0.6473192758023495,
+          "loser_mean": -0.04284699890748743,
+          "effect": 0.6901662747098369,
+          "abs_effect": 0.6901662747098369,
+          "field_hit_rate": 0.15384615384615385,
+          "field_hit_n": 10,
+          "field_hit_den": 65
+        },
+        {
+          "feature": "odds_z",
+          "winner_mean": -0.6385689819416261,
+          "loser_mean": 0.04226780430367179,
+          "effect": 0.680836786245298,
+          "abs_effect": 0.680836786245298,
+          "field_hit_rate": 0.3076923076923077,
+          "field_hit_n": 20,
+          "field_hit_den": 65
+        },
+        {
+          "feature": "odds_pct_low",
+          "winner_mean": 0.8170818001756915,
+          "loser_mean": 0.4790118971370469,
+          "effect": 0.33806990303864465,
+          "abs_effect": 0.33806990303864465,
+          "field_hit_rate": 0.3076923076923077,
+          "field_hit_n": 20,
+          "field_hit_den": 65
+        },
+        {
+          "feature": "win_prob_pct",
+          "winner_mean": 0.7557826562577693,
+          "loser_mean": 0.4830693761132841,
+          "effect": 0.2727132801444852,
+          "abs_effect": 0.2727132801444852,
+          "field_hit_rate": 0.15384615384615385,
+          "field_hit_n": 10,
+          "field_hit_den": 65
+        },
+        {
+          "feature": "history_pct",
+          "winner_mean": 0.7013659605854176,
+          "loser_mean": 0.4866712958879306,
+          "effect": 0.21469466469748694,
+          "abs_effect": 0.21469466469748694,
+          "field_hit_rate": 0.2,
+          "field_hit_n": 13,
+          "field_hit_den": 65
+        }
+      ],
+      "top10": [
+        {
+          "feature": "history_z",
+          "winner_mean": 0.6634509573723942,
+          "loser_mean": -0.04391477823748025,
+          "effect": 0.7073657356098745,
+          "abs_effect": 0.7073657356098745,
+          "field_hit_rate": 0.2,
+          "field_hit_n": 13,
+          "field_hit_den": 65
+        },
+        {
+          "feature": "win_prob_z",
+          "winner_mean": 0.6473192758023495,
+          "loser_mean": -0.04284699890748743,
+          "effect": 0.6901662747098369,
+          "abs_effect": 0.6901662747098369,
+          "field_hit_rate": 0.15384615384615385,
+          "field_hit_n": 10,
+          "field_hit_den": 65
+        },
+        {
+          "feature": "odds_z",
+          "winner_mean": -0.6385689819416261,
+          "loser_mean": 0.04226780430367179,
+          "effect": 0.680836786245298,
+          "abs_effect": 0.680836786245298,
+          "field_hit_rate": 0.3076923076923077,
+          "field_hit_n": 20,
+          "field_hit_den": 65
+        },
+        {
+          "feature": "odds_pct_low",
+          "winner_mean": 0.8170818001756915,
+          "loser_mean": 0.4790118971370469,
+          "effect": 0.33806990303864465,
+          "abs_effect": 0.33806990303864465,
+          "field_hit_rate": 0.3076923076923077,
+          "field_hit_n": 20,
+          "field_hit_den": 65
+        },
+        {
+          "feature": "win_prob_pct",
+          "winner_mean": 0.7557826562577693,
+          "loser_mean": 0.4830693761132841,
+          "effect": 0.2727132801444852,
+          "abs_effect": 0.2727132801444852,
+          "field_hit_rate": 0.15384615384615385,
+          "field_hit_n": 10,
+          "field_hit_den": 65
+        },
+        {
+          "feature": "history_pct",
+          "winner_mean": 0.7013659605854176,
+          "loser_mean": 0.4866712958879306,
+          "effect": 0.21469466469748694,
+          "abs_effect": 0.21469466469748694,
+          "field_hit_rate": 0.2,
+          "field_hit_n": 13,
+          "field_hit_den": 65
+        }
+      ],
+      "losing_features": [
+        {
+          "feature": "history_pct",
+          "loser_vs_winner_gap": -0.21469466469748694,
+          "loser_mean": 0.4866712958879306,
+          "winner_mean": 0.7013659605854176
+        },
+        {
+          "feature": "win_prob_pct",
+          "loser_vs_winner_gap": -0.2727132801444852,
+          "loser_mean": 0.4830693761132841,
+          "winner_mean": 0.7557826562577693
+        },
+        {
+          "feature": "odds_pct_low",
+          "loser_vs_winner_gap": -0.33806990303864465,
+          "loser_mean": 0.4790118971370469,
+          "winner_mean": 0.8170818001756915
+        },
+        {
+          "feature": "odds_z",
+          "loser_vs_winner_gap": -0.680836786245298,
+          "loser_mean": 0.04226780430367179,
+          "winner_mean": -0.6385689819416261
+        },
+        {
+          "feature": "win_prob_z",
+          "loser_vs_winner_gap": -0.6901662747098369,
+          "loser_mean": -0.04284699890748743,
+          "winner_mean": 0.6473192758023495
+        },
+        {
+          "feature": "history_z",
+          "loser_vs_winner_gap": -0.7073657356098745,
+          "loser_mean": -0.04391477823748025,
+          "winner_mean": 0.6634509573723942
+        }
+      ],
+      "style_lift": [
+        {
+          "style": "逃げ",
+          "winner_share": 0.3230769230769231,
+          "loser_share": 0.22606924643584522,
+          "lift": 0.09700767664107787
+        },
+        {
+          "style": "先行",
+          "winner_share": 0.4,
+          "loser_share": 0.3228105906313646,
+          "lift": 0.07718940936863544
+        },
+        {
+          "style": "差し",
+          "winner_share": 0.2,
+          "loser_share": 0.2830957230142566,
+          "lift": -0.0830957230142566
+        },
+        {
+          "style": "追込",
+          "winner_share": 0.07692307692307693,
+          "loser_share": 0.1680244399185336,
+          "lift": -0.09110136299545668
+        }
+      ],
+      "context_profile": {
+        "top_gap": {
+          "mean": 0.012465539369203372,
+          "n": 65
+        },
+        "ability_separation": {
+          "mean": 0.049833699096304626,
+          "n": 65
+        },
+        "upper_ability_band": {
+          "mean": 0.2712223384507537,
+          "n": 65
+        },
+        "mid_eval_band_open": {
+          "mean": 0.4058256927635845,
+          "n": 65
+        },
+        "top_monopoly": {
+          "mean": 0.10419604029803459,
+          "n": 65
+        },
+        "ability_subordinate": {
+          "mean": 0.9376723031539832,
+          "n": 65
+        },
+        "field_size": {
+          "mean": 16.107692307692307,
+          "n": 65
+        },
+        "distance": {
+          "mean": 1623.8461538461538,
+          "n": 65
+        }
+      },
+      "surface_dist": {
+        "ダ": 22,
+        "芝": 43
+      },
+      "stable_features": [
+        {
+          "feature": "history_z",
+          "effect_low_top_gap": 0.6708768697349387,
+          "effect_high_top_gap": 0.7450570809912793,
+          "split": "top_gap_median"
+        },
+        {
+          "feature": "win_prob_z",
+          "effect_low_top_gap": 0.7802166266064304,
+          "effect_high_top_gap": 0.597183835255314,
+          "split": "top_gap_median"
+        },
+        {
+          "feature": "odds_z",
+          "effect_low_top_gap": 0.6285772003993063,
+          "effect_high_top_gap": 0.7348137293706989,
+          "split": "top_gap_median"
+        },
+        {
+          "feature": "odds_pct_low",
+          "effect_low_top_gap": 0.3246882907203285,
+          "effect_high_top_gap": 0.351893648486712,
+          "split": "top_gap_median"
+        },
+        {
+          "feature": "win_prob_pct",
+          "effect_low_top_gap": 0.27355791432734705,
+          "effect_high_top_gap": 0.27184502376546055,
+          "split": "top_gap_median"
+        },
+        {
+          "feature": "history_pct",
+          "effect_low_top_gap": 0.1817612685128442,
+          "effect_high_top_gap": 0.2487071963078762,
+          "split": "top_gap_median"
+        }
+      ],
+      "context_features": [],
+      "winner_model_rank": {
+        "mean": 4.707692307692308,
+        "median": 4,
+        "p25": 2,
+        "p75": 6
+      },
+      "label_source": "v44_positive"
+    },
+    "mixed_world": {
+      "n": 56,
+      "status": "ok",
+      "importance": [
+        {
+          "feature": "history_z",
+          "winner_mean": 0.6377773336254887,
+          "loser_mean": -0.04157803339118442,
+          "effect": 0.6793553670166731,
+          "abs_effect": 0.6793553670166731,
+          "field_hit_rate": 0.17857142857142858,
+          "field_hit_n": 10,
+          "field_hit_den": 56
+        },
+        {
+          "feature": "odds_z",
+          "winner_mean": -0.604838911108525,
+          "loser_mean": 0.039430708989612796,
+          "effect": 0.6442696200981377,
+          "abs_effect": 0.6442696200981377,
+          "field_hit_rate": 0.17857142857142858,
+          "field_hit_n": 10,
+          "field_hit_den": 56
+        },
+        {
+          "feature": "win_prob_z",
+          "winner_mean": 0.5175866872879537,
+          "loser_mean": -0.03374255470096079,
+          "effect": 0.5513292419889144,
+          "abs_effect": 0.5513292419889144,
+          "field_hit_rate": 0.125,
+          "field_hit_n": 7,
+          "field_hit_den": 56
+        },
+        {
+          "feature": "odds_pct_low",
+          "winner_mean": 0.7633450255102041,
+          "loser_mean": 0.4828319890237818,
+          "effect": 0.2805130364864223,
+          "abs_effect": 0.2805130364864223,
+          "field_hit_rate": 0.17857142857142858,
+          "field_hit_n": 10,
+          "field_hit_den": 56
+        },
+        {
+          "feature": "win_prob_pct",
+          "winner_mean": 0.7197941676670668,
+          "loser_mean": 0.48567116019865453,
+          "effect": 0.2341230074684123,
+          "abs_effect": 0.2341230074684123,
+          "field_hit_rate": 0.125,
+          "field_hit_n": 7,
+          "field_hit_den": 56
+        },
+        {
+          "feature": "history_pct",
+          "winner_mean": 0.7066470338135254,
+          "loser_mean": 0.48652824925080623,
+          "effect": 0.22011878456271922,
+          "abs_effect": 0.22011878456271922,
+          "field_hit_rate": 0.17857142857142858,
+          "field_hit_n": 10,
+          "field_hit_den": 56
+        }
+      ],
+      "top10": [
+        {
+          "feature": "history_z",
+          "winner_mean": 0.6377773336254887,
+          "loser_mean": -0.04157803339118442,
+          "effect": 0.6793553670166731,
+          "abs_effect": 0.6793553670166731,
+          "field_hit_rate": 0.17857142857142858,
+          "field_hit_n": 10,
+          "field_hit_den": 56
+        },
+        {
+          "feature": "odds_z",
+          "winner_mean": -0.604838911108525,
+          "loser_mean": 0.039430708989612796,
+          "effect": 0.6442696200981377,
+          "abs_effect": 0.6442696200981377,
+          "field_hit_rate": 0.17857142857142858,
+          "field_hit_n": 10,
+          "field_hit_den": 56
+        },
+        {
+          "feature": "win_prob_z",
+          "winner_mean": 0.5175866872879537,
+          "loser_mean": -0.03374255470096079,
+          "effect": 0.5513292419889144,
+          "abs_effect": 0.5513292419889144,
+          "field_hit_rate": 0.125,
+          "field_hit_n": 7,
+          "field_hit_den": 56
+        },
+        {
+          "feature": "odds_pct_low",
+          "winner_mean": 0.7633450255102041,
+          "loser_mean": 0.4828319890237818,
+          "effect": 0.2805130364864223,
+          "abs_effect": 0.2805130364864223,
+          "field_hit_rate": 0.17857142857142858,
+          "field_hit_n": 10,
+          "field_hit_den": 56
+        },
+        {
+          "feature": "win_prob_pct",
+          "winner_mean": 0.7197941676670668,
+          "loser_mean": 0.48567116019865453,
+          "effect": 0.2341230074684123,
+          "abs_effect": 0.2341230074684123,
+          "field_hit_rate": 0.125,
+          "field_hit_n": 7,
+          "field_hit_den": 56
+        },
+        {
+          "feature": "history_pct",
+          "winner_mean": 0.7066470338135254,
+          "loser_mean": 0.48652824925080623,
+          "effect": 0.22011878456271922,
+          "abs_effect": 0.22011878456271922,
+          "field_hit_rate": 0.17857142857142858,
+          "field_hit_n": 10,
+          "field_hit_den": 56
+        }
+      ],
+      "losing_features": [
+        {
+          "feature": "history_pct",
+          "loser_vs_winner_gap": -0.22011878456271922,
+          "loser_mean": 0.48652824925080623,
+          "winner_mean": 0.7066470338135254
+        },
+        {
+          "feature": "win_prob_pct",
+          "loser_vs_winner_gap": -0.2341230074684123,
+          "loser_mean": 0.48567116019865453,
+          "winner_mean": 0.7197941676670668
+        },
+        {
+          "feature": "odds_pct_low",
+          "loser_vs_winner_gap": -0.2805130364864223,
+          "loser_mean": 0.4828319890237818,
+          "winner_mean": 0.7633450255102041
+        },
+        {
+          "feature": "win_prob_z",
+          "loser_vs_winner_gap": -0.5513292419889144,
+          "loser_mean": -0.03374255470096079,
+          "winner_mean": 0.5175866872879537
+        },
+        {
+          "feature": "odds_z",
+          "loser_vs_winner_gap": -0.6442696200981377,
+          "loser_mean": 0.039430708989612796,
+          "winner_mean": -0.604838911108525
+        },
+        {
+          "feature": "history_z",
+          "loser_vs_winner_gap": -0.6793553670166731,
+          "loser_mean": -0.04157803339118442,
+          "winner_mean": 0.6377773336254887
+        }
+      ],
+      "style_lift": [
+        {
+          "style": "逃げ",
+          "winner_share": 0.30357142857142855,
+          "loser_share": 0.1850989522700815,
+          "lift": 0.11847247630134705
+        },
+        {
+          "style": "先行",
+          "winner_share": 0.3392857142857143,
+          "loser_share": 0.32479627473806755,
+          "lift": 0.014489439547646754
+        },
+        {
+          "style": "追込",
+          "winner_share": 0.17857142857142858,
+          "loser_share": 0.220023282887078,
+          "lift": -0.04145185431564943
+        },
+        {
+          "style": "差し",
+          "winner_share": 0.17857142857142858,
+          "loser_share": 0.270081490104773,
+          "lift": -0.09151006153334443
+        }
+      ],
+      "context_profile": {
+        "top_gap": {
+          "mean": 0.024956408353078947,
+          "n": 56
+        },
+        "ability_separation": {
+          "mean": 0.055366930560241605,
+          "n": 56
+        },
+        "upper_ability_band": {
+          "mean": 0.26469663022222717,
+          "n": 56
+        },
+        "mid_eval_band_open": {
+          "mean": 0.3999048133404893,
+          "n": 56
+        },
+        "top_monopoly": {
+          "mean": 0.10961436358395263,
+          "n": 56
+        },
+        "ability_subordinate": {
+          "mean": 0.8752179582346052,
+          "n": 56
+        },
+        "field_size": {
+          "mean": 16.339285714285715,
+          "n": 56
+        },
+        "distance": {
+          "mean": 1270.5357142857142,
+          "n": 56
+        }
+      },
+      "surface_dist": {
+        "ダ": 24,
+        "芝": 32
+      },
+      "stable_features": [
+        {
+          "feature": "history_z",
+          "effect_low_top_gap": 0.7319687580619174,
+          "effect_high_top_gap": 0.6227851198747356,
+          "split": "top_gap_median"
+        },
+        {
+          "feature": "win_prob_z",
+          "effect_low_top_gap": 0.45035669589153005,
+          "effect_high_top_gap": 0.659916356137736,
+          "split": "top_gap_median"
+        },
+        {
+          "feature": "odds_z",
+          "effect_low_top_gap": 0.6325222924851409,
+          "effect_high_top_gap": 0.6569093451182545,
+          "split": "top_gap_median"
+        },
+        {
+          "feature": "odds_pct_low",
+          "effect_low_top_gap": 0.28618321147674175,
+          "effect_high_top_gap": 0.2744187532736673,
+          "split": "top_gap_median"
+        },
+        {
+          "feature": "win_prob_pct",
+          "effect_low_top_gap": 0.23536515135967606,
+          "effect_high_top_gap": 0.23278989192786426,
+          "split": "top_gap_median"
+        },
+        {
+          "feature": "history_pct",
+          "effect_low_top_gap": 0.24146290725798047,
+          "effect_high_top_gap": 0.19716882823590143,
+          "split": "top_gap_median"
+        }
+      ],
+      "context_features": [],
+      "winner_model_rank": {
+        "mean": 5.303571428571429,
+        "median": 5,
+        "p25": 3,
+        "p75": 8
+      },
+      "label_source": "legacy"
+    },
+    "bug_world": {
+      "n": 0,
+      "status": "insufficient_sample",
+      "label_source": "v44_positive"
+    }
+  },
+  "by_world_legacy": {
+    "core_world": {
+      "n": 104,
+      "status": "ok"
+    },
+    "midupper_world": {
+      "n": 110,
+      "status": "ok"
+    },
+    "midhole_world": {
+      "n": 15,
+      "status": "ok"
+    },
+    "rank7_world": {
+      "n": 0,
+      "status": "insufficient_sample"
+    },
+    "mixed_world": {
+      "n": 56,
+      "status": "ok"
+    },
+    "bug_world": {
+      "n": 0,
+      "status": "insufficient_sample"
+    }
+  },
+  "by_world_v44": {
+    "core_world": {
+      "n": 8,
+      "status": "ok"
+    },
+    "midupper_world": {
+      "n": 6,
+      "status": "ok"
+    },
+    "midhole_world": {
+      "n": 24,
+      "status": "ok"
+    },
+    "rank7_world": {
+      "n": 65,
+      "status": "ok"
+    },
+    "mixed_world": {
+      "n": 6,
+      "status": "ok"
+    },
+    "bug_world": {
+      "n": 0,
+      "status": "insufficient_sample"
+    }
+  },
+  "race_context_by_world": {
+    "core_world": {
+      "n": 104,
+      "top_gap": 0.03520278761481124,
+      "ability_separation": 0.07928814263380445,
+      "upper_ability_band": 0.35383847427198717,
+      "mid_eval_band_open": 0.48114701583136515,
+      "top_monopoly": 0.14861249831843112,
+      "ability_subordinate": 0.8239860619259438,
+      "field_size": 12.826923076923077,
+      "distance": 1749.0384615384614,
+      "winner_model_rank_median": 4
+    },
+    "midupper_world": {
+      "n": 110,
+      "top_gap": 0.027871949614746563,
+      "ability_separation": 0.06005461972697035,
+      "upper_ability_band": 0.2838223178420928,
+      "mid_eval_band_open": 0.4239624121758596,
+      "top_monopoly": 0.11784021931519514,
+      "ability_subordinate": 0.8606402519262671,
+      "field_size": 15.318181818181818,
+      "distance": 1850.4545454545455,
+      "winner_model_rank_median": 4
+    },
+    "midhole_world": {
+      "n": 15,
+      "top_gap": 0.038064952853093366,
+      "ability_separation": 0.06924522636004281,
+      "upper_ability_band": 0.29440512706614225,
+      "mid_eval_band_open": 0.42124076905287816,
+      "top_monopoly": 0.12740205650682043,
+      "ability_subordinate": 0.8096752357345331,
+      "field_size": 15.066666666666666,
+      "distance": 1853.3333333333333,
+      "winner_model_rank_median": 3
+    },
+    "rank7_world": {
+      "n": 65,
+      "top_gap": 0.012465539369203372,
+      "ability_separation": 0.049833699096304626,
+      "upper_ability_band": 0.2712223384507537,
+      "mid_eval_band_open": 0.4058256927635845,
+      "top_monopoly": 0.10419604029803459,
+      "ability_subordinate": 0.9376723031539832,
+      "field_size": 16.107692307692307,
+      "distance": 1623.8461538461538,
+      "winner_model_rank_median": 4
+    },
+    "mixed_world": {
+      "n": 56,
+      "top_gap": 0.024956408353078947,
+      "ability_separation": 0.055366930560241605,
+      "upper_ability_band": 0.26469663022222717,
+      "mid_eval_band_open": 0.3999048133404893,
+      "top_monopoly": 0.10961436358395263,
+      "ability_subordinate": 0.8752179582346052,
+      "field_size": 16.339285714285715,
+      "distance": 1270.5357142857142,
+      "winner_model_rank_median": 5
+    },
+    "bug_world": {
+      "n": 0
+    }
+  },
+  "corr_by_world": {
+    "core_world": {
+      "corr(top_gap,win_prob_pct)": -0.06576838888010553,
+      "corr(top_gap,history_pct)": 0.0029410381020928008,
+      "corr(mid_eval_band_open,win_prob_pct)": -0.19776573857883553,
+      "corr(ability_subordinate,history_pct)": -0.0029410381020927834,
+      "corr(field_size,win_prob_pct)": 0.16303777848082435
+    },
+    "midupper_world": {
+      "corr(top_gap,win_prob_pct)": 0.06711532498538927,
+      "corr(top_gap,history_pct)": 0.021318935178643732,
+      "corr(mid_eval_band_open,win_prob_pct)": -0.1708002805172864,
+      "corr(ability_subordinate,history_pct)": -0.02131893517864372,
+      "corr(field_size,win_prob_pct)": 0.08833163891346556
+    },
+    "midhole_world": {
+      "corr(top_gap,win_prob_pct)": 0.20927433193617453,
+      "corr(top_gap,history_pct)": 0.09590783250668942,
+      "corr(mid_eval_band_open,win_prob_pct)": -0.13868864374236156,
+      "corr(ability_subordinate,history_pct)": -0.09590783250668944,
+      "corr(field_size,win_prob_pct)": 0.04256861796395908
+    },
+    "rank7_world": {
+      "corr(top_gap,win_prob_pct)": 0.022444355132247327,
+      "corr(top_gap,history_pct)": 0.05632926062988367,
+      "corr(mid_eval_band_open,win_prob_pct)": -0.15932109634634947,
+      "corr(ability_subordinate,history_pct)": -0.05632926062988377,
+      "corr(field_size,win_prob_pct)": -0.11307791111977038
+    },
+    "mixed_world": {
+      "corr(top_gap,win_prob_pct)": -0.0922332900626312,
+      "corr(top_gap,history_pct)": -0.19318469450458542,
+      "corr(mid_eval_band_open,win_prob_pct)": -0.08827105116352987,
+      "corr(ability_subordinate,history_pct)": 0.19318469450458542,
+      "corr(field_size,win_prob_pct)": -0.023652312644716445
+    }
+  },
+  "cross_world_conflicts": [],
+  "cross_world_corr_conflicts": [
+    {
+      "metric": "corr(top_gap,win_prob_pct)",
+      "positive_worlds": [
+        "midhole_world"
+      ],
+      "negative_worlds": [
+        "mixed_world"
+      ],
+      "effects": {
+        "core_world": -0.06576838888010553,
+        "midupper_world": 0.06711532498538927,
+        "midhole_world": 0.20927433193617453,
+        "rank7_world": 0.022444355132247327,
+        "mixed_world": -0.0922332900626312
+      },
+      "span": 0.30150762199880576
+    },
+    {
+      "metric": "corr(top_gap,history_pct)",
+      "positive_worlds": [
+        "midhole_world"
+      ],
+      "negative_worlds": [
+        "mixed_world"
+      ],
+      "effects": {
+        "core_world": 0.0029410381020928008,
+        "midupper_world": 0.021318935178643732,
+        "midhole_world": 0.09590783250668942,
+        "rank7_world": 0.05632926062988367,
+        "mixed_world": -0.19318469450458542
+      },
+      "span": 0.28909252701127486
+    },
+    {
+      "metric": "corr(ability_subordinate,history_pct)",
+      "positive_worlds": [
+        "mixed_world"
+      ],
+      "negative_worlds": [
+        "midhole_world"
+      ],
+      "effects": {
+        "core_world": -0.0029410381020927834,
+        "midupper_world": -0.02131893517864372,
+        "midhole_world": -0.09590783250668944,
+        "rank7_world": -0.05632926062988377,
+        "mixed_world": 0.19318469450458542
+      },
+      "span": 0.28909252701127486
+    },
+    {
+      "metric": "corr(field_size,win_prob_pct)",
+      "positive_worlds": [
+        "core_world",
+        "midupper_world"
+      ],
+      "negative_worlds": [
+        "rank7_world"
+      ],
+      "effects": {
+        "core_world": 0.16303777848082435,
+        "midupper_world": 0.08833163891346556,
+        "midhole_world": 0.04256861796395908,
+        "rank7_world": -0.11307791111977038,
+        "mixed_world": -0.023652312644716445
+      },
+      "span": 0.27611568960059474
+    }
+  ],
+  "cross_world_style_conflicts": [
+    {
+      "feature": "style:差し",
+      "positive_worlds": [
+        "midhole_world"
+      ],
+      "negative_worlds": [
+        "core_world",
+        "midupper_world",
+        "rank7_world",
+        "mixed_world"
+      ],
+      "effects": {
+        "core_world": -0.08821138211382112,
+        "midupper_world": -0.07691197691197693,
+        "midhole_world": 0.07677725118483414,
+        "rank7_world": -0.0830957230142566,
+        "mixed_world": -0.09151006153334443
+      },
+      "span": 0.16828731271817857
+    }
+  ],
+  "differentiation": {
+    "grade_hint": "B",
+    "reason": "high overlap mean Jaccard=0.87; upgraded by race-context span(top_gap)=0.0256, corr_conflicts=4, style_conflicts=1",
+    "mean_top5_jaccard": 0.8666666666666666,
+    "conflict_feature_count": 0,
+    "unique_top1": 3,
+    "pairwise_topk_jaccard": {
+      "core_world|midhole_world": {
+        "jaccard_top5": 0.6666666666666666,
+        "shared": [
+          "history_z",
+          "odds_pct_low",
+          "odds_z",
+          "win_prob_z"
+        ]
+      },
+      "core_world|midupper_world": {
+        "jaccard_top5": 0.6666666666666666,
+        "shared": [
+          "history_z",
+          "odds_pct_low",
+          "odds_z",
+          "win_prob_z"
+        ]
+      },
+      "core_world|mixed_world": {
+        "jaccard_top5": 0.6666666666666666,
+        "shared": [
+          "history_z",
+          "odds_pct_low",
+          "odds_z",
+          "win_prob_z"
+        ]
+      },
+      "core_world|rank7_world": {
+        "jaccard_top5": 0.6666666666666666,
+        "shared": [
+          "history_z",
+          "odds_pct_low",
+          "odds_z",
+          "win_prob_z"
+        ]
+      },
+      "midhole_world|midupper_world": {
+        "jaccard_top5": 1.0,
+        "shared": [
+          "history_z",
+          "odds_pct_low",
+          "odds_z",
+          "win_prob_pct",
+          "win_prob_z"
+        ]
+      },
+      "midhole_world|mixed_world": {
+        "jaccard_top5": 1.0,
+        "shared": [
+          "history_z",
+          "odds_pct_low",
+          "odds_z",
+          "win_prob_pct",
+          "win_prob_z"
+        ]
+      },
+      "midhole_world|rank7_world": {
+        "jaccard_top5": 1.0,
+        "shared": [
+          "history_z",
+          "odds_pct_low",
+          "odds_z",
+          "win_prob_pct",
+          "win_prob_z"
+        ]
+      },
+      "midupper_world|mixed_world": {
+        "jaccard_top5": 1.0,
+        "shared": [
+          "history_z",
+          "odds_pct_low",
+          "odds_z",
+          "win_prob_pct",
+          "win_prob_z"
+        ]
+      },
+      "midupper_world|rank7_world": {
+        "jaccard_top5": 1.0,
+        "shared": [
+          "history_z",
+          "odds_pct_low",
+          "odds_z",
+          "win_prob_pct",
+          "win_prob_z"
+        ]
+      },
+      "mixed_world|rank7_world": {
+        "jaccard_top5": 1.0,
+        "shared": [
+          "history_z",
+          "odds_pct_low",
+          "odds_z",
+          "win_prob_pct",
+          "win_prob_z"
+        ]
+      }
+    },
+    "usable_worlds": {
+      "core_world": 104,
+      "midupper_world": 110,
+      "midhole_world": 15,
+      "rank7_world": 65,
+      "mixed_world": 56
+    }
+  },
+  "strategies": {
+    "core_world": "勝ち馬が相対的に高い: popularity_z, win_prob_z, odds_z, history_z / 脚質リフト: 逃げ(+0.14), 先行(+0.06) / レース文脈: top_gap_mean=0.035, top_monopoly_mean=0.149, mid_band_mean=0.481 / 勝ち馬 model_rank median=4",
+    "midupper_world": "勝ち馬が相対的に高い: win_prob_z, odds_z, history_z, odds_pct_low / 脚質リフト: 先行(+0.08), 逃げ(+0.06) / レース文脈: top_gap_mean=0.028, top_monopoly_mean=0.118, mid_band_mean=0.424 / 勝ち馬 model_rank median=4",
+    "midhole_world": "勝ち馬が相対的に高い: win_prob_z, odds_z, history_z, odds_pct_low / 脚質リフト: 差し(+0.08), 先行(+0.02) / レース文脈: top_gap_mean=0.038, top_monopoly_mean=0.127, mid_band_mean=0.421 / 勝ち馬 model_rank median=3",
+    "rank7_world": "勝ち馬が相対的に高い: history_z, win_prob_z, odds_z, odds_pct_low / 脚質リフト: 逃げ(+0.10), 先行(+0.08) / レース文脈: top_gap_mean=0.012, top_monopoly_mean=0.104, mid_band_mean=0.406 / 勝ち馬 model_rank median=4",
+    "mixed_world": "勝ち馬が相対的に高い: history_z, odds_z, win_prob_z, odds_pct_low / 脚質リフト: 逃げ(+0.12), 先行(+0.01) / レース文脈: top_gap_mean=0.025, top_monopoly_mean=0.110, mid_band_mean=0.400 / 勝ち馬 model_rank median=5",
+    "bug_world": "bug_world: サンプル不足のため戦略抽出不可（n=0）。"
+  }
+}

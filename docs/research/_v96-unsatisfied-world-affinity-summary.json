@@ -1,0 +1,390 @@
+{
+  "schema": "v96-unsatisfied-world-affinity/1.0",
+  "generated_at": "2026-07-28T12:22:33+00:00",
+  "purpose": "Measure World Affinity of unsatisfied — not to reduce unsatisfied count",
+  "locks": [
+    "Prediction",
+    "Trigger",
+    "CEW",
+    "World Meaning",
+    "PE",
+    "Production",
+    "Decision product impl"
+  ],
+  "n_unsatisfied": 176,
+  "affinity_definition": {
+    "must_affinity": "(n_must - n_gaps) / n_must; 1.0 if must=True",
+    "near_miss": "must=True AND exclude=True",
+    "exclusion_reasons": "research mirror of V44 Exclusion predicates",
+    "affinity_confidence": "HIGH=unique Near Miss; MED=multi Near Miss or clear partial; LOW/VERY_LOW otherwise",
+    "targets": [
+      "core_world",
+      "midupper_world",
+      "midhole_world",
+      "rank7_world"
+    ]
+  },
+  "class_distribution": {
+    "PURE_RESIDUAL": 72,
+    "NEAR_MISS": 104
+  },
+  "affinity_matrix": {
+    "core_world": {
+      "mean_must_affinity": 0.6761363636363636,
+      "near_miss_count": 81,
+      "partial_must_count": 0,
+      "share_as_affinity_top": 0.5284090909090909
+    },
+    "midupper_world": {
+      "mean_must_affinity": 0.6401647727272738,
+      "near_miss_count": 32,
+      "partial_must_count": 0,
+      "share_as_affinity_top": 0.3068181818181818
+    },
+    "midhole_world": {
+      "mean_must_affinity": 0.45170454545454547,
+      "near_miss_count": 13,
+      "partial_must_count": 0,
+      "share_as_affinity_top": 0.11931818181818182
+    },
+    "rank7_world": {
+      "mean_must_affinity": 0.45075454545454563,
+      "near_miss_count": 1,
+      "partial_must_count": 0,
+      "share_as_affinity_top": 0.045454545454545456
+    }
+  },
+  "affinity_coverage_by_threshold": {
+    "0.34": {
+      "core_world": 0.8920454545454546,
+      "midupper_world": 0.7727272727272727,
+      "midhole_world": 0.8295454545454546,
+      "rank7_world": 0.42045454545454547
+    },
+    "0.5": {
+      "core_world": 0.8920454545454546,
+      "midupper_world": 0.7727272727272727,
+      "midhole_world": 0.8295454545454546,
+      "rank7_world": 0.42045454545454547
+    },
+    "0.67": {
+      "core_world": 0.4602272727272727,
+      "midupper_world": 0.18181818181818182,
+      "midhole_world": 0.07386363636363637,
+      "rank7_world": 0.005681818181818182
+    },
+    "1.0": {
+      "core_world": 0.4602272727272727,
+      "midupper_world": 0.18181818181818182,
+      "midhole_world": 0.07386363636363637,
+      "rank7_world": 0.005681818181818182
+    }
+  },
+  "affinity_top_distribution": {
+    "midupper_world": 54,
+    "core_world": 93,
+    "midhole_world": 21,
+    "rank7_world": 8
+  },
+  "affinity_confidence_distribution": {
+    "LOW": 72,
+    "HIGH": 81,
+    "MED": 23
+  },
+  "near_miss_distribution": {
+    "core_world": 81,
+    "midhole_world": 13,
+    "midupper_world": 9,
+    "rank7_world": 1
+  },
+  "near_miss_affinity_agrees_primary_rate": 1.0,
+  "must_gap_attribution": {
+    "core_world": {
+      "ability_separation↑": 71,
+      "top_gap↑": 43
+    },
+    "midupper_world": {
+      "aptitude_fit↑": 85,
+      "upper_ability_band↑": 74,
+      "development_pressure↑": 31
+    },
+    "midhole_world": {
+      "top_monopoly↓": 116,
+      "mid_eval_band_open↑": 77
+    },
+    "rank7_world": {
+      "ability_subordinate↑": 132,
+      "chaos↑": 127,
+      "pace_conflict↑": 31
+    }
+  },
+  "exclusion_reason_attribution": {
+    "core_world": {
+      "excl:short_field_pressure↑": 145,
+      "excl:mid_eval_band_open↑": 99,
+      "excl:chaos↑": 49,
+      "excl:late∧sustained": 38
+    },
+    "midupper_world": {
+      "excl:mid_eval_band_open↑": 99,
+      "excl:chaos↑∧high_pace↑": 43,
+      "excl:top_gap↑_without_dev/apt": 6
+    },
+    "midhole_world": {
+      "excl:top_gap↑": 133,
+      "excl:chaos↑∧difficulty↑": 39
+    },
+    "rank7_world": {
+      "excl:top_gap↑": 133,
+      "excl:difficulty↑_without_chaos": 16
+    }
+  },
+  "decision_impact_templates": {
+    "pure_residual": 72,
+    "near_miss:core_world": 81,
+    "near_miss:midhole_world": 13,
+    "near_miss:midupper_world": 9,
+    "near_miss:rank7_world": 1
+  },
+  "n_rows": 176,
+  "samples": [
+    {
+      "race_id": "2024-01-06-中山-10",
+      "residual_class": "NEAR_MISS",
+      "near_world_primary": "core_world",
+      "affinity_top": "core_world",
+      "affinity_confidence": "HIGH",
+      "affinities": {
+        "core_world": 1.0,
+        "midupper_world": 0.6667,
+        "midhole_world": 0.5,
+        "rank7_world": 0.3333
+      },
+      "excl": {
+        "core_world": [
+          "excl:short_field_pressure↑",
+          "excl:mid_eval_band_open↑"
+        ],
+        "midupper_world": [
+          "excl:mid_eval_band_open↑"
+        ],
+        "midhole_world": [
+          "excl:top_gap↑"
+        ],
+        "rank7_world": [
+          "excl:top_gap↑"
+        ]
+      },
+      "gaps": {
+        "midupper_world": [
+          "aptitude_fit↑"
+        ],
+        "midhole_world": [
+          "top_monopoly↓"
+        ],
+        "rank7_world": [
+          "chaos↑",
+          "ability_subordinate↑"
+        ]
+      }
+    },
+    {
+      "race_id": "2024-01-06-中山-11",
+      "residual_class": "NEAR_MISS",
+      "near_world_primary": "core_world",
+      "affinity_top": "core_world",
+      "affinity_confidence": "HIGH",
+      "affinities": {
+        "core_world": 1.0,
+        "midupper_world": 0.6667,
+        "midhole_world": 0.0,
+        "rank7_world": 0.3333
+      },
+      "excl": {
+        "core_world": [
+          "excl:short_field_pressure↑"
+        ],
+        "midhole_world": [
+          "excl:top_gap↑"
+        ],
+        "rank7_world": [
+          "excl:top_gap↑",
+          "excl:difficulty↑_without_chaos"
+        ]
+      },
+      "gaps": {
+        "midupper_world": [
+          "upper_ability_band↑"
+        ],
+        "midhole_world": [
+          "mid_eval_band_open↑",
+          "top_monopoly↓"
+        ],
+        "rank7_world": [
+          "chaos↑",
+          "ability_subordinate↑"
+        ]
+      }
+    },
+    {
+      "race_id": "2024-01-06-京都-10",
+      "residual_class": "NEAR_MISS",
+      "near_world_primary": "core_world",
+      "affinity_top": "core_world",
+      "affinity_confidence": "MED",
+      "affinities": {
+        "core_world": 1.0,
+        "midupper_world": 1.0,
+        "midhole_world": 0.5,
+        "rank7_world": 0.3333
+      },
+      "excl": {
+        "core_world": [
+          "excl:short_field_pressure↑",
+          "excl:mid_eval_band_open↑"
+        ],
+        "midupper_world": [
+          "excl:mid_eval_band_open↑"
+        ],
+        "midhole_world": [
+          "excl:top_gap↑"
+        ],
+        "rank7_world": [
+          "excl:top_gap↑"
+        ]
+      },
+      "gaps": {
+        "midhole_world": [
+          "top_monopoly↓"
+        ],
+        "rank7_world": [
+          "chaos↑",
+          "ability_subordinate↑"
+        ]
+      }
+    },
+    {
+      "race_id": "2024-01-06-中山-09",
+      "residual_class": "PURE_RESIDUAL",
+      "near_world_primary": null,
+      "affinity_top": "midupper_world",
+      "affinity_confidence": "LOW",
+      "affinities": {
+        "core_world": 0.5,
+        "midupper_world": 0.6667,
+        "midhole_world": 0.5,
+        "rank7_world": 0.6667
+      },
+      "excl": {
+        "core_world": [
+          "excl:short_field_pressure↑",
+          "excl:mid_eval_band_open↑"
+        ],
+        "midupper_world": [
+          "excl:mid_eval_band_open↑"
+        ]
+      },
+      "gaps": {
+        "core_world": [
+          "top_gap↑"
+        ],
+        "midupper_world": [
+          "aptitude_fit↑"
+        ],
+        "midhole_world": [
+          "top_monopoly↓"
+        ],
+        "rank7_world": [
+          "chaos↑"
+        ]
+      }
+    },
+    {
+      "race_id": "2024-01-21-京都-11",
+      "residual_class": "PURE_RESIDUAL",
+      "near_world_primary": null,
+      "affinity_top": "midupper_world",
+      "affinity_confidence": "LOW",
+      "affinities": {
+        "core_world": 0.5,
+        "midupper_world": 0.6667,
+        "midhole_world": 0.5,
+        "rank7_world": 0.6667
+      },
+      "excl": {
+        "core_world": [
+          "excl:chaos↑",
+          "excl:short_field_pressure↑",
+          "excl:late∧sustained"
+        ],
+        "midupper_world": [
+          "excl:chaos↑∧high_pace↑"
+        ],
+        "midhole_world": [
+          "excl:top_gap↑",
+          "excl:chaos↑∧difficulty↑"
+        ],
+        "rank7_world": [
+          "excl:top_gap↑"
+        ]
+      },
+      "gaps": {
+        "core_world": [
+          "ability_separation↑"
+        ],
+        "midupper_world": [
+          "upper_ability_band↑"
+        ],
+        "midhole_world": [
+          "mid_eval_band_open↑"
+        ],
+        "rank7_world": [
+          "ability_subordinate↑"
+        ]
+      }
+    },
+    {
+      "race_id": "2024-02-11-東京-11",
+      "residual_class": "PURE_RESIDUAL",
+      "near_world_primary": null,
+      "affinity_top": "midupper_world",
+      "affinity_confidence": "LOW",
+      "affinities": {
+        "core_world": 0.5,
+        "midupper_world": 0.6667,
+        "midhole_world": 0.5,
+        "rank7_world": 0.3333
+      },
+      "excl": {
+        "core_world": [
+          "excl:short_field_pressure↑",
+          "excl:mid_eval_band_open↑"
+        ],
+        "midupper_world": [
+          "excl:mid_eval_band_open↑"
+        ],
+        "midhole_world": [
+          "excl:top_gap↑"
+        ],
+        "rank7_world": [
+          "excl:top_gap↑"
+        ]
+      },
+      "gaps": {
+        "core_world": [
+          "ability_separation↑"
+        ],
+        "midupper_world": [
+          "aptitude_fit↑"
+        ],
+        "midhole_world": [
+          "top_monopoly↓"
+        ],
+        "rank7_world": [
+          "chaos↑",
+          "ability_subordinate↑"
+        ]
+      }
+    }
+  ]
+}

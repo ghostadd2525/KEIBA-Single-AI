@@ -3,8 +3,10 @@
  * schema: single-prediction-bundle/2.0
  *
  * Analysis / Confidence / Ticket / Kaoba は bundle.race_id をキーに参照する。
+ *
+ * UI3: ExpectContractGuard（prediction-bind / race.html）必須フィールドを保証する。
  */
-import { alignRaceInfoToRaceId } from "./raceIdMeta.js";
+import { alignRaceInfoToRaceId, parseRaceIdMeta } from "./raceIdMeta.js";
 
 export const BUNDLE_SCHEMA = "single-prediction-bundle/2.0";
 
@@ -15,6 +17,100 @@ export function scorePercent(aiConfidence) {
     return c.score <= 1 ? Math.round(c.score * 100) : Math.round(c.score);
   }
   return null;
+}
+
+function coerceNonEmptyString(v, fallback) {
+  if (typeof v === "string" && v.trim() !== "") return v;
+  if (v != null && typeof v !== "object") {
+    const s = String(v).trim();
+    if (s && s !== "null" && s !== "undefined") return s;
+  }
+  return fallback;
+}
+
+function coerceRaceNo(v, raceId) {
+  if (typeof v === "number" && Number.isFinite(v)) return Math.trunc(v);
+  if (typeof v === "string" && v.trim() !== "") {
+    const n = Number(v);
+    if (Number.isFinite(n)) return Math.trunc(n);
+  }
+  const parsed = parseRaceIdMeta(raceId);
+  if (parsed && parsed.race_no != null && Number.isFinite(parsed.race_no)) {
+    return parsed.race_no;
+  }
+  return 1;
+}
+
+/**
+ * Align bundle fields to ExpectContractGuard.validatePredictionBundle.
+ * Does not change Prediction engine — response shaping only.
+ * @param {object} bundle
+ * @param {string} [raceId]
+ */
+export function ensurePredictionBundleContract(bundle, raceId) {
+  if (!bundle || typeof bundle !== "object") {
+    throw new Error("invalid PredictionBundle");
+  }
+  const id = coerceNonEmptyString(
+    raceId || bundle.race_id || (bundle.race_info && bundle.race_info.race_id),
+    "unknown"
+  );
+  let info = alignRaceInfoToRaceId({ ...(bundle.race_info || {}) }, id);
+  const parsed = parseRaceIdMeta(id);
+  info.race_id = id;
+  info.date = coerceNonEmptyString(info.date, (parsed && parsed.date) || "unknown");
+  info.venue = coerceNonEmptyString(info.venue, (parsed && parsed.venue) || "unknown");
+  info.race_no = coerceRaceNo(info.race_no, id);
+
+  const ev = bundle.evaluation && typeof bundle.evaluation === "object" ? bundle.evaluation : {};
+  const acIn = bundle.ai_confidence && typeof bundle.ai_confidence === "object" ? bundle.ai_confidence : {};
+  let score = Object.prototype.hasOwnProperty.call(acIn, "score") ? acIn.score : null;
+  if (score != null && typeof score !== "number") {
+    const n = Number(score);
+    score = Number.isFinite(n) ? n : null;
+  }
+
+  const exIn = bundle.explain && typeof bundle.explain === "object" ? bundle.explain : {};
+  const betsIn =
+    bundle.betting_recommendations && typeof bundle.betting_recommendations === "object"
+      ? bundle.betting_recommendations
+      : {};
+
+  return {
+    ...bundle,
+    schema_version: BUNDLE_SCHEMA,
+    race_id: id,
+    race_info: info,
+    evaluation: {
+      status: ev.status || "unknown",
+      world: ev.world != null ? ev.world : null,
+      sub_world: ev.sub_world != null ? ev.sub_world : null,
+      runners: Array.isArray(ev.runners) ? ev.runners : [],
+    },
+    ai_confidence: {
+      schema_version: acIn.schema_version || "single-ai-confidence/1.0",
+      status: acIn.status || "unknown",
+      score: score,
+      score_unit: acIn.score_unit || "normalized",
+      band: acIn.band || "unknown",
+      inputs_ref: acIn.inputs_ref != null ? acIn.inputs_ref : null,
+      factors: Array.isArray(acIn.factors) ? acIn.factors : [],
+      component_scores: acIn.component_scores || {},
+      notes: acIn.notes != null ? acIn.notes : null,
+      computed_at: acIn.computed_at != null ? acIn.computed_at : null,
+    },
+    explain: {
+      ...exIn,
+      meta: exIn.meta && typeof exIn.meta === "object" ? exIn.meta : {},
+      reasons: Array.isArray(exIn.reasons) ? exIn.reasons : [],
+      narrative: typeof exIn.narrative === "string" ? exIn.narrative : "",
+    },
+    betting_recommendations: {
+      ...betsIn,
+      schema_version: betsIn.schema_version || "single-betting-recommendations/1.0",
+      items: Array.isArray(betsIn.items) ? betsIn.items : [],
+    },
+  };
 }
 
 /** カタログ行 → 一覧用 PredictionBundle（契約を満たす最小形） */
@@ -102,7 +198,7 @@ export function normalizePredictionBundle(raw, raceId) {
     info = alignRaceInfoToRaceId(info, id);
   }
 
-  return {
+  const shaped = {
     ...raw,
     schema_version: BUNDLE_SCHEMA,
     race_id: id,
@@ -154,6 +250,7 @@ export function normalizePredictionBundle(raw, raceId) {
       items: [],
     },
   };
+  return ensurePredictionBundleContract(shaped, id);
 }
 
 /** ConfidenceService 投影（PredictionBundle.ai_confidence + race_id） */

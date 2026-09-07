@@ -19,7 +19,21 @@ class RuleKaobaSource:
     """現行ルールエンジン。"""
 
     def generate(self, body: dict[str, Any]) -> dict[str, Any]:
-        return domains.kaoba_reply(body if isinstance(body, dict) else {})
+        payload = dict(body if isinstance(body, dict) else {})
+        race_id = str(payload.get("race_id") or "")
+        if not race_id:
+            ctx = payload.get("context") if isinstance(payload.get("context"), dict) else {}
+            race_id = str(ctx.get("bundle_ref") or "")
+            if race_id:
+                payload["race_id"] = race_id
+        if race_id and "_bundle" not in payload:
+            try:
+                bundle = get_bundle(race_id)
+                if isinstance(bundle, dict) and bundle:
+                    payload["_bundle"] = bundle
+            except Exception:
+                pass
+        return domains.kaoba_reply(payload)
 
 
 class LlmKaobaSource:

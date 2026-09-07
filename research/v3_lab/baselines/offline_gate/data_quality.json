@@ -1,0 +1,2612 @@
+{
+  "n_jobs": 285,
+  "n_races_built": 285,
+  "status_counts": {
+    "ok": 268,
+    "degraded": 17
+  },
+  "issue_counts": {
+    "odds_le_1_present": 17
+  },
+  "rows": [
+    {
+      "race_id": "2024-01-06-京都-10",
+      "status": "ok",
+      "field_size": 13,
+      "winner_name": "メイショウブレゲ",
+      "winner_id": "2019104091",
+      "winner_rank": 1,
+      "issues": []
+    },
+    {
+      "race_id": "2024-01-06-中山-11",
+      "status": "ok",
+      "field_size": 17,
+      "winner_name": "リカンカブール",
+      "winner_id": "2019103823",
+      "winner_rank": 1,
+      "issues": []
+    },
+    {
+      "race_id": "2024-01-06-京都-11",
+      "status": "ok",
+      "field_size": 18,
+      "winner_name": "コレペティトール",
+      "winner_id": "2020103043",
+      "winner_rank": 1,
+      "issues": []
+    },
+    {
+      "race_id": "2024-01-06-中山-09",
+      "status": "degraded",
+      "field_size": 8,
+      "winner_name": "アドマイヤハレー",
+      "winner_id": "2018104895",
+      "winner_rank": 1,
+      "issues": [
+        "odds_le_1_present"
+      ]
+    },
+    {
+      "race_id": "2024-01-06-中山-10",
+      "status": "ok",
+      "field_size": 10,
+      "winner_name": "キャプテンシー",
+      "winner_id": "2021105370",
+      "winner_rank": 1,
+      "issues": []
+    },
+    {
+      "race_id": "2024-01-07-中山-09",
+      "status": "ok",
+      "field_size": 17,
+      "winner_name": "ダイバリオン",
+      "winner_id": "2019105383",
+      "winner_rank": 1,
+      "issues": []
+    },
+    {
+      "race_id": "2024-01-07-京都-11",
+      "status": "ok",
+      "field_size": 15,
+      "winner_name": "テーオーステルス",
+      "winner_id": "2019103472",
+      "winner_rank": 1,
+      "issues": []
+    },
+    {
+      "race_id": "2024-01-07-中山-11",
+      "status": "ok",
+      "field_size": 14,
+      "winner_name": "イフェイオン",
+      "winner_id": "2021104955",
+      "winner_rank": 1,
+      "issues": []
+    },
+    {
+      "race_id": "2024-01-07-中山-10",
+      "status": "ok",
+      "field_size": 16,
+      "winner_name": "ヴァルツァーシャル",
+      "winner_id": "2019102437",
+      "winner_rank": 1,
+      "issues": []
+    },
+    {
+      "race_id": "2024-01-07-京都-10",
+      "status": "ok",
+      "field_size": 13,
+      "winner_name": "サンライズロナウド",
+      "winner_id": "2019105087",
+      "winner_rank": 1,
+      "issues": []
+    },
+    {
+      "race_id": "2024-01-14-中山-11",
+      "status": "degraded",
+      "field_size": 15,
+      "winner_name": "ダノンデサイル",
+      "winner_id": "2021105143",
+      "winner_rank": 1,
+      "issues": [
+        "odds_le_1_present"
+      ]
+    },
+    {
+      "race_id": "2024-01-14-中山-10",
+      "status": "ok",
+      "field_size": 14,
+      "winner_name": "クロジシジョー",
+      "winner_id": "2019102238",
+      "winner_rank": 1,
+      "issues": []
+    },
+    {
+      "race_id": "2024-01-14-小倉-11",
+      "status": "ok",
+      "field_size": 16,
+      "winner_name": "スレイマン",
+      "winner_id": "2018105164",
+      "winner_rank": 1,
+      "issues": []
+    },
+    {
+      "race_id": "2024-01-14-京都-10",
+      "status": "ok",
+      "field_size": 13,
+      "winner_name": "ヤマニンウルス",
+      "winner_id": "2020105599",
+      "winner_rank": 1,
+      "issues": []
+    },
+    {
+      "race_id": "2024-01-14-京都-11",
+      "status": "ok",
+      "field_size": 14,
+      "winner_name": "ブローザホーン",
+      "winner_id": "2019105748",
+      "winner_rank": 1,
+      "issues": []
+    },
+    {
+      "race_id": "2024-01-21-中山-10",
+      "status": "ok",
+      "field_size": 16,
+      "winner_name": "ダイシンピスケス",
+      "winner_id": "2018100830",
+      "winner_rank": 5,
+      "issues": []
+    },
+    {
+      "race_id": "2024-01-21-中山-11",
+      "status": "ok",
+      "field_size": 12,
+      "winner_name": "チャックネイト",
+      "winner_id": "2018104609",
+      "winner_rank": 4,
+      "issues": []
+    },
+    {
+      "race_id": "2024-01-21-京都-10",
+      "status": "ok",
+      "field_size": 16,
+      "winner_name": "ゼットレヨン",
+      "winner_id": "2019103065",
+      "winner_rank": 5,
+      "issues": []
+    },
+    {
+      "race_id": "2024-01-21-京都-11",
+      "status": "ok",
+      "field_size": 16,
+      "winner_name": "ウィリアムバローズ",
+      "winner_id": "2018100829",
+      "winner_rank": 7,
+      "issues": []
+    },
+    {
+      "race_id": "2024-01-21-小倉-11",
+      "status": "ok",
+      "field_size": 16,
+      "winner_name": "サンライズアリオン",
+      "winner_id": "2019103419",
+      "winner_rank": 4,
+      "issues": []
+    },
+    {
+      "race_id": "2024-01-28-京都-10",
+      "status": "ok",
+      "field_size": 12,
+      "winner_name": "サスツルギ",
+      "winner_id": "2020103439",
+      "winner_rank": 6,
+      "issues": []
+    },
+    {
+      "race_id": "2024-01-28-小倉-11",
+      "status": "ok",
+      "field_size": 18,
+      "winner_name": "ヤクシマ",
+      "winner_id": "2020110040",
+      "winner_rank": 10,
+      "issues": []
+    },
+    {
+      "race_id": "2024-01-28-京都-11",
+      "status": "ok",
+      "field_size": 18,
+      "winner_name": "ルガル",
+      "winner_id": "2020106851",
+      "winner_rank": 3,
+      "issues": []
+    },
+    {
+      "race_id": "2024-01-28-東京-11",
+      "status": "ok",
+      "field_size": 16,
+      "winner_name": "エンペラーワケア",
+      "winner_id": "2020101547",
+      "winner_rank": 1,
+      "issues": []
+    },
+    {
+      "race_id": "2024-01-28-東京-10",
+      "status": "ok",
+      "field_size": 14,
+      "winner_name": "クルゼイロドスル",
+      "winner_id": "2020101813",
+      "winner_rank": 1,
+      "issues": []
+    },
+    {
+      "race_id": "2024-02-04-京都-10",
+      "status": "ok",
+      "field_size": 16,
+      "winner_name": "クロジシジョー",
+      "winner_id": "2019102238",
+      "winner_rank": 3,
+      "issues": []
+    },
+    {
+      "race_id": "2024-02-04-東京-10",
+      "status": "ok",
+      "field_size": 16,
+      "winner_name": "コスタノヴァ",
+      "winner_id": "2020103307",
+      "winner_rank": 1,
+      "issues": []
+    },
+    {
+      "race_id": "2024-02-04-小倉-11",
+      "status": "ok",
+      "field_size": 9,
+      "winner_name": "ダンディズム",
+      "winner_id": "2016102175",
+      "winner_rank": 5,
+      "issues": []
+    },
+    {
+      "race_id": "2024-02-04-東京-11",
+      "status": "ok",
+      "field_size": 16,
+      "winner_name": "サクラトゥジュール",
+      "winner_id": "2017103751",
+      "winner_rank": 13,
+      "issues": []
+    },
+    {
+      "race_id": "2024-02-04-京都-11",
+      "status": "ok",
+      "field_size": 12,
+      "winner_name": "ビザンチンドリーム",
+      "winner_id": "2021105587",
+      "winner_rank": 5,
+      "issues": []
+    },
+    {
+      "race_id": "2024-02-11-京都-10",
+      "status": "ok",
+      "field_size": 15,
+      "winner_name": "ゴーゴーユタカ",
+      "winner_id": "2019100167",
+      "winner_rank": 6,
+      "issues": []
+    },
+    {
+      "race_id": "2024-02-11-京都-11",
+      "status": "ok",
+      "field_size": 12,
+      "winner_name": "プラダリア",
+      "winner_id": "2019100109",
+      "winner_rank": 3,
+      "issues": []
+    },
+    {
+      "race_id": "2024-02-11-小倉-11",
+      "status": "ok",
+      "field_size": 18,
+      "winner_name": "ヨシノイースター",
+      "winner_id": "2018106055",
+      "winner_rank": 2,
+      "issues": []
+    },
+    {
+      "race_id": "2024-02-11-東京-10",
+      "status": "degraded",
+      "field_size": 16,
+      "winner_name": "レッドヴェイロン",
+      "winner_id": "2015104714",
+      "winner_rank": 8,
+      "issues": [
+        "odds_le_1_present"
+      ]
+    },
+    {
+      "race_id": "2024-02-11-東京-11",
+      "status": "ok",
+      "field_size": 10,
+      "winner_name": "ジャスティンミラノ",
+      "winner_id": "2021105795",
+      "winner_rank": 9,
+      "issues": []
+    },
+    {
+      "race_id": "2024-02-18-京都-10",
+      "status": "ok",
+      "field_size": 12,
+      "winner_name": "ディオ",
+      "winner_id": "2019101609",
+      "winner_rank": 3,
+      "issues": []
+    },
+    {
+      "race_id": "2024-02-18-京都-11",
+      "status": "ok",
+      "field_size": 13,
+      "winner_name": "スズカコテキタイ",
+      "winner_id": "2019105967",
+      "winner_rank": 10,
+      "issues": []
+    },
+    {
+      "race_id": "2024-02-18-小倉-11",
+      "status": "degraded",
+      "field_size": 16,
+      "winner_name": "エピファニー",
+      "winner_id": "2019105532",
+      "winner_rank": 5,
+      "issues": [
+        "odds_le_1_present"
+      ]
+    },
+    {
+      "race_id": "2024-02-18-東京-11",
+      "status": "ok",
+      "field_size": 16,
+      "winner_name": "ペプチドナイル",
+      "winner_id": "2018106084",
+      "winner_rank": 13,
+      "issues": []
+    },
+    {
+      "race_id": "2024-02-18-東京-10",
+      "status": "ok",
+      "field_size": 9,
+      "winner_name": "レッドラディエンス",
+      "winner_id": "2019104984",
+      "winner_rank": 3,
+      "issues": []
+    },
+    {
+      "race_id": "2024-02-25-中山-10",
+      "status": "ok",
+      "field_size": 16,
+      "winner_name": "マニバドラ",
+      "winner_id": "2020110105",
+      "winner_rank": 1,
+      "issues": []
+    },
+    {
+      "race_id": "2024-02-25-中山-11",
+      "status": "ok",
+      "field_size": 16,
+      "winner_name": "マテンロウスカイ",
+      "winner_id": "2019105546",
+      "winner_rank": 3,
+      "issues": []
+    },
+    {
+      "race_id": "2024-02-25-小倉-11",
+      "status": "ok",
+      "field_size": 17,
+      "winner_name": "カンチェンジュンガ",
+      "winner_id": "2020101503",
+      "winner_rank": 6,
+      "issues": []
+    },
+    {
+      "race_id": "2024-02-25-阪神-11",
+      "status": "ok",
+      "field_size": 18,
+      "winner_name": "ウインマーベル",
+      "winner_id": "2019100213",
+      "winner_rank": 2,
+      "issues": []
+    },
+    {
+      "race_id": "2024-02-25-阪神-10",
+      "status": "ok",
+      "field_size": 11,
+      "winner_name": "ナナオ",
+      "winner_id": "2021102392",
+      "winner_rank": 6,
+      "issues": []
+    },
+    {
+      "race_id": "2024-03-03-中山-10",
+      "status": "ok",
+      "field_size": 15,
+      "winner_name": "ゴールドハイアー",
+      "winner_id": "2018102195",
+      "winner_rank": 1,
+      "issues": []
+    },
+    {
+      "race_id": "2024-03-03-中山-11",
+      "status": "ok",
+      "field_size": 11,
+      "winner_name": "コスモキュランダ",
+      "winner_id": "2021106787",
+      "winner_rank": 3,
+      "issues": []
+    },
+    {
+      "race_id": "2024-03-03-小倉-11",
+      "status": "ok",
+      "field_size": 14,
+      "winner_name": "ニホンピロキーフ",
+      "winner_id": "2020104564",
+      "winner_rank": 2,
+      "issues": []
+    },
+    {
+      "race_id": "2024-03-03-阪神-10",
+      "status": "ok",
+      "field_size": 14,
+      "winner_name": "レイベリング",
+      "winner_id": "2020110155",
+      "winner_rank": 1,
+      "issues": []
+    },
+    {
+      "race_id": "2024-03-03-阪神-11",
+      "status": "ok",
+      "field_size": 15,
+      "winner_name": "ステラヴェローチェ",
+      "winner_id": "2018104980",
+      "winner_rank": 1,
+      "issues": []
+    },
+    {
+      "race_id": "2024-03-10-中京-11",
+      "status": "ok",
+      "field_size": 13,
+      "winner_name": "プログノーシス",
+      "winner_id": "2018104541",
+      "winner_rank": 5,
+      "issues": []
+    },
+    {
+      "race_id": "2024-03-10-中山-11",
+      "status": "ok",
+      "field_size": 12,
+      "winner_name": "キャットファイト",
+      "winner_id": "2021101685",
+      "winner_rank": 6,
+      "issues": []
+    },
+    {
+      "race_id": "2024-03-10-中山-10",
+      "status": "ok",
+      "field_size": 14,
+      "winner_name": "ディオ",
+      "winner_id": "2019101609",
+      "winner_rank": 5,
+      "issues": []
+    },
+    {
+      "race_id": "2024-03-10-阪神-10",
+      "status": "ok",
+      "field_size": 16,
+      "winner_name": "グリューヴルム",
+      "winner_id": "2019105519",
+      "winner_rank": 1,
+      "issues": []
+    },
+    {
+      "race_id": "2024-03-10-阪神-11",
+      "status": "degraded",
+      "field_size": 15,
+      "winner_name": "エトヴプレ",
+      "winner_id": "2021110027",
+      "winner_rank": 6,
+      "issues": [
+        "odds_le_1_present"
+      ]
+    },
+    {
+      "race_id": "2024-03-17-中京-11",
+      "status": "ok",
+      "field_size": 13,
+      "winner_name": "テーオードレフォン",
+      "winner_id": "2019101324",
+      "winner_rank": 7,
+      "issues": []
+    },
+    {
+      "race_id": "2024-03-17-中山-10",
+      "status": "ok",
+      "field_size": 16,
+      "winner_name": "ケイアイロベージ",
+      "winner_id": "2018103819",
+      "winner_rank": 2,
+      "issues": []
+    },
+    {
+      "race_id": "2024-03-17-阪神-11",
+      "status": "ok",
+      "field_size": 15,
+      "winner_name": "テーオーロイヤル",
+      "winner_id": "2018106545",
+      "winner_rank": 1,
+      "issues": []
+    },
+    {
+      "race_id": "2024-03-17-中山-11",
+      "status": "ok",
+      "field_size": 10,
+      "winner_name": "シックスペンス",
+      "winner_id": "2021105724",
+      "winner_rank": 6,
+      "issues": []
+    },
+    {
+      "race_id": "2024-03-17-阪神-10",
+      "status": "ok",
+      "field_size": 11,
+      "winner_name": "ロードアウォード",
+      "winner_id": "2020100162",
+      "winner_rank": 1,
+      "issues": []
+    },
+    {
+      "race_id": "2024-03-24-中京-10",
+      "status": "ok",
+      "field_size": 16,
+      "winner_name": "サンテックス",
+      "winner_id": "2020100635",
+      "winner_rank": 1,
+      "issues": []
+    },
+    {
+      "race_id": "2024-03-24-中京-11",
+      "status": "ok",
+      "field_size": 18,
+      "winner_name": "マッドクール",
+      "winner_id": "2019110020",
+      "winner_rank": 9,
+      "issues": []
+    },
+    {
+      "race_id": "2024-03-24-中山-11",
+      "status": "ok",
+      "field_size": 14,
+      "winner_name": "ヴァルツァーシャル",
+      "winner_id": "2019102437",
+      "winner_rank": 2,
+      "issues": []
+    },
+    {
+      "race_id": "2024-03-24-中山-10",
+      "status": "ok",
+      "field_size": 13,
+      "winner_name": "サイルーン",
+      "winner_id": "2019104838",
+      "winner_rank": 2,
+      "issues": []
+    },
+    {
+      "race_id": "2024-03-24-阪神-11",
+      "status": "ok",
+      "field_size": 15,
+      "winner_name": "ボルザコフスキー",
+      "winner_id": "2019100684",
+      "winner_rank": 7,
+      "issues": []
+    },
+    {
+      "race_id": "2024-03-31-中山-11",
+      "status": "ok",
+      "field_size": 15,
+      "winner_name": "キングズパレス",
+      "winner_id": "2019104828",
+      "winner_rank": 1,
+      "issues": []
+    },
+    {
+      "race_id": "2024-03-31-中山-10",
+      "status": "ok",
+      "field_size": 16,
+      "winner_name": "ドライゼ",
+      "winner_id": "2019104768",
+      "winner_rank": 4,
+      "issues": []
+    },
+    {
+      "race_id": "2024-03-31-阪神-10",
+      "status": "ok",
+      "field_size": 17,
+      "winner_name": "スズハローム",
+      "winner_id": "2020105018",
+      "winner_rank": 2,
+      "issues": []
+    },
+    {
+      "race_id": "2024-03-31-阪神-11",
+      "status": "ok",
+      "field_size": 16,
+      "winner_name": "ベラジオオペラ",
+      "winner_id": "2020102781",
+      "winner_rank": 8,
+      "issues": []
+    },
+    {
+      "race_id": "2024-03-31-阪神-09",
+      "status": "ok",
+      "field_size": 11,
+      "winner_name": "エートラックス",
+      "winner_id": "2021104876",
+      "winner_rank": 3,
+      "issues": []
+    },
+    {
+      "race_id": "2024-04-07-中山-10",
+      "status": "ok",
+      "field_size": 15,
+      "winner_name": "ホウオウスーペリア",
+      "winner_id": "2020103928",
+      "winner_rank": 2,
+      "issues": []
+    },
+    {
+      "race_id": "2024-04-07-中山-11",
+      "status": "ok",
+      "field_size": 14,
+      "winner_name": "シアージスト",
+      "winner_id": "2019110009",
+      "winner_rank": 1,
+      "issues": []
+    },
+    {
+      "race_id": "2024-04-07-福島-11",
+      "status": "ok",
+      "field_size": 16,
+      "winner_name": "アサカラキング",
+      "winner_id": "2020105154",
+      "winner_rank": 3,
+      "issues": []
+    },
+    {
+      "race_id": "2024-04-07-阪神-10",
+      "status": "ok",
+      "field_size": 16,
+      "winner_name": "エーデルブルーメ",
+      "winner_id": "2019105062",
+      "winner_rank": 1,
+      "issues": []
+    },
+    {
+      "race_id": "2024-04-07-阪神-11",
+      "status": "ok",
+      "field_size": 18,
+      "winner_name": "ステレンボッシュ",
+      "winner_id": "2021105743",
+      "winner_rank": 2,
+      "issues": []
+    },
+    {
+      "race_id": "2024-04-14-中山-10",
+      "status": "ok",
+      "field_size": 14,
+      "winner_name": "セイウンプラチナ",
+      "winner_id": "2019102628",
+      "winner_rank": 14,
+      "issues": []
+    },
+    {
+      "race_id": "2024-04-14-中山-11",
+      "status": "degraded",
+      "field_size": 18,
+      "winner_name": "ジャスティンミラノ",
+      "winner_id": "2021105795",
+      "winner_rank": 1,
+      "issues": [
+        "odds_le_1_present"
+      ]
+    },
+    {
+      "race_id": "2024-04-14-福島-11",
+      "status": "ok",
+      "field_size": 16,
+      "winner_name": "リフレーミング",
+      "winner_id": "2018104225",
+      "winner_rank": 2,
+      "issues": []
+    },
+    {
+      "race_id": "2024-04-14-阪神-10",
+      "status": "ok",
+      "field_size": 11,
+      "winner_name": "セオ",
+      "winner_id": "2020103102",
+      "winner_rank": 1,
+      "issues": []
+    },
+    {
+      "race_id": "2024-04-14-阪神-11",
+      "status": "ok",
+      "field_size": 16,
+      "winner_name": "ミッキーヌチバナ",
+      "winner_id": "2018105431",
+      "winner_rank": 1,
+      "issues": []
+    },
+    {
+      "race_id": "2024-04-21-京都-10",
+      "status": "ok",
+      "field_size": 9,
+      "winner_name": "アスコルティアーモ",
+      "winner_id": "2020103195",
+      "winner_rank": 2,
+      "issues": []
+    },
+    {
+      "race_id": "2024-04-21-京都-11",
+      "status": "ok",
+      "field_size": 17,
+      "winner_name": "ソウルラッシュ",
+      "winner_id": "2018100382",
+      "winner_rank": 4,
+      "issues": []
+    },
+    {
+      "race_id": "2024-04-21-東京-10",
+      "status": "ok",
+      "field_size": 15,
+      "winner_name": "コパノニコルソン",
+      "winner_id": "2019104116",
+      "winner_rank": 7,
+      "issues": []
+    },
+    {
+      "race_id": "2024-04-21-東京-11",
+      "status": "ok",
+      "field_size": 14,
+      "winner_name": "アドマイヤベル",
+      "winner_id": "2021105764",
+      "winner_rank": 3,
+      "issues": []
+    },
+    {
+      "race_id": "2024-04-21-福島-11",
+      "status": "ok",
+      "field_size": 16,
+      "winner_name": "アシャカタカ",
+      "winner_id": "2020102299",
+      "winner_rank": 6,
+      "issues": []
+    },
+    {
+      "race_id": "2024-04-28-京都-10",
+      "status": "ok",
+      "field_size": 18,
+      "winner_name": "グランテスト",
+      "winner_id": "2020101543",
+      "winner_rank": 2,
+      "issues": []
+    },
+    {
+      "race_id": "2024-04-28-京都-11",
+      "status": "degraded",
+      "field_size": 18,
+      "winner_name": "テーオーロイヤル",
+      "winner_id": "2018106545",
+      "winner_rank": 1,
+      "issues": [
+        "odds_le_1_present"
+      ]
+    },
+    {
+      "race_id": "2024-04-28-新潟-11",
+      "status": "ok",
+      "field_size": 15,
+      "winner_name": "メイショウチタン",
+      "winner_id": "2017104172",
+      "winner_rank": 15,
+      "issues": []
+    },
+    {
+      "race_id": "2024-04-28-東京-10",
+      "status": "ok",
+      "field_size": 16,
+      "winner_name": "メイショウフンジン",
+      "winner_id": "2018106571",
+      "winner_rank": 7,
+      "issues": []
+    },
+    {
+      "race_id": "2024-04-28-東京-11",
+      "status": "ok",
+      "field_size": 13,
+      "winner_name": "コガネノソラ",
+      "winner_id": "2021106823",
+      "winner_rank": 6,
+      "issues": []
+    },
+    {
+      "race_id": "2024-05-05-京都-11",
+      "status": "ok",
+      "field_size": 13,
+      "winner_name": "ジャスティンスカイ",
+      "winner_id": "2019105512",
+      "winner_rank": 4,
+      "issues": []
+    },
+    {
+      "race_id": "2024-05-05-新潟-11",
+      "status": "ok",
+      "field_size": 16,
+      "winner_name": "ヤマニンサルバム",
+      "winner_id": "2019100596",
+      "winner_rank": 6,
+      "issues": []
+    },
+    {
+      "race_id": "2024-05-05-東京-10",
+      "status": "ok",
+      "field_size": 16,
+      "winner_name": "タマモロック",
+      "winner_id": "2020104861",
+      "winner_rank": 6,
+      "issues": []
+    },
+    {
+      "race_id": "2024-05-05-東京-11",
+      "status": "ok",
+      "field_size": 18,
+      "winner_name": "ジャンタルマンタル",
+      "winner_id": "2021107171",
+      "winner_rank": 1,
+      "issues": []
+    },
+    {
+      "race_id": "2024-05-05-京都-10",
+      "status": "degraded",
+      "field_size": 11,
+      "winner_name": "ガロンヌ",
+      "winner_id": "2021100494",
+      "winner_rank": 6,
+      "issues": [
+        "odds_le_1_present"
+      ]
+    },
+    {
+      "race_id": "2024-05-12-京都-11",
+      "status": "ok",
+      "field_size": 16,
+      "winner_name": "サンライズアムール",
+      "winner_id": "2019101633",
+      "winner_rank": 2,
+      "issues": []
+    },
+    {
+      "race_id": "2024-05-12-新潟-11",
+      "status": "ok",
+      "field_size": 16,
+      "winner_name": "セレシオン",
+      "winner_id": "2019105168",
+      "winner_rank": 5,
+      "issues": []
+    },
+    {
+      "race_id": "2024-05-12-東京-11",
+      "status": "ok",
+      "field_size": 15,
+      "winner_name": "テンハッピーローズ",
+      "winner_id": "2018104750",
+      "winner_rank": 11,
+      "issues": []
+    },
+    {
+      "race_id": "2024-05-12-京都-10",
+      "status": "ok",
+      "field_size": 14,
+      "winner_name": "ボーデン",
+      "winner_id": "2018105264",
+      "winner_rank": 12,
+      "issues": []
+    },
+    {
+      "race_id": "2024-05-12-東京-10",
+      "status": "ok",
+      "field_size": 12,
+      "winner_name": "アイファーエポック",
+      "winner_id": "2019101325",
+      "winner_rank": 10,
+      "issues": []
+    },
+    {
+      "race_id": "2024-05-19-京都-10",
+      "status": "ok",
+      "field_size": 12,
+      "winner_name": "エンパイアウエスト",
+      "winner_id": "2019105571",
+      "winner_rank": 4,
+      "issues": []
+    },
+    {
+      "race_id": "2024-05-19-京都-11",
+      "status": "ok",
+      "field_size": 16,
+      "winner_name": "エルゲルージ",
+      "winner_id": "2019102044",
+      "winner_rank": 6,
+      "issues": []
+    },
+    {
+      "race_id": "2024-05-19-新潟-11",
+      "status": "ok",
+      "field_size": 16,
+      "winner_name": "チェイスザドリーム",
+      "winner_id": "2019105968",
+      "winner_rank": 4,
+      "issues": []
+    },
+    {
+      "race_id": "2024-05-19-東京-10",
+      "status": "ok",
+      "field_size": 16,
+      "winner_name": "ルクスフロンティア",
+      "winner_id": "2020104474",
+      "winner_rank": 1,
+      "issues": []
+    },
+    {
+      "race_id": "2024-05-19-東京-11",
+      "status": "ok",
+      "field_size": 18,
+      "winner_name": "チェルヴィニア",
+      "winner_id": "2021105643",
+      "winner_rank": 1,
+      "issues": []
+    },
+    {
+      "race_id": "2024-05-26-京都-10",
+      "status": "ok",
+      "field_size": 18,
+      "winner_name": "エイシンスポッター",
+      "winner_id": "2019102979",
+      "winner_rank": 3,
+      "issues": []
+    },
+    {
+      "race_id": "2024-05-26-京都-09",
+      "status": "ok",
+      "field_size": 11,
+      "winner_name": "ペプチドソレイユ",
+      "winner_id": "2020102095",
+      "winner_rank": 4,
+      "issues": []
+    },
+    {
+      "race_id": "2024-05-26-東京-10",
+      "status": "ok",
+      "field_size": 16,
+      "winner_name": "ドゥラレジリエント",
+      "winner_id": "2020102845",
+      "winner_rank": 1,
+      "issues": []
+    },
+    {
+      "race_id": "2024-05-26-東京-11",
+      "status": "degraded",
+      "field_size": 18,
+      "winner_name": "ダノンデサイル",
+      "winner_id": "2021105143",
+      "winner_rank": 13,
+      "issues": [
+        "odds_le_1_present"
+      ]
+    },
+    {
+      "race_id": "2024-05-26-東京-09",
+      "status": "ok",
+      "field_size": 10,
+      "winner_name": "ジェイパームス",
+      "winner_id": "2020103331",
+      "winner_rank": 2,
+      "issues": []
+    },
+    {
+      "race_id": "2024-06-02-京都-10",
+      "status": "ok",
+      "field_size": 13,
+      "winner_name": "ベリーヴィーナス",
+      "winner_id": "2019103430",
+      "winner_rank": 10,
+      "issues": []
+    },
+    {
+      "race_id": "2024-06-02-東京-09",
+      "status": "ok",
+      "field_size": 10,
+      "winner_name": "グランドカリナン",
+      "winner_id": "2020106234",
+      "winner_rank": 6,
+      "issues": []
+    },
+    {
+      "race_id": "2024-06-02-東京-10",
+      "status": "ok",
+      "field_size": 16,
+      "winner_name": "バグラダス",
+      "winner_id": "2020106015",
+      "winner_rank": 4,
+      "issues": []
+    },
+    {
+      "race_id": "2024-06-02-京都-11",
+      "status": "ok",
+      "field_size": 16,
+      "winner_name": "ジレトール",
+      "winner_id": "2019105972",
+      "winner_rank": 4,
+      "issues": []
+    },
+    {
+      "race_id": "2024-06-02-東京-11",
+      "status": "ok",
+      "field_size": 18,
+      "winner_name": "ロマンチックウォリアー",
+      "winner_id": "2018190002",
+      "winner_rank": 3,
+      "issues": []
+    },
+    {
+      "race_id": "2024-06-09-京都-10",
+      "status": "ok",
+      "field_size": 16,
+      "winner_name": "ボナンザ",
+      "winner_id": "2020101292",
+      "winner_rank": 3,
+      "issues": []
+    },
+    {
+      "race_id": "2024-06-09-京都-11",
+      "status": "ok",
+      "field_size": 16,
+      "winner_name": "オメガギネス",
+      "winner_id": "2020102904",
+      "winner_rank": 7,
+      "issues": []
+    },
+    {
+      "race_id": "2024-06-09-函館-11",
+      "status": "ok",
+      "field_size": 16,
+      "winner_name": "サトノレーヴ",
+      "winner_id": "2019101700",
+      "winner_rank": 4,
+      "issues": []
+    },
+    {
+      "race_id": "2024-06-09-東京-10",
+      "status": "ok",
+      "field_size": 16,
+      "winner_name": "サンテックス",
+      "winner_id": "2020100635",
+      "winner_rank": 5,
+      "issues": []
+    },
+    {
+      "race_id": "2024-06-09-東京-11",
+      "status": "ok",
+      "field_size": 18,
+      "winner_name": "レーベンスティール",
+      "winner_id": "2020102078",
+      "winner_rank": 4,
+      "issues": []
+    },
+    {
+      "race_id": "2024-06-16-京都-10",
+      "status": "ok",
+      "field_size": 16,
+      "winner_name": "ペプチドソレイユ",
+      "winner_id": "2020102095",
+      "winner_rank": 3,
+      "issues": []
+    },
+    {
+      "race_id": "2024-06-16-京都-11",
+      "status": "ok",
+      "field_size": 16,
+      "winner_name": "アリスヴェリテ",
+      "winner_id": "2020105655",
+      "winner_rank": 3,
+      "issues": []
+    },
+    {
+      "race_id": "2024-06-16-函館-11",
+      "status": "ok",
+      "field_size": 16,
+      "winner_name": "マメコ",
+      "winner_id": "2019102240",
+      "winner_rank": 9,
+      "issues": []
+    },
+    {
+      "race_id": "2024-06-16-東京-11",
+      "status": "ok",
+      "field_size": 16,
+      "winner_name": "メイプルリッジ",
+      "winner_id": "2019105523",
+      "winner_rank": 5,
+      "issues": []
+    },
+    {
+      "race_id": "2024-06-16-東京-10",
+      "status": "ok",
+      "field_size": 12,
+      "winner_name": "オメガウインク",
+      "winner_id": "2021103559",
+      "winner_rank": 2,
+      "issues": []
+    },
+    {
+      "race_id": "2024-06-23-京都-10",
+      "status": "ok",
+      "field_size": 15,
+      "winner_name": "ライツフォル",
+      "winner_id": "2020103398",
+      "winner_rank": 5,
+      "issues": []
+    },
+    {
+      "race_id": "2024-06-23-函館-11",
+      "status": "ok",
+      "field_size": 14,
+      "winner_name": "サヴァ",
+      "winner_id": "2018103223",
+      "winner_rank": 12,
+      "issues": []
+    },
+    {
+      "race_id": "2024-06-23-東京-10",
+      "status": "ok",
+      "field_size": 16,
+      "winner_name": "ニシノカシミヤ",
+      "winner_id": "2020100418",
+      "winner_rank": 6,
+      "issues": []
+    },
+    {
+      "race_id": "2024-06-23-東京-11",
+      "status": "ok",
+      "field_size": 16,
+      "winner_name": "オーキッドロマンス",
+      "winner_id": "2021103323",
+      "winner_rank": 5,
+      "issues": []
+    },
+    {
+      "race_id": "2024-06-23-京都-11",
+      "status": "ok",
+      "field_size": 13,
+      "winner_name": "ブローザホーン",
+      "winner_id": "2019105748",
+      "winner_rank": 5,
+      "issues": []
+    },
+    {
+      "race_id": "2024-06-30-小倉-10",
+      "status": "degraded",
+      "field_size": 16,
+      "winner_name": "レリジールダモーレ",
+      "winner_id": "2019104729",
+      "winner_rank": 11,
+      "issues": [
+        "odds_le_1_present"
+      ]
+    },
+    {
+      "race_id": "2024-06-30-函館-11",
+      "status": "ok",
+      "field_size": 16,
+      "winner_name": "ホウオウビスケッツ",
+      "winner_id": "2020103941",
+      "winner_rank": 3,
+      "issues": []
+    },
+    {
+      "race_id": "2024-06-30-小倉-11",
+      "status": "ok",
+      "field_size": 18,
+      "winner_name": "ピューロマジック",
+      "winner_id": "2021107058",
+      "winner_rank": 5,
+      "issues": []
+    },
+    {
+      "race_id": "2024-06-30-福島-10",
+      "status": "ok",
+      "field_size": 13,
+      "winner_name": "サノノエスポ",
+      "winner_id": "2020102161",
+      "winner_rank": 4,
+      "issues": []
+    },
+    {
+      "race_id": "2024-06-30-福島-11",
+      "status": "ok",
+      "field_size": 12,
+      "winner_name": "オフトレイル",
+      "winner_id": "2021110031",
+      "winner_rank": 1,
+      "issues": []
+    },
+    {
+      "race_id": "2024-07-07-函館-11",
+      "status": "ok",
+      "field_size": 14,
+      "winner_name": "キミノナハマリア",
+      "winner_id": "2020102873",
+      "winner_rank": 6,
+      "issues": []
+    },
+    {
+      "race_id": "2024-07-07-小倉-11",
+      "status": "ok",
+      "field_size": 16,
+      "winner_name": "ヤマニンウルス",
+      "winner_id": "2020105599",
+      "winner_rank": 1,
+      "issues": []
+    },
+    {
+      "race_id": "2024-07-07-福島-11",
+      "status": "ok",
+      "field_size": 15,
+      "winner_name": "レッドラディエンス",
+      "winner_id": "2019104984",
+      "winner_rank": 6,
+      "issues": []
+    },
+    {
+      "race_id": "2024-07-07-小倉-10",
+      "status": "ok",
+      "field_size": 15,
+      "winner_name": "レッドヒルシューズ",
+      "winner_id": "2020101897",
+      "winner_rank": 8,
+      "issues": []
+    },
+    {
+      "race_id": "2024-07-07-福島-10",
+      "status": "ok",
+      "field_size": 10,
+      "winner_name": "ジョージテソーロ",
+      "winner_id": "2021102078",
+      "winner_rank": 1,
+      "issues": []
+    },
+    {
+      "race_id": "2024-07-14-函館-10",
+      "status": "ok",
+      "field_size": 14,
+      "winner_name": "レッドラグラス",
+      "winner_id": "2020103183",
+      "winner_rank": 8,
+      "issues": []
+    },
+    {
+      "race_id": "2024-07-14-函館-11",
+      "status": "ok",
+      "field_size": 16,
+      "winner_name": "ホウオウビスケッツ",
+      "winner_id": "2020103941",
+      "winner_rank": 3,
+      "issues": []
+    },
+    {
+      "race_id": "2024-07-14-福島-10",
+      "status": "ok",
+      "field_size": 14,
+      "winner_name": "ウインシュクラン",
+      "winner_id": "2018101615",
+      "winner_rank": 5,
+      "issues": []
+    },
+    {
+      "race_id": "2024-07-14-小倉-11",
+      "status": "ok",
+      "field_size": 18,
+      "winner_name": "レッドヒルシューズ",
+      "winner_id": "2020101897",
+      "winner_rank": 2,
+      "issues": []
+    },
+    {
+      "race_id": "2024-07-14-福島-11",
+      "status": "ok",
+      "field_size": 16,
+      "winner_name": "カリボール",
+      "winner_id": "2016104668",
+      "winner_rank": 12,
+      "issues": []
+    },
+    {
+      "race_id": "2024-07-21-小倉-10",
+      "status": "ok",
+      "field_size": 18,
+      "winner_name": "ミルテンベルク",
+      "winner_id": "2021105771",
+      "winner_rank": 5,
+      "issues": []
+    },
+    {
+      "race_id": "2024-07-21-小倉-11",
+      "status": "ok",
+      "field_size": 14,
+      "winner_name": "アルナシーム",
+      "winner_id": "2019105252",
+      "winner_rank": 5,
+      "issues": []
+    },
+    {
+      "race_id": "2024-07-21-札幌-11",
+      "status": "degraded",
+      "field_size": 11,
+      "winner_name": "ゾンニッヒ",
+      "winner_id": "2018101343",
+      "winner_rank": 4,
+      "issues": [
+        "odds_le_1_present"
+      ]
+    },
+    {
+      "race_id": "2024-07-21-福島-11",
+      "status": "ok",
+      "field_size": 15,
+      "winner_name": "メイショウテンスイ",
+      "winner_id": "2017106084",
+      "winner_rank": 8,
+      "issues": []
+    },
+    {
+      "race_id": "2024-07-21-福島-10",
+      "status": "degraded",
+      "field_size": 16,
+      "winner_name": "ミユキアイラブユー",
+      "winner_id": "2019105058",
+      "winner_rank": 3,
+      "issues": [
+        "odds_le_1_present"
+      ]
+    },
+    {
+      "race_id": "2025-12-06-中京-11",
+      "status": "ok",
+      "field_size": 12,
+      "winner_name": "レディマリオン",
+      "winner_id": "2021105752",
+      "winner_rank": 4,
+      "issues": []
+    },
+    {
+      "race_id": "2025-12-06-中山-11",
+      "status": "ok",
+      "field_size": 14,
+      "winner_name": "ホーエリート",
+      "winner_id": "2021104855",
+      "winner_rank": 2,
+      "issues": []
+    },
+    {
+      "race_id": "2025-12-06-阪神-10",
+      "status": "ok",
+      "field_size": 16,
+      "winner_name": "ファムエレガンテ",
+      "winner_id": "2022110142",
+      "winner_rank": 5,
+      "issues": []
+    },
+    {
+      "race_id": "2025-12-06-阪神-11",
+      "status": "ok",
+      "field_size": 14,
+      "winner_name": "デビットバローズ",
+      "winner_id": "2019104878",
+      "winner_rank": 6,
+      "issues": []
+    },
+    {
+      "race_id": "2025-12-06-中山-10",
+      "status": "ok",
+      "field_size": 12,
+      "winner_name": "ブルータス",
+      "winner_id": "2022103703",
+      "winner_rank": 5,
+      "issues": []
+    },
+    {
+      "race_id": "2025-12-07-中京-11",
+      "status": "ok",
+      "field_size": 16,
+      "winner_name": "ダブルハートボンド",
+      "winner_id": "2021105700",
+      "winner_rank": 3,
+      "issues": []
+    },
+    {
+      "race_id": "2025-12-07-中京-10",
+      "status": "ok",
+      "field_size": 13,
+      "winner_name": "キングメーカー",
+      "winner_id": "2022102744",
+      "winner_rank": 6,
+      "issues": []
+    },
+    {
+      "race_id": "2025-12-07-中山-10",
+      "status": "ok",
+      "field_size": 16,
+      "winner_name": "クラウンシエンタ",
+      "winner_id": "2021101253",
+      "winner_rank": 4,
+      "issues": []
+    },
+    {
+      "race_id": "2025-12-07-中山-11",
+      "status": "ok",
+      "field_size": 16,
+      "winner_name": "ロードフォアエース",
+      "winner_id": "2021100130",
+      "winner_rank": 3,
+      "issues": []
+    },
+    {
+      "race_id": "2025-12-07-阪神-11",
+      "status": "ok",
+      "field_size": 16,
+      "winner_name": "メイショウホウレン",
+      "winner_id": "2021103716",
+      "winner_rank": 6,
+      "issues": []
+    },
+    {
+      "race_id": "2025-12-13-中京-10",
+      "status": "ok",
+      "field_size": 16,
+      "winner_name": "アラレタバシル",
+      "winner_id": "2021107192",
+      "winner_rank": 1,
+      "issues": []
+    },
+    {
+      "race_id": "2025-12-13-中京-11",
+      "status": "ok",
+      "field_size": 18,
+      "winner_name": "シェイクユアハート",
+      "winner_id": "2020103101",
+      "winner_rank": 6,
+      "issues": []
+    },
+    {
+      "race_id": "2025-12-13-中山-10",
+      "status": "ok",
+      "field_size": 15,
+      "winner_name": "モンドプリューム",
+      "winner_id": "2020103876",
+      "winner_rank": 9,
+      "issues": []
+    },
+    {
+      "race_id": "2025-12-13-中山-11",
+      "status": "ok",
+      "field_size": 16,
+      "winner_name": "マイネルオーシャン",
+      "winner_id": "2021106766",
+      "winner_rank": 7,
+      "issues": []
+    },
+    {
+      "race_id": "2025-12-13-阪神-11",
+      "status": "ok",
+      "field_size": 13,
+      "winner_name": "ランスオブカオス",
+      "winner_id": "2022104401",
+      "winner_rank": 3,
+      "issues": []
+    },
+    {
+      "race_id": "2025-12-14-阪神-10",
+      "status": "ok",
+      "field_size": 16,
+      "winner_name": "ロードプレジール",
+      "winner_id": "2018102576",
+      "winner_rank": 2,
+      "issues": []
+    },
+    {
+      "race_id": "2025-12-14-中山-11",
+      "status": "ok",
+      "field_size": 16,
+      "winner_name": "テーオーエルビス",
+      "winner_id": "2022110081",
+      "winner_rank": 4,
+      "issues": []
+    },
+    {
+      "race_id": "2025-12-14-阪神-11",
+      "status": "ok",
+      "field_size": 18,
+      "winner_name": "スターアニス",
+      "winner_id": "2023106920",
+      "winner_rank": 3,
+      "issues": []
+    },
+    {
+      "race_id": "2025-12-14-中京-10",
+      "status": "ok",
+      "field_size": 10,
+      "winner_name": "バルナバ",
+      "winner_id": "2022106633",
+      "winner_rank": 4,
+      "issues": []
+    },
+    {
+      "race_id": "2025-12-14-中京-11",
+      "status": "ok",
+      "field_size": 10,
+      "winner_name": "モズナナスター",
+      "winner_id": "2022100490",
+      "winner_rank": 8,
+      "issues": []
+    },
+    {
+      "race_id": "2025-12-20-中山-10",
+      "status": "ok",
+      "field_size": 16,
+      "winner_name": "プレシャスデイ",
+      "winner_id": "2022104859",
+      "winner_rank": 3,
+      "issues": []
+    },
+    {
+      "race_id": "2025-12-20-中山-11",
+      "status": "ok",
+      "field_size": 16,
+      "winner_name": "ドロップオブライト",
+      "winner_id": "2019105806",
+      "winner_rank": 11,
+      "issues": []
+    },
+    {
+      "race_id": "2025-12-20-阪神-11",
+      "status": "degraded",
+      "field_size": 16,
+      "winner_name": "デュガ",
+      "winner_id": "2019110102",
+      "winner_rank": 3,
+      "issues": [
+        "odds_le_1_present"
+      ]
+    },
+    {
+      "race_id": "2025-12-20-中京-11",
+      "status": "ok",
+      "field_size": 11,
+      "winner_name": "メイショウズイウン",
+      "winner_id": "2022100154",
+      "winner_rank": 4,
+      "issues": []
+    },
+    {
+      "race_id": "2025-12-20-阪神-10",
+      "status": "ok",
+      "field_size": 8,
+      "winner_name": "シュバルツマサムネ",
+      "winner_id": "2022104887",
+      "winner_rank": 1,
+      "issues": []
+    },
+    {
+      "race_id": "2025-12-21-中京-11",
+      "status": "ok",
+      "field_size": 16,
+      "winner_name": "ダノンフィーゴ",
+      "winner_id": "2022100623",
+      "winner_rank": 4,
+      "issues": []
+    },
+    {
+      "race_id": "2025-12-21-中山-10",
+      "status": "ok",
+      "field_size": 15,
+      "winner_name": "イムホテプ",
+      "winner_id": "2022104983",
+      "winner_rank": 1,
+      "issues": []
+    },
+    {
+      "race_id": "2025-12-21-中山-11",
+      "status": "ok",
+      "field_size": 16,
+      "winner_name": "ドラゴンブースト",
+      "winner_id": "2022105891",
+      "winner_rank": 4,
+      "issues": []
+    },
+    {
+      "race_id": "2025-12-21-阪神-11",
+      "status": "ok",
+      "field_size": 14,
+      "winner_name": "カヴァレリッツォ",
+      "winner_id": "2023107153",
+      "winner_rank": 4,
+      "issues": []
+    },
+    {
+      "race_id": "2025-12-21-阪神-10",
+      "status": "ok",
+      "field_size": 16,
+      "winner_name": "ルシュヴァルドール",
+      "winner_id": "2021105630",
+      "winner_rank": 11,
+      "issues": []
+    },
+    {
+      "race_id": "2025-12-27-中山-10",
+      "status": "ok",
+      "field_size": 10,
+      "winner_name": "エコロデュエル",
+      "winner_id": "2019101614",
+      "winner_rank": 1,
+      "issues": []
+    },
+    {
+      "race_id": "2025-12-27-中山-09",
+      "status": "ok",
+      "field_size": 16,
+      "winner_name": "アンビバレント",
+      "winner_id": "2020102140",
+      "winner_rank": 13,
+      "issues": []
+    },
+    {
+      "race_id": "2025-12-27-阪神-10",
+      "status": "ok",
+      "field_size": 16,
+      "winner_name": "ハナウマビーチ",
+      "winner_id": "2022102874",
+      "winner_rank": 1,
+      "issues": []
+    },
+    {
+      "race_id": "2025-12-27-中山-11",
+      "status": "ok",
+      "field_size": 16,
+      "winner_name": "ロブチェン",
+      "winner_id": "2023107089",
+      "winner_rank": 15,
+      "issues": []
+    },
+    {
+      "race_id": "2025-12-27-阪神-11",
+      "status": "ok",
+      "field_size": 16,
+      "winner_name": "ルガル",
+      "winner_id": "2020106851",
+      "winner_rank": 4,
+      "issues": []
+    },
+    {
+      "race_id": "2025-12-28-中山-09",
+      "status": "ok",
+      "field_size": 14,
+      "winner_name": "コーチェラバレー",
+      "winner_id": "2022104733",
+      "winner_rank": 5,
+      "issues": []
+    },
+    {
+      "race_id": "2025-12-28-中山-10",
+      "status": "ok",
+      "field_size": 16,
+      "winner_name": "カンパニョーラ",
+      "winner_id": "2019104385",
+      "winner_rank": 10,
+      "issues": []
+    },
+    {
+      "race_id": "2025-12-28-中山-11",
+      "status": "ok",
+      "field_size": 16,
+      "winner_name": "ミュージアムマイル",
+      "winner_id": "2022105081",
+      "winner_rank": 1,
+      "issues": []
+    },
+    {
+      "race_id": "2025-12-28-阪神-11",
+      "status": "ok",
+      "field_size": 16,
+      "winner_name": "ノーブルロジャー",
+      "winner_id": "2021110148",
+      "winner_rank": 5,
+      "issues": []
+    },
+    {
+      "race_id": "2025-12-28-阪神-10",
+      "status": "ok",
+      "field_size": 11,
+      "winner_name": "ローランドバローズ",
+      "winner_id": "2022101827",
+      "winner_rank": 2,
+      "issues": []
+    },
+    {
+      "race_id": "2026-01-04-中山-09",
+      "status": "ok",
+      "field_size": 11,
+      "winner_name": "アスクデビューモア",
+      "winner_id": "2021104824",
+      "winner_rank": 1,
+      "issues": []
+    },
+    {
+      "race_id": "2026-01-04-中山-11",
+      "status": "ok",
+      "field_size": 14,
+      "winner_name": "カラマティアノス",
+      "winner_id": "2022104896",
+      "winner_rank": 6,
+      "issues": []
+    },
+    {
+      "race_id": "2026-01-04-中山-10",
+      "status": "ok",
+      "field_size": 8,
+      "winner_name": "リゾートアイランド",
+      "winner_id": "2023106916",
+      "winner_rank": 1,
+      "issues": []
+    },
+    {
+      "race_id": "2026-01-04-京都-10",
+      "status": "ok",
+      "field_size": 9,
+      "winner_name": "タガノデュード",
+      "winner_id": "2021106548",
+      "winner_rank": 3,
+      "issues": []
+    },
+    {
+      "race_id": "2026-01-04-京都-11",
+      "status": "ok",
+      "field_size": 18,
+      "winner_name": "ブエナオンダ",
+      "winner_id": "2021105454",
+      "winner_rank": 5,
+      "issues": []
+    },
+    {
+      "race_id": "2026-01-11-中山-10",
+      "status": "ok",
+      "field_size": 16,
+      "winner_name": "カゼノランナー",
+      "winner_id": "2021106611",
+      "winner_rank": 3,
+      "issues": []
+    },
+    {
+      "race_id": "2026-01-11-京都-10",
+      "status": "ok",
+      "field_size": 15,
+      "winner_name": "ベラジオボンド",
+      "winner_id": "2021105117",
+      "winner_rank": 5,
+      "issues": []
+    },
+    {
+      "race_id": "2026-01-11-中山-09",
+      "status": "ok",
+      "field_size": 13,
+      "winner_name": "コンドゥイア",
+      "winner_id": "2022100201",
+      "winner_rank": 1,
+      "issues": []
+    },
+    {
+      "race_id": "2026-01-11-京都-11",
+      "status": "ok",
+      "field_size": 16,
+      "winner_name": "ヤブサメ",
+      "winner_id": "2021103116",
+      "winner_rank": 1,
+      "issues": []
+    },
+    {
+      "race_id": "2026-01-11-中山-11",
+      "status": "ok",
+      "field_size": 16,
+      "winner_name": "ブラックチャリス",
+      "winner_id": "2023107008",
+      "winner_rank": 2,
+      "issues": []
+    },
+    {
+      "race_id": "2026-01-18-中山-09",
+      "status": "ok",
+      "field_size": 15,
+      "winner_name": "ポルカリズム",
+      "winner_id": "2020103577",
+      "winner_rank": 4,
+      "issues": []
+    },
+    {
+      "race_id": "2026-01-18-中山-10",
+      "status": "ok",
+      "field_size": 16,
+      "winner_name": "モンドプリューム",
+      "winner_id": "2020103876",
+      "winner_rank": 9,
+      "issues": []
+    },
+    {
+      "race_id": "2026-01-18-中山-11",
+      "status": "ok",
+      "field_size": 15,
+      "winner_name": "グリーンエナジー",
+      "winner_id": "2023105456",
+      "winner_rank": 8,
+      "issues": []
+    },
+    {
+      "race_id": "2026-01-18-京都-11",
+      "status": "ok",
+      "field_size": 13,
+      "winner_name": "ゲルチュタール",
+      "winner_id": "2022104736",
+      "winner_rank": 5,
+      "issues": []
+    },
+    {
+      "race_id": "2026-01-18-京都-10",
+      "status": "ok",
+      "field_size": 16,
+      "winner_name": "バッケンレコード",
+      "winner_id": "2022102516",
+      "winner_rank": 3,
+      "issues": []
+    },
+    {
+      "race_id": "2026-01-25-中山-10",
+      "status": "ok",
+      "field_size": 16,
+      "winner_name": "ルディック",
+      "winner_id": "2021110008",
+      "winner_rank": 3,
+      "issues": []
+    },
+    {
+      "race_id": "2026-01-25-中山-11",
+      "status": "ok",
+      "field_size": 16,
+      "winner_name": "ショウヘイ",
+      "winner_id": "2022104714",
+      "winner_rank": 6,
+      "issues": []
+    },
+    {
+      "race_id": "2026-01-25-京都-10",
+      "status": "ok",
+      "field_size": 18,
+      "winner_name": "ララマセラシオン",
+      "winner_id": "2021100935",
+      "winner_rank": 7,
+      "issues": []
+    },
+    {
+      "race_id": "2026-01-25-小倉-11",
+      "status": "ok",
+      "field_size": 12,
+      "winner_name": "エラトー",
+      "winner_id": "2021105442",
+      "winner_rank": 6,
+      "issues": []
+    },
+    {
+      "race_id": "2026-01-25-京都-11",
+      "status": "ok",
+      "field_size": 16,
+      "winner_name": "ロードクロンヌ",
+      "winner_id": "2021100169",
+      "winner_rank": 7,
+      "issues": []
+    },
+    {
+      "race_id": "2026-02-01-京都-11",
+      "status": "ok",
+      "field_size": 18,
+      "winner_name": "フィオライア",
+      "winner_id": "2021101924",
+      "winner_rank": 13,
+      "issues": []
+    },
+    {
+      "race_id": "2026-02-01-小倉-11",
+      "status": "ok",
+      "field_size": 15,
+      "winner_name": "コトホドサヨウニ",
+      "winner_id": "2021103306",
+      "winner_rank": 6,
+      "issues": []
+    },
+    {
+      "race_id": "2026-02-01-京都-10",
+      "status": "ok",
+      "field_size": 8,
+      "winner_name": "メイショウゲキリン",
+      "winner_id": "2019104092",
+      "winner_rank": 6,
+      "issues": []
+    },
+    {
+      "race_id": "2026-02-01-東京-10",
+      "status": "ok",
+      "field_size": 15,
+      "winner_name": "ウイントワイライト",
+      "winner_id": "2022106232",
+      "winner_rank": 8,
+      "issues": []
+    },
+    {
+      "race_id": "2026-02-01-東京-11",
+      "status": "ok",
+      "field_size": 16,
+      "winner_name": "ロードフォンス",
+      "winner_id": "2020100145",
+      "winner_rank": 1,
+      "issues": []
+    },
+    {
+      "race_id": "2026-02-15-京都-11",
+      "status": "ok",
+      "field_size": 12,
+      "winner_name": "ジューンテイク",
+      "winner_id": "2021100913",
+      "winner_rank": 7,
+      "issues": []
+    },
+    {
+      "race_id": "2026-02-15-小倉-11",
+      "status": "ok",
+      "field_size": 18,
+      "winner_name": "ジョーメッドヴィン",
+      "winner_id": "2021100522",
+      "winner_rank": 6,
+      "issues": []
+    },
+    {
+      "race_id": "2026-02-15-東京-10",
+      "status": "ok",
+      "field_size": 16,
+      "winner_name": "ウェットシーズン",
+      "winner_id": "2021110112",
+      "winner_rank": 2,
+      "issues": []
+    },
+    {
+      "race_id": "2026-02-15-京都-10",
+      "status": "ok",
+      "field_size": 10,
+      "winner_name": "グランドプラージュ",
+      "winner_id": "2022105722",
+      "winner_rank": 1,
+      "issues": []
+    },
+    {
+      "race_id": "2026-02-15-東京-11",
+      "status": "ok",
+      "field_size": 9,
+      "winner_name": "リアライズシリウス",
+      "winner_id": "2023103604",
+      "winner_rank": 3,
+      "issues": []
+    },
+    {
+      "race_id": "2026-02-22-小倉-11",
+      "status": "ok",
+      "field_size": 16,
+      "winner_name": "タガノデュード",
+      "winner_id": "2021106548",
+      "winner_rank": 4,
+      "issues": []
+    },
+    {
+      "race_id": "2026-02-22-東京-10",
+      "status": "ok",
+      "field_size": 14,
+      "winner_name": "サクラファレル",
+      "winner_id": "2022104094",
+      "winner_rank": 4,
+      "issues": []
+    },
+    {
+      "race_id": "2026-02-22-東京-11",
+      "status": "ok",
+      "field_size": 16,
+      "winner_name": "コスタノヴァ",
+      "winner_id": "2020103307",
+      "winner_rank": 6,
+      "issues": []
+    },
+    {
+      "race_id": "2026-02-22-阪神-11",
+      "status": "ok",
+      "field_size": 12,
+      "winner_name": "コンクイスタ",
+      "winner_id": "2020106557",
+      "winner_rank": 4,
+      "issues": []
+    },
+    {
+      "race_id": "2026-02-22-阪神-10",
+      "status": "ok",
+      "field_size": 8,
+      "winner_name": "アイサンサン",
+      "winner_id": "2022103875",
+      "winner_rank": 4,
+      "issues": []
+    },
+    {
+      "race_id": "2026-03-01-中山-10",
+      "status": "ok",
+      "field_size": 15,
+      "winner_name": "ソーダーンライト",
+      "winner_id": "2022110034",
+      "winner_rank": 2,
+      "issues": []
+    },
+    {
+      "race_id": "2026-03-01-中山-11",
+      "status": "ok",
+      "field_size": 14,
+      "winner_name": "レーベンスティール",
+      "winner_id": "2020102078",
+      "winner_rank": 3,
+      "issues": []
+    },
+    {
+      "race_id": "2026-03-01-阪神-10",
+      "status": "ok",
+      "field_size": 14,
+      "winner_name": "ベルウェザー",
+      "winner_id": "2021105425",
+      "winner_rank": 6,
+      "issues": []
+    },
+    {
+      "race_id": "2026-03-01-小倉-11",
+      "status": "ok",
+      "field_size": 17,
+      "winner_name": "バルナバ",
+      "winner_id": "2022106633",
+      "winner_rank": 3,
+      "issues": []
+    },
+    {
+      "race_id": "2026-03-01-阪神-11",
+      "status": "ok",
+      "field_size": 15,
+      "winner_name": "タイセイボーグ",
+      "winner_id": "2023106900",
+      "winner_rank": 3,
+      "issues": []
+    },
+    {
+      "race_id": "2026-03-08-中山-09",
+      "status": "ok",
+      "field_size": 16,
+      "winner_name": "マイユニバース",
+      "winner_id": "2022104902",
+      "winner_rank": 3,
+      "issues": []
+    },
+    {
+      "race_id": "2026-03-08-中山-10",
+      "status": "ok",
+      "field_size": 15,
+      "winner_name": "ブレイクフォース",
+      "winner_id": "2019105604",
+      "winner_rank": 6,
+      "issues": []
+    },
+    {
+      "race_id": "2026-03-08-阪神-11",
+      "status": "ok",
+      "field_size": 13,
+      "winner_name": "ドラゴンブースト",
+      "winner_id": "2022105891",
+      "winner_rank": 5,
+      "issues": []
+    },
+    {
+      "race_id": "2026-03-08-阪神-10",
+      "status": "ok",
+      "field_size": 14,
+      "winner_name": "ファインライン",
+      "winner_id": "2021102419",
+      "winner_rank": 14,
+      "issues": []
+    },
+    {
+      "race_id": "2026-03-08-中山-11",
+      "status": "ok",
+      "field_size": 10,
+      "winner_name": "バステール",
+      "winner_id": "2023107247",
+      "winner_rank": 5,
+      "issues": []
+    },
+    {
+      "race_id": "2026-03-15-中京-11",
+      "status": "ok",
+      "field_size": 14,
+      "winner_name": "シェイクユアハート",
+      "winner_id": "2020103101",
+      "winner_rank": 5,
+      "issues": []
+    },
+    {
+      "race_id": "2026-03-15-中山-10",
+      "status": "ok",
+      "field_size": 16,
+      "winner_name": "ヴァルキリーバース",
+      "winner_id": "2022104764",
+      "winner_rank": 5,
+      "issues": []
+    },
+    {
+      "race_id": "2026-03-15-中山-11",
+      "status": "ok",
+      "field_size": 16,
+      "winner_name": "アウダーシア",
+      "winner_id": "2023107321",
+      "winner_rank": 10,
+      "issues": []
+    },
+    {
+      "race_id": "2026-03-15-阪神-10",
+      "status": "ok",
+      "field_size": 14,
+      "winner_name": "テスティモーネ",
+      "winner_id": "2022103686",
+      "winner_rank": 1,
+      "issues": []
+    },
+    {
+      "race_id": "2026-03-15-阪神-11",
+      "status": "ok",
+      "field_size": 16,
+      "winner_name": "タマモブラックタイ",
+      "winner_id": "2020105400",
+      "winner_rank": 13,
+      "issues": []
+    },
+    {
+      "race_id": "2026-03-22-中京-11",
+      "status": "ok",
+      "field_size": 18,
+      "winner_name": "アイサンサン",
+      "winner_id": "2022103875",
+      "winner_rank": 11,
+      "issues": []
+    },
+    {
+      "race_id": "2026-03-22-阪神-10",
+      "status": "ok",
+      "field_size": 16,
+      "winner_name": "テーオーグランビル",
+      "winner_id": "2020110081",
+      "winner_rank": 3,
+      "issues": []
+    },
+    {
+      "race_id": "2026-03-22-中山-11",
+      "status": "ok",
+      "field_size": 16,
+      "winner_name": "ドラゴンウェルズ",
+      "winner_id": "2022110137",
+      "winner_rank": 1,
+      "issues": []
+    },
+    {
+      "race_id": "2026-03-22-中山-10",
+      "status": "ok",
+      "field_size": 9,
+      "winner_name": "フィーリウス",
+      "winner_id": "2022105175",
+      "winner_rank": 3,
+      "issues": []
+    },
+    {
+      "race_id": "2026-03-22-阪神-11",
+      "status": "ok",
+      "field_size": 10,
+      "winner_name": "アドマイヤテラ",
+      "winner_id": "2021105369",
+      "winner_rank": 6,
+      "issues": []
+    },
+    {
+      "race_id": "2026-03-29-中京-10",
+      "status": "ok",
+      "field_size": 15,
+      "winner_name": "ゴールデンクラウド",
+      "winner_id": "2022110121",
+      "winner_rank": 2,
+      "issues": []
+    },
+    {
+      "race_id": "2026-03-29-中京-11",
+      "status": "ok",
+      "field_size": 18,
+      "winner_name": "サトノレーヴ",
+      "winner_id": "2019101700",
+      "winner_rank": 11,
+      "issues": []
+    },
+    {
+      "race_id": "2026-03-29-中山-10",
+      "status": "ok",
+      "field_size": 15,
+      "winner_name": "サウンドモリアーナ",
+      "winner_id": "2022102057",
+      "winner_rank": 3,
+      "issues": []
+    },
+    {
+      "race_id": "2026-03-29-中山-11",
+      "status": "degraded",
+      "field_size": 16,
+      "winner_name": "サンデーファンデー",
+      "winner_id": "2020104136",
+      "winner_rank": 7,
+      "issues": [
+        "odds_le_1_present"
+      ]
+    },
+    {
+      "race_id": "2026-03-29-阪神-11",
+      "status": "ok",
+      "field_size": 13,
+      "winner_name": "ベラジオボンド",
+      "winner_id": "2021105117",
+      "winner_rank": 1,
+      "issues": []
+    },
+    {
+      "race_id": "2026-04-05-中山-10",
+      "status": "ok",
+      "field_size": 16,
+      "winner_name": "メリークリスマス",
+      "winner_id": "2022100394",
+      "winner_rank": 1,
+      "issues": []
+    },
+    {
+      "race_id": "2026-04-05-中山-11",
+      "status": "ok",
+      "field_size": 16,
+      "winner_name": "ジュタ",
+      "winner_id": "2022104813",
+      "winner_rank": 6,
+      "issues": []
+    },
+    {
+      "race_id": "2026-04-05-阪神-09",
+      "status": "ok",
+      "field_size": 12,
+      "winner_name": "エコロレーヴ",
+      "winner_id": "2023110090",
+      "winner_rank": 4,
+      "issues": []
+    },
+    {
+      "race_id": "2026-04-05-阪神-10",
+      "status": "ok",
+      "field_size": 18,
+      "winner_name": "ミトノオルフェ",
+      "winner_id": "2022104053",
+      "winner_rank": 1,
+      "issues": []
+    },
+    {
+      "race_id": "2026-04-05-阪神-11",
+      "status": "ok",
+      "field_size": 15,
+      "winner_name": "クロワデュノール",
+      "winner_id": "2022105102",
+      "winner_rank": 3,
+      "issues": []
+    },
+    {
+      "race_id": "2026-04-12-中山-10",
+      "status": "ok",
+      "field_size": 12,
+      "winner_name": "ストレイトトーカー",
+      "winner_id": "2022101669",
+      "winner_rank": 4,
+      "issues": []
+    },
+    {
+      "race_id": "2026-04-12-福島-11",
+      "status": "ok",
+      "field_size": 15,
+      "winner_name": "サヴォーナ",
+      "winner_id": "2020100734",
+      "winner_rank": 5,
+      "issues": []
+    },
+    {
+      "race_id": "2026-04-12-中山-11",
+      "status": "ok",
+      "field_size": 16,
+      "winner_name": "クラスペディア",
+      "winner_id": "2022106394",
+      "winner_rank": 7,
+      "issues": []
+    },
+    {
+      "race_id": "2026-04-12-阪神-10",
+      "status": "ok",
+      "field_size": 15,
+      "winner_name": "マイネルエニグマ",
+      "winner_id": "2018102178",
+      "winner_rank": 7,
+      "issues": []
+    },
+    {
+      "race_id": "2026-04-12-阪神-11",
+      "status": "ok",
+      "field_size": 18,
+      "winner_name": "スターアニス",
+      "winner_id": "2023106920",
+      "winner_rank": 3,
+      "issues": []
+    },
+    {
+      "race_id": "2026-04-19-中山-10",
+      "status": "ok",
+      "field_size": 15,
+      "winner_name": "ナムラフランク",
+      "winner_id": "2019101975",
+      "winner_rank": 8,
+      "issues": []
+    },
+    {
+      "race_id": "2026-04-19-中山-11",
+      "status": "ok",
+      "field_size": 18,
+      "winner_name": "ロブチェン",
+      "winner_id": "2023107089",
+      "winner_rank": 6,
+      "issues": []
+    },
+    {
+      "race_id": "2026-04-19-福島-11",
+      "status": "ok",
+      "field_size": 16,
+      "winner_name": "コガネノソラ",
+      "winner_id": "2021106823",
+      "winner_rank": 11,
+      "issues": []
+    },
+    {
+      "race_id": "2026-04-19-阪神-10",
+      "status": "ok",
+      "field_size": 13,
+      "winner_name": "ゼットエール",
+      "winner_id": "2022107278",
+      "winner_rank": 1,
+      "issues": []
+    },
+    {
+      "race_id": "2026-04-19-阪神-11",
+      "status": "ok",
+      "field_size": 10,
+      "winner_name": "スイープアワーズ",
+      "winner_id": "2020103428",
+      "winner_rank": 3,
+      "issues": []
+    },
+    {
+      "race_id": "2026-04-25-東京-10",
+      "status": "ok",
+      "field_size": 15,
+      "winner_name": "ペイシャケイプ",
+      "winner_id": "2022104219",
+      "winner_rank": 4,
+      "issues": []
+    },
+    {
+      "race_id": "2026-04-25-東京-11",
+      "status": "ok",
+      "field_size": 18,
+      "winner_name": "ゴーイントゥスカイ",
+      "winner_id": "2023105378",
+      "winner_rank": 6,
+      "issues": []
+    },
+    {
+      "race_id": "2026-04-25-京都-10",
+      "status": "ok",
+      "field_size": 11,
+      "winner_name": "マイノワール",
+      "winner_id": "2021104411",
+      "winner_rank": 7,
+      "issues": []
+    },
+    {
+      "race_id": "2026-04-25-京都-11",
+      "status": "ok",
+      "field_size": 12,
+      "winner_name": "ジュンウィンダム",
+      "winner_id": "2020106062",
+      "winner_rank": 11,
+      "issues": []
+    },
+    {
+      "race_id": "2026-04-25-福島-11",
+      "status": "degraded",
+      "field_size": 12,
+      "winner_name": "プレゼンティーア",
+      "winner_id": "2021102153",
+      "winner_rank": 4,
+      "issues": [
+        "odds_le_1_present"
+      ]
+    },
+    {
+      "race_id": "2026-04-26-京都-11",
+      "status": "ok",
+      "field_size": 18,
+      "winner_name": "アドマイヤズーム",
+      "winner_id": "2022105396",
+      "winner_rank": 5,
+      "issues": []
+    },
+    {
+      "race_id": "2026-04-26-京都-10",
+      "status": "ok",
+      "field_size": 18,
+      "winner_name": "イガッチ",
+      "winner_id": "2022100699",
+      "winner_rank": 6,
+      "issues": []
+    },
+    {
+      "race_id": "2026-04-26-東京-10",
+      "status": "degraded",
+      "field_size": 16,
+      "winner_name": "ドンインザムード",
+      "winner_id": "2022106942",
+      "winner_rank": 2,
+      "issues": [
+        "odds_le_1_present"
+      ]
+    },
+    {
+      "race_id": "2026-04-26-東京-11",
+      "status": "degraded",
+      "field_size": 13,
+      "winner_name": "ラフターラインズ",
+      "winner_id": "2023107154",
+      "winner_rank": 4,
+      "issues": [
+        "odds_le_1_present"
+      ]
+    },
+    {
+      "race_id": "2026-04-26-福島-11",
+      "status": "ok",
+      "field_size": 16,
+      "winner_name": "サウンドモリアーナ",
+      "winner_id": "2022102057",
+      "winner_rank": 2,
+      "issues": []
+    },
+    {
+      "race_id": "2026-05-02-京都-11",
+      "status": "ok",
+      "field_size": 12,
+      "winner_name": "シルバーレシオ",
+      "winner_id": "2023107043",
+      "winner_rank": 2,
+      "issues": []
+    },
+    {
+      "race_id": "2026-05-02-新潟-11",
+      "status": "ok",
+      "field_size": 15,
+      "winner_name": "クインズショコラ",
+      "winner_id": "2022100159",
+      "winner_rank": 1,
+      "issues": []
+    },
+    {
+      "race_id": "2026-05-02-東京-11",
+      "status": "ok",
+      "field_size": 18,
+      "winner_name": "ワールズエンド",
+      "winner_id": "2021105864",
+      "winner_rank": 4,
+      "issues": []
+    },
+    {
+      "race_id": "2026-05-02-京都-10",
+      "status": "ok",
+      "field_size": 12,
+      "winner_name": "クアトロジャック",
+      "winner_id": "2021106105",
+      "winner_rank": 8,
+      "issues": []
+    },
+    {
+      "race_id": "2026-05-02-東京-10",
+      "status": "ok",
+      "field_size": 11,
+      "winner_name": "カナルサンマルタン",
+      "winner_id": "2023106846",
+      "winner_rank": 5,
+      "issues": []
+    },
+    {
+      "race_id": "2026-06-28-函館-11",
+      "status": "ok",
+      "field_size": 15,
+      "winner_name": "ファウストラーゼン",
+      "winner_id": "2022104218",
+      "winner_rank": 11,
+      "issues": []
+    },
+    {
+      "race_id": "2026-06-28-小倉-10",
+      "status": "ok",
+      "field_size": 16,
+      "winner_name": "カルパ",
+      "winner_id": "2021105736",
+      "winner_rank": 8,
+      "issues": []
+    },
+    {
+      "race_id": "2026-06-28-福島-11",
+      "status": "ok",
+      "field_size": 16,
+      "winner_name": "サノノグレーター",
+      "winner_id": "2023100724",
+      "winner_rank": 4,
+      "issues": []
+    },
+    {
+      "race_id": "2026-06-28-小倉-11",
+      "status": "ok",
+      "field_size": 8,
+      "winner_name": "テーオーダヴィンチ",
+      "winner_id": "2018104633",
+      "winner_rank": 7,
+      "issues": []
+    },
+    {
+      "race_id": "2026-06-28-福島-10",
+      "status": "ok",
+      "field_size": 11,
+      "winner_name": "エクリプスルバン",
+      "winner_id": "2021106623",
+      "winner_rank": 1,
+      "issues": []
+    }
+  ]
+}

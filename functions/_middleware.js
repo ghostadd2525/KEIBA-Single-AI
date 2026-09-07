@@ -2,12 +2,18 @@ import { writeAudit, AuditEvent } from "./_lib/auditLog.js";
 import { requireAuth } from "./_lib/auth.js";
 import { resolveAuthorization } from "./_lib/authorization.js";
 import { getBetaConfig } from "./_lib/betaConfig.js";
+import { getEnv } from "./_lib/env.js";
 import { jsonError } from "./_lib/errors.js";
 import { evaluateOpsAccess, resolveOpsModeDetailed } from "./_lib/opsMode.js";
+import {
+  evaluateProductionAuthConfig,
+  PRODUCTION_AUTH_FATAL_EXEMPT,
+} from "./_lib/productionAuthGuard.js";
 
 /**
  * Phase OPS-1A — 認可フロー
  *
+ * 0. Production Auth FATAL guard（stub 矛盾）
  * 1. requireAuth（認証）
  * 2. resolveAuthorization（ロール / bypass 権限）← 公開制御より先
  * 3. evaluateOpsAccess（OPS Mode PUBLIC/CLOSED）
@@ -20,6 +26,17 @@ export async function onRequest(context) {
   const url = new URL(context.request.url);
   if (!url.pathname.startsWith("/api/")) {
     return context.next();
+  }
+
+  const env = getEnv(context);
+  const authCfg = evaluateProductionAuthConfig(env);
+  if (authCfg.fatal && !PRODUCTION_AUTH_FATAL_EXEMPT.has(url.pathname)) {
+    return jsonError(authCfg.code, authCfg.message, 503, {
+      expect_env: authCfg.expect_env,
+      auth_mode: authCfg.auth_mode,
+      allow_stub_auth: authCfg.allow_stub_auth,
+      remediation: "Set ALLOW_STUB_AUTH=1 for stub break-glass, or switch AUTH_MODE off stub with a signed verifier",
+    });
   }
 
   const authError = await requireAuth(context);
@@ -58,7 +75,8 @@ export async function onRequest(context) {
     });
     return jsonError(
       "OPS_CLOSED",
-      beta.maintenance_message || "ただいま公開時間外です。開催日のみご利用いただけます。",
+      beta.maintenance_message ||
+        "ただいまメンテナンス中です（Research Week）。土曜 0:00（JST）以降に再度ログインしてください。",
       503
     );
   }

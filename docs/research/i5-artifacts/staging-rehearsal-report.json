@@ -1,0 +1,102 @@
+{
+  "schema": "expect-i5-staging-rehearsal/1.0",
+  "phase": "I5",
+  "generated_at": "2026-07-29T01:26:59.565653+00:00",
+  "verdict": "PASS",
+  "production_cutover": false,
+  "flag_left_on": false,
+  "checks": [
+    {
+      "id": "list_no_single",
+      "status": "PASS",
+      "detail": "races.html has no Single wiring"
+    },
+    {
+      "id": "list_cache_key",
+      "status": "PASS",
+      "detail": "Race List Cache key present"
+    },
+    {
+      "id": "detail_wired",
+      "status": "PASS",
+      "detail": "race.html SingleDetail wired (repo)"
+    },
+    {
+      "id": "flag_default_off",
+      "status": "PASS",
+      "detail": "committed beta Flag default OFF (rehearsal must not leave ON)"
+    },
+    {
+      "id": "runbook_doc_single-detail-operation-guide.md",
+      "status": "PASS",
+      "detail": "docs\\ops\\single-detail-operation-guide.md"
+    },
+    {
+      "id": "runbook_doc_single-detail-alert-rules.md",
+      "status": "PASS",
+      "detail": "docs\\ops\\single-detail-alert-rules.md"
+    },
+    {
+      "id": "runbook_doc_single-detail-runbook.md",
+      "status": "PASS",
+      "detail": "docs\\ops\\single-detail-runbook.md"
+    },
+    {
+      "id": "runbook_doc_single-detail-metrics.md",
+      "status": "PASS",
+      "detail": "docs\\ops\\single-detail-metrics.md"
+    },
+    {
+      "id": "runbook_doc_single-detail-dashboard.md",
+      "status": "PASS",
+      "detail": "docs\\ops\\single-detail-dashboard.md"
+    },
+    {
+      "id": "metrics_module",
+      "status": "PASS",
+      "detail": "I4 metrics"
+    },
+    {
+      "id": "ops_endpoint",
+      "status": "PASS",
+      "detail": "/api/ops/single-detail present"
+    },
+    {
+      "id": "dashboard_probe",
+      "status": "PASS",
+      "detail": "single_detail_ops probe"
+    },
+    {
+      "id": "alert_validation_unit",
+      "status": "PASS",
+      "detail": "node observability unit"
+    },
+    {
+      "id": "fe_flag_gate",
+      "status": "PASS",
+      "detail": "FE Flag gate"
+    },
+    {
+      "id": "fe_timeout",
+      "status": "PASS",
+      "detail": "FE timeout path"
+    },
+    {
+      "id": "fe_rollback_catch",
+      "status": "PASS",
+      "detail": "FE catch → Prediction"
+    },
+    {
+      "id": "client_harness_present",
+      "status": "PASS",
+      "detail": "I5 client harness"
+    }
+  ],
+  "alert_unit_excerpt": "TIMEOUT\",\"http_status\":504,\"timed_out\":true}\nPASS single-detail-observability {\n  alerts: [ 'ALT-SD01', 'ALT-SD02', 'ALT-SD03', 'ALT-SD04', 'ALT-SD05' ],\n  rates: {\n    flag_on_path: 1,\n    single_success: 0,\n    prediction_fallback: 1,\n    expected_fallback: 0,\n    error_fallback_of_attempted: 1,\n    timeout: 1,\n    http_error: 1\n  }\n}\n(node:16724) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///C:/win5-ai/KEIBA-Single-AI/functions/_lib/singleDetailObservability.js is not specified and it doesn't parse as CommonJS.\nReparsing as ES module because module syntax was detected. This incurs a performance overhead.\nTo eliminate this warning, add \"type\": \"module\" to \\\\?\\C:\\win5-ai\\KEIBA-Single-AI\\package.json.\n(Use `node --trace-warnings ...` to show where the warning was created)\n",
+  "procedure": {
+    "flag_on": "Set ui_features.single_ai_detail=true in beta.json (staging only)",
+    "flag_off_rollback": "Set single_ai_detail=false",
+    "ops": "GET /api/ops/single-detail · /api/ops/dashboard",
+    "scope": "race.html only · list LOCK"
+  }
+}

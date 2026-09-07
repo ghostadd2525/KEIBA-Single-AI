@@ -1,10 +1,12 @@
 # -*- coding: utf-8 -*-
 """
-Review Agent — Prediction 結果のレビュー文章のみ生成。
+Review Agent — レース相談の会話文のみ生成。
 
 公開 API: review(context: ReviewContext) のみ。
-個別 payload を直接受け取らない。
 Flow: ReviewContext → Prompt Builder → Ollama
+レポート見出し（予想の強み / リスク / 展開…）は出さない。
+回答は 結論 → 理由 → 補足 の会話形式。
+Prediction / 印 / 順位 / 買い目ロジックは変更しない。
 """
 from __future__ import annotations
 
@@ -14,6 +16,7 @@ from typing import Any
 from ..config import load_conversation_config, resolve_model
 from ..context.review_context import ReviewContext
 from ..flags import conversation_ollama_enabled, review_agent_enabled
+from ..intent_router import classify_consult_route, classify_explain_sub_intent
 from ..ollama_client import OllamaClient
 from ..prompts.builder import PromptBuilder
 
@@ -23,19 +26,110 @@ _REWRITE_RE = re.compile(
     re.I,
 )
 
-_TEMPLATE_REVIEW = """## 予想の強み
-Prediction AI の印・順位を前提にすると、軸候補の一貫性が読み取りやすいよ。
+_EXPLAIN_REDIRECT = (
+    "その内容は「予想の説明」で確認できるよ。\n"
+    "馬の理由や差・不安・穴の話はそちらが向いているよ。\n"
+    "ここでは買い方や立ち回りの相談を続けよう。"
+)
 
-## リスク
-展開や相手関係で着順が入れ替わる可能性は常にあるよ。数値の自信度もあわせて見てね。
+_ROOM_CHAT_REDIRECT = (
+    "その話ならルームチャットで話そう😊\n"
+    "ここではレースや買い方の相談を中心に案内しているよ。"
+)
 
-## 展開の注目点
-ペース配分と位置取りが、想定どおりか発走前後の気配で確認するのがポイントだよ。
+_GREETING_TAIL = "レースや買い方について気になることがあれば、一緒に考えるよ。"
 
-## 初心者向けアドバイス
-印や買い目は変えず、まずは Prediction の結果をレース画面で確認してから相談内容を深掘りしよう。
-※ Review Agent は予測を変更しません。Prediction AI が唯一の正解です。
-"""
+
+def _greeting_reply(message: str) -> str:
+    text = (message or "").strip()
+    if re.search(r"ありがとう|どうも|サンキュ", text):
+        soft = "どういたしまして😊"
+    elif re.search(r"お疲れ|おつかれ", text):
+        soft = "お疲れさま😊"
+    elif "おはよう" in text:
+        soft = "おはよう😊"
+    elif "こんばんは" in text:
+        soft = "こんばんは😊"
+    elif re.search(r"hello|hi\b|ハロー", text, re.I):
+        soft = "Hello😊"
+    else:
+        soft = "こんにちは😊"
+    return f"{soft}\n{_GREETING_TAIL}"
+
+
+def _horse_label(pred: dict[str, Any] | None) -> str:
+    if not isinstance(pred, dict):
+        return "中心の馬"
+    tops = pred.get("top_runners") if isinstance(pred.get("top_runners"), list) else []
+    if tops and isinstance(tops[0], dict):
+        r = tops[0]
+        num = r.get("umaban") or r.get("horse_number") or ""
+        name = str(r.get("name") or r.get("horse_name") or "").strip()
+        if name:
+            return f"{num}番{name}".strip() if num != "" and num is not None else name
+        if num != "" and num is not None:
+            return f"{num}番"
+    return "中心の馬"
+
+
+def _strategy_reply(route: str, pred: dict[str, Any] | None) -> str:
+    axis = _horse_label(pred)
+    sub = route.split(":", 1)[1] if ":" in route else "betting"
+    if sub == "skip":
+        return (
+            "迷うなら、無理に大きく買わず見送り寄りでいいよ。\n"
+            "自信が薄いときは総額を抑えるか、主軸だけ少額にするのが無難。\n"
+            "今日の調子に合わせて、無理しない立ち回りを優先しよう。"
+        )
+    if sub == "beginner":
+        return (
+            "初心者なら、主軸（馬連・ワイド）を少点数で買うのがおすすめだよ。\n"
+            "保険や一発は後回しにして、総額も普段どおりに抑えよう。\n"
+            f"軸の {axis} を中心に、相手は広げすぎないのが安心。"
+        )
+    if sub == "weather":
+        return (
+            "雨なら、前が残るか崩れやすいかが変わりやすいよ。\n"
+            "軸は変えず、相手を1頭増減して様子を見るのが無難。\n"
+            "馬場発表を見てから最終判断しよう。"
+        )
+    if sub == "odds":
+        return (
+            "オッズが動いても、軸をすぐ変えないのがおすすめだよ。\n"
+            "人気が急に集まった相手は点数を少し抑えめに。\n"
+            "総額の上限は守ったまま調整しよう。"
+        )
+    if sub == "budget":
+        return (
+            "少額なら、主軸（馬連・ワイド）に寄せるのがおすすめだよ。\n"
+            "保険や一発は後回しにして、総額を普段どおりに抑えよう。\n"
+            f"軸の {axis} 中心はそのままで大丈夫。"
+        )
+    if sub == "risks":
+        return (
+            "展開が想定と違うと、着順は動きやすいよ。\n"
+            "だから大きく勝負するより、普段どおりの金額が安心。\n"
+            "迷うなら点数を減らすか、見送り寄りでもいいよ。"
+        )
+    return (
+        f"この買い方なら、軸の {axis} を中心に進めて大丈夫だと思うよ。\n"
+        "大きく崩すより、点数と総額を守るほうが安心。\n"
+        "迷うところがあれば、見送りや少額の話も続けて聞いてね。"
+    )
+
+
+def _template_chat(message: str, pred: dict[str, Any] | None) -> str:
+    """classify_consult_route に従う（①Greeting ②Explain ③Strategy ④Room）。"""
+    route = classify_consult_route(message)
+    if route == "greeting":
+        return _greeting_reply(message)
+    if route == "explain_redirect":
+        return _EXPLAIN_REDIRECT
+    if route == "room_chat_redirect":
+        return _ROOM_CHAT_REDIRECT
+    if route.startswith("strategy:"):
+        return _strategy_reply(route, pred)
+    return _ROOM_CHAT_REDIRECT
 
 
 class ReviewAgent:
@@ -58,6 +152,7 @@ class ReviewAgent:
         cfg = load_conversation_config()
         req = context.request or {}
         race_id = context.race_id
+        message = context.message or ""
 
         if not review_agent_enabled():
             return {
@@ -69,7 +164,7 @@ class ReviewAgent:
                     "race_id": race_id,
                     "slots": req.get("slots") or {},
                 },
-                "reply": "Review Agent は現在オフです（F_V4_REVIEW_AGENT）。",
+                "reply": "いま相談の準備中だよ。少し待ってからもう一度ね。",
                 "citations": [],
                 "actions": [],
                 "tools_used": [],
@@ -86,8 +181,12 @@ class ReviewAgent:
             }
 
         prompt = self.prompts.build_review(context)
-        reply, llm_meta, fallback = self._generate(prompt, cfg)
-        reply = self._guard_output(reply)
+        route = classify_consult_route(message)
+        # ルーティングは実装で確定（プロンプト任せにしない）
+        reply = _template_chat(message, context.prediction)
+        llm_meta = {"used": False, "role": "consult_route"}
+        fallback = route
+        reply = self._guard_output(reply, message, context.prediction)
 
         max_reply = int(cfg["limits"]["max_reply_chars"])
         if len(reply) > max_reply:
@@ -97,7 +196,6 @@ class ReviewAgent:
         if race_id:
             actions.append({"type": "open_race", "race_id": race_id})
 
-        # prediction_meta は Context 由来を維持し、mutated は常に false
         meta = dict(context.prediction_meta or {})
         meta["mutated"] = False
         meta["connected"] = False
@@ -114,6 +212,8 @@ class ReviewAgent:
                     **(req.get("slots") or {}),
                     "review_rules": "no_mutate_prediction",
                     "input": "ReviewContext",
+                    "sub_intent": classify_explain_sub_intent(message),
+                    "consult_route": classify_consult_route(message),
                 },
             },
             "reply": reply,
@@ -133,17 +233,22 @@ class ReviewAgent:
             "prediction_meta": meta,
             "llm": llm_meta,
             "fallback": fallback,
-            "review_sections": ["strengths", "risks", "pace_focus", "beginner_advice"],
+            "review_style": "conversational",
             "context_keys": list(context.to_dict().keys()),
             "history_used": len(context.history or []),
         }
 
     def _generate(
-        self, prompt: dict[str, str], cfg: dict[str, Any]
+        self,
+        prompt: dict[str, str],
+        cfg: dict[str, Any],
+        message: str,
+        pred: dict[str, Any] | None,
     ) -> tuple[str, dict[str, Any], str | None]:
         model = resolve_model(None)
+        template = _template_chat(message, pred)
         if not conversation_ollama_enabled():
-            return _TEMPLATE_REVIEW, {"used": False, "role": "review_template"}, "template_no_ollama_flag"
+            return template, {"used": False, "role": "review_template"}, "template_no_ollama_flag"
 
         client = self._ollama or OllamaClient(
             base_url=cfg["ollama"]["base_url"],
@@ -160,16 +265,26 @@ class ReviewAgent:
                 None,
             )
         return (
-            _TEMPLATE_REVIEW,
+            template,
             {"used": False, "role": "review_fail_open", "model": model},
             result.error_reason or "ollama_error",
         )
 
-    def _guard_output(self, reply: str) -> str:
-        text = str(reply or "").strip() or _TEMPLATE_REVIEW
+    def _guard_output(
+        self, reply: str, message: str, pred: dict[str, Any] | None
+    ) -> str:
+        text = str(reply or "").strip() or _template_chat(message, pred)
+        # 旧レポート見出しが混入したら会話テンプレへ差し替え
+        if re.search(r"^##\s*(予想の強み|リスク|展開の注目点|初心者向け)", text, re.M):
+            return _template_chat(message, pred)
         if _REWRITE_RE.search(text):
-            return (
-                _TEMPLATE_REVIEW
-                + "\n\n（出力ガード: 順位・印・買い目の変更表現を検出し、レビュー定型に差し替えました。）"
-            )
+            return _template_chat(message, pred)
+        # 内部設計語が混入したら相談AIテンプレへ
+        if re.search(
+            r"Review\s*Agent|予想は変更しません|印は変更しません|Prediction\s*AI|"
+            r"内容は受け取ったよ|どこからでも大丈夫|買い方のどこが気になる",
+            text,
+            re.I,
+        ):
+            return _template_chat(message, pred)
         return text

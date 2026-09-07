@@ -1,51 +1,20 @@
 {
   "schema_version": "expect-evidence-index/1.0",
-  "generated_at": "2026-07-21T13:18:09.942Z",
+  "generated_at": "2026-07-26T23:56:20.480Z",
   "source_root": "evidence/improvement",
-  "filter_date": "2026-07-19",
-  "corpus_status": "populated",
+  "filter_date": null,
+  "corpus_status": "empty",
   "counts_by_event_type": {
-    "miss": 1,
+    "miss": 0,
     "feature_missing": 0,
     "prediction_failed": 0,
     "result_sync_failed": 0
   },
-  "counts_by_model_version": {
-    "unknown": 1
-  },
-  "event_total": 1,
-  "dates": [
-    "2026-07-19"
-  ],
-  "events": [
-    {
-      "event_id": "miss:2026-07-19-04-11:t1",
-      "event_type": "miss",
-      "race_date": "2026-07-19",
-      "race_id": "2026-07-19-04-11",
-      "fingerprint": "sha256:testmiss",
-      "path": "evidence/improvement/miss/2026-07-19/2026-07-19-04-11.json",
-      "model_version": null
-    }
-  ],
-  "clusters": [
-    {
-      "cluster_id": "fp-miss-testmiss",
-      "fingerprint": "sha256:testmiss",
-      "event_type": "miss",
-      "count": 1,
-      "event_ids": [
-        "miss:2026-07-19-04-11:t1"
-      ],
-      "sample_path": "evidence/improvement/miss/2026-07-19/2026-07-19-04-11.json",
-      "race_dates": [
-        "2026-07-19"
-      ],
-      "model_versions": [
-        "unknown"
-      ]
-    }
-  ],
+  "counts_by_model_version": {},
+  "event_total": 0,
+  "dates": [],
+  "events": [],
+  "clusters": [],
   "dimensions": {
     "by_date": true,
     "by_event_type": true,

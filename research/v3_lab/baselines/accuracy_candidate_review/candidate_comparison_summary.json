@@ -1,0 +1,159 @@
+{
+  "comparison_table": {
+    "metric": [
+      "Hit",
+      "Purchase",
+      "rank710",
+      "rank46",
+      "other",
+      "ROI",
+      "churn",
+      "ΔHit"
+    ],
+    "baseline": [
+      218,
+      218,
+      9,
+      6,
+      52,
+      1.1418,
+      0,
+      0
+    ],
+    "a01": [
+      246,
+      246,
+      9,
+      6,
+      24,
+      1.4463,
+      0,
+      28
+    ],
+    "a02": [
+      242,
+      242,
+      9,
+      6,
+      28,
+      1.4744,
+      0,
+      24
+    ]
+  },
+  "ranking": {
+    "rank_1": "A-01",
+    "rank_2": "A-02",
+    "recommendation": {
+      "lab_primary_candidate": "A-01",
+      "lab_secondary_candidate": "A-02",
+      "stack_both": false,
+      "stack_note": "単独 Flag 原則のため同時 ON は禁止。重複率が低いため将来の stack は別実験承認が必要。",
+      "production_wiring": false,
+      "rationale": [
+        "同一条件 Hit A-01 246 > A-02 242",
+        "両候補とも churn=0",
+        "実装・保守は A-01 が優位",
+        "改善レース重複率 0.0（ほぼ相補）→ 併用余地は別承認"
+      ]
+    },
+    "scores": {
+      "a01": {
+        "hit": 246,
+        "churn": 0,
+        "roi": 1.4463,
+        "validation": "PASS",
+        "complexity_advantage": true
+      },
+      "a02": {
+        "hit": 242,
+        "churn": 0,
+        "roi": 1.4744,
+        "validation": "Lab PASS only（Validation 未実施）",
+        "extensibility_advantage": true
+      }
+    }
+  },
+  "qualitative": {
+    "implementation_complexity": {
+      "a01": {
+        "score": 2,
+        "scale": "1=simple .. 5=complex",
+        "notes": [
+          "Feature-invariant scalar recalibration",
+          "Single runner score; no field pairwise loop",
+          "Contract 2.0 / ~120 LOC policy"
+        ]
+      },
+      "a02": {
+        "score": 3,
+        "scale": "1=simple .. 5=complex",
+        "notes": [
+          "Listwise crowding + pairwise history strength",
+          "O(n^2) pairwise over field",
+          "Contract 2.1 / crowding hyperparameter (0.15 gap)"
+        ]
+      },
+      "winner": "A-01（より単純）"
+    },
+    "maintainability": {
+      "a01": {
+        "score": 4,
+        "notes": [
+          "Signals limited to win_prob/rank/odds/form",
+          "Frozen after Validation PASS",
+          "Easy to reason about Fail modes"
+        ]
+      },
+      "a02": {
+        "score": 3,
+        "notes": [
+          "Depends on history_score quality / crowding threshold",
+          "Crowded-field behavior harder to debug",
+          "Still isolated module (evaluation_policy_d2)"
+        ]
+      },
+      "winner": "A-01（保守しやすい）"
+    },
+    "extensibility": {
+      "a01": {
+        "score": 3,
+        "notes": [
+          "Natural path to learned isotonic calibrator",
+          "Less suited to relative/listwise objectives alone"
+        ]
+      },
+      "a02": {
+        "score": 4,
+        "notes": [
+          "Maps to pairwise/listwise rank-loss training",
+          "Can absorb Representation embeddings later",
+          "Orthogonal miss layer to A-01 → stack candidate"
+        ]
+      },
+      "winner": "A-02（学習・表現拡張に近い）"
+    }
+  },
+  "primary_delta": {
+    "a01_hit": 28,
+    "a02_hit": 24,
+    "a01_roi": 0.3045,
+    "a02_roi": 0.3326
+  },
+  "race_comparison": {
+    "overlap_count": 0,
+    "overlap_rate_of_union": 0.0,
+    "only_a01_count": 28,
+    "only_a02_count": 24,
+    "only_a01_layers": {
+      "Eval": 28
+    },
+    "only_a02_layers": {
+      "Boundary": 14,
+      "Reorder": 10
+    },
+    "union_count": 52,
+    "worsened_a01": [],
+    "worsened_a02": []
+  }
+}

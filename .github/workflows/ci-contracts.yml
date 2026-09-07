@@ -15,6 +15,12 @@ jobs:
         with:
           node-version: "20"
 
+      - name: Production stub-auth config check
+        run: npm run check:auth:prod
+
+      - name: Production auth guard unit tests
+        run: npm run test:auth-guard
+
       - name: Validate fixtures against Schema
         run: npm run validate:fixtures
 

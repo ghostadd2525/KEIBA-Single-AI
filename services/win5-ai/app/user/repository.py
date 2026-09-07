@@ -18,6 +18,10 @@ def _expires(hours: int = 24) -> str:
     return (datetime.now(timezone.utc) + timedelta(hours=hours)).isoformat()
 
 
+# Stub-mirror sentinel — not a real password; blocks password login.
+_STUB_MIRROR_PASSWORD_HASH = "!stub-auth-mirror!"
+
+
 class UserRepository:
     def __init__(self) -> None:
         migrate()
@@ -58,6 +62,86 @@ class UserRepository:
             conn.close()
         return self.get_by_id(user_id) or {}
 
+    def ensure_stub_mirror(
+        self,
+        user_id: str,
+        *,
+        display_name: str | None = None,
+        role: str = "USER",
+    ) -> dict[str, Any]:
+        """Upsert minimal AI users (+ profile) for BFF stub identities.
+
+        Version8.9.1: prevents user_progress FK failures when stub users
+        are authenticated but not yet mirrored into AI SQLite.
+        """
+        uid = str(user_id or "").strip()
+        if not uid:
+            return {}
+        now = _now()
+        name = (display_name or uid).strip() or uid
+        role_norm = str(role or "USER").strip() or "USER"
+        prefs = json.dumps({"role": role_norm, "stub_mirror": True}, ensure_ascii=False)
+
+        conn = connect()
+        try:
+            existing = conn.execute(
+                "SELECT * FROM users WHERE user_id = ?", (uid,)
+            ).fetchone()
+            if not existing:
+                login_id = uid
+                # Avoid UNIQUE(login_id) clash with a different user_id.
+                clash = conn.execute(
+                    "SELECT user_id FROM users WHERE login_id = ?", (login_id,)
+                ).fetchone()
+                if clash and str(clash["user_id"]) != uid:
+                    login_id = f"stub:{uid}"
+                try:
+                    conn.execute(
+                        """
+                        INSERT INTO users(
+                          user_id, login_id, password_hash, status, invite_id,
+                          terms_version, terms_accepted_at, created_at, updated_at
+                        ) VALUES (?,?,?,?,NULL,NULL,NULL,?,?)
+                        """,
+                        (uid, login_id, _STUB_MIRROR_PASSWORD_HASH, "active", now, now),
+                    )
+                except Exception:
+                    # Concurrent insert or residual UNIQUE — fall through to profile upsert.
+                    pass
+
+            # profiles.display_name + preferences.role (no role column on users)
+            prof = conn.execute(
+                "SELECT user_id FROM profiles WHERE user_id = ?", (uid,)
+            ).fetchone()
+            if prof:
+                conn.execute(
+                    """
+                    UPDATE profiles SET
+                      display_name = COALESCE(?, display_name),
+                      preferences_json = ?,
+                      updated_at = ?
+                    WHERE user_id = ?
+                    """,
+                    (name, prefs, now, uid),
+                )
+            else:
+                # Only insert profile if parent user row exists (FK).
+                parent = conn.execute(
+                    "SELECT user_id FROM users WHERE user_id = ?", (uid,)
+                ).fetchone()
+                if parent:
+                    conn.execute(
+                        """
+                        INSERT INTO profiles(
+                          user_id, display_name, avatar_url, locale, preferences_json, updated_at
+                        ) VALUES (?,?,?,?,?,?)
+                        """,
+                        (uid, name, "", "ja", prefs, now),
+                    )
+            conn.commit()
+        finally:
+            conn.close()
+        return self.get_by_id(uid) or {"user_id": uid, "created_at": now}
     def get_by_id(self, user_id: str) -> dict[str, Any] | None:
         conn = connect()
         try:
@@ -618,3 +702,485 @@ class SubscriptionRepository:
         finally:
             conn.close()
         return self.get_active(user_id) or {}
+
+class UserRaceResultRepository:
+    """Personal race P&L ledger (independent from Prediction Engine)."""
+
+    def __init__(self) -> None:
+        migrate()
+
+    def _row_to_dict(self, row: Any) -> dict[str, Any]:
+        item = dict(row)
+        for key, out_key in (
+            ("strategy_snapshot_json", "strategy_snapshot"),
+            ("finish_order_json", "finish_order"),
+            ("payouts_json", "payouts"),
+            ("bet_results_json", "bet_results"),
+            ("marks_result_json", "marks_result"),
+            ("official_result_json", "official_result"),
+        ):
+            raw = item.pop(key, None)
+            if raw:
+                try:
+                    item[out_key] = json.loads(raw)
+                except json.JSONDecodeError:
+                    item[out_key] = {}
+            else:
+                item[out_key] = {} if out_key != "finish_order" else []
+        item["hit"] = bool(item.get("hit"))
+        item["settled"] = bool(item.get("settled"))
+        item["purchase_registered"] = bool(item.get("purchase_registered"))
+        if item.get("selected_bet_types_json"):
+            try:
+                item["selected_bet_types"] = json.loads(item.pop("selected_bet_types_json"))
+            except json.JSONDecodeError:
+                item["selected_bet_types"] = []
+                item.pop("selected_bet_types_json", None)
+        else:
+            item.pop("selected_bet_types_json", None)
+            item["selected_bet_types"] = []
+        if item.get("client_meta_json"):
+            try:
+                item["client_meta"] = json.loads(item.pop("client_meta_json"))
+            except json.JSONDecodeError:
+                item["client_meta"] = {}
+                item.pop("client_meta_json", None)
+        else:
+            item.pop("client_meta_json", None)
+            item["client_meta"] = {}
+        return item
+
+    def get(self, user_id: str, race_id: str) -> dict[str, Any] | None:
+        conn = connect()
+        try:
+            row = conn.execute(
+                "SELECT * FROM user_race_results WHERE user_id=? AND race_id=?",
+                (user_id, race_id),
+            ).fetchone()
+            return self._row_to_dict(row) if row else None
+        finally:
+            conn.close()
+
+    def list_for_month(self, user_id: str, month: str) -> list[dict[str, Any]]:
+        """month: YYYY-MM"""
+        conn = connect()
+        try:
+            rows = conn.execute(
+                """
+                SELECT * FROM user_race_results
+                WHERE user_id=? AND race_date IS NOT NULL AND substr(race_date, 1, 7)=?
+                ORDER BY race_date DESC, race_id DESC
+                """,
+                (user_id, month),
+            ).fetchall()
+            return [self._row_to_dict(r) for r in rows]
+        finally:
+            conn.close()
+
+    def list_purchased(self, user_id: str, *, limit: int = 500) -> list[dict[str, Any]]:
+        """All purchase-registered races (newest first)."""
+        conn = connect()
+        try:
+            rows = conn.execute(
+                """
+                SELECT * FROM user_race_results
+                WHERE user_id=? AND purchase_registered=1
+                  AND race_date IS NOT NULL
+                ORDER BY race_date DESC, race_id DESC
+                LIMIT ?
+                """,
+                (user_id, limit),
+            ).fetchall()
+            return [self._row_to_dict(r) for r in rows]
+        finally:
+            conn.close()
+
+    def list_unsettled(self, user_id: str, *, limit: int = 100) -> list[dict[str, Any]]:
+        conn = connect()
+        try:
+            rows = conn.execute(
+                """
+                SELECT * FROM user_race_results
+                WHERE user_id=? AND settled=0
+                ORDER BY race_date DESC, id DESC
+                LIMIT ?
+                """,
+                (user_id, limit),
+            ).fetchall()
+            return [self._row_to_dict(r) for r in rows]
+        finally:
+            conn.close()
+
+    def list_unsettled_for_date(
+        self, race_date: str, *, limit: int = 2000
+    ) -> list[dict[str, Any]]:
+        """Purchase-registered unsettled rows for a race_date (all users)."""
+        conn = connect()
+        try:
+            rows = conn.execute(
+                """
+                SELECT * FROM user_race_results
+                WHERE race_date=? AND purchase_registered=1 AND settled=0
+                ORDER BY user_id ASC, race_id ASC
+                LIMIT ?
+                """,
+                (race_date, limit),
+            ).fetchall()
+            return [self._row_to_dict(r) for r in rows]
+        finally:
+            conn.close()
+
+    def list_purchased_for_date(
+        self, race_date: str, *, limit: int = 2000
+    ) -> list[dict[str, Any]]:
+        conn = connect()
+        try:
+            rows = conn.execute(
+                """
+                SELECT * FROM user_race_results
+                WHERE race_date=? AND purchase_registered=1
+                ORDER BY user_id ASC, race_id ASC
+                LIMIT ?
+                """,
+                (race_date, limit),
+            ).fetchall()
+            return [self._row_to_dict(r) for r in rows]
+        finally:
+            conn.close()
+
+    def upsert_snapshot(
+        self,
+        user_id: str,
+        *,
+        race_id: str,
+        race_date: str | None,
+        race_label: str | None,
+        prediction_version: str | None,
+        strategy_snapshot: dict[str, Any],
+        purchase_amount: int,
+        purchase_registered: int = 0,
+        unit_stake: int | None = None,
+        selected_bet_types: list[str] | None = None,
+        client_meta: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
+        now = _now()
+        conn = connect()
+        try:
+            existing = conn.execute(
+                "SELECT settled FROM user_race_results WHERE user_id=? AND race_id=?",
+                (user_id, race_id),
+            ).fetchone()
+            # Once settled, keep snapshot frozen (do not overwrite strategy).
+            if existing and int(existing["settled"] or 0) == 1:
+                row = conn.execute(
+                    "SELECT * FROM user_race_results WHERE user_id=? AND race_id=?",
+                    (user_id, race_id),
+                ).fetchone()
+                return self._row_to_dict(row)
+
+            conn.execute(
+                """
+                INSERT INTO user_race_results(
+                  user_id, race_id, race_date, race_label, prediction_version,
+                  strategy_snapshot_json, purchase_amount, payout_amount, profit, hit,
+                  settled, purchase_registered, unit_stake, selected_bet_types_json,
+                  client_meta_json, registered_at, created_at, updated_at
+                ) VALUES (?,?,?,?,?,?,?,0,0,0,0,?,?,?,?,?,?,?)
+                ON CONFLICT(user_id, race_id) DO UPDATE SET
+                  race_date=COALESCE(excluded.race_date, user_race_results.race_date),
+                  race_label=COALESCE(excluded.race_label, user_race_results.race_label),
+                  prediction_version=COALESCE(excluded.prediction_version, user_race_results.prediction_version),
+                  strategy_snapshot_json=excluded.strategy_snapshot_json,
+                  purchase_amount=excluded.purchase_amount,
+                  purchase_registered=excluded.purchase_registered,
+                  unit_stake=excluded.unit_stake,
+                  selected_bet_types_json=excluded.selected_bet_types_json,
+                  client_meta_json=excluded.client_meta_json,
+                  registered_at=CASE
+                    WHEN excluded.purchase_registered=1 THEN excluded.registered_at
+                    ELSE user_race_results.registered_at END,
+                  updated_at=excluded.updated_at
+                WHERE user_race_results.settled=0
+                """,
+                (
+                    user_id,
+                    race_id,
+                    race_date,
+                    race_label,
+                    prediction_version,
+                    json.dumps(strategy_snapshot or {}, ensure_ascii=False),
+                    int(purchase_amount or 0),
+                    int(purchase_registered or 0),
+                    unit_stake,
+                    json.dumps(selected_bet_types or [], ensure_ascii=False),
+                    json.dumps(client_meta or {}, ensure_ascii=False),
+                    now if purchase_registered else None,
+                    now,
+                    now,
+                ),
+            )
+            conn.commit()
+            row = conn.execute(
+                "SELECT * FROM user_race_results WHERE user_id=? AND race_id=?",
+                (user_id, race_id),
+            ).fetchone()
+            return self._row_to_dict(row)
+        finally:
+            conn.close()
+
+    def mark_points_awarded(self, user_id: str, race_id: str, points: int) -> None:
+        conn = connect()
+        try:
+            conn.execute(
+                """
+                UPDATE user_race_results
+                SET points_awarded=?, updated_at=?
+                WHERE user_id=? AND race_id=?
+                """,
+                (int(points or 0), _now(), user_id, race_id),
+            )
+            conn.commit()
+        finally:
+            conn.close()
+
+    def apply_settlement(
+        self,
+        user_id: str,
+        race_id: str,
+        *,
+        purchase_amount: int,
+        payout_amount: int,
+        profit: int,
+        hit: int,
+        settled: int,
+        finish_order: list[Any] | None,
+        payouts: dict[str, Any] | None,
+        bet_results: dict[str, Any] | None,
+        marks_result: dict[str, Any] | None,
+        official_result: dict[str, Any] | None,
+        race_date: str | None = None,
+        race_label: str | None = None,
+    ) -> dict[str, Any]:
+        now = _now()
+        conn = connect()
+        try:
+            conn.execute(
+                """
+                UPDATE user_race_results SET
+                  purchase_amount=?,
+                  payout_amount=?,
+                  profit=?,
+                  hit=?,
+                  settled=?,
+                  finish_order_json=?,
+                  payouts_json=?,
+                  bet_results_json=?,
+                  marks_result_json=?,
+                  official_result_json=?,
+                  race_date=COALESCE(?, race_date),
+                  race_label=COALESCE(?, race_label),
+                  updated_at=?,
+                  settled_at=CASE WHEN ?=1 THEN ? ELSE settled_at END
+                WHERE user_id=? AND race_id=?
+                """,
+                (
+                    int(purchase_amount or 0),
+                    int(payout_amount or 0),
+                    int(profit or 0),
+                    int(hit or 0),
+                    int(settled or 0),
+                    json.dumps(finish_order or [], ensure_ascii=False),
+                    json.dumps(payouts or {}, ensure_ascii=False),
+                    json.dumps(bet_results or {}, ensure_ascii=False),
+                    json.dumps(marks_result or {}, ensure_ascii=False),
+                    json.dumps(official_result or {}, ensure_ascii=False),
+                    race_date,
+                    race_label,
+                    now,
+                    int(settled or 0),
+                    now,
+                    user_id,
+                    race_id,
+                ),
+            )
+            conn.commit()
+            row = conn.execute(
+                "SELECT * FROM user_race_results WHERE user_id=? AND race_id=?",
+                (user_id, race_id),
+            ).fetchone()
+            return self._row_to_dict(row) if row else {}
+        finally:
+            conn.close()
+
+class UserProgressRepository:
+    def __init__(self) -> None:
+        migrate()
+
+    def get(self, user_id: str) -> dict[str, Any] | None:
+        conn = connect()
+        try:
+            row = conn.execute(
+                "SELECT * FROM user_progress WHERE user_id=?",
+                (user_id,),
+            ).fetchone()
+            return dict(row) if row else None
+        finally:
+            conn.close()
+
+    def ensure(self, user_id: str) -> dict[str, Any]:
+        """Ensure progress row; never raise IntegrityError to callers (V8.9.1)."""
+        uid = str(user_id or "").strip()
+        now = _now()
+        default = {
+            "user_id": uid or "unknown",
+            "cumulative_points": 0,
+            "cumulative_profit": 0,
+            "level": 1,
+            "updated_at": now,
+        }
+        if not uid:
+            return default
+
+        existing = self.get(uid)
+        if existing:
+            return existing
+
+        # Parent user must exist for FK(user_progress → users).
+        try:
+            UserRepository().ensure_stub_mirror(uid)
+        except Exception:
+            pass
+
+        conn = connect()
+        try:
+            try:
+                conn.execute(
+                    """
+                    INSERT OR IGNORE INTO user_progress(
+                      user_id, cumulative_points, cumulative_profit, level, updated_at
+                    ) VALUES (?,?,?,?,?)
+                    """,
+                    (uid, 0, 0, 1, now),
+                )
+                conn.commit()
+            except Exception:
+                # FK / concurrent / schema — return safe default, do not propagate.
+                try:
+                    conn.rollback()
+                except Exception:
+                    pass
+                return default
+        finally:
+            conn.close()
+
+        return self.get(uid) or default
+
+    def add_profit_and_points(
+        self, user_id: str, *, profit_delta: int, points_delta: int
+    ) -> dict[str, Any]:
+        from .progress import level_from_points
+
+        self.ensure(user_id)
+        now = _now()
+        conn = connect()
+        try:
+            conn.execute(
+                """
+                UPDATE user_progress SET
+                  cumulative_profit = cumulative_profit + ?,
+                  cumulative_points = cumulative_points + ?,
+                  updated_at = ?
+                WHERE user_id = ?
+                """,
+                (int(profit_delta or 0), int(points_delta or 0), now, user_id),
+            )
+            row = conn.execute(
+                "SELECT * FROM user_progress WHERE user_id=?",
+                (user_id,),
+            ).fetchone()
+            if row:
+                pts = int(row["cumulative_points"] or 0)
+                lv = level_from_points(pts)
+                conn.execute(
+                    "UPDATE user_progress SET level=? WHERE user_id=?",
+                    (lv, user_id),
+                )
+            conn.commit()
+        finally:
+            conn.close()
+        return self.get(user_id) or {}
+
+
+class PurchaseAuditRepository:
+    def __init__(self) -> None:
+        migrate()
+
+    def append(self, row: dict[str, Any]) -> None:
+        conn = connect()
+        try:
+            conn.execute(
+                """
+                INSERT INTO user_purchase_audit(
+                  user_id, race_id, event_type, purchase_amount, payout_amount,
+                  profit, points_awarded, ai_strategy_json, user_bets_json,
+                  ip_address, user_agent, meta_json, created_at
+                ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)
+                """,
+                (
+                    row.get("user_id"),
+                    row.get("race_id"),
+                    row.get("event_type") or "purchase",
+                    row.get("purchase_amount"),
+                    row.get("payout_amount"),
+                    row.get("profit"),
+                    int(row.get("points_awarded") or 0),
+                    json.dumps(row.get("ai_strategy") or {}, ensure_ascii=False),
+                    json.dumps(row.get("user_bets") or {}, ensure_ascii=False),
+                    row.get("ip_address"),
+                    row.get("user_agent"),
+                    json.dumps(row.get("meta") or {}, ensure_ascii=False),
+                    _now(),
+                ),
+            )
+            conn.commit()
+        finally:
+            conn.close()
+
+
+class AppSettingsRepository:
+    def __init__(self) -> None:
+        migrate()
+
+    def get(self, key: str, default: Any = None) -> Any:
+        conn = connect()
+        try:
+            row = conn.execute(
+                "SELECT value_json FROM app_settings WHERE key=?",
+                (key,),
+            ).fetchone()
+            if not row:
+                return default
+            raw = row["value_json"]
+            try:
+                return json.loads(raw)
+            except (TypeError, json.JSONDecodeError):
+                return raw
+        finally:
+            conn.close()
+
+    def set(self, key: str, value: Any) -> None:
+        conn = connect()
+        try:
+            conn.execute(
+                """
+                INSERT INTO app_settings(key, value_json, updated_at)
+                VALUES (?,?,?)
+                ON CONFLICT(key) DO UPDATE SET
+                  value_json=excluded.value_json,
+                  updated_at=excluded.updated_at
+                """,
+                (key, json.dumps(value, ensure_ascii=False), _now()),
+            )
+            conn.commit()
+        finally:
+            conn.close()

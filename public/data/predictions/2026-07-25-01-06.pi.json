@@ -1,0 +1,169 @@
+{
+  "race_id": "2026-07-25-01-06",
+  "race_date": "2026-07-25",
+  "course": "新潟",
+  "venue": "新潟",
+  "race_number": 6,
+  "race_no": 6,
+  "race_name": "豊栄特別",
+  "race_label": "新潟6R",
+  "status": "published",
+  "prediction_available": true,
+  "prediction": {
+    "race_id": "2026-07-25-01-06",
+    "candidates": [
+      {
+        "CandidateID": "コルドンブルー",
+        "Rank": 1,
+        "Confidence": 0.09771316412070961,
+        "HorseNumber": 4,
+        "WorldMeta": "midupper_world",
+        "SubWorldMeta": "midupper_route"
+      },
+      {
+        "CandidateID": "シャンソンドール",
+        "Rank": 2,
+        "Confidence": 0.09328950748908332,
+        "HorseNumber": 7,
+        "WorldMeta": "midupper_world",
+        "SubWorldMeta": "midupper_route"
+      },
+      {
+        "CandidateID": "ホウオウタイタン",
+        "Rank": 3,
+        "Confidence": 0.05493793828232772,
+        "HorseNumber": 13,
+        "WorldMeta": "midupper_world",
+        "SubWorldMeta": "midupper_route"
+      },
+      {
+        "CandidateID": "ソニックライン",
+        "Rank": 4,
+        "Confidence": 0.053152933802795066,
+        "HorseNumber": 9,
+        "WorldMeta": "midupper_world",
+        "SubWorldMeta": "midupper_route"
+      },
+      {
+        "CandidateID": "リカントロポ",
+        "Rank": 5,
+        "Confidence": 0.05274462005340726,
+        "HorseNumber": 17,
+        "WorldMeta": "midupper_world",
+        "SubWorldMeta": "midupper_route"
+      },
+      {
+        "CandidateID": "コンフェルマ",
+        "Rank": 6,
+        "Confidence": 0.050902237347916074,
+        "HorseNumber": 5,
+        "WorldMeta": "midupper_world",
+        "SubWorldMeta": "midupper_route"
+      },
+      {
+        "CandidateID": "ラビットアイ",
+        "Rank": 7,
+        "Confidence": 0.05085409177582383,
+        "HorseNumber": 16,
+        "WorldMeta": "midupper_world",
+        "SubWorldMeta": "midupper_route"
+      },
+      {
+        "CandidateID": "ギフテッド",
+        "Rank": 8,
+        "Confidence": 0.050320043270478246,
+        "HorseNumber": 2,
+        "WorldMeta": "midupper_world",
+        "SubWorldMeta": "midupper_route"
+      },
+      {
+        "CandidateID": "メランジェ",
+        "Rank": 9,
+        "Confidence": 0.050245632233889045,
+        "HorseNumber": 15,
+        "WorldMeta": "midupper_world",
+        "SubWorldMeta": "midupper_route"
+      },
+      {
+        "CandidateID": "ルナルーチェット",
+        "Rank": 10,
+        "Confidence": 0.050068887920902486,
+        "HorseNumber": 18,
+        "WorldMeta": "midupper_world",
+        "SubWorldMeta": "midupper_route"
+      },
+      {
+        "CandidateID": "ジーネキング",
+        "Rank": 11,
+        "Confidence": 0.049928780765519265,
+        "HorseNumber": 8,
+        "WorldMeta": "midupper_world",
+        "SubWorldMeta": "midupper_route"
+      },
+      {
+        "CandidateID": "ガリレア",
+        "Rank": 12,
+        "Confidence": 0.04977964498331237,
+        "HorseNumber": 1,
+        "WorldMeta": "midupper_world",
+        "SubWorldMeta": "midupper_route"
+      },
+      {
+        "CandidateID": "ミッキースターダム",
+        "Rank": 13,
+        "Confidence": 0.04974641957395651,
+        "HorseNumber": 14,
+        "WorldMeta": "midupper_world",
+        "SubWorldMeta": "midupper_route"
+      },
+      {
+        "CandidateID": "ナファロア",
+        "Rank": 14,
+        "Confidence": 0.04974099753199204,
+        "HorseNumber": 12,
+        "WorldMeta": "midupper_world",
+        "SubWorldMeta": "midupper_route"
+      },
+      {
+        "CandidateID": "ゴールドスター",
+        "Rank": 15,
+        "Confidence": 0.04922277640276551,
+        "HorseNumber": 6,
+        "WorldMeta": "midupper_world",
+        "SubWorldMeta": "midupper_route"
+      },
+      {
+        "CandidateID": "ドリームクルーズ",
+        "Rank": 16,
+        "Confidence": 0.049151561529638045,
+        "HorseNumber": 10,
+        "WorldMeta": "midupper_world",
+        "SubWorldMeta": "midupper_route"
+      },
+      {
+        "CandidateID": "ケイケイ",
+        "Rank": 17,
+        "Confidence": 0.04913562691124091,
+        "HorseNumber": 3,
+        "WorldMeta": "midupper_world",
+        "SubWorldMeta": "midupper_route"
+      },
+      {
+        "CandidateID": "ナグルファル",
+        "Rank": 18,
+        "Confidence": 0.049065136004242546,
+        "HorseNumber": 11,
+        "WorldMeta": "midupper_world",
+        "SubWorldMeta": "midupper_route"
+      }
+    ],
+    "world": "midupper_world",
+    "sub_world": "midupper_route",
+    "overall_confidence": 0.055035747726160086,
+    "core_version": "ai-core-migrated/1.0-phase1",
+    "meta": {
+      "generated_at": "2026-07-25T15:53:09.412653+09:00",
+      "source": "local_core_pipeline"
+    }
+  }
+}

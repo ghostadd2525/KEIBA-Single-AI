@@ -57,10 +57,17 @@ class StateMachineTest(unittest.TestCase):
             sm.STATS_UPDATING,
             sm.SELF_EVAL_UPDATING,
             sm.EVIDENCE_EXPORTING,
+            sm.USER_SETTLING,
+            sm.POINT_UPDATING,
+            sm.LEVEL_UPDATING,
+            sm.ARCHIVING,
             sm.COMPLETED,
         ]
         for a, b in zip(path, path[1:]):
             self.assertTrue(sm.can_transition(a, b), f"{a}->{b}")
+
+    def test_evidence_only_can_complete(self):
+        self.assertTrue(sm.can_transition(sm.EVIDENCE_EXPORTING, sm.COMPLETED))
 
     def test_illegal(self):
         self.assertFalse(sm.can_transition(sm.PENDING, sm.COMPLETED))
@@ -125,9 +132,11 @@ class ResultAutomationIntegrationTest(unittest.TestCase):
         self.db_path = Path(self.tmp.name) / "test.db"
         self.miss_dir = Path(self.tmp.name) / "miss-evidence"
         self.imp_dir = Path(self.tmp.name) / "improvement"
+        self.arch_dir = Path(self.tmp.name) / "race-archives"
         os.environ["EXPECT_AI_DB_PATH"] = str(self.db_path)
         os.environ["EXPECT_MISS_EVIDENCE_DIR"] = str(self.miss_dir)
         os.environ["EXPECT_IMPROVEMENT_EVIDENCE_DIR"] = str(self.imp_dir)
+        os.environ["EXPECT_RACE_ARCHIVE_DIR"] = str(self.arch_dir)
 
         from app.data import db as app_db
 
@@ -190,13 +199,18 @@ class ResultAutomationIntegrationTest(unittest.TestCase):
             "EXPECT_AI_DB_PATH",
             "EXPECT_MISS_EVIDENCE_DIR",
             "EXPECT_IMPROVEMENT_EVIDENCE_DIR",
+            "EXPECT_RACE_ARCHIVE_DIR",
         ):
             os.environ.pop(k, None)
         from app.ops import result_automation as ra
-        from app.stats import service as stats_service_mod
 
         ra._service = None
-        stats_service_mod._stats_service = None
+        try:
+            from app.stats import service as stats_service_mod
+
+            stats_service_mod._stats_service = None
+        except Exception:
+            pass
 
     def test_post_race_pipeline(self):
         from app.ops.result_automation import ResultAutomationService
@@ -223,6 +237,9 @@ class ResultAutomationIntegrationTest(unittest.TestCase):
         self.assertGreaterEqual(doc["event_total"], 1)
         for name in ("run.json", "summary.json", "index.json"):
             self.assertTrue((self.imp_dir / "manifest" / "2026-07-19" / name).exists())
+        self.assertIsNotNone(result.get("archive"))
+        self.assertEqual(result["archive"].get("race_count"), 1)
+        self.assertIn("stages", result)
 
         from app.data import db as app_db
 
@@ -242,6 +259,21 @@ class ResultAutomationIntegrationTest(unittest.TestCase):
             ).fetchone()
             self.assertEqual(row["going"], "良")
             self.assertEqual(row["distance"], 1200)
+            # Miss research queue = improvement_evidence_index
+            idx = conn.execute(
+                """
+                SELECT COUNT(*) AS n FROM improvement_evidence_index
+                WHERE race_date=? AND event_type='miss'
+                """,
+                ("2026-07-19",),
+            ).fetchone()
+            self.assertGreaterEqual(int(idx["n"]), 1)
+            # Archive must NOT delete predictions / race_results
+            pred = conn.execute(
+                "SELECT COUNT(*) AS n FROM predictions WHERE race_id=?",
+                ("2026-07-19-04-11",),
+            ).fetchone()
+            self.assertEqual(int(pred["n"]), 1)
         finally:
             conn.close()
 
@@ -266,10 +298,18 @@ class ResultAutomationCanaryTest(unittest.TestCase):
     def test_canary_gates(self):
         # Gates documented in development/canary — structural checks
         from app.ops.evidence.registry import registered_types
-        from app.ops.state_machine import TRANSITIONS, COMPLETED, EVIDENCE_EXPORTING
+        from app.ops.state_machine import (
+            TRANSITIONS,
+            COMPLETED,
+            EVIDENCE_EXPORTING,
+            USER_SETTLING,
+            ARCHIVING,
+        )
 
         self.assertIn("miss", registered_types())
         self.assertIn(COMPLETED, TRANSITIONS[EVIDENCE_EXPORTING])
+        self.assertIn(USER_SETTLING, TRANSITIONS[EVIDENCE_EXPORTING])
+        self.assertIn(COMPLETED, TRANSITIONS[ARCHIVING])
 
 
 if __name__ == "__main__":

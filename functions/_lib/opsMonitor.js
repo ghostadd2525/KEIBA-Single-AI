@@ -9,6 +9,11 @@ import { getEnv, useAiProxy } from "./env.js";
 import { logMetrics } from "./opsMetrics.js";
 import { piFetchStatus, usePiProxy } from "./piProxy.js";
 import { buildDashboardPayload } from "./opsDashboard.js";
+import {
+  evaluateSingleDetailAlerts,
+  snapshotSingleDetailMetrics,
+  DEFAULT_THRESHOLDS,
+} from "./singleDetailObservability.js";
 
 const PROBE_TIMEOUT_MS = 8000;
 
@@ -302,6 +307,132 @@ export async function probeResultAutomation(context) {
   }
 }
 
+/**
+ * Horse Number Integrity — formal umaban gate for Feature CSV
+ * PI: GET /v1/ops/horse-number-integrity
+ */
+export async function probeHorseNumberIntegrity(context) {
+  const env = getEnv(context);
+  if (!usePiProxy(env)) {
+    return {
+      name: "pi_horse_number_integrity",
+      ok: true,
+      skipped: true,
+      error: null,
+      latency_ms: 0,
+      detail: { reason: "PI_BASE_URL not configured" },
+      label: "Horse Number Integrity",
+    };
+  }
+  const start = Date.now();
+  try {
+    const result = await withTimeout(
+      piFetchStatus(context, "/v1/ops/horse-number-integrity"),
+      PROBE_TIMEOUT_MS
+    );
+    const latency = Date.now() - start;
+    const payload =
+      result && result.payload && result.payload.data != null
+        ? result.payload.data
+        : result && result.payload;
+    const statusOk = !!(result && result.ok && payload && payload.ok === true);
+    const blocked =
+      (payload &&
+        payload.live_runners &&
+        payload.live_runners.blocked_race_ids) ||
+      (payload && payload.latest_report && payload.latest_report.blocked_race_ids) ||
+      [];
+    return {
+      name: "pi_horse_number_integrity",
+      ok: statusOk,
+      error: statusOk
+        ? null
+        : (payload && payload.check ? payload.check + " NG" : null) ||
+          (result && result.error) ||
+          "Horse Number Not Ready",
+      latency_ms: latency,
+      detail: {
+        via: env.PI_BASE_URL,
+        check: "Horse Number Integrity",
+        date: payload && payload.date,
+        blocked_race_ids: blocked,
+        body: payload,
+      },
+      label: "Horse Number Integrity",
+      alert_id: statusOk ? null : "ALT-E10",
+    };
+  } catch (e) {
+    return {
+      name: "pi_horse_number_integrity",
+      ok: false,
+      error: String(e && e.message ? e.message : e),
+      latency_ms: Date.now() - start,
+      label: "Horse Number Integrity",
+      alert_id: "ALT-E10",
+    };
+  }
+}
+
+/**
+ * I4 — in-process Single Detail metrics / alerts (Flag ON path only).
+ * Also probes Python /v1/site/health when AI proxy is configured.
+ */
+export async function probeSingleDetailOps(context) {
+  const start = Date.now();
+  const metrics = snapshotSingleDetailMetrics();
+  const evaluated = evaluateSingleDetailAlerts(DEFAULT_THRESHOLDS, metrics);
+  const sdAlerts = evaluated.alerts || [];
+  const critical = sdAlerts.some(function (a) {
+    return a.severity === "critical";
+  });
+  const warning = sdAlerts.some(function (a) {
+    return a.severity === "warning";
+  });
+
+  let siteHealth = null;
+  const site = await probeAi(context, "/v1/site/health");
+  if (!site.skipped) {
+    siteHealth = {
+      ok: !!site.ok,
+      latency_ms: site.latency_ms || 0,
+      error: site.error || null,
+    };
+  }
+
+  const deferred = !!evaluated.deferred;
+  const ok = deferred ? true : !critical && (!siteHealth || siteHealth.ok);
+  const firstCritical = sdAlerts.find(function (a) {
+    return a.severity === "critical";
+  });
+  const firstAlert = firstCritical || sdAlerts[0] || null;
+
+  return {
+    name: "single_detail_ops",
+    ok: ok,
+    skipped: false,
+    deferred: deferred,
+    latency_ms: Date.now() - start,
+    error: ok
+      ? null
+      : (firstAlert && firstAlert.message) ||
+        (siteHealth && !siteHealth.ok && siteHealth.error) ||
+        "single detail ops degraded",
+    alert_id: !ok && firstAlert ? firstAlert.alert_id : null,
+    label: "Single Detail Ops",
+    detail: {
+      metrics: metrics,
+      alerts: sdAlerts,
+      alert_eval: {
+        deferred: deferred,
+        reason: evaluated.reason || null,
+        thresholds: DEFAULT_THRESHOLDS,
+      },
+      site_health: siteHealth,
+      warning_only: !critical && warning,
+    },
+  };
+}
+
 export async function runAllProbes(context) {
   const env = getEnv(context);
   const bff = {
@@ -314,28 +445,42 @@ export async function runAllProbes(context) {
     },
   };
 
-  const [python, tunnel, piHealth, prediction, conversation, conversationHealth, etl, resultAutomation] =
-    await Promise.all([
-      probePythonHealth(context),
-      probeCloudflareTunnel(context),
-      probePiHealth(context),
-      probePredictionApi(context),
-      probeConversationApi(context),
-      probeConversationHealth(context),
-      probeEtlStatus(context),
-      probeResultAutomation(context),
-    ]);
+  const [
+    python,
+    tunnel,
+    piHealth,
+    horseNumberIntegrity,
+    prediction,
+    conversation,
+    conversationHealth,
+    etl,
+    resultAutomation,
+    singleDetailOps,
+  ] = await Promise.all([
+    probePythonHealth(context),
+    probeCloudflareTunnel(context),
+    probePiHealth(context),
+    probeHorseNumberIntegrity(context),
+    probePredictionApi(context),
+    probeConversationApi(context),
+    probeConversationHealth(context),
+    probeEtlStatus(context),
+    probeResultAutomation(context),
+    probeSingleDetailOps(context),
+  ]);
 
   const checks = [
     bff,
     python,
     tunnel,
     piHealth,
+    horseNumberIntegrity,
     prediction,
     conversation,
     conversationHealth,
     etl,
     resultAutomation,
+    singleDetailOps,
   ];
   const active = checks.filter(function (c) {
     return !c.skipped;
@@ -368,6 +513,42 @@ export async function runAllProbes(context) {
     ]);
   }
 
+  const sdMetrics = (singleDetailOps.detail && singleDetailOps.detail.metrics) || {};
+  logMetrics(context, [
+    {
+      source: "bff-probe",
+      metric: "single_detail.requests_total",
+      value: sdMetrics.requests_total || 0,
+      unit: "count",
+      labels: { probe: "single_detail_ops" },
+      status: singleDetailOps.ok ? "ok" : "error",
+    },
+    {
+      source: "bff-probe",
+      metric: "single_detail.latency_ms_p95",
+      value: sdMetrics.latency_ms_p95 || 0,
+      unit: "ms",
+      labels: { probe: "single_detail_ops" },
+      status: singleDetailOps.ok ? "ok" : "error",
+    },
+    {
+      source: "bff-probe",
+      metric: "single_detail.prediction_fallback",
+      value: sdMetrics.prediction_fallback || 0,
+      unit: "count",
+      labels: { probe: "single_detail_ops" },
+      status: "ok",
+    },
+    {
+      source: "bff-probe",
+      metric: "single_detail.error_fallback",
+      value: sdMetrics.error_fallback || 0,
+      unit: "count",
+      labels: { probe: "single_detail_ops" },
+      status: singleDetailOps.ok ? "ok" : "error",
+    },
+  ]);
+
   const base = {
     status: allOk ? "ok" : anyDown ? "degraded" : "ok",
     phase: "v2-ops-phase3",
@@ -380,6 +561,34 @@ export async function runAllProbes(context) {
   };
 
   const dash = buildDashboardPayload(base, { source: "bff-probe" });
+
+  // Merge full SD alert set (deriveAlertsFromChecks keeps one id per failed check)
+  const sdExtra = ((singleDetailOps.detail && singleDetailOps.detail.alerts) || []).map(
+    function (a) {
+      return {
+        alert_id: a.alert_id,
+        severity: a.severity || "warning",
+        active: true,
+        service: "single_detail_ops",
+        summary: a.message || a.title || "single detail alert",
+        latency_ms: sdMetrics.latency_ms_p95 != null ? sdMetrics.latency_ms_p95 : null,
+        runbook: a.runbook || "docs/ops/single-detail-runbook.md",
+      };
+    }
+  );
+  const seenIds = new Set(
+    (dash.alerts || []).map(function (a) {
+      return a.alert_id;
+    })
+  );
+  const mergedAlerts = (dash.alerts || []).slice();
+  sdExtra.forEach(function (a) {
+    if (!seenIds.has(a.alert_id)) {
+      seenIds.add(a.alert_id);
+      mergedAlerts.push(a);
+    }
+  });
+
   return {
     ...base,
     overview: dash.overview,
@@ -387,10 +596,24 @@ export async function runAllProbes(context) {
     inventory_summary: dash.inventory_summary,
     notifications: dash.notifications,
     metrics: dash.metrics,
-    alerts: dash.alerts,
-    alert_summary: dash.alert_summary,
+    alerts: mergedAlerts,
+    alert_summary: {
+      ...(dash.alert_summary || {}),
+      total: mergedAlerts.length,
+      critical: mergedAlerts.filter(function (a) {
+        return a.severity === "critical";
+      }).length,
+      warning: mergedAlerts.filter(function (a) {
+        return a.severity === "warning";
+      }).length,
+    },
     incidents: dash.incidents,
     incident_summary: dash.incident_summary,
+    single_detail: {
+      metrics: sdMetrics,
+      alerts: (singleDetailOps.detail && singleDetailOps.detail.alerts) || [],
+      deferred: !!singleDetailOps.deferred,
+    },
   };
 }
 

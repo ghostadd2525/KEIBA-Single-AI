@@ -1,0 +1,21 @@
+feature_id,display_name,already_acquired,source,pred_time_available,timing,acquisition_method,failure_reasons,missing_rate_est,research_priority,impl_difficulty,verdict,verdict_reason
+popularity,人気,NO,Netkeiba+JRA,PARTIAL,発売後〜締切直前,既存API+HTML解析（runners列あり・refresh時は空が多い）,未発表|時刻依存|race_refreshがJRA単勝未マージ,High,P0,Medium,PARTIAL,parse/APIは存在するが予測生成経路で0%埋め実測あり。Snapshot固定なし
+expected_popularity,想定人気,NO,派生（単勝）,PARTIAL,単勝取得直後,未実装（win_oddsソート派生）,単勝欠損時不可,High,P0,Low,PARTIAL,単勝があれば算出可能だが未実装。単勝経路がPARTIALのため連動
+win_odds,単勝オッズ,NO,Netkeiba+JRA,PARTIAL,発売後〜締切直前,既存API+HTML解析（board経路あり・refresh未マージ）,未発表|時刻依存,High,P0,Medium,PARTIAL,PI boardは取得可。race_refresh→runnersは空が多い。Anti-leak固定なし
+place_odds,複勝オッズ,NO,JRA（想定）,NO,発売後〜締切直前,未実装,取得不可（type=2未接続）,High,P0,Medium,BLOCKED,JRA odds APIはtype=1（単勝）のみ。複勝アダプタなし
+jockey,騎手,YES,Netkeiba,YES,枠出〜当日,既存Collector/HTML解析/CSV,パース汚れ,Low,P0,Low,READY,runners.csv / entries.jockey に既存。予測時点で取得可
+jockey_continued,継続騎乗,NO,Netkeiba（history）,PARTIAL,前日〜当日（history取得時）,未実装（入力CSVあり）,not_applicable（新馬）|週末history skip|未実装派生,Medium,P0,Low,PARTIAL,jockey_today+history_jockeyはあり。派生フラグ未実装。新馬は定義不能
+trainer,厩舎,NO,Netkeiba,PARTIAL,枠出〜当日,HTML解析のみ（CSV未露出）,取得不可（永続化なし）,High,P0,Low,PARTIAL,parse.pyで_trainer抽出済みだがrunners/entries_full未露出。露出すればREADY化可能
+sire,父,NO,Netkeiba（想定）,NO,静的（いつでも可だが未収集）,未実装,対象ページ未接続|未実装,High,P1,High,BLOCKED,血統パーサ/pedigree DBなし。理論上は静的だがCollector未整備
+damsire,母父,NO,Netkeiba（想定）,NO,静的（未収集）,未実装,対象ページ未接続|未実装,High,P1,High,BLOCKED,sireと同様
+horse_weight,馬体重,NO,Netkeiba（想定）,PARTIAL,馬体重発表後〜発走前,未実装（過去走history_horse_weightのみ）,未発表|対象ページなし（当日）,High,P1,High,BLOCKED,runnersのweightは斤量。当日馬体重ボード未実装。発表前は正規null
+horse_weight_delta,馬体重増減,NO,Netkeiba（想定）,PARTIAL,馬体重発表後,未実装,未発表|未実装,High,P1,Medium,BLOCKED,当日コレクタなし。history文字列に増減が含まれる場合あるが未パース
+workout_rating,追切,NO,Netkeiba（想定）,NO,調教公開後〜前日,未実装,対象ページなし|未実装,High,P2,High,BLOCKED,調教/追切ページの取得・評価スケール未定義
+training_time,調教時計,NO,Netkeiba（想定）,NO,調教公開後〜前日,未実装,対象ページなし|未実装,High,P2,High,BLOCKED,workoutと同様
+frame,枠,YES,Netkeiba,YES,枠順確定後,既存Collector/HTML解析/CSV,時刻依存（未確定時0）,Low,P0,Low,READY,frame_number既存。0埋め日はMissing扱いが必要
+track_condition,馬場,YES,Netkeiba,PARTIAL,前日カード〜当日更新,既存Collector/HTML解析/CSV,時刻依存（goingはunknown多い）,Medium,P0,Low,PARTIAL,surface（芝/ダ）はYES。going/track_conditionは当日変動でPARTIAL。含水率とは別
+weather,天候,YES,Netkeiba,PARTIAL,当日朝〜発走前,既存Collector/HTML解析/CSV,時刻依存|unknown,Medium,P0,Low,PARTIAL,runners.weatherあり。早朝予測ではunknown多
+moisture_rate,含水率,NO,JRA/開催（想定）,NO,当日計測後,未実装,取得不可|開催非対応|対象ページなし,High,P2,High,BLOCKED,コード・ソース接続なし。多くの開催でsource_unavailable想定
+distance,距離,YES,Netkeiba,YES,カード公開後,既存Collector/HTML解析/CSV/DB,パース失敗時デフォルト注意,Low,P0,Low,READY,target_distance / races.distance 既存
+field_size,頭数,YES,Netkeiba+既存DB,YES,カード公開後（取消で変動可）,既存Collector/派生,取消後ズレ,Low,P0,Low,READY,meta field_size / races.field_size / 行数派生
+venue,開催,YES,Netkeiba+既存DB,YES,開催確定後,既存Collector/HTML解析/CSV/DB,命名差（course/venue）,Low,P0,Low,READY,course/venue / races.venue 既存

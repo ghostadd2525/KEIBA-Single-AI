@@ -1,0 +1,78 @@
+{
+  "schema_version": "expect-v89-evidence-index/1.0",
+  "published_at": "2026-07-27T00:18:38.114Z",
+  "items": [
+    {
+      "id": "knowledge:accepted_patterns.json",
+      "kind": "knowledge",
+      "label": "accepted_patterns.json",
+      "week_id": null,
+      "version": "Version8.5",
+      "public_path": "/ops-data/artifacts/knowledge/accepted_patterns.json",
+      "source_path": "development/knowledge/accepted_patterns.json"
+    },
+    {
+      "id": "knowledge:rejected_patterns.json",
+      "kind": "knowledge",
+      "label": "rejected_patterns.json",
+      "week_id": null,
+      "version": "Version8.5",
+      "public_path": "/ops-data/artifacts/knowledge/rejected_patterns.json",
+      "source_path": "development/knowledge/rejected_patterns.json"
+    },
+    {
+      "id": "knowledge:proposals.json",
+      "kind": "knowledge",
+      "label": "proposals.json",
+      "week_id": null,
+      "version": "Version8.5",
+      "public_path": "/ops-data/artifacts/knowledge/proposals.json",
+      "source_path": "development/knowledge/proposals.json"
+    },
+    {
+      "id": "knowledge:root_causes.json",
+      "kind": "knowledge",
+      "label": "root_causes.json",
+      "week_id": null,
+      "version": "Version8.5",
+      "public_path": "/ops-data/artifacts/knowledge/root_causes.json",
+      "source_path": "development/knowledge/root_causes.json"
+    },
+    {
+      "id": "knowledge:canary_results.json",
+      "kind": "knowledge",
+      "label": "canary_results.json",
+      "week_id": null,
+      "version": "Version8.5",
+      "public_path": "/ops-data/artifacts/knowledge/canary_results.json",
+      "source_path": "development/knowledge/canary_results.json"
+    },
+    {
+      "id": "2026-W30:weekly-ops-report.json",
+      "kind": "weekly-ops-report",
+      "label": "weekly-ops-report.json",
+      "week_id": "2026-W30",
+      "version": "Version8.5",
+      "public_path": "/ops-data/artifacts/2026-W30/weekly-ops-report.json",
+      "source_path": "development/weekly/2026-W30/reports/weekly-ops-report.json"
+    },
+    {
+      "id": "2026-W30:weekly-ops-report.md",
+      "kind": "weekly-ops-report",
+      "label": "weekly-ops-report.md",
+      "week_id": "2026-W30",
+      "version": "Version8.5",
+      "public_path": "/ops-data/artifacts/2026-W30/weekly-ops-report.md",
+      "source_path": "development/weekly/2026-W30/reports/weekly-ops-report.md"
+    },
+    {
+      "id": "2026-W31:decision.json",
+      "kind": "decision",
+      "label": "decision.json",
+      "week_id": "2026-W31",
+      "version": "Version8.5",
+      "public_path": "/ops-data/artifacts/2026-W31/decision.json",
+      "source_path": "development/weekly/2026-W31/fri-decision/decision.json"
+    }
+  ]
+}

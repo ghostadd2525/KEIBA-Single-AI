@@ -1,0 +1,31 @@
+{
+  "schema_version": "expect-root-cause/1.0",
+  "event_type": "miss",
+  "analysis_id": "miss-2026-07-21T13-18-09Z",
+  "event_count": 1,
+  "status": "ok",
+  "root_cause": "calibration_high_confidence_near_miss",
+  "confidence": 0.97,
+  "reason": "Dominant miss_top1 (1/1): winner near candidate pool but Top1 wrong. Prefer Top1 calibration; exclude feature_missing co-occurring races. High-confidence misses=1.",
+  "findings": {
+    "by_miss_category": {
+      "miss_top1": 1
+    },
+    "by_engine_source": {
+      "real_ai": 1
+    },
+    "high_confidence_miss_count": 1,
+    "dominant_category": "miss_top1"
+  },
+  "evidence_refs": [
+    {
+      "event_id": "miss:2026-07-19-04-11:t1",
+      "event_type": "miss",
+      "path": "evidence/improvement/miss/2026-07-19/2026-07-19-04-11.json",
+      "fingerprint": "sha256:testmiss",
+      "race_date": "2026-07-19",
+      "race_id": "2026-07-19-04-11"
+    }
+  ],
+  "recommendation": "Candidate for Core-targeted Proposal after Human Review (I-3)."
+}

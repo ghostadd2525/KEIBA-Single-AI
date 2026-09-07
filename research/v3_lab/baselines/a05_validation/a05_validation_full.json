@@ -1,0 +1,429 @@
+{
+  "validation_id": "v3-a05-validation/1.0",
+  "experiment_id": "v3-a05-favorite-safe-coverage",
+  "flag": "F_V3_A05_ADM_FAVSAFE_ENABLED",
+  "scope": "Control vs A-05 · Offline Hard Gate reproducibility",
+  "algorithm_changes": false,
+  "flag_default_changes": false,
+  "production_wiring": false,
+  "decision": "PASS",
+  "adopt_lab": true,
+  "offline_panel": {
+    "panel": "offline_control_vs_a05",
+    "metric_summary": {
+      "control": {
+        "n": 285,
+        "hit": 59,
+        "miss": 226,
+        "purchase": 59,
+        "rank710": 37,
+        "rank46": 101,
+        "other": 88,
+        "roi": 0.0246,
+        "stake_total": 28500.0,
+        "return_total": 29200.0
+      },
+      "treatment": {
+        "n": 285,
+        "hit": 66,
+        "miss": 219,
+        "purchase": 66,
+        "rank710": 32,
+        "rank46": 101,
+        "other": 86,
+        "roi": 0.5235,
+        "stake_total": 28500.0,
+        "return_total": 43420.0
+      },
+      "delta": {
+        "hit": 7,
+        "purchase": 7,
+        "rank710": -5,
+        "rank46": 0,
+        "other": -2,
+        "roi": 0.4989
+      },
+      "churn_hit": 0,
+      "pick_churn": 46,
+      "worsened_winner_rank1": 0,
+      "roi_def": "flat 100yen/race on top pick; ROI=(return-stake)/stake"
+    },
+    "race_diff": {
+      "improved_count": 7,
+      "worsened_count": 0,
+      "worsened_winner_rank1": 0,
+      "improved_races": [
+        {
+          "race_id": "2024-02-11-東京-10",
+          "miss_layer": null,
+          "winner_rank": 8,
+          "control_pick": "2020106756",
+          "treatment_pick": "2015104714"
+        },
+        {
+          "race_id": "2024-04-21-東京-10",
+          "miss_layer": null,
+          "winner_rank": 7,
+          "control_pick": "2020100145",
+          "treatment_pick": "2019104116"
+        },
+        {
+          "race_id": "2024-04-28-東京-10",
+          "miss_layer": null,
+          "winner_rank": 7,
+          "control_pick": "2016105206",
+          "treatment_pick": "2018106571"
+        },
+        {
+          "race_id": "2024-06-02-京都-10",
+          "miss_layer": null,
+          "winner_rank": 10,
+          "control_pick": "2019105239",
+          "treatment_pick": "2019103430"
+        },
+        {
+          "race_id": "2024-06-30-小倉-10",
+          "miss_layer": null,
+          "winner_rank": 11,
+          "control_pick": "2020106635",
+          "treatment_pick": "2019104729"
+        },
+        {
+          "race_id": "2026-02-15-京都-11",
+          "miss_layer": null,
+          "winner_rank": 7,
+          "control_pick": "2018105012",
+          "treatment_pick": "2021100913"
+        },
+        {
+          "race_id": "2026-03-22-中京-11",
+          "miss_layer": null,
+          "winner_rank": 11,
+          "control_pick": "2021104434",
+          "treatment_pick": "2022103875"
+        }
+      ],
+      "worsened_races": [],
+      "improved_race_ids": [
+        "2024-02-11-東京-10",
+        "2024-04-21-東京-10",
+        "2024-04-28-東京-10",
+        "2024-06-02-京都-10",
+        "2024-06-30-小倉-10",
+        "2026-02-15-京都-11",
+        "2026-03-22-中京-11"
+      ],
+      "expected_improved_race_ids": [
+        "2024-02-11-東京-10",
+        "2024-04-21-東京-10",
+        "2024-04-28-東京-10",
+        "2024-06-02-京都-10",
+        "2024-06-30-小倉-10",
+        "2026-02-15-京都-11",
+        "2026-03-22-中京-11"
+      ],
+      "improved_ids_match": true
+    },
+    "flag_comparison": {
+      "off": {
+        "F_V3_A05_ADM_FAVSAFE_ENABLED": false,
+        "n": 285,
+        "hit": 59,
+        "miss": 226,
+        "purchase": 59,
+        "rank710": 37,
+        "rank46": 101,
+        "other": 88,
+        "roi": 0.0246,
+        "stake_total": 28500.0,
+        "return_total": 29200.0
+      },
+      "on": {
+        "F_V3_A05_ADM_FAVSAFE_ENABLED": true,
+        "n": 285,
+        "hit": 66,
+        "miss": 219,
+        "purchase": 66,
+        "rank710": 32,
+        "rank46": 101,
+        "other": 86,
+        "roi": 0.5235,
+        "stake_total": 28500.0,
+        "return_total": 43420.0
+      }
+    },
+    "expected": {
+      "control_hit": 59,
+      "treatment_hit": 66,
+      "delta_hit": 7,
+      "churn_hit": 0,
+      "worsened_n": 0,
+      "worsened_winner_rank1": 0,
+      "improved_n": 7,
+      "treatment_roi": 0.5235,
+      "control_roi": 0.0246
+    },
+    "matches_expected": true,
+    "hard_gate": {
+      "worsened_winner_rank1_0": true,
+      "delta_hit_gt_0": true,
+      "churn_hit": 0,
+      "pick_churn": 46,
+      "pass": true
+    },
+    "pass": true
+  },
+  "lab_panel": {
+    "panel": "lab_control_vs_a05",
+    "metric_summary": {
+      "control": {
+        "n": 285,
+        "hit": 218,
+        "miss": 67,
+        "purchase": 218,
+        "rank710": 9,
+        "rank46": 6,
+        "other": 52,
+        "roi": 1.1418,
+        "stake_total": 28500.0,
+        "return_total": 61040.0
+      },
+      "treatment": {
+        "n": 285,
+        "hit": 218,
+        "miss": 67,
+        "purchase": 218,
+        "rank710": 9,
+        "rank46": 6,
+        "other": 52,
+        "roi": 1.1418,
+        "stake_total": 28500.0,
+        "return_total": 61040.0
+      },
+      "delta": {
+        "hit": 0,
+        "purchase": 0,
+        "rank710": 0,
+        "rank46": 0,
+        "other": 0,
+        "roi": 0.0
+      },
+      "churn_hit": 0,
+      "pick_churn": 0,
+      "worsened_winner_rank1": 0,
+      "roi_def": "flat 100yen/race on top pick; ROI=(return-stake)/stake"
+    },
+    "race_diff": {
+      "improved_count": 0,
+      "worsened_count": 0,
+      "worsened_winner_rank1": 0,
+      "improved_races": [],
+      "worsened_races": [],
+      "improved_race_ids": [],
+      "expected_improved_race_ids": null,
+      "improved_ids_match": true
+    },
+    "flag_comparison": {
+      "off": {
+        "F_V3_A05_ADM_FAVSAFE_ENABLED": false,
+        "n": 285,
+        "hit": 218,
+        "miss": 67,
+        "purchase": 218,
+        "rank710": 9,
+        "rank46": 6,
+        "other": 52,
+        "roi": 1.1418,
+        "stake_total": 28500.0,
+        "return_total": 61040.0
+      },
+      "on": {
+        "F_V3_A05_ADM_FAVSAFE_ENABLED": true,
+        "n": 285,
+        "hit": 218,
+        "miss": 67,
+        "purchase": 218,
+        "rank710": 9,
+        "rank46": 6,
+        "other": 52,
+        "roi": 1.1418,
+        "stake_total": 28500.0,
+        "return_total": 61040.0
+      }
+    },
+    "expected": {
+      "control_hit": 218,
+      "treatment_hit": 218,
+      "delta_hit": 0,
+      "churn_hit": 0,
+      "worsened_n": 0,
+      "improved_n": 0
+    },
+    "matches_expected": true,
+    "hard_gate": {
+      "worsened_winner_rank1_0": true,
+      "delta_hit_gt_0": true,
+      "churn_hit": 0,
+      "pick_churn": 0,
+      "pass": true
+    },
+    "pass": true
+  },
+  "reproducibility": {
+    "pass": true,
+    "rounds": 2,
+    "reference": {
+      "control_hit": 59,
+      "treatment_hit": 66,
+      "delta_hit": 7,
+      "churn_hit": 0,
+      "pick_churn": 46,
+      "worsened_winner_rank1": 0,
+      "improved_n": 7,
+      "worsened_n": 0,
+      "treatment_roi": 0.5235,
+      "improved_race_ids": [
+        "2024-02-11-東京-10",
+        "2024-04-21-東京-10",
+        "2024-04-28-東京-10",
+        "2024-06-02-京都-10",
+        "2024-06-30-小倉-10",
+        "2026-02-15-京都-11",
+        "2026-03-22-中京-11"
+      ]
+    },
+    "rounds_detail": [
+      {
+        "panel": "offline_round_1",
+        "pass": true,
+        "hit": 66,
+        "delta_hit": 7,
+        "worsened_rank1": 0
+      },
+      {
+        "panel": "offline_round_2",
+        "pass": true,
+        "hit": 66,
+        "delta_hit": 7,
+        "worsened_rank1": 0
+      }
+    ],
+    "matches_expected": true
+  },
+  "input_identity": {
+    "pass": true,
+    "corpus_fingerprint": "c9ae4f172c5565cd0674c37b",
+    "n": 285,
+    "same_race_ids": true,
+    "note": "Control/Treatment share identical Offline corpus inputs"
+  },
+  "frozen_modules": {
+    "pass": true,
+    "modules": [
+      {
+        "module": "feature_generator.py",
+        "expected": "32a71445b03ddb65",
+        "actual": "32a71445b03ddb65",
+        "match": true
+      },
+      {
+        "module": "admission_policy.py",
+        "expected": "78a79ebce7786dea",
+        "actual": "78a79ebce7786dea",
+        "match": true
+      },
+      {
+        "module": "admission_policy_a03.py",
+        "expected": "04142443526f62b0",
+        "actual": "04142443526f62b0",
+        "match": true
+      },
+      {
+        "module": "admission_policy_a05.py",
+        "expected": "368017d328a21cb0",
+        "actual": "368017d328a21cb0",
+        "match": true
+      },
+      {
+        "module": "evaluation_policy.py",
+        "expected": "5fcd339f846e4d46",
+        "actual": "5fcd339f846e4d46",
+        "match": true
+      },
+      {
+        "module": "evaluation_policy_d2.py",
+        "expected": "9e6c63994517371b",
+        "actual": "9e6c63994517371b",
+        "match": true
+      },
+      {
+        "module": "selection_policy.py",
+        "expected": "cea5a9befae0b1a6",
+        "actual": "cea5a9befae0b1a6",
+        "match": true
+      },
+      {
+        "module": "selection_policy_a04.py",
+        "expected": "4c3538e74ba05980",
+        "actual": "4c3538e74ba05980",
+        "match": true
+      }
+    ]
+  },
+  "flag_defaults": {
+    "pass": true,
+    "checks": {
+      "a05_default_off": true,
+      "a03_default_off": true,
+      "a04_default_off": true,
+      "d1_default_off": true
+    },
+    "snapshot": {
+      "F_V3_REPRESENTATION": false,
+      "F_V3_REPRESENTATION_ENABLED": false,
+      "F_V3_ADMISSION": false,
+      "F_V3_ADMISSION_ENABLED": false,
+      "F_V3_SELECTION": false,
+      "F_V3_SELECTION_ENABLED": false,
+      "F_V3_LAB_ENABLED": false,
+      "F_V3_EVALUATION_ENABLED": false,
+      "F_V3_PURCHASE_ENABLED": false,
+      "F_V3_RANK_D1_ENABLED": false,
+      "F_V3_RANK_D2_ENABLED": false,
+      "F_V3_A03_POOL_ADMIT_ENABLED": false,
+      "F_V3_A05_ADM_FAVSAFE_ENABLED": false,
+      "F_V3_A04_SEL_HISTORY_ENABLED": false,
+      "F_V3_AP_BANDED_ENABLED": false,
+      "F_V3_AP_COVERAGE_ENABLED": false,
+      "F_V3_SEL_REORDER_ENABLED": false,
+      "any_stage_on": false,
+      "representation_on": false,
+      "admission_on": false,
+      "selection_on": false,
+      "evaluation_on": false,
+      "a03_admission_on": false,
+      "a05_admission_on": false,
+      "a04_selection_on": false
+    }
+  },
+  "stage_isolation": {
+    "pass": true,
+    "checks": {
+      "representation_disabled": true,
+      "admission_a05": true,
+      "selection_identity": true,
+      "evaluation_disabled": true,
+      "purchase_identity_mapper": true,
+      "flags_only_a05": true
+    },
+    "race_id": "2024-01-06-京都-10"
+  },
+  "mutex_a03_a05_rejected": true,
+  "hard_gate": {
+    "worsened_winner_rank1_0": true,
+    "delta_hit_gt_0": true,
+    "churn_hit": 0,
+    "pick_churn": 46,
+    "pass": true
+  }
+}

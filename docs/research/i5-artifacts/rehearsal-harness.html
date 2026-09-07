@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <title>I5 Staging Rehearsal Harness (non-product)</title>
+</head>
+<body>
+  <h1>I5 Staging Rehearsal Harness</h1>
+  <p>Non-product. Validates Flag ON/OFF · Single detail fetch · Prediction fallback · Timeout.</p>
+  <pre id="out">running…</pre>
+  <script src="/public/assets/api/ui-features.js?v=i5"></script>
+  <script>
+    // Mock Prediction before single-detail loads
+    window.ExpectApi = window.ExpectApi || {};
+    window.ExpectApi.Prediction = {
+      getWithMeta: function (raceId) {
+        return Promise.resolve({
+          bundle: { schema_version: "prediction-bundle/2.0", race_id: raceId, ranks: [] },
+          meta: { detail_source: "prediction", source: "mock-prediction" },
+        });
+      },
+    };
+    // Capture fetches
+    window.__i5_fetches = [];
+    var _fetch = window.fetch.bind(window);
+    window.fetch = function (url, init) {
+      var u = String(url);
+      window.__i5_fetches.push({ url: u, method: (init && init.method) || "GET", body: init && init.body });
+      if (u.indexOf("/api/single/detail/") >= 0) {
+        var mode = window.__i5_detail_mode || "fallback";
+        if (mode === "timeout") {
+          return new Promise(function (_res, rej) {
+            setTimeout(function () {
+              var e = new Error("aborted");
+              e.name = "AbortError";
+              rej(e);
+            }, 30);
+          });
+        }
+        if (mode === "error") {
+          return Promise.resolve(
+            new Response(JSON.stringify({ ok: false, error: { code: "SINGLE_SITE_ERROR" } }), {
+              status: 502,
+              headers: { "content-type": "application/json" },
+            })
+          );
+        }
+        if (mode === "success") {
+          return Promise.resolve(
+            new Response(
+              JSON.stringify({
+                ok: true,
+                data: { schema_version: "prediction-bundle/2.0", race_id: "stg", ranks: ["A"] },
+                meta: { detail_source: "single", single_attempted: true },
+              }),
+              { status: 200, headers: { "content-type": "application/json" } }
+            )
+          );
+        }
+        // default: BFF returns prediction_fallback envelope
+        return Promise.resolve(
+          new Response(
+            JSON.stringify({
+              ok: true,
+              data: { schema_version: "prediction-bundle/2.0", race_id: "stg", ranks: [] },
+              meta: {
+                detail_source: "prediction_fallback",
+                fallback_reason: "CORE_PAYLOAD_REQUIRED",
+                single_attempted: false,
+              },
+            }),
+            { status: 200, headers: { "content-type": "application/json" } }
+          )
+        );
+      }
+      if (u.indexOf("/config/beta.json") >= 0) {
+        return Promise.resolve(
+          new Response(
+            JSON.stringify({
+              schema_version: "expect-beta-config/1.0",
+              ui_features: window.__i5_beta_features || { single_ai_detail: false },
+            }),
+            { status: 200, headers: { "content-type": "application/json" } }
+          )
+        );
+      }
+      return _fetch(url, init);
+    };
+  </script>
+  <script src="/public/assets/api/single-detail.js?v=i5"></script>
+  <script>
+    (async function () {
+      var out = document.getElementById("out");
+      var report = { phase: "I5", checks: [], fetches: [] };
+      function check(id, ok, detail) {
+        report.checks.push({ id: id, status: ok ? "PASS" : "FAIL", detail: detail });
+      }
+      try {
+        // --- Flag OFF ---
+        window.__i5_beta_features = { single_ai_detail: false };
+        window.ExpectUiFeatures && (ExpectUiFeatures._resetForTest = null);
+        // force reload features cache
+        if (ExpectUiFeatures) {
+          // poke internal by re-calling load after clearing ready
+          ExpectUiFeatures.ready = ExpectUiFeatures.ready;
+        }
+        // Direct: patch enabled
+        var origEnabled = ExpectUiFeatures.enabled;
+        ExpectUiFeatures.enabled = function (name) {
+          if (name === "single_ai_detail") return !!window.__i5_flag_on;
+          return origEnabled.call(ExpectUiFeatures, name);
+        };
+
+        window.__i5_flag_on = false;
+        window.__i5_fetches = [];
+        var off = await ExpectApi.SingleDetail.getWithMeta("202607190611");
+        check(
+          "flag_off_prediction",
+          off && off.meta && (off.meta.detail_source === "prediction" || off.bundle),
+          "flag OFF → Prediction path"
+        );
+        check(
+          "flag_off_no_single_http",
+          window.__i5_fetches.every(function (f) {
+            return f.url.indexOf("/api/single/detail/") < 0;
+          }),
+          "no Single detail HTTP when Flag OFF"
+        );
+
+        // --- Flag ON · expected Prediction fallback (no core) ---
+        window.__i5_flag_on = true;
+        window.__i5_detail_mode = "fallback";
+        window.__i5_fetches = [];
+        var fb = await ExpectApi.SingleDetail.getWithMeta("202607190611");
+        var called = window.__i5_fetches.some(function (f) {
+          return f.url.indexOf("/api/single/detail/") >= 0 && f.method === "POST";
+        });
+        check("flag_on_single_api_call", called, "Flag ON → POST /api/single/detail/:id");
+        check(
+          "prediction_fallback_envelope",
+          fb && fb.meta && (fb.meta.detail_source === "prediction_fallback" || fb.bundle),
+          "Prediction fallback / bundle present"
+        );
+
+        // --- Flag ON · Single success ---
+        window.__i5_detail_mode = "success";
+        window.__i5_fetches = [];
+        var ok = await ExpectApi.SingleDetail.getWithMeta("202607190611");
+        check(
+          "single_api_success",
+          ok && ok.meta && ok.meta.detail_source === "single",
+          "Single success meta.detail_source=single"
+        );
+
+        // --- Timeout → Prediction fallback ---
+        window.__i5_detail_mode = "timeout";
+        window.__i5_fetches = [];
+        var to = await ExpectApi.SingleDetail.getWithMeta("202607190611");
+        check(
+          "timeout_prediction_fallback",
+          to &&
+            to.meta &&
+            to.meta.detail_source === "prediction_fallback" &&
+            (to.meta.fallback_reason === "TIMEOUT" || to.meta.fallback_reason),
+          "Timeout/Abort → Prediction fallback"
+        );
+
+        // --- HTTP error → Prediction fallback ---
+        window.__i5_detail_mode = "error";
+        var er = await ExpectApi.SingleDetail.getWithMeta("202607190611");
+        check(
+          "error_prediction_fallback",
+          er && er.meta && er.meta.detail_source === "prediction_fallback",
+          "HTTP error → Prediction fallback"
+        );
+
+        // --- Rollback Flag OFF ---
+        window.__i5_flag_on = false;
+        window.__i5_fetches = [];
+        var rb = await ExpectApi.SingleDetail.getWithMeta("202607190611");
+        check(
+          "rollback_flag_off",
+          rb &&
+            window.__i5_fetches.every(function (f) {
+              return f.url.indexOf("/api/single/detail/") < 0;
+            }),
+          "Rollback Flag OFF → no Single HTTP"
+        );
+
+        report.fetches = window.__i5_fetches.slice();
+        report.verdict = report.checks.every(function (c) {
+          return c.status === "PASS";
+        })
+          ? "PASS"
+          : "FAIL";
+      } catch (e) {
+        report.verdict = "FAIL";
+        report.error = String(e && e.message ? e.message : e);
+        check("harness_exception", false, report.error);
+      }
+      out.textContent = JSON.stringify(report, null, 2);
+      window.__i5_report = report;
+      document.title = "I5 " + report.verdict;
+    })();
+  </script>
+</body>
+</html>

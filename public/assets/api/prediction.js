@@ -168,6 +168,7 @@
         (payload.error && payload.error.message) || "API error"
       );
       err.status = payload.status;
+      err.code = payload.error && payload.error.code;
       throw err;
     }
     return {
@@ -184,29 +185,65 @@
     return bundle;
   }
 
-  function apiGet(path, query, opts) {
-    opts = opts || {};
-    var headers = { Accept: "application/json" };
-    var token = getToken();
-    if (token) headers.Authorization = "Bearer " + token;
-    var timeoutMs =
-      typeof opts.timeoutMs === "number" && opts.timeoutMs > 0 ? opts.timeoutMs : 18000;
-    var controller = typeof AbortController !== "undefined" ? new AbortController() : null;
-    var timer = null;
-    if (controller) {
-      timer = setTimeout(function () {
-        try {
-          controller.abort();
-        } catch (e) { /* ignore */ }
-      }, timeoutMs);
+  /** Terminal unavailable — polling しても解決しない（race_not_resolved 等） */
+  function isTerminalUnavailable(meta, bundle) {
+    meta = meta || {};
+    bundle = bundle || {};
+    var reason = String(meta.fallback_reason || bundle.fallback_reason || "");
+    if (reason === "race_not_resolved" || reason === "race_not_found") return true;
+    if (meta.prediction_status === "unavailable") return true;
+    var st = String(meta.fallback_state || "").toLowerCase();
+    if (st.indexOf("race_not_resolved") >= 0 || st.indexOf("race_not_found") >= 0) return true;
+    if (meta.engine_source === "prediction_unavailable" && reason === "race_not_resolved") {
+      return true;
     }
+    return false;
+  }
 
-    return fetch(buildUrl(path, query), {
-      method: "GET",
-      headers: headers,
-      signal: controller ? controller.signal : undefined,
-    })
-      .then(function (res) {
+  /** Ready Bundle 判定（空 Projection / runners=0 / pending / mock / unavailable は拒否） */
+  function isReadyPrediction(bundle, meta) {
+    if (!bundle || typeof bundle !== "object") return false;
+    meta = meta || bundle.__meta || {};
+    if (meta.prediction_status === "pending") return false;
+    if (meta.prediction_available === false) return false;
+    if (bundle.prediction_available === false) return false;
+    if (meta.engine_source === "pi_catalog_projection") return false;
+    if (meta.engine_source === "prediction_unavailable") return false;
+    if (
+      meta.engine_source === "mock_fallback" ||
+      meta.engine_source === "bff_mock" ||
+      meta.engine_source === "mock"
+    ) {
+      return false;
+    }
+    if (
+      meta.fallback_reason === "pi_prediction_unavailable_catalog_projection" ||
+      meta.fallback_reason === "pi_prediction_unavailable_pending"
+    ) {
+      return false;
+    }
+    var fb = String(meta.fallback_state || meta.fallback_reason || "").toLowerCase();
+    if (fb.indexOf("mock_fallback") >= 0) return false;
+    if (fb.indexOf("prediction_unavailable") >= 0) return false;
+    if (
+      String(meta.model_version || bundle.model_version || "")
+        .toLowerCase()
+        .indexOf("dummy-model") >= 0
+    ) {
+      return false;
+    }
+    var runners =
+      (bundle.evaluation && bundle.evaluation.runners) || bundle.runners || [];
+    return Array.isArray(runners) && runners.length > 0;
+  }
+
+  function apiGet(path, query) {
+    function doFetch() {
+      var headers = { Accept: "application/json" };
+      var token = getToken();
+      if (token) headers.Authorization = "Bearer " + token;
+
+      return fetch(buildUrl(path, query), { method: "GET", headers: headers }).then(function (res) {
         return res.text().then(function (text) {
           var payload = null;
           try {
@@ -214,27 +251,44 @@
           } catch (e) {
             payload = null;
           }
+          // Version7: 空 Projection 代わりの pending（HTTP 202）
+          var pendingCode =
+            payload &&
+            payload.error &&
+            payload.error.code === "PREDICTION_PENDING";
+          if (res.status === 202 || pendingCode) {
+            return {
+              pending: true,
+              data: null,
+              meta: (payload && payload.meta) || {},
+              error: (payload && payload.error) || {
+                code: "PREDICTION_PENDING",
+                message: "Prediction pending",
+              },
+            };
+          }
           if (!res.ok || (payload && payload.ok === false)) {
             var err = new Error(
               (payload && payload.error && payload.error.message) || "API error " + res.status
             );
             err.status = res.status;
+            err.code = payload && payload.error && payload.error.code;
             throw err;
           }
           return parsePayload(payload);
         });
-      })
-      .catch(function (err) {
-        if (err && err.name === "AbortError") {
-          var te = new Error("Prediction API timeout");
-          te.code = "TIMEOUT";
-          throw te;
-        }
-        throw err;
-      })
-      .finally(function () {
-        if (timer) clearTimeout(timer);
       });
+    }
+
+    if (global.ExpectHttpCache) {
+      var isGetOne = String(path || "").indexOf("/api/predictions/") === 0;
+      var ttl = isGetOne
+        ? ExpectHttpCache.TTL.predictions_get
+        : ExpectHttpCache.TTL.predictions_list;
+      var key = ExpectHttpCache.buildKey(path, query);
+      return ExpectHttpCache.cachedGet(key, ttl, doFetch);
+    }
+    return doFetch();
   }
 
   function attachContract(bundle) {
@@ -258,20 +312,28 @@
       var query = { date: opts.date || "", venue: opts.venue || "" };
       return apiGet("/api/predictions", query)
         .then(function (parsed) {
+          if (parsed && parsed.pending) {
+            return [];
+          }
           var data = parsed.data;
           var meta = parsed.meta || {};
           var items = Array.isArray(data) ? data : (data && data.items) || [];
           var metaItems = Array.isArray(meta.items) ? meta.items : [];
-          return items.map(function (b) {
-            var itemMeta = Object.assign({}, meta);
-            for (var i = 0; i < metaItems.length; i++) {
-              if (metaItems[i] && b && metaItems[i].race_id === b.race_id) {
-                itemMeta = Object.assign({}, meta, metaItems[i]);
-                break;
+          return items
+            .map(function (b) {
+              var itemMeta = Object.assign({}, meta);
+              for (var i = 0; i < metaItems.length; i++) {
+                if (metaItems[i] && b && metaItems[i].race_id === b.race_id) {
+                  itemMeta = Object.assign({}, meta, metaItems[i]);
+                  break;
+                }
               }
-            }
-            return attachContract(attachMeta(normalizeBundle(b, b.race_id), itemMeta));
-          });
+              var bundle = attachContract(
+                attachMeta(normalizeBundle(b, b.race_id), itemMeta)
+              );
+              return isReadyPrediction(bundle, itemMeta) ? bundle : null;
+            })
+            .filter(Boolean);
         })
         .catch(function (err) {
           if (global.ExpectMockGate && ExpectMockGate.allowMockFallback()) {
@@ -292,15 +354,40 @@
       });
     },
 
-    /** @returns {Promise<{bundle: PredictionBundle, meta: object}>} */
+    /** @returns {Promise<{bundle: PredictionBundle|null, meta: object, pending?: boolean}>} */
     getWithMeta: function (raceId) {
       if (!raceId) return Promise.reject(new Error("race_id required"));
       return apiGet("/api/predictions/" + encodeURIComponent(raceId))
         .then(function (parsed) {
+          if (parsed && parsed.pending) {
+            return {
+              bundle: null,
+              meta: parsed.meta || {},
+              pending: true,
+              error: parsed.error || null,
+            };
+          }
+          var meta = parsed.meta || {};
           var bundle = attachContract(
-            attachMeta(normalizeBundle(parsed.data, raceId), parsed.meta || {})
+            attachMeta(normalizeBundle(parsed.data, raceId), meta)
           );
-          return { bundle: bundle, meta: (bundle && bundle.__meta) || parsed.meta || {} };
+          if (!isReadyPrediction(bundle, meta)) {
+            if (isTerminalUnavailable(meta, bundle)) {
+              return {
+                bundle: bundle,
+                meta: meta,
+                pending: false,
+                terminal: true,
+              };
+            }
+            return {
+              bundle: null,
+              meta: Object.assign({}, meta, { prediction_status: "pending" }),
+              pending: true,
+              error: { code: "PREDICTION_PENDING", message: "empty or projection" },
+            };
+          }
+          return { bundle: bundle, meta: (bundle && bundle.__meta) || meta };
         })
         .catch(function (err) {
           if (global.ExpectMockGate && ExpectMockGate.allowMockFallback()) {
@@ -312,6 +399,9 @@
           return Promise.reject(err || new Error("Prediction API unavailable"));
         });
     },
+
+    /** 空 Projection / pending 判定（UI・prefetch 共用） */
+    isReady: isReadyPrediction,
 
     scorePercent: scorePercent,
 

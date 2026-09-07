@@ -1,10 +1,13 @@
 # Version 3 Accuracy — Roadmap Update（V2 検証終了後）
 
 **Date:** 2026-07-22  
-**Status:** Roadmap Update（設計のみ・実装禁止）  
+**Status:** Roadmap Update（設計のみ・実装禁止） — **上位正本は V3 Design 一式**  
 **前提:** Version 2 Accuracy **検証終了** — Final Report 受領  
 **V2 Final 構成:** Phase255 + **PE-V2-A のみ**（Hit **218**）  
-**正本:** `docs/releases/v2-accuracy-final-report.md`
+**正本（V2）:** `docs/releases/v2-accuracy-final-report.md`  
+**正本（V3 設計）:** [`v3-design-report.md`](./v3-design-report.md) · [`v3-experiment-roadmap.md`](./v3-experiment-roadmap.md) · [`v3-accuracy-strategy.md`](./v3-accuracy-strategy.md) · [`v3-architecture-proposal.md`](./v3-architecture-proposal.md) · [`v3-vision.md`](./v3-vision.md)
+
+> 本ファイルは V2 終了直後の短い引き継ぎメモ。Version 3 の正式設計は上記 V3 Design 文書を用いる。
 
 ---
 

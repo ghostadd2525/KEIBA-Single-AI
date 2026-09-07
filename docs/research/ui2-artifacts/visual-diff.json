@@ -1,0 +1,74 @@
+{
+  "identical_slots": true,
+  "diff_keys": [],
+  "baseline": {
+    "race_id": "2026-07-19-hanshin-11",
+    "marks": [
+      {
+        "mark": "honmei",
+        "horse_number": 5,
+        "model_rank": 1
+      },
+      {
+        "mark": "taikou",
+        "horse_number": 3,
+        "model_rank": 2
+      },
+      {
+        "mark": "ana",
+        "horse_number": 8,
+        "model_rank": 3
+      },
+      {
+        "mark": "chuuken",
+        "horse_number": 2,
+        "model_rank": 4
+      }
+    ],
+    "confidence_band": "medium",
+    "confidence_score": 0.72,
+    "ability_score_keys": [
+      "distance_score",
+      "front_rate",
+      "history_score",
+      "pace_collapse_risk_v2",
+      "style_distance_fit_weight"
+    ],
+    "world_null": true
+  },
+  "candidate": {
+    "race_id": "2026-07-19-hanshin-11",
+    "marks": [
+      {
+        "mark": "honmei",
+        "horse_number": 5,
+        "model_rank": 1
+      },
+      {
+        "mark": "taikou",
+        "horse_number": 3,
+        "model_rank": 2
+      },
+      {
+        "mark": "ana",
+        "horse_number": 8,
+        "model_rank": 3
+      },
+      {
+        "mark": "chuuken",
+        "horse_number": 2,
+        "model_rank": 4
+      }
+    ],
+    "confidence_band": "medium",
+    "confidence_score": 0.72,
+    "ability_score_keys": [
+      "distance_score",
+      "front_rate",
+      "history_score",
+      "pace_collapse_risk_v2",
+      "style_distance_fit_weight"
+    ],
+    "world_null": true
+  }
+}

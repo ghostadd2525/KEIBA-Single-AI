@@ -1,0 +1,24 @@
+{
+  "schema_version": "expect-v8-week-manifesto/1.1",
+  "week_id": "YYYY-Www",
+  "timezone": "Asia/Tokyo",
+  "mode": "research",
+  "stages": {
+    "mon_analyzer": { "status": "pending", "path": "mon-analyzer/" },
+    "tue_proposal": { "status": "pending", "path": "tue-proposal/" },
+    "tue_validation": { "status": "pending", "path": "tue-proposal/" },
+    "wed_canary": { "status": "pending", "path": "wed-canary/" },
+    "thu_baseline": { "status": "pending", "path": "thu-baseline/" },
+    "fri_decision": { "status": "pending", "path": "fri-decision/" },
+    "fri_knowledge": { "status": "pending", "path": "fri-decision/" },
+    "fri_governance": { "status": "pending", "path": "reports/" },
+    "fri_report": { "status": "pending", "path": "reports/" },
+    "sat_deploy": {
+      "status": "skipped",
+      "path": "sat-deploy/",
+      "note": "deploy-note only — Production auto-apply forbidden"
+    }
+  },
+  "decision": null,
+  "notes": "V8.6 Runner manages phases. Copy via v8:runner / run-day."
+}

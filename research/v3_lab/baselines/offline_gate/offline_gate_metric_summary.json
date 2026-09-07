@@ -1,0 +1,43 @@
+{
+  "control": {
+    "name": "Lab Flag OFF (identity top-1)",
+    "flags_on": [],
+    "n": 285,
+    "hit": 59,
+    "miss": 226,
+    "purchase": 59,
+    "rank710": 37,
+    "rank46": 101,
+    "other": 88,
+    "roi": 0.0246,
+    "stake_total": 28500.0,
+    "return_total": 29200.0
+  },
+  "treatment": {
+    "name": "Lab Baseline v3 (A-01 + A-03 + A-04)",
+    "flags_on": [
+      "F_V3_RANK_D1_ENABLED",
+      "F_V3_A03_POOL_ADMIT_ENABLED",
+      "F_V3_A04_SEL_HISTORY_ENABLED"
+    ],
+    "n": 285,
+    "hit": 42,
+    "miss": 243,
+    "purchase": 42,
+    "rank710": 29,
+    "rank46": 101,
+    "other": 113,
+    "roi": 0.1807,
+    "stake_total": 28500.0,
+    "return_total": 33650.0
+  },
+  "delta": {
+    "hit": -17,
+    "purchase": -17,
+    "rank710": -8,
+    "rank46": 0,
+    "other": 25,
+    "roi": 0.1561
+  },
+  "churn_hit": 29
+}

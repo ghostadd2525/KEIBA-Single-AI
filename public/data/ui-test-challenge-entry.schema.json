@@ -1,0 +1,124 @@
+{
+  "schema_version": "expect-ui-test-challenge-entry/1.2",
+  "description": "Frontend-only multi-race Challenge entry contract. Runtime writes go to sessionStorage (same shape); this file is schema/fixture authority only — not mutated at runtime. status: ACTIVE | RESULT_READY. RESULT_READY uses official settled authority for real races; ui-test uses Frontend battle fixture only (no Result Automation / DB / Settlement).",
+  "ui_test": true,
+  "entries": [
+    {
+      "race_id": "ui-test-race-001",
+      "ui_test": true,
+      "race_date": "2026-08-30",
+      "venue": "東京",
+      "race_number": "11R",
+      "race_name": "Expect Challenge テストレース",
+      "post_time": "15:40",
+      "registered_at": "2026-08-30T12:00:00+09:00",
+      "status": "ACTIVE",
+      "total_registered_amount": 900,
+      "bets": [
+        {
+          "bet_type": "単勝",
+          "ordered": false,
+          "legs_display": "13",
+          "selections": [
+            { "horse_number": 13, "horse_name": "テスト馬ジュウサン" }
+          ],
+          "amount": 100
+        },
+        {
+          "bet_type": "馬連",
+          "ordered": false,
+          "legs_display": "1 - 12",
+          "selections": [
+            { "horse_number": 1, "horse_name": "テスト馬イチバン" },
+            { "horse_number": 12, "horse_name": "テスト馬ジュウニ" }
+          ],
+          "amount": 300
+        },
+        {
+          "bet_type": "三連単",
+          "ordered": true,
+          "legs_display": "1 → 12 → 7",
+          "selections": [
+            { "horse_number": 1, "horse_name": "テスト馬イチバン" },
+            { "horse_number": 12, "horse_name": "テスト馬ジュウニ" },
+            { "horse_number": 7, "horse_name": "テスト馬ナナバン" }
+          ],
+          "amount": 500
+        }
+      ]
+    },
+    {
+      "race_id": "ui-test-race-002",
+      "ui_test": true,
+      "race_date": "2026-08-30",
+      "venue": "札幌",
+      "race_number": "10R",
+      "race_name": "UIテスト 札幌ステークス",
+      "post_time": "15:10",
+      "registered_at": "2026-08-30T11:00:00+09:00",
+      "status": "ACTIVE",
+      "total_registered_amount": 500,
+      "bets": [
+        {
+          "bet_type": "複勝",
+          "ordered": false,
+          "legs_display": "5",
+          "selections": [
+            { "horse_number": 5, "horse_name": "テスト馬ゴバン" }
+          ],
+          "amount": 500
+        }
+      ]
+    },
+    {
+      "race_id": "ui-test-race-003",
+      "ui_test": true,
+      "race_date": "2026-08-30",
+      "venue": "新潟",
+      "race_number": "12R",
+      "race_name": "UIテスト 新潟特別",
+      "post_time": "16:30",
+      "registered_at": "2026-08-30T10:00:00+09:00",
+      "status": "ACTIVE",
+      "total_registered_amount": 1000,
+      "bets": [
+        {
+          "bet_type": "ワイド",
+          "ordered": false,
+          "legs_display": "3 - 8",
+          "selections": [
+            { "horse_number": 3, "horse_name": "テスト馬サンバン" },
+            { "horse_number": 8, "horse_name": "テスト馬ハチバン" }
+          ],
+          "amount": 400
+        },
+        {
+          "bet_type": "馬単",
+          "ordered": true,
+          "legs_display": "1 → 4",
+          "selections": [
+            { "horse_number": 1, "horse_name": "テスト馬イチバン" },
+            { "horse_number": 4, "horse_name": "テスト馬ヨンバン" }
+          ],
+          "amount": 600
+        }
+      ]
+    }
+  ],
+  "battle_fixture_example": {
+    "note": "Attached when status becomes RESULT_READY via Frontend simulation. AI side is frozen pre-race challenge comparator — never generated after result.",
+    "user": {
+      "registered": 900,
+      "payout": 1500,
+      "profit": 600,
+      "bets": []
+    },
+    "ai": {
+      "registered": 1000,
+      "payout": 450,
+      "profit": -550,
+      "source": "FROZEN_UI_TEST_AI_CHALLENGE"
+    },
+    "winner": "USER"
+  }
+}

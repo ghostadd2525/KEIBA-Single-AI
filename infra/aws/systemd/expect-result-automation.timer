@@ -1,12 +1,13 @@
 [Unit]
-Description=Expect Result Automation — post-meeting + morning catch-up
+Description=Expect Result Automation Timer (Version7.3 race-day cadence)
+Requires=expect-result-automation.service
 
 [Timer]
-# 開催日終了後の目安（21:00 JST ≈ 12:00 UTC）と翌日 06:00 JST（21:00 UTC 前日）
-OnCalendar=*-*-* 12:00:00
-OnCalendar=*-*-* 21:00:00
+# Version7.3: 2 分 tick。runner 側 cadence が idle/stop なら即 skip
+OnCalendar=*-*-* *:0/2:00
+AccuracySec=30s
 Persistent=true
-AccuracySec=1min
+Unit=expect-result-automation.service
 
 [Install]
 WantedBy=timers.target

@@ -1,0 +1,50 @@
+{
+  "schema_version": "expect-v89-history/1.0",
+  "published_at": "2026-07-27T00:18:38.114Z",
+  "baseline_lock": "Version8.5",
+  "approval": [],
+  "deploy": [],
+  "research": [
+    {
+      "week_id": "2026-W30",
+      "version": "Version8.5",
+      "decision": "no_improvement",
+      "status": "recorded",
+      "path": null,
+      "updated_at": "2026-07-26T12:59:35.691Z"
+    },
+    {
+      "week_id": "2026-W31",
+      "version": "Version8.5",
+      "decision": "no_improvement",
+      "status": "recorded",
+      "path": "/ops-data/artifacts/2026-W31/decision.json",
+      "updated_at": null
+    },
+    {
+      "week_id": "2026-W31",
+      "version": "Version8.5",
+      "phase": "analyzer",
+      "decision": null,
+      "status": "PASS",
+      "started_at": "2026-07-26T23:56:20.318Z",
+      "ended_at": "2026-07-26T23:56:20.550Z",
+      "duration_ms": 232,
+      "path": null,
+      "updated_at": "2026-07-26T23:56:20.550Z"
+    }
+  ],
+  "weekly_report": [
+    {
+      "week_id": "2026-W30",
+      "version": "Version8.5",
+      "status": "available",
+      "decision": "no_improvement",
+      "path": "/ops-data/artifacts/2026-W30/weekly-ops-report.json",
+      "md_path": "/ops-data/artifacts/2026-W30/weekly-ops-report.md",
+      "updated_at": "2026-07-26T12:59:35.691Z"
+    }
+  ],
+  "boundary_audit": [],
+  "incident": []
+}

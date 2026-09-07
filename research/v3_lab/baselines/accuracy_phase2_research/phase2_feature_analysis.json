@@ -1,0 +1,60 @@
+{
+  "analysis_id": "v3-accuracy-phase2-research-analysis/1.0",
+  "date": "2026-07-24",
+  "corpus": "unified_review_285r (rev-285-*)",
+  "baseline_hit": 218,
+  "control_miss": 67,
+  "counts": {
+    "control_hit": 218,
+    "a01_only_improved": 28,
+    "a02_only_improved": 24,
+    "both_improved": 0,
+    "neither_remaining_miss": 15,
+    "overlap_rate": 0.0
+  },
+  "a01_common_features": {
+    "layer": "Eval",
+    "n": 28,
+    "winner_rank": 2,
+    "field_size": 8,
+    "top_win_prob": 0.15,
+    "winner_win_prob": 0.4,
+    "wp_gap_top_minus_winner": -0.25,
+    "wp_gap_1_2": 0.25,
+    "winner_odds": 3.1,
+    "top_odds": 4.8,
+    "signature": "model_rank1 favorite wrong; rank2 has clearly higher win_prob (calibration miss)"
+  },
+  "a02_common_features": {
+    "layers": {"Boundary": 14, "Reorder": 10},
+    "n": 24,
+    "winner_rank": {"2": 10, "3": 14},
+    "field_size": 8,
+    "top_win_prob_mean": 0.1983,
+    "winner_win_prob_mean": 0.1904,
+    "wp_gap_top_minus_winner_mean": 0.0079,
+    "wp_gap_1_2_mean": 0.005,
+    "winner_hist_mean": 0.4717,
+    "top_hist_mean": 0.1283,
+    "hist_gap_winner_minus_top_mean": 0.3433,
+    "signature": "crowded top win_probs; winner distinguished by history_score pairwise strength"
+  },
+  "neither_remaining": {
+    "Pool": {
+      "n": 9,
+      "winner_rank": [8, 9, 10],
+      "field_size": 12,
+      "winner_wp_mean": 0.04,
+      "top_wp_mean": 0.24,
+      "winner_odds_mean": 45.0,
+      "signature": "far winner outside typical evaluation top; pool/admission territory"
+    },
+    "Delete": {
+      "n": 6,
+      "winner_rank": [5],
+      "field_size": 8,
+      "purchase_eligible": false,
+      "signature": "purchase/delete boundary — immutable by Accuracy policy"
+    }
+  }
+}

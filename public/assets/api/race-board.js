@@ -1,6 +1,6 @@
 /**
- * ExpectApi.RaceBoard — 出馬表 / オッズ / 近走
- * GET /api/races/:id/board[?include=history]
+ * ExpectApi.RaceBoard — 出馬表 / 単勝オッズ（entries）
+ * Version7.2: GET /api/races/:id/board（history なし）
  */
 (function (global) {
   "use strict";
@@ -19,7 +19,7 @@
     var token = getToken();
     if (token) headers.Authorization = "Bearer " + token;
     var timeoutMs =
-      typeof opts.timeoutMs === "number" && opts.timeoutMs > 0 ? opts.timeoutMs : 15000;
+      typeof opts.timeoutMs === "number" && opts.timeoutMs > 0 ? opts.timeoutMs : 20000;
     var controller = typeof AbortController !== "undefined" ? new AbortController() : null;
     var timer = null;
     if (controller) {
@@ -65,12 +65,12 @@
   function getBoard(raceId, opts) {
     opts = opts || {};
     var qs = [];
-    if (opts.includeHistory) qs.push("include=history");
-    // 強制更新時はブラウザ/中間キャッシュを避ける（PI 側は 5 分 TTL）
+    // Version7.2: include=history は送らない（近走は RaceHistory）
     if (opts.fresh) qs.push("_=" + Date.now());
     var q = qs.length ? "?" + qs.join("&") : "";
     return api("/api/races/" + encodeURIComponent(raceId) + "/board" + q, {
       fresh: !!opts.fresh,
+      timeoutMs: opts.timeoutMs != null ? opts.timeoutMs : 20000,
     });
   }
 
@@ -78,4 +78,4 @@
   global.ExpectApi.RaceBoard = {
     getBoard: getBoard,
   };
-})(typeof window !== "undefined" ? window : globalThis);
+})(typeof window !== "undefined" ? window : this);

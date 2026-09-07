@@ -1,0 +1,13 @@
+{
+  "schema_version": "expect-v8-week-decision/1.0",
+  "week_id": null,
+  "decided_at": null,
+  "decision": "no_improvement",
+  "ok": true,
+  "reason": "TEMPLATE — replace via npm run v8:fri",
+  "baseline_id": "formal-285r-offline-corpus",
+  "proposal_ids": [],
+  "canary_pass": null,
+  "baseline_delta": null,
+  "promote_to_production": false
+}

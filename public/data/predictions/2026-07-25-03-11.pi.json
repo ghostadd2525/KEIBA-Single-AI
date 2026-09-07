@@ -1,0 +1,121 @@
+{
+  "race_id": "2026-07-25-03-11",
+  "race_date": "2026-07-25",
+  "course": "札幌",
+  "venue": "札幌",
+  "race_number": 11,
+  "race_no": 11,
+  "race_name": "TVh賞",
+  "race_label": "札幌11R",
+  "status": "published",
+  "prediction_available": true,
+  "prediction": {
+    "race_id": "2026-07-25-03-11",
+    "candidates": [
+      {
+        "CandidateID": "ロジケープ",
+        "Rank": 1,
+        "Confidence": 0.13849784727929404,
+        "HorseNumber": 12,
+        "WorldMeta": "midupper_world",
+        "SubWorldMeta": "midupper_route"
+      },
+      {
+        "CandidateID": "アスクケンタッキー",
+        "Rank": 2,
+        "Confidence": 0.0828146448838092,
+        "HorseNumber": 1,
+        "WorldMeta": "midupper_world",
+        "SubWorldMeta": "midupper_route"
+      },
+      {
+        "CandidateID": "アンジュプロミス",
+        "Rank": 3,
+        "Confidence": 0.08099577995164561,
+        "HorseNumber": 2,
+        "WorldMeta": "midupper_world",
+        "SubWorldMeta": "midupper_route"
+      },
+      {
+        "CandidateID": "メルトユアハート",
+        "Rank": 4,
+        "Confidence": 0.07852499225664969,
+        "HorseNumber": 10,
+        "WorldMeta": "midupper_world",
+        "SubWorldMeta": "midupper_route"
+      },
+      {
+        "CandidateID": "サウスバンク",
+        "Rank": 5,
+        "Confidence": 0.07834873246788031,
+        "HorseNumber": 7,
+        "WorldMeta": "midupper_world",
+        "SubWorldMeta": "midupper_route"
+      },
+      {
+        "CandidateID": "ゴールドサーベル",
+        "Rank": 6,
+        "Confidence": 0.07814187116569184,
+        "HorseNumber": 6,
+        "WorldMeta": "midupper_world",
+        "SubWorldMeta": "midupper_route"
+      },
+      {
+        "CandidateID": "ウィルオレオール",
+        "Rank": 7,
+        "Confidence": 0.07771599375468786,
+        "HorseNumber": 3,
+        "WorldMeta": "midupper_world",
+        "SubWorldMeta": "midupper_route"
+      },
+      {
+        "CandidateID": "エヴァンスウィート",
+        "Rank": 8,
+        "Confidence": 0.07721945941321506,
+        "HorseNumber": 4,
+        "WorldMeta": "midupper_world",
+        "SubWorldMeta": "midupper_route"
+      },
+      {
+        "CandidateID": "ルーフ",
+        "Rank": 9,
+        "Confidence": 0.07721302390807797,
+        "HorseNumber": 11,
+        "WorldMeta": "midupper_world",
+        "SubWorldMeta": "midupper_route"
+      },
+      {
+        "CandidateID": "パクスロマーナ",
+        "Rank": 10,
+        "Confidence": 0.07699636585433295,
+        "HorseNumber": 9,
+        "WorldMeta": "midupper_world",
+        "SubWorldMeta": "midupper_route"
+      },
+      {
+        "CandidateID": "クリエープキー",
+        "Rank": 11,
+        "Confidence": 0.0769640269825496,
+        "HorseNumber": 5,
+        "WorldMeta": "midupper_world",
+        "SubWorldMeta": "midupper_route"
+      },
+      {
+        "CandidateID": "シカゴスティング",
+        "Rank": 12,
+        "Confidence": 0.07656726208216576,
+        "HorseNumber": 8,
+        "WorldMeta": "midupper_world",
+        "SubWorldMeta": "midupper_route"
+      }
+    ],
+    "world": "midupper_world",
+    "sub_world": "midupper_route",
+    "overall_confidence": 0.09028546087488132,
+    "core_version": "ai-core-migrated/1.0-phase1",
+    "meta": {
+      "generated_at": "2026-07-25T15:53:11.206264+09:00",
+      "source": "local_core_pipeline"
+    }
+  }
+}

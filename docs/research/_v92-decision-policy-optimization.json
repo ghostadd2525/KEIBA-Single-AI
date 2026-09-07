@@ -1,0 +1,1100 @@
+{
+  "schema": "v92-decision-policy-optimization/1.0",
+  "generated_at": "2026-07-28T11:37:53+00:00",
+  "adr": "ADR-008 (unchanged)",
+  "scope": "Decision Layer policy params only (rank7 Top×Pool grid)",
+  "n_races": 285,
+  "n_rank7": 65,
+  "grid_size": 16,
+  "m1_default": {
+    "ticket_top_n": 3,
+    "pool_size": 5,
+    "stake_scale": 1.0,
+    "explain_variant": "melee_default",
+    "id": "rank7_Top3_Pool5_s1"
+  },
+  "results": [
+    {
+      "params": {
+        "ticket_top_n": 5,
+        "pool_size": 7,
+        "stake_scale": 1.0,
+        "explain_variant": "melee_default",
+        "id": "rank7_Top5_Pool7_s1"
+      },
+      "fingerprint_ok": true,
+      "rank7": {
+        "n_races": 65,
+        "ticket_roi": -0.3542,
+        "ticket_pnl": -2302.3,
+        "purchase_hit_rate": 0.6461538461538462,
+        "coverage_rate": 0.8307692307692308,
+        "hit_rate": 0.6461538461538462,
+        "prediction_hit_rate": 0.8,
+        "buy_rate": 1.0,
+        "skip_rate": 0.0,
+        "mean_pool_size": 7.0,
+        "mean_n_tickets": 5.0,
+        "decision_distribution": {
+          "BUY": 65,
+          "SKIP": 0
+        }
+      },
+      "all": {
+        "n_races": 285,
+        "ticket_roi": 0.017986811481768842,
+        "ticket_pnl": 463.7000000000007,
+        "purchase_hit_rate": 0.3169811320754717,
+        "coverage_rate": 0.39649122807017545,
+        "hit_rate": 0.29473684210526313,
+        "prediction_hit_rate": 0.7649122807017544,
+        "buy_rate": 0.9298245614035088,
+        "skip_rate": 0.07017543859649122,
+        "mean_pool_size": 2.617543859649123,
+        "mean_n_tickets": 1.8421052631578947,
+        "decision_distribution": {
+          "BUY": 265,
+          "SKIP": 20
+        }
+      }
+    },
+    {
+      "params": {
+        "ticket_top_n": 5,
+        "pool_size": 6,
+        "stake_scale": 1.0,
+        "explain_variant": "melee_default",
+        "id": "rank7_Top5_Pool6_s1"
+      },
+      "fingerprint_ok": true,
+      "rank7": {
+        "n_races": 65,
+        "ticket_roi": -0.3542,
+        "ticket_pnl": -2302.3,
+        "purchase_hit_rate": 0.6461538461538462,
+        "coverage_rate": 0.7846153846153846,
+        "hit_rate": 0.6461538461538462,
+        "prediction_hit_rate": 0.8,
+        "buy_rate": 1.0,
+        "skip_rate": 0.0,
+        "mean_pool_size": 6.0,
+        "mean_n_tickets": 5.0,
+        "decision_distribution": {
+          "BUY": 65,
+          "SKIP": 0
+        }
+      },
+      "all": {
+        "n_races": 285,
+        "ticket_roi": 0.017986811481768842,
+        "ticket_pnl": 463.7000000000007,
+        "purchase_hit_rate": 0.3169811320754717,
+        "coverage_rate": 0.38596491228070173,
+        "hit_rate": 0.29473684210526313,
+        "prediction_hit_rate": 0.7649122807017544,
+        "buy_rate": 0.9298245614035088,
+        "skip_rate": 0.07017543859649122,
+        "mean_pool_size": 2.389473684210526,
+        "mean_n_tickets": 1.8421052631578947,
+        "decision_distribution": {
+          "BUY": 265,
+          "SKIP": 20
+        }
+      }
+    },
+    {
+      "params": {
+        "ticket_top_n": 5,
+        "pool_size": 4,
+        "stake_scale": 1.0,
+        "explain_variant": "melee_default",
+        "id": "rank7_Top5_Pool4_s1"
+      },
+      "fingerprint_ok": true,
+      "rank7": {
+        "n_races": 65,
+        "ticket_roi": -0.3542,
+        "ticket_pnl": -2302.3,
+        "purchase_hit_rate": 0.6461538461538462,
+        "coverage_rate": 0.6461538461538462,
+        "hit_rate": 0.6461538461538462,
+        "prediction_hit_rate": 0.8,
+        "buy_rate": 1.0,
+        "skip_rate": 0.0,
+        "mean_pool_size": 5.0,
+        "mean_n_tickets": 5.0,
+        "decision_distribution": {
+          "BUY": 65,
+          "SKIP": 0
+        }
+      },
+      "all": {
+        "n_races": 285,
+        "ticket_roi": 0.017986811481768842,
+        "ticket_pnl": 463.7000000000007,
+        "purchase_hit_rate": 0.3169811320754717,
+        "coverage_rate": 0.3543859649122807,
+        "hit_rate": 0.29473684210526313,
+        "prediction_hit_rate": 0.7649122807017544,
+        "buy_rate": 0.9298245614035088,
+        "skip_rate": 0.07017543859649122,
+        "mean_pool_size": 2.16140350877193,
+        "mean_n_tickets": 1.8421052631578947,
+        "decision_distribution": {
+          "BUY": 265,
+          "SKIP": 20
+        }
+      }
+    },
+    {
+      "params": {
+        "ticket_top_n": 5,
+        "pool_size": 5,
+        "stake_scale": 1.0,
+        "explain_variant": "melee_default",
+        "id": "rank7_Top5_Pool5_s1"
+      },
+      "fingerprint_ok": true,
+      "rank7": {
+        "n_races": 65,
+        "ticket_roi": -0.3542,
+        "ticket_pnl": -2302.3,
+        "purchase_hit_rate": 0.6461538461538462,
+        "coverage_rate": 0.6461538461538462,
+        "hit_rate": 0.6461538461538462,
+        "prediction_hit_rate": 0.8,
+        "buy_rate": 1.0,
+        "skip_rate": 0.0,
+        "mean_pool_size": 5.0,
+        "mean_n_tickets": 5.0,
+        "decision_distribution": {
+          "BUY": 65,
+          "SKIP": 0
+        }
+      },
+      "all": {
+        "n_races": 285,
+        "ticket_roi": 0.017986811481768842,
+        "ticket_pnl": 463.7000000000007,
+        "purchase_hit_rate": 0.3169811320754717,
+        "coverage_rate": 0.3543859649122807,
+        "hit_rate": 0.29473684210526313,
+        "prediction_hit_rate": 0.7649122807017544,
+        "buy_rate": 0.9298245614035088,
+        "skip_rate": 0.07017543859649122,
+        "mean_pool_size": 2.16140350877193,
+        "mean_n_tickets": 1.8421052631578947,
+        "decision_distribution": {
+          "BUY": 265,
+          "SKIP": 20
+        }
+      }
+    },
+    {
+      "params": {
+        "ticket_top_n": 4,
+        "pool_size": 7,
+        "stake_scale": 1.0,
+        "explain_variant": "melee_default",
+        "id": "rank7_Top4_Pool7_s1"
+      },
+      "fingerprint_ok": true,
+      "rank7": {
+        "n_races": 65,
+        "ticket_roi": -0.3586153846153846,
+        "ticket_pnl": -2331.0,
+        "purchase_hit_rate": 0.5538461538461539,
+        "coverage_rate": 0.8307692307692308,
+        "hit_rate": 0.5538461538461539,
+        "prediction_hit_rate": 0.8,
+        "buy_rate": 1.0,
+        "skip_rate": 0.0,
+        "mean_pool_size": 7.0,
+        "mean_n_tickets": 4.0,
+        "decision_distribution": {
+          "BUY": 65,
+          "SKIP": 0
+        }
+      },
+      "all": {
+        "n_races": 285,
+        "ticket_roi": 0.01687354538401862,
+        "ticket_pnl": 435.0,
+        "purchase_hit_rate": 0.2943396226415094,
+        "coverage_rate": 0.39649122807017545,
+        "hit_rate": 0.2736842105263158,
+        "prediction_hit_rate": 0.7649122807017544,
+        "buy_rate": 0.9298245614035088,
+        "skip_rate": 0.07017543859649122,
+        "mean_pool_size": 2.617543859649123,
+        "mean_n_tickets": 1.6140350877192982,
+        "decision_distribution": {
+          "BUY": 265,
+          "SKIP": 20
+        }
+      }
+    },
+    {
+      "params": {
+        "ticket_top_n": 4,
+        "pool_size": 6,
+        "stake_scale": 1.0,
+        "explain_variant": "melee_default",
+        "id": "rank7_Top4_Pool6_s1"
+      },
+      "fingerprint_ok": true,
+      "rank7": {
+        "n_races": 65,
+        "ticket_roi": -0.3586153846153846,
+        "ticket_pnl": -2331.0,
+        "purchase_hit_rate": 0.5538461538461539,
+        "coverage_rate": 0.7846153846153846,
+        "hit_rate": 0.5538461538461539,
+        "prediction_hit_rate": 0.8,
+        "buy_rate": 1.0,
+        "skip_rate": 0.0,
+        "mean_pool_size": 6.0,
+        "mean_n_tickets": 4.0,
+        "decision_distribution": {
+          "BUY": 65,
+          "SKIP": 0
+        }
+      },
+      "all": {
+        "n_races": 285,
+        "ticket_roi": 0.01687354538401862,
+        "ticket_pnl": 435.0,
+        "purchase_hit_rate": 0.2943396226415094,
+        "coverage_rate": 0.38596491228070173,
+        "hit_rate": 0.2736842105263158,
+        "prediction_hit_rate": 0.7649122807017544,
+        "buy_rate": 0.9298245614035088,
+        "skip_rate": 0.07017543859649122,
+        "mean_pool_size": 2.389473684210526,
+        "mean_n_tickets": 1.6140350877192982,
+        "decision_distribution": {
+          "BUY": 265,
+          "SKIP": 20
+        }
+      }
+    },
+    {
+      "params": {
+        "ticket_top_n": 4,
+        "pool_size": 5,
+        "stake_scale": 1.0,
+        "explain_variant": "melee_default",
+        "id": "rank7_Top4_Pool5_s1"
+      },
+      "fingerprint_ok": true,
+      "rank7": {
+        "n_races": 65,
+        "ticket_roi": -0.3586153846153846,
+        "ticket_pnl": -2331.0,
+        "purchase_hit_rate": 0.5538461538461539,
+        "coverage_rate": 0.6461538461538462,
+        "hit_rate": 0.5538461538461539,
+        "prediction_hit_rate": 0.8,
+        "buy_rate": 1.0,
+        "skip_rate": 0.0,
+        "mean_pool_size": 5.0,
+        "mean_n_tickets": 4.0,
+        "decision_distribution": {
+          "BUY": 65,
+          "SKIP": 0
+        }
+      },
+      "all": {
+        "n_races": 285,
+        "ticket_roi": 0.01687354538401862,
+        "ticket_pnl": 435.0,
+        "purchase_hit_rate": 0.2943396226415094,
+        "coverage_rate": 0.3543859649122807,
+        "hit_rate": 0.2736842105263158,
+        "prediction_hit_rate": 0.7649122807017544,
+        "buy_rate": 0.9298245614035088,
+        "skip_rate": 0.07017543859649122,
+        "mean_pool_size": 2.16140350877193,
+        "mean_n_tickets": 1.6140350877192982,
+        "decision_distribution": {
+          "BUY": 265,
+          "SKIP": 20
+        }
+      }
+    },
+    {
+      "params": {
+        "ticket_top_n": 4,
+        "pool_size": 4,
+        "stake_scale": 1.0,
+        "explain_variant": "melee_default",
+        "id": "rank7_Top4_Pool4_s1"
+      },
+      "fingerprint_ok": true,
+      "rank7": {
+        "n_races": 65,
+        "ticket_roi": -0.3586153846153846,
+        "ticket_pnl": -2331.0,
+        "purchase_hit_rate": 0.5538461538461539,
+        "coverage_rate": 0.5538461538461539,
+        "hit_rate": 0.5538461538461539,
+        "prediction_hit_rate": 0.8,
+        "buy_rate": 1.0,
+        "skip_rate": 0.0,
+        "mean_pool_size": 4.0,
+        "mean_n_tickets": 4.0,
+        "decision_distribution": {
+          "BUY": 65,
+          "SKIP": 0
+        }
+      },
+      "all": {
+        "n_races": 285,
+        "ticket_roi": 0.01687354538401862,
+        "ticket_pnl": 435.0,
+        "purchase_hit_rate": 0.2943396226415094,
+        "coverage_rate": 0.3333333333333333,
+        "hit_rate": 0.2736842105263158,
+        "prediction_hit_rate": 0.7649122807017544,
+        "buy_rate": 0.9298245614035088,
+        "skip_rate": 0.07017543859649122,
+        "mean_pool_size": 1.9333333333333333,
+        "mean_n_tickets": 1.6140350877192982,
+        "decision_distribution": {
+          "BUY": 265,
+          "SKIP": 20
+        }
+      }
+    },
+    {
+      "params": {
+        "ticket_top_n": 3,
+        "pool_size": 7,
+        "stake_scale": 1.0,
+        "explain_variant": "melee_default",
+        "id": "rank7_Top3_Pool7_s1"
+      },
+      "fingerprint_ok": true,
+      "rank7": {
+        "n_races": 65,
+        "ticket_roi": -0.3493846153846154,
+        "ticket_pnl": -2271.0,
+        "purchase_hit_rate": 0.4461538461538462,
+        "coverage_rate": 0.8307692307692308,
+        "hit_rate": 0.4461538461538462,
+        "prediction_hit_rate": 0.8,
+        "buy_rate": 1.0,
+        "skip_rate": 0.0,
+        "mean_pool_size": 7.0,
+        "mean_n_tickets": 3.0,
+        "decision_distribution": {
+          "BUY": 65,
+          "SKIP": 0
+        }
+      },
+      "all": {
+        "n_races": 285,
+        "ticket_roi": 0.019200930954228083,
+        "ticket_pnl": 495.0,
+        "purchase_hit_rate": 0.2679245283018868,
+        "coverage_rate": 0.39649122807017545,
+        "hit_rate": 0.24912280701754386,
+        "prediction_hit_rate": 0.7649122807017544,
+        "buy_rate": 0.9298245614035088,
+        "skip_rate": 0.07017543859649122,
+        "mean_pool_size": 2.617543859649123,
+        "mean_n_tickets": 1.3859649122807018,
+        "decision_distribution": {
+          "BUY": 265,
+          "SKIP": 20
+        }
+      }
+    },
+    {
+      "params": {
+        "ticket_top_n": 3,
+        "pool_size": 6,
+        "stake_scale": 1.0,
+        "explain_variant": "melee_default",
+        "id": "rank7_Top3_Pool6_s1"
+      },
+      "fingerprint_ok": true,
+      "rank7": {
+        "n_races": 65,
+        "ticket_roi": -0.3493846153846154,
+        "ticket_pnl": -2271.0,
+        "purchase_hit_rate": 0.4461538461538462,
+        "coverage_rate": 0.7846153846153846,
+        "hit_rate": 0.4461538461538462,
+        "prediction_hit_rate": 0.8,
+        "buy_rate": 1.0,
+        "skip_rate": 0.0,
+        "mean_pool_size": 6.0,
+        "mean_n_tickets": 3.0,
+        "decision_distribution": {
+          "BUY": 65,
+          "SKIP": 0
+        }
+      },
+      "all": {
+        "n_races": 285,
+        "ticket_roi": 0.019200930954228083,
+        "ticket_pnl": 495.0,
+        "purchase_hit_rate": 0.2679245283018868,
+        "coverage_rate": 0.38596491228070173,
+        "hit_rate": 0.24912280701754386,
+        "prediction_hit_rate": 0.7649122807017544,
+        "buy_rate": 0.9298245614035088,
+        "skip_rate": 0.07017543859649122,
+        "mean_pool_size": 2.389473684210526,
+        "mean_n_tickets": 1.3859649122807018,
+        "decision_distribution": {
+          "BUY": 265,
+          "SKIP": 20
+        }
+      }
+    },
+    {
+      "params": {
+        "ticket_top_n": 3,
+        "pool_size": 5,
+        "stake_scale": 1.0,
+        "explain_variant": "melee_default",
+        "id": "rank7_Top3_Pool5_s1"
+      },
+      "fingerprint_ok": true,
+      "rank7": {
+        "n_races": 65,
+        "ticket_roi": -0.3493846153846154,
+        "ticket_pnl": -2271.0,
+        "purchase_hit_rate": 0.4461538461538462,
+        "coverage_rate": 0.6461538461538462,
+        "hit_rate": 0.4461538461538462,
+        "prediction_hit_rate": 0.8,
+        "buy_rate": 1.0,
+        "skip_rate": 0.0,
+        "mean_pool_size": 5.0,
+        "mean_n_tickets": 3.0,
+        "decision_distribution": {
+          "BUY": 65,
+          "SKIP": 0
+        }
+      },
+      "all": {
+        "n_races": 285,
+        "ticket_roi": 0.019200930954228083,
+        "ticket_pnl": 495.0,
+        "purchase_hit_rate": 0.2679245283018868,
+        "coverage_rate": 0.3543859649122807,
+        "hit_rate": 0.24912280701754386,
+        "prediction_hit_rate": 0.7649122807017544,
+        "buy_rate": 0.9298245614035088,
+        "skip_rate": 0.07017543859649122,
+        "mean_pool_size": 2.16140350877193,
+        "mean_n_tickets": 1.3859649122807018,
+        "decision_distribution": {
+          "BUY": 265,
+          "SKIP": 20
+        }
+      }
+    },
+    {
+      "params": {
+        "ticket_top_n": 3,
+        "pool_size": 4,
+        "stake_scale": 1.0,
+        "explain_variant": "melee_default",
+        "id": "rank7_Top3_Pool4_s1"
+      },
+      "fingerprint_ok": true,
+      "rank7": {
+        "n_races": 65,
+        "ticket_roi": -0.3493846153846154,
+        "ticket_pnl": -2271.0,
+        "purchase_hit_rate": 0.4461538461538462,
+        "coverage_rate": 0.5538461538461539,
+        "hit_rate": 0.4461538461538462,
+        "prediction_hit_rate": 0.8,
+        "buy_rate": 1.0,
+        "skip_rate": 0.0,
+        "mean_pool_size": 4.0,
+        "mean_n_tickets": 3.0,
+        "decision_distribution": {
+          "BUY": 65,
+          "SKIP": 0
+        }
+      },
+      "all": {
+        "n_races": 285,
+        "ticket_roi": 0.019200930954228083,
+        "ticket_pnl": 495.0,
+        "purchase_hit_rate": 0.2679245283018868,
+        "coverage_rate": 0.3333333333333333,
+        "hit_rate": 0.24912280701754386,
+        "prediction_hit_rate": 0.7649122807017544,
+        "buy_rate": 0.9298245614035088,
+        "skip_rate": 0.07017543859649122,
+        "mean_pool_size": 1.9333333333333333,
+        "mean_n_tickets": 1.3859649122807018,
+        "decision_distribution": {
+          "BUY": 265,
+          "SKIP": 20
+        }
+      }
+    },
+    {
+      "params": {
+        "ticket_top_n": 2,
+        "pool_size": 7,
+        "stake_scale": 1.0,
+        "explain_variant": "melee_default",
+        "id": "rank7_Top2_Pool7_s1"
+      },
+      "fingerprint_ok": true,
+      "rank7": {
+        "n_races": 65,
+        "ticket_roi": -0.38953846153846156,
+        "ticket_pnl": -2532.0,
+        "purchase_hit_rate": 0.27692307692307694,
+        "coverage_rate": 0.8307692307692308,
+        "hit_rate": 0.27692307692307694,
+        "prediction_hit_rate": 0.8,
+        "buy_rate": 1.0,
+        "skip_rate": 0.0,
+        "mean_pool_size": 7.0,
+        "mean_n_tickets": 2.0,
+        "decision_distribution": {
+          "BUY": 65,
+          "SKIP": 0
+        }
+      },
+      "all": {
+        "n_races": 285,
+        "ticket_roi": 0.009076803723816912,
+        "ticket_pnl": 234.0,
+        "purchase_hit_rate": 0.22641509433962265,
+        "coverage_rate": 0.39649122807017545,
+        "hit_rate": 0.21052631578947367,
+        "prediction_hit_rate": 0.7649122807017544,
+        "buy_rate": 0.9298245614035088,
+        "skip_rate": 0.07017543859649122,
+        "mean_pool_size": 2.617543859649123,
+        "mean_n_tickets": 1.1578947368421053,
+        "decision_distribution": {
+          "BUY": 265,
+          "SKIP": 20
+        }
+      }
+    },
+    {
+      "params": {
+        "ticket_top_n": 2,
+        "pool_size": 6,
+        "stake_scale": 1.0,
+        "explain_variant": "melee_default",
+        "id": "rank7_Top2_Pool6_s1"
+      },
+      "fingerprint_ok": true,
+      "rank7": {
+        "n_races": 65,
+        "ticket_roi": -0.38953846153846156,
+        "ticket_pnl": -2532.0,
+        "purchase_hit_rate": 0.27692307692307694,
+        "coverage_rate": 0.7846153846153846,
+        "hit_rate": 0.27692307692307694,
+        "prediction_hit_rate": 0.8,
+        "buy_rate": 1.0,
+        "skip_rate": 0.0,
+        "mean_pool_size": 6.0,
+        "mean_n_tickets": 2.0,
+        "decision_distribution": {
+          "BUY": 65,
+          "SKIP": 0
+        }
+      },
+      "all": {
+        "n_races": 285,
+        "ticket_roi": 0.009076803723816912,
+        "ticket_pnl": 234.0,
+        "purchase_hit_rate": 0.22641509433962265,
+        "coverage_rate": 0.38596491228070173,
+        "hit_rate": 0.21052631578947367,
+        "prediction_hit_rate": 0.7649122807017544,
+        "buy_rate": 0.9298245614035088,
+        "skip_rate": 0.07017543859649122,
+        "mean_pool_size": 2.389473684210526,
+        "mean_n_tickets": 1.1578947368421053,
+        "decision_distribution": {
+          "BUY": 265,
+          "SKIP": 20
+        }
+      }
+    },
+    {
+      "params": {
+        "ticket_top_n": 2,
+        "pool_size": 5,
+        "stake_scale": 1.0,
+        "explain_variant": "melee_default",
+        "id": "rank7_Top2_Pool5_s1"
+      },
+      "fingerprint_ok": true,
+      "rank7": {
+        "n_races": 65,
+        "ticket_roi": -0.38953846153846156,
+        "ticket_pnl": -2532.0,
+        "purchase_hit_rate": 0.27692307692307694,
+        "coverage_rate": 0.6461538461538462,
+        "hit_rate": 0.27692307692307694,
+        "prediction_hit_rate": 0.8,
+        "buy_rate": 1.0,
+        "skip_rate": 0.0,
+        "mean_pool_size": 5.0,
+        "mean_n_tickets": 2.0,
+        "decision_distribution": {
+          "BUY": 65,
+          "SKIP": 0
+        }
+      },
+      "all": {
+        "n_races": 285,
+        "ticket_roi": 0.009076803723816912,
+        "ticket_pnl": 234.0,
+        "purchase_hit_rate": 0.22641509433962265,
+        "coverage_rate": 0.3543859649122807,
+        "hit_rate": 0.21052631578947367,
+        "prediction_hit_rate": 0.7649122807017544,
+        "buy_rate": 0.9298245614035088,
+        "skip_rate": 0.07017543859649122,
+        "mean_pool_size": 2.16140350877193,
+        "mean_n_tickets": 1.1578947368421053,
+        "decision_distribution": {
+          "BUY": 265,
+          "SKIP": 20
+        }
+      }
+    },
+    {
+      "params": {
+        "ticket_top_n": 2,
+        "pool_size": 4,
+        "stake_scale": 1.0,
+        "explain_variant": "melee_default",
+        "id": "rank7_Top2_Pool4_s1"
+      },
+      "fingerprint_ok": true,
+      "rank7": {
+        "n_races": 65,
+        "ticket_roi": -0.38953846153846156,
+        "ticket_pnl": -2532.0,
+        "purchase_hit_rate": 0.27692307692307694,
+        "coverage_rate": 0.5538461538461539,
+        "hit_rate": 0.27692307692307694,
+        "prediction_hit_rate": 0.8,
+        "buy_rate": 1.0,
+        "skip_rate": 0.0,
+        "mean_pool_size": 4.0,
+        "mean_n_tickets": 2.0,
+        "decision_distribution": {
+          "BUY": 65,
+          "SKIP": 0
+        }
+      },
+      "all": {
+        "n_races": 285,
+        "ticket_roi": 0.009076803723816912,
+        "ticket_pnl": 234.0,
+        "purchase_hit_rate": 0.22641509433962265,
+        "coverage_rate": 0.3333333333333333,
+        "hit_rate": 0.21052631578947367,
+        "prediction_hit_rate": 0.7649122807017544,
+        "buy_rate": 0.9298245614035088,
+        "skip_rate": 0.07017543859649122,
+        "mean_pool_size": 1.9333333333333333,
+        "mean_n_tickets": 1.1578947368421053,
+        "decision_distribution": {
+          "BUY": 265,
+          "SKIP": 20
+        }
+      }
+    }
+  ],
+  "pareto_front_hit_roi": [
+    {
+      "params": {
+        "ticket_top_n": 5,
+        "pool_size": 4,
+        "stake_scale": 1.0,
+        "explain_variant": "melee_default",
+        "id": "rank7_Top5_Pool4_s1"
+      },
+      "rank7": {
+        "n_races": 65,
+        "ticket_roi": -0.3542,
+        "ticket_pnl": -2302.3,
+        "purchase_hit_rate": 0.6461538461538462,
+        "coverage_rate": 0.6461538461538462,
+        "hit_rate": 0.6461538461538462,
+        "prediction_hit_rate": 0.8,
+        "buy_rate": 1.0,
+        "skip_rate": 0.0,
+        "mean_pool_size": 5.0,
+        "mean_n_tickets": 5.0,
+        "decision_distribution": {
+          "BUY": 65,
+          "SKIP": 0
+        }
+      }
+    },
+    {
+      "params": {
+        "ticket_top_n": 5,
+        "pool_size": 5,
+        "stake_scale": 1.0,
+        "explain_variant": "melee_default",
+        "id": "rank7_Top5_Pool5_s1"
+      },
+      "rank7": {
+        "n_races": 65,
+        "ticket_roi": -0.3542,
+        "ticket_pnl": -2302.3,
+        "purchase_hit_rate": 0.6461538461538462,
+        "coverage_rate": 0.6461538461538462,
+        "hit_rate": 0.6461538461538462,
+        "prediction_hit_rate": 0.8,
+        "buy_rate": 1.0,
+        "skip_rate": 0.0,
+        "mean_pool_size": 5.0,
+        "mean_n_tickets": 5.0,
+        "decision_distribution": {
+          "BUY": 65,
+          "SKIP": 0
+        }
+      }
+    },
+    {
+      "params": {
+        "ticket_top_n": 5,
+        "pool_size": 6,
+        "stake_scale": 1.0,
+        "explain_variant": "melee_default",
+        "id": "rank7_Top5_Pool6_s1"
+      },
+      "rank7": {
+        "n_races": 65,
+        "ticket_roi": -0.3542,
+        "ticket_pnl": -2302.3,
+        "purchase_hit_rate": 0.6461538461538462,
+        "coverage_rate": 0.7846153846153846,
+        "hit_rate": 0.6461538461538462,
+        "prediction_hit_rate": 0.8,
+        "buy_rate": 1.0,
+        "skip_rate": 0.0,
+        "mean_pool_size": 6.0,
+        "mean_n_tickets": 5.0,
+        "decision_distribution": {
+          "BUY": 65,
+          "SKIP": 0
+        }
+      }
+    },
+    {
+      "params": {
+        "ticket_top_n": 5,
+        "pool_size": 7,
+        "stake_scale": 1.0,
+        "explain_variant": "melee_default",
+        "id": "rank7_Top5_Pool7_s1"
+      },
+      "rank7": {
+        "n_races": 65,
+        "ticket_roi": -0.3542,
+        "ticket_pnl": -2302.3,
+        "purchase_hit_rate": 0.6461538461538462,
+        "coverage_rate": 0.8307692307692308,
+        "hit_rate": 0.6461538461538462,
+        "prediction_hit_rate": 0.8,
+        "buy_rate": 1.0,
+        "skip_rate": 0.0,
+        "mean_pool_size": 7.0,
+        "mean_n_tickets": 5.0,
+        "decision_distribution": {
+          "BUY": 65,
+          "SKIP": 0
+        }
+      }
+    },
+    {
+      "params": {
+        "ticket_top_n": 3,
+        "pool_size": 4,
+        "stake_scale": 1.0,
+        "explain_variant": "melee_default",
+        "id": "rank7_Top3_Pool4_s1"
+      },
+      "rank7": {
+        "n_races": 65,
+        "ticket_roi": -0.3493846153846154,
+        "ticket_pnl": -2271.0,
+        "purchase_hit_rate": 0.4461538461538462,
+        "coverage_rate": 0.5538461538461539,
+        "hit_rate": 0.4461538461538462,
+        "prediction_hit_rate": 0.8,
+        "buy_rate": 1.0,
+        "skip_rate": 0.0,
+        "mean_pool_size": 4.0,
+        "mean_n_tickets": 3.0,
+        "decision_distribution": {
+          "BUY": 65,
+          "SKIP": 0
+        }
+      }
+    },
+    {
+      "params": {
+        "ticket_top_n": 3,
+        "pool_size": 5,
+        "stake_scale": 1.0,
+        "explain_variant": "melee_default",
+        "id": "rank7_Top3_Pool5_s1"
+      },
+      "rank7": {
+        "n_races": 65,
+        "ticket_roi": -0.3493846153846154,
+        "ticket_pnl": -2271.0,
+        "purchase_hit_rate": 0.4461538461538462,
+        "coverage_rate": 0.6461538461538462,
+        "hit_rate": 0.4461538461538462,
+        "prediction_hit_rate": 0.8,
+        "buy_rate": 1.0,
+        "skip_rate": 0.0,
+        "mean_pool_size": 5.0,
+        "mean_n_tickets": 3.0,
+        "decision_distribution": {
+          "BUY": 65,
+          "SKIP": 0
+        }
+      }
+    },
+    {
+      "params": {
+        "ticket_top_n": 3,
+        "pool_size": 6,
+        "stake_scale": 1.0,
+        "explain_variant": "melee_default",
+        "id": "rank7_Top3_Pool6_s1"
+      },
+      "rank7": {
+        "n_races": 65,
+        "ticket_roi": -0.3493846153846154,
+        "ticket_pnl": -2271.0,
+        "purchase_hit_rate": 0.4461538461538462,
+        "coverage_rate": 0.7846153846153846,
+        "hit_rate": 0.4461538461538462,
+        "prediction_hit_rate": 0.8,
+        "buy_rate": 1.0,
+        "skip_rate": 0.0,
+        "mean_pool_size": 6.0,
+        "mean_n_tickets": 3.0,
+        "decision_distribution": {
+          "BUY": 65,
+          "SKIP": 0
+        }
+      }
+    },
+    {
+      "params": {
+        "ticket_top_n": 3,
+        "pool_size": 7,
+        "stake_scale": 1.0,
+        "explain_variant": "melee_default",
+        "id": "rank7_Top3_Pool7_s1"
+      },
+      "rank7": {
+        "n_races": 65,
+        "ticket_roi": -0.3493846153846154,
+        "ticket_pnl": -2271.0,
+        "purchase_hit_rate": 0.4461538461538462,
+        "coverage_rate": 0.8307692307692308,
+        "hit_rate": 0.4461538461538462,
+        "prediction_hit_rate": 0.8,
+        "buy_rate": 1.0,
+        "skip_rate": 0.0,
+        "mean_pool_size": 7.0,
+        "mean_n_tickets": 3.0,
+        "decision_distribution": {
+          "BUY": 65,
+          "SKIP": 0
+        }
+      }
+    }
+  ],
+  "pareto_front_coverage_roi": [
+    {
+      "params": {
+        "ticket_top_n": 3,
+        "pool_size": 7,
+        "stake_scale": 1.0,
+        "explain_variant": "melee_default",
+        "id": "rank7_Top3_Pool7_s1"
+      },
+      "rank7": {
+        "n_races": 65,
+        "ticket_roi": -0.3493846153846154,
+        "ticket_pnl": -2271.0,
+        "purchase_hit_rate": 0.4461538461538462,
+        "coverage_rate": 0.8307692307692308,
+        "hit_rate": 0.4461538461538462,
+        "prediction_hit_rate": 0.8,
+        "buy_rate": 1.0,
+        "skip_rate": 0.0,
+        "mean_pool_size": 7.0,
+        "mean_n_tickets": 3.0,
+        "decision_distribution": {
+          "BUY": 65,
+          "SKIP": 0
+        }
+      }
+    }
+  ],
+  "recommendations": {
+    "max_ticket_roi": {
+      "id": "rank7_Top3_Pool4_s1",
+      "params": {
+        "ticket_top_n": 3,
+        "pool_size": 4,
+        "stake_scale": 1.0,
+        "explain_variant": "melee_default",
+        "id": "rank7_Top3_Pool4_s1"
+      },
+      "rank7": {
+        "n_races": 65,
+        "ticket_roi": -0.3493846153846154,
+        "ticket_pnl": -2271.0,
+        "purchase_hit_rate": 0.4461538461538462,
+        "coverage_rate": 0.5538461538461539,
+        "hit_rate": 0.4461538461538462,
+        "prediction_hit_rate": 0.8,
+        "buy_rate": 1.0,
+        "skip_rate": 0.0,
+        "mean_pool_size": 4.0,
+        "mean_n_tickets": 3.0,
+        "decision_distribution": {
+          "BUY": 65,
+          "SKIP": 0
+        }
+      }
+    },
+    "max_purchase_hit": {
+      "id": "rank7_Top5_Pool4_s1",
+      "params": {
+        "ticket_top_n": 5,
+        "pool_size": 4,
+        "stake_scale": 1.0,
+        "explain_variant": "melee_default",
+        "id": "rank7_Top5_Pool4_s1"
+      },
+      "rank7": {
+        "n_races": 65,
+        "ticket_roi": -0.3542,
+        "ticket_pnl": -2302.3,
+        "purchase_hit_rate": 0.6461538461538462,
+        "coverage_rate": 0.6461538461538462,
+        "hit_rate": 0.6461538461538462,
+        "prediction_hit_rate": 0.8,
+        "buy_rate": 1.0,
+        "skip_rate": 0.0,
+        "mean_pool_size": 5.0,
+        "mean_n_tickets": 5.0,
+        "decision_distribution": {
+          "BUY": 65,
+          "SKIP": 0
+        }
+      }
+    },
+    "balanced_hit_roi": {
+      "id": "rank7_Top5_Pool7_s1",
+      "params": {
+        "ticket_top_n": 5,
+        "pool_size": 7,
+        "stake_scale": 1.0,
+        "explain_variant": "melee_default",
+        "id": "rank7_Top5_Pool7_s1"
+      },
+      "rank7": {
+        "n_races": 65,
+        "ticket_roi": -0.3542,
+        "ticket_pnl": -2302.3,
+        "purchase_hit_rate": 0.6461538461538462,
+        "coverage_rate": 0.8307692307692308,
+        "hit_rate": 0.6461538461538462,
+        "prediction_hit_rate": 0.8,
+        "buy_rate": 1.0,
+        "skip_rate": 0.0,
+        "mean_pool_size": 7.0,
+        "mean_n_tickets": 5.0,
+        "decision_distribution": {
+          "BUY": 65,
+          "SKIP": 0
+        }
+      },
+      "score": 0.5330769230769231
+    },
+    "m1_baseline": {
+      "id": "rank7_Top3_Pool5_s1",
+      "params": {
+        "ticket_top_n": 3,
+        "pool_size": 5,
+        "stake_scale": 1.0,
+        "explain_variant": "melee_default",
+        "id": "rank7_Top3_Pool5_s1"
+      },
+      "rank7": {
+        "n_races": 65,
+        "ticket_roi": -0.3493846153846154,
+        "ticket_pnl": -2271.0,
+        "purchase_hit_rate": 0.4461538461538462,
+        "coverage_rate": 0.6461538461538462,
+        "hit_rate": 0.4461538461538462,
+        "prediction_hit_rate": 0.8,
+        "buy_rate": 1.0,
+        "skip_rate": 0.0,
+        "mean_pool_size": 5.0,
+        "mean_n_tickets": 3.0,
+        "decision_distribution": {
+          "BUY": 65,
+          "SKIP": 0
+        }
+      },
+      "on_pareto": true
+    }
+  },
+  "recommended_default": {
+    "id": "rank7_Top5_Pool7_s1",
+    "params": {
+      "ticket_top_n": 5,
+      "pool_size": 7,
+      "stake_scale": 1.0,
+      "explain_variant": "melee_default",
+      "id": "rank7_Top5_Pool7_s1"
+    },
+    "rank7": {
+      "n_races": 65,
+      "ticket_roi": -0.3542,
+      "ticket_pnl": -2302.3,
+      "purchase_hit_rate": 0.6461538461538462,
+      "coverage_rate": 0.8307692307692308,
+      "hit_rate": 0.6461538461538462,
+      "prediction_hit_rate": 0.8,
+      "buy_rate": 1.0,
+      "skip_rate": 0.0,
+      "mean_pool_size": 7.0,
+      "mean_n_tickets": 5.0,
+      "decision_distribution": {
+        "BUY": 65,
+        "SKIP": 0
+      }
+    },
+    "score": 0.5330769230769231
+  }
+}

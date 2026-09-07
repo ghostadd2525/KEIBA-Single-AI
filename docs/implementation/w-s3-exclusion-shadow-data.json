@@ -1,0 +1,965 @@
+{
+  "schema_version": "expect-w-s3-exclusion-shadow/1.0",
+  "generated_at": "2026-07-28T05:22:49+00:00",
+  "stage": "W-S3-Exclusion-Shadow",
+  "polarity_adr": "Accepted (W-S3) — thresholds not changed; batch-median observational",
+  "n_285": 285,
+  "n_near_match": 140,
+  "true_exclusion_n": 69,
+  "false_exclusion_n": 71,
+  "false_exclusion_rate": 0.5071428571428571,
+  "design_aligned_primary_n": 140,
+  "world_breakdown_near_match": {
+    "core_world": 83,
+    "midupper_world": 54,
+    "midhole_world": 25,
+    "rank7_world": 1
+  },
+  "clause_ranking": [
+    [
+      "CORE_EXCL:sfp↑_F+",
+      79
+    ],
+    [
+      "CORE_EXCL:mid_band_open_ForbidDef",
+      55
+    ],
+    [
+      "MIDUPPER_EXCL:mid_band_open_ForbidDef",
+      31
+    ],
+    [
+      "MIDUPPER_EXCL:chaos∧high_pace_rank7_region",
+      28
+    ],
+    [
+      "CORE_EXCL:chaos↑_F+",
+      24
+    ],
+    [
+      "MIDHOLE_EXCL:chaos∧difficulty_extreme",
+      18
+    ],
+    [
+      "CORE_EXCL:late∧sust_F+",
+      13
+    ],
+    [
+      "MIDHOLE_EXCL:top_gap↑_monopoly_F+",
+      13
+    ],
+    [
+      "RANK7_EXCL:top_gap↑_ability_resolution",
+      1
+    ]
+  ],
+  "winner_alignment_legacy": {
+    "soft": 67,
+    "aligned": 167,
+    "misaligned": 51
+  },
+  "winner_alignment_near_primary": {
+    "aligned": 71,
+    "soft": 36,
+    "misaligned": 33
+  },
+  "prediction": {
+    "before": {
+      "n": 285,
+      "hit": 218,
+      "purchase": 218,
+      "rank710": 14,
+      "other_1_3": 1,
+      "other_10_13": 13,
+      "rank46": 35,
+      "other": 4,
+      "other_miss": 18,
+      "buckets": {
+        "hit": 218,
+        "rank710": 14,
+        "rank46": 35,
+        "other_10_13": 13,
+        "other_1_3": 1,
+        "other": 4
+      },
+      "prediction_fingerprint": "d3c43162ebf143239c456521a745d4af12d9cd53c78c561d351d559d88f93f2a"
+    },
+    "after": {
+      "n": 285,
+      "hit": 218,
+      "purchase": 218,
+      "rank710": 14,
+      "other_1_3": 1,
+      "other_10_13": 13,
+      "rank46": 35,
+      "other": 4,
+      "other_miss": 18,
+      "buckets": {
+        "hit": 218,
+        "rank710": 14,
+        "rank46": 35,
+        "other_10_13": 13,
+        "other_1_3": 1,
+        "other": 4
+      },
+      "prediction_fingerprint": "d3c43162ebf143239c456521a745d4af12d9cd53c78c561d351d559d88f93f2a"
+    },
+    "deltas": {
+      "hit": 0,
+      "purchase": 0,
+      "rank710": 0,
+      "other_1_3": 0,
+      "other_10_13": 0,
+      "rank46": 0,
+      "other_miss": 0
+    },
+    "identical": true
+  },
+  "governance": {
+    "grade": "C",
+    "verdict": "C",
+    "reason": "Exclusion過剰候補: false_rate=0.507 unexplained_clause_share=0.000"
+  },
+  "method": {
+    "near_match": "must=True AND exclude=True (V44 shadow evaluator)",
+    "true_exclusion": "Near Match AND winner_alignment(primary) != aligned",
+    "false_exclusion": "Near Match AND winner_alignment(primary) == aligned",
+    "clause_ids": "V44 EXCLUDE × W-S3 F+ labels; observational median polarity unchanged",
+    "production_decision": "legacy classify_world_line_type only"
+  },
+  "sample_false": [
+    {
+      "race_id": "2024-01-06-京都-10",
+      "legacy_world": "midupper_world",
+      "primary_near_world": "core_world",
+      "near_worlds": [
+        "core_world",
+        "midupper_world"
+      ],
+      "winner_model_rank": 1,
+      "winner_alignment_primary": "aligned",
+      "kind": "false_exclusion",
+      "design_aligned_clauses": true,
+      "clauses_fired_primary": [
+        "CORE_EXCL:sfp↑_F+",
+        "CORE_EXCL:mid_band_open_ForbidDef"
+      ],
+      "clauses_all": {
+        "core_world": [
+          "CORE_EXCL:sfp↑_F+",
+          "CORE_EXCL:mid_band_open_ForbidDef"
+        ],
+        "midupper_world": [
+          "MIDUPPER_EXCL:mid_band_open_ForbidDef"
+        ]
+      },
+      "v44_world": "unsatisfied",
+      "hit_at_1": true
+    },
+    {
+      "race_id": "2024-01-06-中山-11",
+      "legacy_world": "midupper_world",
+      "primary_near_world": "core_world",
+      "near_worlds": [
+        "core_world"
+      ],
+      "winner_model_rank": 1,
+      "winner_alignment_primary": "aligned",
+      "kind": "false_exclusion",
+      "design_aligned_clauses": true,
+      "clauses_fired_primary": [
+        "CORE_EXCL:sfp↑_F+"
+      ],
+      "clauses_all": {
+        "core_world": [
+          "CORE_EXCL:sfp↑_F+"
+        ]
+      },
+      "v44_world": "unsatisfied",
+      "hit_at_1": true
+    },
+    {
+      "race_id": "2024-01-06-京都-11",
+      "legacy_world": "midupper_world",
+      "primary_near_world": "core_world",
+      "near_worlds": [
+        "core_world"
+      ],
+      "winner_model_rank": 1,
+      "winner_alignment_primary": "aligned",
+      "kind": "false_exclusion",
+      "design_aligned_clauses": true,
+      "clauses_fired_primary": [
+        "CORE_EXCL:chaos↑_F+",
+        "CORE_EXCL:sfp↑_F+"
+      ],
+      "clauses_all": {
+        "core_world": [
+          "CORE_EXCL:chaos↑_F+",
+          "CORE_EXCL:sfp↑_F+"
+        ]
+      },
+      "v44_world": "unsatisfied",
+      "hit_at_1": true
+    },
+    {
+      "race_id": "2024-01-06-中山-10",
+      "legacy_world": "core_world",
+      "primary_near_world": "core_world",
+      "near_worlds": [
+        "core_world"
+      ],
+      "winner_model_rank": 1,
+      "winner_alignment_primary": "aligned",
+      "kind": "false_exclusion",
+      "design_aligned_clauses": true,
+      "clauses_fired_primary": [
+        "CORE_EXCL:sfp↑_F+",
+        "CORE_EXCL:mid_band_open_ForbidDef"
+      ],
+      "clauses_all": {
+        "core_world": [
+          "CORE_EXCL:sfp↑_F+",
+          "CORE_EXCL:mid_band_open_ForbidDef"
+        ]
+      },
+      "v44_world": "unsatisfied",
+      "hit_at_1": true
+    },
+    {
+      "race_id": "2024-01-07-京都-11",
+      "legacy_world": "mixed_world",
+      "primary_near_world": "core_world",
+      "near_worlds": [
+        "core_world"
+      ],
+      "winner_model_rank": 1,
+      "winner_alignment_primary": "aligned",
+      "kind": "false_exclusion",
+      "design_aligned_clauses": true,
+      "clauses_fired_primary": [
+        "CORE_EXCL:chaos↑_F+",
+        "CORE_EXCL:sfp↑_F+",
+        "CORE_EXCL:late∧sust_F+",
+        "CORE_EXCL:mid_band_open_ForbidDef"
+      ],
+      "clauses_all": {
+        "core_world": [
+          "CORE_EXCL:chaos↑_F+",
+          "CORE_EXCL:sfp↑_F+",
+          "CORE_EXCL:late∧sust_F+",
+          "CORE_EXCL:mid_band_open_ForbidDef"
+        ]
+      },
+      "v44_world": "unsatisfied",
+      "hit_at_1": true
+    },
+    {
+      "race_id": "2024-01-07-京都-10",
+      "legacy_world": "midupper_world",
+      "primary_near_world": "core_world",
+      "near_worlds": [
+        "core_world"
+      ],
+      "winner_model_rank": 1,
+      "winner_alignment_primary": "aligned",
+      "kind": "false_exclusion",
+      "design_aligned_clauses": true,
+      "clauses_fired_primary": [
+        "CORE_EXCL:sfp↑_F+",
+        "CORE_EXCL:mid_band_open_ForbidDef"
+      ],
+      "clauses_all": {
+        "core_world": [
+          "CORE_EXCL:sfp↑_F+",
+          "CORE_EXCL:mid_band_open_ForbidDef"
+        ]
+      },
+      "v44_world": "unsatisfied",
+      "hit_at_1": true
+    },
+    {
+      "race_id": "2024-01-14-中山-11",
+      "legacy_world": "midhole_world",
+      "primary_near_world": "core_world",
+      "near_worlds": [
+        "core_world"
+      ],
+      "winner_model_rank": 1,
+      "winner_alignment_primary": "aligned",
+      "kind": "false_exclusion",
+      "design_aligned_clauses": true,
+      "clauses_fired_primary": [
+        "CORE_EXCL:chaos↑_F+",
+        "CORE_EXCL:sfp↑_F+",
+        "CORE_EXCL:late∧sust_F+",
+        "CORE_EXCL:mid_band_open_ForbidDef"
+      ],
+      "clauses_all": {
+        "core_world": [
+          "CORE_EXCL:chaos↑_F+",
+          "CORE_EXCL:sfp↑_F+",
+          "CORE_EXCL:late∧sust_F+",
+          "CORE_EXCL:mid_band_open_ForbidDef"
+        ]
+      },
+      "v44_world": "unsatisfied",
+      "hit_at_1": true
+    },
+    {
+      "race_id": "2024-01-14-中山-10",
+      "legacy_world": "midupper_world",
+      "primary_near_world": "core_world",
+      "near_worlds": [
+        "core_world"
+      ],
+      "winner_model_rank": 1,
+      "winner_alignment_primary": "aligned",
+      "kind": "false_exclusion",
+      "design_aligned_clauses": true,
+      "clauses_fired_primary": [
+        "CORE_EXCL:sfp↑_F+",
+        "CORE_EXCL:mid_band_open_ForbidDef"
+      ],
+      "clauses_all": {
+        "core_world": [
+          "CORE_EXCL:sfp↑_F+",
+          "CORE_EXCL:mid_band_open_ForbidDef"
+        ]
+      },
+      "v44_world": "unsatisfied",
+      "hit_at_1": true
+    },
+    {
+      "race_id": "2024-01-14-小倉-11",
+      "legacy_world": "midhole_world",
+      "primary_near_world": "core_world",
+      "near_worlds": [
+        "core_world"
+      ],
+      "winner_model_rank": 1,
+      "winner_alignment_primary": "aligned",
+      "kind": "false_exclusion",
+      "design_aligned_clauses": true,
+      "clauses_fired_primary": [
+        "CORE_EXCL:chaos↑_F+",
+        "CORE_EXCL:sfp↑_F+"
+      ],
+      "clauses_all": {
+        "core_world": [
+          "CORE_EXCL:chaos↑_F+",
+          "CORE_EXCL:sfp↑_F+"
+        ]
+      },
+      "v44_world": "unsatisfied",
+      "hit_at_1": true
+    },
+    {
+      "race_id": "2024-01-14-京都-10",
+      "legacy_world": "core_world",
+      "primary_near_world": "core_world",
+      "near_worlds": [
+        "core_world",
+        "midupper_world"
+      ],
+      "winner_model_rank": 1,
+      "winner_alignment_primary": "aligned",
+      "kind": "false_exclusion",
+      "design_aligned_clauses": true,
+      "clauses_fired_primary": [
+        "CORE_EXCL:sfp↑_F+",
+        "CORE_EXCL:mid_band_open_ForbidDef"
+      ],
+      "clauses_all": {
+        "core_world": [
+          "CORE_EXCL:sfp↑_F+",
+          "CORE_EXCL:mid_band_open_ForbidDef"
+        ],
+        "midupper_world": [
+          "MIDUPPER_EXCL:mid_band_open_ForbidDef"
+        ]
+      },
+      "v44_world": "unsatisfied",
+      "hit_at_1": true
+    },
+    {
+      "race_id": "2024-01-14-京都-11",
+      "legacy_world": "midupper_world",
+      "primary_near_world": "core_world",
+      "near_worlds": [
+        "core_world",
+        "midupper_world"
+      ],
+      "winner_model_rank": 1,
+      "winner_alignment_primary": "aligned",
+      "kind": "false_exclusion",
+      "design_aligned_clauses": true,
+      "clauses_fired_primary": [
+        "CORE_EXCL:sfp↑_F+",
+        "CORE_EXCL:mid_band_open_ForbidDef"
+      ],
+      "clauses_all": {
+        "core_world": [
+          "CORE_EXCL:sfp↑_F+",
+          "CORE_EXCL:mid_band_open_ForbidDef"
+        ],
+        "midupper_world": [
+          "MIDUPPER_EXCL:mid_band_open_ForbidDef"
+        ]
+      },
+      "v44_world": "unsatisfied",
+      "hit_at_1": true
+    },
+    {
+      "race_id": "2024-01-21-中山-10",
+      "legacy_world": "midupper_world",
+      "primary_near_world": "midupper_world",
+      "near_worlds": [
+        "midupper_world"
+      ],
+      "winner_model_rank": 5,
+      "winner_alignment_primary": "aligned",
+      "kind": "false_exclusion",
+      "design_aligned_clauses": true,
+      "clauses_fired_primary": [
+        "MIDUPPER_EXCL:chaos∧high_pace_rank7_region"
+      ],
+      "clauses_all": {
+        "midupper_world": [
+          "MIDUPPER_EXCL:chaos∧high_pace_rank7_region"
+        ]
+      },
+      "v44_world": "rank7_world",
+      "hit_at_1": true
+    },
+    {
+      "race_id": "2024-01-28-京都-10",
+      "legacy_world": "core_world",
+      "primary_near_world": "midupper_world",
+      "near_worlds": [
+        "midupper_world"
+      ],
+      "winner_model_rank": 6,
+      "winner_alignment_primary": "aligned",
+      "kind": "false_exclusion",
+      "design_aligned_clauses": true,
+      "clauses_fired_primary": [
+        "MIDUPPER_EXCL:mid_band_open_ForbidDef"
+      ],
+      "clauses_all": {
+        "midupper_world": [
+          "MIDUPPER_EXCL:mid_band_open_ForbidDef"
+        ]
+      },
+      "v44_world": "unsatisfied",
+      "hit_at_1": false
+    },
+    {
+      "race_id": "2024-02-11-京都-10",
+      "legacy_world": "midupper_world",
+      "primary_near_world": "midupper_world",
+      "near_worlds": [
+        "midupper_world"
+      ],
+      "winner_model_rank": 6,
+      "winner_alignment_primary": "aligned",
+      "kind": "false_exclusion",
+      "design_aligned_clauses": true,
+      "clauses_fired_primary": [
+        "MIDUPPER_EXCL:chaos∧high_pace_rank7_region"
+      ],
+      "clauses_all": {
+        "midupper_world": [
+          "MIDUPPER_EXCL:chaos∧high_pace_rank7_region"
+        ]
+      },
+      "v44_world": "rank7_world",
+      "hit_at_1": false
+    },
+    {
+      "race_id": "2024-02-11-京都-11",
+      "legacy_world": "core_world",
+      "primary_near_world": "midupper_world",
+      "near_worlds": [
+        "midupper_world"
+      ],
+      "winner_model_rank": 3,
+      "winner_alignment_primary": "aligned",
+      "kind": "false_exclusion",
+      "design_aligned_clauses": true,
+      "clauses_fired_primary": [
+        "MIDUPPER_EXCL:mid_band_open_ForbidDef"
+      ],
+      "clauses_all": {
+        "midupper_world": [
+          "MIDUPPER_EXCL:mid_band_open_ForbidDef"
+        ]
+      },
+      "v44_world": "unsatisfied",
+      "hit_at_1": true
+    }
+  ],
+  "sample_true": [
+    {
+      "race_id": "2024-01-21-中山-11",
+      "legacy_world": "core_world",
+      "primary_near_world": "midhole_world",
+      "near_worlds": [
+        "midhole_world"
+      ],
+      "winner_model_rank": 4,
+      "winner_alignment_primary": "soft",
+      "kind": "true_exclusion",
+      "design_aligned_clauses": true,
+      "clauses_fired_primary": [
+        "MIDHOLE_EXCL:top_gap↑_monopoly_F+"
+      ],
+      "clauses_all": {
+        "midhole_world": [
+          "MIDHOLE_EXCL:top_gap↑_monopoly_F+"
+        ]
+      },
+      "v44_world": "unsatisfied",
+      "hit_at_1": true
+    },
+    {
+      "race_id": "2024-01-21-京都-10",
+      "legacy_world": "mixed_world",
+      "primary_near_world": "core_world",
+      "near_worlds": [
+        "core_world"
+      ],
+      "winner_model_rank": 5,
+      "winner_alignment_primary": "soft",
+      "kind": "true_exclusion",
+      "design_aligned_clauses": true,
+      "clauses_fired_primary": [
+        "CORE_EXCL:chaos↑_F+",
+        "CORE_EXCL:sfp↑_F+",
+        "CORE_EXCL:late∧sust_F+"
+      ],
+      "clauses_all": {
+        "core_world": [
+          "CORE_EXCL:chaos↑_F+",
+          "CORE_EXCL:sfp↑_F+",
+          "CORE_EXCL:late∧sust_F+"
+        ]
+      },
+      "v44_world": "unsatisfied",
+      "hit_at_1": true
+    },
+    {
+      "race_id": "2024-01-21-小倉-11",
+      "legacy_world": "midupper_world",
+      "primary_near_world": "core_world",
+      "near_worlds": [
+        "core_world",
+        "midupper_world"
+      ],
+      "winner_model_rank": 4,
+      "winner_alignment_primary": "soft",
+      "kind": "true_exclusion",
+      "design_aligned_clauses": true,
+      "clauses_fired_primary": [
+        "CORE_EXCL:chaos↑_F+",
+        "CORE_EXCL:sfp↑_F+",
+        "CORE_EXCL:late∧sust_F+"
+      ],
+      "clauses_all": {
+        "core_world": [
+          "CORE_EXCL:chaos↑_F+",
+          "CORE_EXCL:sfp↑_F+",
+          "CORE_EXCL:late∧sust_F+"
+        ],
+        "midupper_world": [
+          "MIDUPPER_EXCL:chaos∧high_pace_rank7_region"
+        ]
+      },
+      "v44_world": "unsatisfied",
+      "hit_at_1": true
+    },
+    {
+      "race_id": "2024-01-28-小倉-11",
+      "legacy_world": "mixed_world",
+      "primary_near_world": "core_world",
+      "near_worlds": [
+        "core_world"
+      ],
+      "winner_model_rank": 10,
+      "winner_alignment_primary": "misaligned",
+      "kind": "true_exclusion",
+      "design_aligned_clauses": true,
+      "clauses_fired_primary": [
+        "CORE_EXCL:chaos↑_F+",
+        "CORE_EXCL:sfp↑_F+"
+      ],
+      "clauses_all": {
+        "core_world": [
+          "CORE_EXCL:chaos↑_F+",
+          "CORE_EXCL:sfp↑_F+"
+        ]
+      },
+      "v44_world": "unsatisfied",
+      "hit_at_1": true
+    },
+    {
+      "race_id": "2024-01-28-東京-11",
+      "legacy_world": "mixed_world",
+      "primary_near_world": "midhole_world",
+      "near_worlds": [
+        "midhole_world"
+      ],
+      "winner_model_rank": 1,
+      "winner_alignment_primary": "misaligned",
+      "kind": "true_exclusion",
+      "design_aligned_clauses": true,
+      "clauses_fired_primary": [
+        "MIDHOLE_EXCL:chaos∧difficulty_extreme"
+      ],
+      "clauses_all": {
+        "midhole_world": [
+          "MIDHOLE_EXCL:chaos∧difficulty_extreme"
+        ]
+      },
+      "v44_world": "rank7_world",
+      "hit_at_1": true
+    },
+    {
+      "race_id": "2024-01-28-東京-10",
+      "legacy_world": "core_world",
+      "primary_near_world": "midupper_world",
+      "near_worlds": [
+        "midupper_world"
+      ],
+      "winner_model_rank": 1,
+      "winner_alignment_primary": "soft",
+      "kind": "true_exclusion",
+      "design_aligned_clauses": true,
+      "clauses_fired_primary": [
+        "MIDUPPER_EXCL:chaos∧high_pace_rank7_region",
+        "MIDUPPER_EXCL:mid_band_open_ForbidDef"
+      ],
+      "clauses_all": {
+        "midupper_world": [
+          "MIDUPPER_EXCL:chaos∧high_pace_rank7_region",
+          "MIDUPPER_EXCL:mid_band_open_ForbidDef"
+        ]
+      },
+      "v44_world": "rank7_world",
+      "hit_at_1": true
+    },
+    {
+      "race_id": "2024-02-04-東京-10",
+      "legacy_world": "midupper_world",
+      "primary_near_world": "midupper_world",
+      "near_worlds": [
+        "midupper_world"
+      ],
+      "winner_model_rank": 1,
+      "winner_alignment_primary": "soft",
+      "kind": "true_exclusion",
+      "design_aligned_clauses": true,
+      "clauses_fired_primary": [
+        "MIDUPPER_EXCL:chaos∧high_pace_rank7_region"
+      ],
+      "clauses_all": {
+        "midupper_world": [
+          "MIDUPPER_EXCL:chaos∧high_pace_rank7_region"
+        ]
+      },
+      "v44_world": "rank7_world",
+      "hit_at_1": true
+    },
+    {
+      "race_id": "2024-02-04-小倉-11",
+      "legacy_world": "core_world",
+      "primary_near_world": "core_world",
+      "near_worlds": [
+        "core_world"
+      ],
+      "winner_model_rank": 5,
+      "winner_alignment_primary": "soft",
+      "kind": "true_exclusion",
+      "design_aligned_clauses": true,
+      "clauses_fired_primary": [
+        "CORE_EXCL:sfp↑_F+",
+        "CORE_EXCL:mid_band_open_ForbidDef"
+      ],
+      "clauses_all": {
+        "core_world": [
+          "CORE_EXCL:sfp↑_F+",
+          "CORE_EXCL:mid_band_open_ForbidDef"
+        ]
+      },
+      "v44_world": "unsatisfied",
+      "hit_at_1": true
+    },
+    {
+      "race_id": "2024-02-18-東京-11",
+      "legacy_world": "midupper_world",
+      "primary_near_world": "midhole_world",
+      "near_worlds": [
+        "midhole_world"
+      ],
+      "winner_model_rank": 13,
+      "winner_alignment_primary": "misaligned",
+      "kind": "true_exclusion",
+      "design_aligned_clauses": true,
+      "clauses_fired_primary": [
+        "MIDHOLE_EXCL:chaos∧difficulty_extreme"
+      ],
+      "clauses_all": {
+        "midhole_world": [
+          "MIDHOLE_EXCL:chaos∧difficulty_extreme"
+        ]
+      },
+      "v44_world": "rank7_world",
+      "hit_at_1": false
+    },
+    {
+      "race_id": "2024-02-25-中山-11",
+      "legacy_world": "midupper_world",
+      "primary_near_world": "rank7_world",
+      "near_worlds": [
+        "rank7_world"
+      ],
+      "winner_model_rank": 3,
+      "winner_alignment_primary": "misaligned",
+      "kind": "true_exclusion",
+      "design_aligned_clauses": true,
+      "clauses_fired_primary": [
+        "RANK7_EXCL:top_gap↑_ability_resolution"
+      ],
+      "clauses_all": {
+        "rank7_world": [
+          "RANK7_EXCL:top_gap↑_ability_resolution"
+        ]
+      },
+      "v44_world": "unsatisfied",
+      "hit_at_1": true
+    },
+    {
+      "race_id": "2024-02-25-阪神-10",
+      "legacy_world": "core_world",
+      "primary_near_world": "core_world",
+      "near_worlds": [
+        "core_world"
+      ],
+      "winner_model_rank": 6,
+      "winner_alignment_primary": "misaligned",
+      "kind": "true_exclusion",
+      "design_aligned_clauses": true,
+      "clauses_fired_primary": [
+        "CORE_EXCL:sfp↑_F+",
+        "CORE_EXCL:late∧sust_F+",
+        "CORE_EXCL:mid_band_open_ForbidDef"
+      ],
+      "clauses_all": {
+        "core_world": [
+          "CORE_EXCL:sfp↑_F+",
+          "CORE_EXCL:late∧sust_F+",
+          "CORE_EXCL:mid_band_open_ForbidDef"
+        ]
+      },
+      "v44_world": "unsatisfied",
+      "hit_at_1": false
+    },
+    {
+      "race_id": "2024-03-03-阪神-11",
+      "legacy_world": "midupper_world",
+      "primary_near_world": "midhole_world",
+      "near_worlds": [
+        "midhole_world"
+      ],
+      "winner_model_rank": 1,
+      "winner_alignment_primary": "misaligned",
+      "kind": "true_exclusion",
+      "design_aligned_clauses": true,
+      "clauses_fired_primary": [
+        "MIDHOLE_EXCL:top_gap↑_monopoly_F+",
+        "MIDHOLE_EXCL:chaos∧difficulty_extreme"
+      ],
+      "clauses_all": {
+        "midhole_world": [
+          "MIDHOLE_EXCL:top_gap↑_monopoly_F+",
+          "MIDHOLE_EXCL:chaos∧difficulty_extreme"
+        ]
+      },
+      "v44_world": "unsatisfied",
+      "hit_at_1": true
+    },
+    {
+      "race_id": "2024-03-10-中京-11",
+      "legacy_world": "core_world",
+      "primary_near_world": "core_world",
+      "near_worlds": [
+        "core_world",
+        "midupper_world"
+      ],
+      "winner_model_rank": 5,
+      "winner_alignment_primary": "soft",
+      "kind": "true_exclusion",
+      "design_aligned_clauses": true,
+      "clauses_fired_primary": [
+        "CORE_EXCL:sfp↑_F+",
+        "CORE_EXCL:mid_band_open_ForbidDef"
+      ],
+      "clauses_all": {
+        "core_world": [
+          "CORE_EXCL:sfp↑_F+",
+          "CORE_EXCL:mid_band_open_ForbidDef"
+        ],
+        "midupper_world": [
+          "MIDUPPER_EXCL:mid_band_open_ForbidDef"
+        ]
+      },
+      "v44_world": "unsatisfied",
+      "hit_at_1": true
+    },
+    {
+      "race_id": "2024-03-17-中京-11",
+      "legacy_world": "midupper_world",
+      "primary_near_world": "core_world",
+      "near_worlds": [
+        "core_world",
+        "midupper_world"
+      ],
+      "winner_model_rank": 7,
+      "winner_alignment_primary": "misaligned",
+      "kind": "true_exclusion",
+      "design_aligned_clauses": true,
+      "clauses_fired_primary": [
+        "CORE_EXCL:sfp↑_F+",
+        "CORE_EXCL:mid_band_open_ForbidDef"
+      ],
+      "clauses_all": {
+        "core_world": [
+          "CORE_EXCL:sfp↑_F+",
+          "CORE_EXCL:mid_band_open_ForbidDef"
+        ],
+        "midupper_world": [
+          "MIDUPPER_EXCL:mid_band_open_ForbidDef"
+        ]
+      },
+      "v44_world": "unsatisfied",
+      "hit_at_1": true
+    },
+    {
+      "race_id": "2024-03-17-阪神-11",
+      "legacy_world": "midupper_world",
+      "primary_near_world": "midupper_world",
+      "near_worlds": [
+        "midupper_world"
+      ],
+      "winner_model_rank": 1,
+      "winner_alignment_primary": "soft",
+      "kind": "true_exclusion",
+      "design_aligned_clauses": true,
+      "clauses_fired_primary": [
+        "MIDUPPER_EXCL:chaos∧high_pace_rank7_region"
+      ],
+      "clauses_all": {
+        "midupper_world": [
+          "MIDUPPER_EXCL:chaos∧high_pace_rank7_region"
+        ]
+      },
+      "v44_world": "rank7_world",
+      "hit_at_1": true
+    }
+  ],
+  "cohort_unsatisfied_104": {
+    "n_exclusion_unsatisfied_cohort": 104,
+    "true_exclusion_n": 53,
+    "false_exclusion_n": 51,
+    "false_rate": 0.49038461538461536,
+    "world_breakdown": {
+      "core_world": 81,
+      "midupper_world": 32,
+      "midhole_world": 13,
+      "rank7_world": 1
+    },
+    "winner_alignment_primary": {
+      "aligned": 51,
+      "soft": 25,
+      "misaligned": 28
+    },
+    "clause_ranking_primary": [
+      [
+        "CORE_EXCL:sfp↑_F+",
+        77
+      ],
+      [
+        "CORE_EXCL:mid_band_open_ForbidDef",
+        55
+      ],
+      [
+        "CORE_EXCL:chaos↑_F+",
+        24
+      ],
+      [
+        "CORE_EXCL:late∧sust_F+",
+        13
+      ],
+      [
+        "MIDHOLE_EXCL:top_gap↑_monopoly_F+",
+        13
+      ],
+      [
+        "MIDUPPER_EXCL:mid_band_open_ForbidDef",
+        9
+      ],
+      [
+        "MIDHOLE_EXCL:chaos∧difficulty_extreme",
+        6
+      ],
+      [
+        "RANK7_EXCL:top_gap↑_ability_resolution",
+        1
+      ]
+    ],
+    "clause_ranking_all_near_worlds": [
+      [
+        "CORE_EXCL:sfp↑_F+",
+        77
+      ],
+      [
+        "CORE_EXCL:mid_band_open_ForbidDef",
+        55
+      ],
+      [
+        "MIDUPPER_EXCL:mid_band_open_ForbidDef",
+        26
+      ],
+      [
+        "CORE_EXCL:chaos↑_F+",
+        24
+      ],
+      [
+        "CORE_EXCL:late∧sust_F+",
+        13
+      ],
+      [
+        "MIDHOLE_EXCL:top_gap↑_monopoly_F+",
+        13
+      ],
+      [
+        "MIDUPPER_EXCL:chaos∧high_pace_rank7_region",
+        7
+      ],
+      [
+        "MIDHOLE_EXCL:chaos∧difficulty_extreme",
+        6
+      ],
+      [
+        "RANK7_EXCL:top_gap↑_ability_resolution",
+        1
+      ]
+    ],
+    "design_aligned_primary_n": 104,
+    "governance_grade": "C",
+    "note": "Cohort = Unsatisfied AND must-then-exclude (V57 104). Full must-then-exclude on 285R = 140 (36 also have another World MATCH).",
+    "n_near_match_all_285": 140,
+    "n_near_match_with_other_pm": 36
+  },
+  "filtered_rows_n": 104
+}

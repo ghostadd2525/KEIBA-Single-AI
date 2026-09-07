@@ -25,6 +25,7 @@ from app.data import db as app_db
 from app.ops import state_machine as sm
 from app.ops.result_automation import get_result_automation
 from app.ops.run_recovery import fail_orphan_active_runs
+from app.ops import ra_cadence
 
 
 def _jst_today() -> str:
@@ -123,9 +124,37 @@ def run_auto() -> list[dict]:
     mode = os_environ("EXPECT_RA_AUTO_MODE", "all")  # post|morning|recovery|all
 
     if mode in ("post", "all") and (not days or today in days):
+        is_race_day = (not days) or (today in days)
+        decision = ra_cadence.decide_today_run(today, is_race_day=is_race_day)
         results.append(
-            svc.run(today, trigger=sm.TRIGGER_SCHEDULED, force=True)
+            {
+                "status": "cadence",
+                "run_status": "CADENCE",
+                "decision": decision,
+            }
         )
+        if decision.get("run"):
+            out = svc.run(today, trigger=sm.TRIGGER_SCHEDULED, force=True)
+            ra_cadence.mark_ran(
+                today,
+                {
+                    "run_status": out.get("run_status"),
+                    "reason": decision.get("reason"),
+                    "cadence": decision.get("cadence"),
+                },
+            )
+            results.append(out)
+        else:
+            results.append(
+                {
+                    "status": "skipped",
+                    "run_status": "SKIPPED",
+                    "race_date": today,
+                    "reason": decision.get("reason"),
+                    "cadence": decision.get("cadence"),
+                    "unsettled": decision.get("unsettled"),
+                }
+            )
 
     if mode in ("morning", "all") and (not days or yesterday in days):
         if not _has_terminal_success(yesterday):

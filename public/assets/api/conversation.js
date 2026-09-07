@@ -5,8 +5,8 @@
  * Prediction は Read Only（UI から予測を変更しない）。
  *
  * Modes（ADR / V4 契約）:
- *   explain — KAOBAに◎の理由を聞く
- *   review  — KAOBAに相談
+ *   explain — KAOBAに◎の理由を聞く（予想の説明）
+ *   review  — 相談AI（買い方・立ち回り）
  *   chat    — マイページ日常会話（Personal Chat）
  */
 (function (global) {
@@ -14,7 +14,7 @@
 
   var MODES = {
     explain: { label: "KAOBAに◎の理由を聞く", contextType: "honmei_reason" },
-    review: { label: "KAOBAに相談", contextType: "consult" },
+    review: { label: "相談AI", contextType: "consult" },
     chat: { label: "マイページ日常会話", contextType: "personal_chat" },
   };
 

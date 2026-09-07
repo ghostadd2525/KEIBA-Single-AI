@@ -1,0 +1,44 @@
+{
+  "status_id": "v3-experiment-status/phase2-close",
+  "experiments": [
+    {
+      "experiment_id": "v3-p5-freeze",
+      "status": "complete",
+      "note": "foundation"
+    },
+    {
+      "experiment_id": "v3-a01-d1-recal",
+      "status": "lab_primary_evaluation",
+      "in_stack": true
+    },
+    {
+      "experiment_id": "v3-a02-d2-rerank",
+      "status": "lab_secondary_candidate",
+      "in_stack": false
+    },
+    {
+      "experiment_id": "v3-a03-pool-coverage",
+      "status": "lab_primary_admission",
+      "in_stack": true
+    },
+    {
+      "experiment_id": "v3-lab-configuration-freeze",
+      "status": "complete",
+      "note": "Baseline v2 history"
+    },
+    {
+      "experiment_id": "v3-accuracy-gap-analysis-v2",
+      "status": "complete"
+    },
+    {
+      "experiment_id": "v3-a04-sel-history",
+      "status": "lab_primary_selection",
+      "in_stack": true
+    },
+    {
+      "experiment_id": "v3-accuracy-phase2-close",
+      "status": "closed",
+      "close_id": "v3-accuracy-phase2-close/1.0"
+    }
+  ]
+}

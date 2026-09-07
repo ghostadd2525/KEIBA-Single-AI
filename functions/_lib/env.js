@@ -7,6 +7,8 @@ export function getEnv(context) {
     PI_BASE_URL: String(env.PI_BASE_URL || "").replace(/\/$/, ""),
     AI_API_KEY: String(env.AI_API_KEY || ""),
     AUTH_MODE: String(env.AUTH_MODE || "stub"),
+    /** Version8.5.1: production で stub を一時許可するブレークグラス（"1" のみ） */
+    ALLOW_STUB_AUTH: String(env.ALLOW_STUB_AUTH || ""),
     /** Kaoba 応答: auto | python | rule（契約は不変） */
     KAOBA_PROVIDER: String(env.KAOBA_PROVIDER || "auto"),
     /** Prediction/Analysis エンジンヒント（観測用。実切替は AI_BASE_URL） */

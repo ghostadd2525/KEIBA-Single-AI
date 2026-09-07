@@ -1,0 +1,27 @@
+{
+  "ok": true,
+  "meta": {
+    "generated_at": "2026-07-21T04:48:04.595Z",
+    "source": "stub-auth",
+    "cache": "bypass",
+    "service": "AuthService",
+    "contract": "AuthLoginResponse",
+    "flow": "login"
+  },
+  "data": {
+    "schema_version": "expect-auth/1.0",
+    "access_token": "stub.eyJzdWIiOiJpbnZpdGUtY2FuYXJ5IiwiZXhwIjoxNzg0Njk1Njg0LCJwdXJwb3NlIjoiYWNjZXNzIn0.1784695684",
+    "token_type": "bearer",
+    "expires_in": 86400,
+    "user": {
+      "id": "invite-canary",
+      "display_name": "invite-canary"
+    },
+    "favorites": {
+      "schema_version": "expect-favorites/1.0",
+      "race_ids": [],
+      "items": [],
+      "synced_at": null
+    }
+  }
+}

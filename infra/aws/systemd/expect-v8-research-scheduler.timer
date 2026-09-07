@@ -1,0 +1,13 @@
+[Unit]
+Description=Expect V8.6 Research Scheduler Timer (03:00 JST daily)
+Requires=expect-v8-research-scheduler.service
+
+[Timer]
+# Asia/Tokyo — 毎日 03:00。曜日別 timer は持たない（Runner が自律判定）
+OnCalendar=*-*-* 03:00:00
+Persistent=true
+AccuracySec=1min
+Unit=expect-v8-research-scheduler.service
+
+[Install]
+WantedBy=timers.target

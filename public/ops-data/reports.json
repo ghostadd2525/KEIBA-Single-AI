@@ -1,0 +1,28 @@
+{
+  "schema_version": "expect-v881-reports-publish/1.0",
+  "published_at": "2026-07-27T00:18:38.123Z",
+  "source": "development/weekly/*/reports",
+  "weekly_report": "2026-W30",
+  "weekly_report_path": "development/weekly/2026-W30/reports/weekly-ops-report.json",
+  "baseline_health_check": "OK",
+  "boundary_audit": "Pending",
+  "incident_report": null,
+  "latest_week_id": "2026-W30",
+  "decision": "no_improvement",
+  "items": [
+    {
+      "week_id": "2026-W30",
+      "file": "weekly-ops-report.md",
+      "path": "development/weekly/2026-W30/reports/weekly-ops-report.md",
+      "mtime": "2026-07-26T12:59:35.694Z",
+      "bytes": 2562
+    },
+    {
+      "week_id": "2026-W30",
+      "file": "weekly-ops-report.json",
+      "path": "development/weekly/2026-W30/reports/weekly-ops-report.json",
+      "mtime": "2026-07-26T12:59:35.693Z",
+      "bytes": 3243
+    }
+  ]
+}

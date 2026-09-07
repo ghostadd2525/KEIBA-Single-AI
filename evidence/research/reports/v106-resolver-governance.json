@@ -1,0 +1,1932 @@
+{
+  "schema_version": "expect-resolver-governance/1.0",
+  "generated_at": "2026-07-27T06:58:47+00:00",
+  "shadow_only": true,
+  "production_prediction": "unchanged",
+  "adoption_gate": {
+    "min_tie_races": 100,
+    "min_resolver_win_rate": 0.6,
+    "max_resolver_lose_rate": 0.05,
+    "min_strict_improvement_rate": 0.05,
+    "min_roi_change": 0.0,
+    "min_coverage": 0.95,
+    "min_confidence_median": 0.7
+  },
+  "v104_input": {
+    "evidence_priority": [
+      "trainer",
+      "owner",
+      "win_odds",
+      "popularity",
+      "expected_popularity",
+      "damsire",
+      "sire",
+      "breeder",
+      "sale_price",
+      "oikiri_time",
+      "oikiri_rating"
+    ],
+    "tiers": {
+      "S": [
+        "trainer",
+        "owner",
+        "win_odds",
+        "popularity",
+        "expected_popularity"
+      ],
+      "A": [
+        "damsire",
+        "sire",
+        "breeder"
+      ],
+      "B": [
+        "sale_price"
+      ],
+      "C": [
+        "oikiri_time",
+        "oikiri_rating"
+      ]
+    }
+  },
+  "v105_summary": {
+    "n_tie_races": 9,
+    "baseline_strict_hits": 0,
+    "shadow_strict_hits": 2,
+    "strict_delta": 2,
+    "resolver_win": 2,
+    "resolver_lose": 0,
+    "resolver_draw": 7,
+    "baseline_strict_rate": 0.0,
+    "shadow_strict_rate": 0.222222
+  },
+  "cumulative": {
+    "tie_races": 9,
+    "resolver_win": 2,
+    "resolver_lose": 0,
+    "resolver_draw": 7,
+    "resolver_win_rate": 0.222222,
+    "resolver_lose_rate": 0.0,
+    "resolver_draw_rate": 0.777778,
+    "baseline_strict_hits": 0,
+    "shadow_strict_hits": 2,
+    "strict_improvement": 2,
+    "strict_improvement_rate": 0.222222,
+    "soft_improvement_rate": 0.0,
+    "roi_change": 0.222222,
+    "feature_usage_rate": {
+      "trainer": 0.666667,
+      "owner": 0.333333
+    },
+    "tier_usage_rate": {
+      "S": 1.0
+    },
+    "cascade_stop_rate": {
+      "trainer": 0.666667,
+      "owner": 0.333333
+    },
+    "feature_usage_count": {
+      "trainer": 6,
+      "owner": 3
+    },
+    "tier_usage_count": {
+      "S": 9
+    },
+    "cascade_stop_count": {
+      "trainer": 6,
+      "owner": 3
+    },
+    "coverage_avg": 1.0,
+    "used_feature_coverage_avg": 1.0,
+    "confidence_distribution": {
+      "p50": 1.0,
+      "p75": 1.0,
+      "min": 0.55,
+      "max": 1.0,
+      "avg": 0.875
+    },
+    "gate": {
+      "status": "sample_insufficient",
+      "checks": {
+        "tie_races": false,
+        "resolver_win_rate": false,
+        "resolver_lose_rate": true,
+        "strict_improvement_rate": true,
+        "roi_change": true,
+        "coverage_avg": true,
+        "confidence_median": true
+      },
+      "progress": {
+        "tie_races": 0.09,
+        "resolver_win_rate": 0.37037,
+        "resolver_lose_rate": 1.0,
+        "strict_improvement_rate": 1.0,
+        "coverage_avg": 1.0,
+        "confidence_median": 1.0
+      }
+    }
+  },
+  "segments": [
+    {
+      "segment": "age_group:unknown",
+      "tie_races": 9,
+      "resolver_win": 2,
+      "resolver_lose": 0,
+      "resolver_draw": 7,
+      "resolver_win_rate": 0.222222,
+      "resolver_lose_rate": 0.0,
+      "resolver_draw_rate": 0.777778,
+      "baseline_strict_hits": 0,
+      "shadow_strict_hits": 2,
+      "strict_improvement": 2,
+      "strict_improvement_rate": 0.222222,
+      "soft_improvement_rate": 0.0,
+      "roi_change": 0.222222,
+      "feature_usage_rate": {
+        "trainer": 0.666667,
+        "owner": 0.333333
+      },
+      "tier_usage_rate": {
+        "S": 1.0
+      },
+      "cascade_stop_rate": {
+        "trainer": 0.666667,
+        "owner": 0.333333
+      },
+      "feature_usage_count": {
+        "trainer": 6,
+        "owner": 3
+      },
+      "tier_usage_count": {
+        "S": 9
+      },
+      "cascade_stop_count": {
+        "trainer": 6,
+        "owner": 3
+      },
+      "coverage_avg": 1.0,
+      "used_feature_coverage_avg": 1.0,
+      "confidence_distribution": {
+        "p50": 1.0,
+        "p75": 1.0,
+        "min": 0.55,
+        "max": 1.0,
+        "avg": 0.875
+      },
+      "gate": {
+        "status": "sample_insufficient",
+        "checks": {
+          "tie_races": false,
+          "resolver_win_rate": false,
+          "resolver_lose_rate": true,
+          "strict_improvement_rate": true,
+          "roi_change": true,
+          "coverage_avg": true,
+          "confidence_median": true
+        },
+        "progress": {
+          "tie_races": 0.09,
+          "resolver_win_rate": 0.37037,
+          "resolver_lose_rate": 1.0,
+          "strict_improvement_rate": 1.0,
+          "coverage_avg": 1.0,
+          "confidence_median": 1.0
+        }
+      }
+    },
+    {
+      "segment": "all_tie",
+      "tie_races": 9,
+      "resolver_win": 2,
+      "resolver_lose": 0,
+      "resolver_draw": 7,
+      "resolver_win_rate": 0.222222,
+      "resolver_lose_rate": 0.0,
+      "resolver_draw_rate": 0.777778,
+      "baseline_strict_hits": 0,
+      "shadow_strict_hits": 2,
+      "strict_improvement": 2,
+      "strict_improvement_rate": 0.222222,
+      "soft_improvement_rate": 0.0,
+      "roi_change": 0.222222,
+      "feature_usage_rate": {
+        "trainer": 0.666667,
+        "owner": 0.333333
+      },
+      "tier_usage_rate": {
+        "S": 1.0
+      },
+      "cascade_stop_rate": {
+        "trainer": 0.666667,
+        "owner": 0.333333
+      },
+      "feature_usage_count": {
+        "trainer": 6,
+        "owner": 3
+      },
+      "tier_usage_count": {
+        "S": 9
+      },
+      "cascade_stop_count": {
+        "trainer": 6,
+        "owner": 3
+      },
+      "coverage_avg": 1.0,
+      "used_feature_coverage_avg": 1.0,
+      "confidence_distribution": {
+        "p50": 1.0,
+        "p75": 1.0,
+        "min": 0.55,
+        "max": 1.0,
+        "avg": 0.875
+      },
+      "gate": {
+        "status": "sample_insufficient",
+        "checks": {
+          "tie_races": false,
+          "resolver_win_rate": false,
+          "resolver_lose_rate": true,
+          "strict_improvement_rate": true,
+          "roi_change": true,
+          "coverage_avg": true,
+          "confidence_median": true
+        },
+        "progress": {
+          "tie_races": 0.09,
+          "resolver_win_rate": 0.37037,
+          "resolver_lose_rate": 1.0,
+          "strict_improvement_rate": 1.0,
+          "coverage_avg": 1.0,
+          "confidence_median": 1.0
+        }
+      }
+    },
+    {
+      "segment": "class:unknown",
+      "tie_races": 9,
+      "resolver_win": 2,
+      "resolver_lose": 0,
+      "resolver_draw": 7,
+      "resolver_win_rate": 0.222222,
+      "resolver_lose_rate": 0.0,
+      "resolver_draw_rate": 0.777778,
+      "baseline_strict_hits": 0,
+      "shadow_strict_hits": 2,
+      "strict_improvement": 2,
+      "strict_improvement_rate": 0.222222,
+      "soft_improvement_rate": 0.0,
+      "roi_change": 0.222222,
+      "feature_usage_rate": {
+        "trainer": 0.666667,
+        "owner": 0.333333
+      },
+      "tier_usage_rate": {
+        "S": 1.0
+      },
+      "cascade_stop_rate": {
+        "trainer": 0.666667,
+        "owner": 0.333333
+      },
+      "feature_usage_count": {
+        "trainer": 6,
+        "owner": 3
+      },
+      "tier_usage_count": {
+        "S": 9
+      },
+      "cascade_stop_count": {
+        "trainer": 6,
+        "owner": 3
+      },
+      "coverage_avg": 1.0,
+      "used_feature_coverage_avg": 1.0,
+      "confidence_distribution": {
+        "p50": 1.0,
+        "p75": 1.0,
+        "min": 0.55,
+        "max": 1.0,
+        "avg": 0.875
+      },
+      "gate": {
+        "status": "sample_insufficient",
+        "checks": {
+          "tie_races": false,
+          "resolver_win_rate": false,
+          "resolver_lose_rate": true,
+          "strict_improvement_rate": true,
+          "roi_change": true,
+          "coverage_avg": true,
+          "confidence_median": true
+        },
+        "progress": {
+          "tie_races": 0.09,
+          "resolver_win_rate": 0.37037,
+          "resolver_lose_rate": 1.0,
+          "strict_improvement_rate": 1.0,
+          "coverage_avg": 1.0,
+          "confidence_median": 1.0
+        }
+      }
+    },
+    {
+      "segment": "distance:unknown",
+      "tie_races": 9,
+      "resolver_win": 2,
+      "resolver_lose": 0,
+      "resolver_draw": 7,
+      "resolver_win_rate": 0.222222,
+      "resolver_lose_rate": 0.0,
+      "resolver_draw_rate": 0.777778,
+      "baseline_strict_hits": 0,
+      "shadow_strict_hits": 2,
+      "strict_improvement": 2,
+      "strict_improvement_rate": 0.222222,
+      "soft_improvement_rate": 0.0,
+      "roi_change": 0.222222,
+      "feature_usage_rate": {
+        "trainer": 0.666667,
+        "owner": 0.333333
+      },
+      "tier_usage_rate": {
+        "S": 1.0
+      },
+      "cascade_stop_rate": {
+        "trainer": 0.666667,
+        "owner": 0.333333
+      },
+      "feature_usage_count": {
+        "trainer": 6,
+        "owner": 3
+      },
+      "tier_usage_count": {
+        "S": 9
+      },
+      "cascade_stop_count": {
+        "trainer": 6,
+        "owner": 3
+      },
+      "coverage_avg": 1.0,
+      "used_feature_coverage_avg": 1.0,
+      "confidence_distribution": {
+        "p50": 1.0,
+        "p75": 1.0,
+        "min": 0.55,
+        "max": 1.0,
+        "avg": 0.875
+      },
+      "gate": {
+        "status": "sample_insufficient",
+        "checks": {
+          "tie_races": false,
+          "resolver_win_rate": false,
+          "resolver_lose_rate": true,
+          "strict_improvement_rate": true,
+          "roi_change": true,
+          "coverage_avg": true,
+          "confidence_median": true
+        },
+        "progress": {
+          "tie_races": 0.09,
+          "resolver_win_rate": 0.37037,
+          "resolver_lose_rate": 1.0,
+          "strict_improvement_rate": 1.0,
+          "coverage_avg": 1.0,
+          "confidence_median": 1.0
+        }
+      }
+    },
+    {
+      "segment": "surface:unknown",
+      "tie_races": 9,
+      "resolver_win": 2,
+      "resolver_lose": 0,
+      "resolver_draw": 7,
+      "resolver_win_rate": 0.222222,
+      "resolver_lose_rate": 0.0,
+      "resolver_draw_rate": 0.777778,
+      "baseline_strict_hits": 0,
+      "shadow_strict_hits": 2,
+      "strict_improvement": 2,
+      "strict_improvement_rate": 0.222222,
+      "soft_improvement_rate": 0.0,
+      "roi_change": 0.222222,
+      "feature_usage_rate": {
+        "trainer": 0.666667,
+        "owner": 0.333333
+      },
+      "tier_usage_rate": {
+        "S": 1.0
+      },
+      "cascade_stop_rate": {
+        "trainer": 0.666667,
+        "owner": 0.333333
+      },
+      "feature_usage_count": {
+        "trainer": 6,
+        "owner": 3
+      },
+      "tier_usage_count": {
+        "S": 9
+      },
+      "cascade_stop_count": {
+        "trainer": 6,
+        "owner": 3
+      },
+      "coverage_avg": 1.0,
+      "used_feature_coverage_avg": 1.0,
+      "confidence_distribution": {
+        "p50": 1.0,
+        "p75": 1.0,
+        "min": 0.55,
+        "max": 1.0,
+        "avg": 0.875
+      },
+      "gate": {
+        "status": "sample_insufficient",
+        "checks": {
+          "tie_races": false,
+          "resolver_win_rate": false,
+          "resolver_lose_rate": true,
+          "strict_improvement_rate": true,
+          "roi_change": true,
+          "coverage_avg": true,
+          "confidence_median": true
+        },
+        "progress": {
+          "tie_races": 0.09,
+          "resolver_win_rate": 0.37037,
+          "resolver_lose_rate": 1.0,
+          "strict_improvement_rate": 1.0,
+          "coverage_avg": 1.0,
+          "confidence_median": 1.0
+        }
+      }
+    },
+    {
+      "segment": "venue:中京",
+      "tie_races": 4,
+      "resolver_win": 0,
+      "resolver_lose": 0,
+      "resolver_draw": 4,
+      "resolver_win_rate": 0.0,
+      "resolver_lose_rate": 0.0,
+      "resolver_draw_rate": 1.0,
+      "baseline_strict_hits": 0,
+      "shadow_strict_hits": 0,
+      "strict_improvement": 0,
+      "strict_improvement_rate": 0.0,
+      "soft_improvement_rate": 0.0,
+      "roi_change": 0.0,
+      "feature_usage_rate": {
+        "trainer": 0.5,
+        "owner": 0.5
+      },
+      "tier_usage_rate": {
+        "S": 1.0
+      },
+      "cascade_stop_rate": {
+        "trainer": 0.5,
+        "owner": 0.5
+      },
+      "feature_usage_count": {
+        "trainer": 2,
+        "owner": 2
+      },
+      "tier_usage_count": {
+        "S": 4
+      },
+      "cascade_stop_count": {
+        "trainer": 2,
+        "owner": 2
+      },
+      "coverage_avg": 1.0,
+      "used_feature_coverage_avg": 1.0,
+      "confidence_distribution": {
+        "p50": 0.775,
+        "p75": 1.0,
+        "min": 0.55,
+        "max": 1.0,
+        "avg": 0.775
+      },
+      "gate": {
+        "status": "sample_insufficient",
+        "checks": {
+          "tie_races": false,
+          "resolver_win_rate": false,
+          "resolver_lose_rate": true,
+          "strict_improvement_rate": false,
+          "roi_change": true,
+          "coverage_avg": true,
+          "confidence_median": true
+        },
+        "progress": {
+          "tie_races": 0.04,
+          "resolver_win_rate": 0.0,
+          "resolver_lose_rate": 1.0,
+          "strict_improvement_rate": 0.0,
+          "coverage_avg": 1.0,
+          "confidence_median": 1.0
+        }
+      }
+    },
+    {
+      "segment": "venue:新潟",
+      "tie_races": 3,
+      "resolver_win": 1,
+      "resolver_lose": 0,
+      "resolver_draw": 2,
+      "resolver_win_rate": 0.333333,
+      "resolver_lose_rate": 0.0,
+      "resolver_draw_rate": 0.666667,
+      "baseline_strict_hits": 0,
+      "shadow_strict_hits": 1,
+      "strict_improvement": 1,
+      "strict_improvement_rate": 0.333333,
+      "soft_improvement_rate": 0.0,
+      "roi_change": 0.333333,
+      "feature_usage_rate": {
+        "trainer": 0.666667,
+        "owner": 0.333333
+      },
+      "tier_usage_rate": {
+        "S": 1.0
+      },
+      "cascade_stop_rate": {
+        "trainer": 0.666667,
+        "owner": 0.333333
+      },
+      "feature_usage_count": {
+        "trainer": 2,
+        "owner": 1
+      },
+      "tier_usage_count": {
+        "S": 3
+      },
+      "cascade_stop_count": {
+        "trainer": 2,
+        "owner": 1
+      },
+      "coverage_avg": 1.0,
+      "used_feature_coverage_avg": 1.0,
+      "confidence_distribution": {
+        "p50": 1.0,
+        "p75": 1.0,
+        "min": 0.775,
+        "max": 1.0,
+        "avg": 0.925
+      },
+      "gate": {
+        "status": "sample_insufficient",
+        "checks": {
+          "tie_races": false,
+          "resolver_win_rate": false,
+          "resolver_lose_rate": true,
+          "strict_improvement_rate": true,
+          "roi_change": true,
+          "coverage_avg": true,
+          "confidence_median": true
+        },
+        "progress": {
+          "tie_races": 0.03,
+          "resolver_win_rate": 0.555555,
+          "resolver_lose_rate": 1.0,
+          "strict_improvement_rate": 1.0,
+          "coverage_avg": 1.0,
+          "confidence_median": 1.0
+        }
+      }
+    },
+    {
+      "segment": "venue:札幌",
+      "tie_races": 2,
+      "resolver_win": 1,
+      "resolver_lose": 0,
+      "resolver_draw": 1,
+      "resolver_win_rate": 0.5,
+      "resolver_lose_rate": 0.0,
+      "resolver_draw_rate": 0.5,
+      "baseline_strict_hits": 0,
+      "shadow_strict_hits": 1,
+      "strict_improvement": 1,
+      "strict_improvement_rate": 0.5,
+      "soft_improvement_rate": 0.0,
+      "roi_change": 0.5,
+      "feature_usage_rate": {
+        "trainer": 1.0
+      },
+      "tier_usage_rate": {
+        "S": 1.0
+      },
+      "cascade_stop_rate": {
+        "trainer": 1.0
+      },
+      "feature_usage_count": {
+        "trainer": 2
+      },
+      "tier_usage_count": {
+        "S": 2
+      },
+      "cascade_stop_count": {
+        "trainer": 2
+      },
+      "coverage_avg": 1.0,
+      "used_feature_coverage_avg": 1.0,
+      "confidence_distribution": {
+        "p50": 1.0,
+        "p75": 1.0,
+        "min": 1.0,
+        "max": 1.0,
+        "avg": 1.0
+      },
+      "gate": {
+        "status": "sample_insufficient",
+        "checks": {
+          "tie_races": false,
+          "resolver_win_rate": false,
+          "resolver_lose_rate": true,
+          "strict_improvement_rate": true,
+          "roi_change": true,
+          "coverage_avg": true,
+          "confidence_median": true
+        },
+        "progress": {
+          "tie_races": 0.02,
+          "resolver_win_rate": 0.833333,
+          "resolver_lose_rate": 1.0,
+          "strict_improvement_rate": 1.0,
+          "coverage_avg": 1.0,
+          "confidence_median": 1.0
+        }
+      }
+    }
+  ],
+  "periods": {
+    "daily": [
+      {
+        "period_key": "2026-07-25",
+        "tie_races": 5,
+        "resolver_win": 0,
+        "resolver_lose": 0,
+        "resolver_draw": 5,
+        "resolver_win_rate": 0.0,
+        "resolver_lose_rate": 0.0,
+        "resolver_draw_rate": 1.0,
+        "baseline_strict_hits": 0,
+        "shadow_strict_hits": 0,
+        "strict_improvement": 0,
+        "strict_improvement_rate": 0.0,
+        "soft_improvement_rate": 0.0,
+        "roi_change": 0.0,
+        "feature_usage_rate": {
+          "owner": 0.6,
+          "trainer": 0.4
+        },
+        "tier_usage_rate": {
+          "S": 1.0
+        },
+        "cascade_stop_rate": {
+          "owner": 0.6,
+          "trainer": 0.4
+        },
+        "feature_usage_count": {
+          "owner": 3,
+          "trainer": 2
+        },
+        "tier_usage_count": {
+          "S": 5
+        },
+        "cascade_stop_count": {
+          "owner": 3,
+          "trainer": 2
+        },
+        "coverage_avg": 1.0,
+        "used_feature_coverage_avg": 1.0,
+        "confidence_distribution": {
+          "p50": 0.775,
+          "p75": 1.0,
+          "min": 0.55,
+          "max": 1.0,
+          "avg": 0.775
+        },
+        "gate": {
+          "status": "sample_insufficient",
+          "checks": {
+            "tie_races": false,
+            "resolver_win_rate": false,
+            "resolver_lose_rate": true,
+            "strict_improvement_rate": false,
+            "roi_change": true,
+            "coverage_avg": true,
+            "confidence_median": true
+          },
+          "progress": {
+            "tie_races": 0.05,
+            "resolver_win_rate": 0.0,
+            "resolver_lose_rate": 1.0,
+            "strict_improvement_rate": 0.0,
+            "coverage_avg": 1.0,
+            "confidence_median": 1.0
+          }
+        }
+      },
+      {
+        "period_key": "2026-07-26",
+        "tie_races": 4,
+        "resolver_win": 2,
+        "resolver_lose": 0,
+        "resolver_draw": 2,
+        "resolver_win_rate": 0.5,
+        "resolver_lose_rate": 0.0,
+        "resolver_draw_rate": 0.5,
+        "baseline_strict_hits": 0,
+        "shadow_strict_hits": 2,
+        "strict_improvement": 2,
+        "strict_improvement_rate": 0.5,
+        "soft_improvement_rate": 0.0,
+        "roi_change": 0.5,
+        "feature_usage_rate": {
+          "trainer": 1.0
+        },
+        "tier_usage_rate": {
+          "S": 1.0
+        },
+        "cascade_stop_rate": {
+          "trainer": 1.0
+        },
+        "feature_usage_count": {
+          "trainer": 4
+        },
+        "tier_usage_count": {
+          "S": 4
+        },
+        "cascade_stop_count": {
+          "trainer": 4
+        },
+        "coverage_avg": 1.0,
+        "used_feature_coverage_avg": 1.0,
+        "confidence_distribution": {
+          "p50": 1.0,
+          "p75": 1.0,
+          "min": 1.0,
+          "max": 1.0,
+          "avg": 1.0
+        },
+        "gate": {
+          "status": "sample_insufficient",
+          "checks": {
+            "tie_races": false,
+            "resolver_win_rate": false,
+            "resolver_lose_rate": true,
+            "strict_improvement_rate": true,
+            "roi_change": true,
+            "coverage_avg": true,
+            "confidence_median": true
+          },
+          "progress": {
+            "tie_races": 0.04,
+            "resolver_win_rate": 0.833333,
+            "resolver_lose_rate": 1.0,
+            "strict_improvement_rate": 1.0,
+            "coverage_avg": 1.0,
+            "confidence_median": 1.0
+          }
+        }
+      }
+    ],
+    "weekly": [
+      {
+        "period_key": "2026-W30",
+        "tie_races": 9,
+        "resolver_win": 2,
+        "resolver_lose": 0,
+        "resolver_draw": 7,
+        "resolver_win_rate": 0.222222,
+        "resolver_lose_rate": 0.0,
+        "resolver_draw_rate": 0.777778,
+        "baseline_strict_hits": 0,
+        "shadow_strict_hits": 2,
+        "strict_improvement": 2,
+        "strict_improvement_rate": 0.222222,
+        "soft_improvement_rate": 0.0,
+        "roi_change": 0.222222,
+        "feature_usage_rate": {
+          "trainer": 0.666667,
+          "owner": 0.333333
+        },
+        "tier_usage_rate": {
+          "S": 1.0
+        },
+        "cascade_stop_rate": {
+          "trainer": 0.666667,
+          "owner": 0.333333
+        },
+        "feature_usage_count": {
+          "trainer": 6,
+          "owner": 3
+        },
+        "tier_usage_count": {
+          "S": 9
+        },
+        "cascade_stop_count": {
+          "trainer": 6,
+          "owner": 3
+        },
+        "coverage_avg": 1.0,
+        "used_feature_coverage_avg": 1.0,
+        "confidence_distribution": {
+          "p50": 1.0,
+          "p75": 1.0,
+          "min": 0.55,
+          "max": 1.0,
+          "avg": 0.875
+        },
+        "gate": {
+          "status": "sample_insufficient",
+          "checks": {
+            "tie_races": false,
+            "resolver_win_rate": false,
+            "resolver_lose_rate": true,
+            "strict_improvement_rate": true,
+            "roi_change": true,
+            "coverage_avg": true,
+            "confidence_median": true
+          },
+          "progress": {
+            "tie_races": 0.09,
+            "resolver_win_rate": 0.37037,
+            "resolver_lose_rate": 1.0,
+            "strict_improvement_rate": 1.0,
+            "coverage_avg": 1.0,
+            "confidence_median": 1.0
+          }
+        }
+      }
+    ],
+    "monthly": [
+      {
+        "period_key": "2026-07",
+        "tie_races": 9,
+        "resolver_win": 2,
+        "resolver_lose": 0,
+        "resolver_draw": 7,
+        "resolver_win_rate": 0.222222,
+        "resolver_lose_rate": 0.0,
+        "resolver_draw_rate": 0.777778,
+        "baseline_strict_hits": 0,
+        "shadow_strict_hits": 2,
+        "strict_improvement": 2,
+        "strict_improvement_rate": 0.222222,
+        "soft_improvement_rate": 0.0,
+        "roi_change": 0.222222,
+        "feature_usage_rate": {
+          "trainer": 0.666667,
+          "owner": 0.333333
+        },
+        "tier_usage_rate": {
+          "S": 1.0
+        },
+        "cascade_stop_rate": {
+          "trainer": 0.666667,
+          "owner": 0.333333
+        },
+        "feature_usage_count": {
+          "trainer": 6,
+          "owner": 3
+        },
+        "tier_usage_count": {
+          "S": 9
+        },
+        "cascade_stop_count": {
+          "trainer": 6,
+          "owner": 3
+        },
+        "coverage_avg": 1.0,
+        "used_feature_coverage_avg": 1.0,
+        "confidence_distribution": {
+          "p50": 1.0,
+          "p75": 1.0,
+          "min": 0.55,
+          "max": 1.0,
+          "avg": 0.875
+        },
+        "gate": {
+          "status": "sample_insufficient",
+          "checks": {
+            "tie_races": false,
+            "resolver_win_rate": false,
+            "resolver_lose_rate": true,
+            "strict_improvement_rate": true,
+            "roi_change": true,
+            "coverage_avg": true,
+            "confidence_median": true
+          },
+          "progress": {
+            "tie_races": 0.09,
+            "resolver_win_rate": 0.37037,
+            "resolver_lose_rate": 1.0,
+            "strict_improvement_rate": 1.0,
+            "coverage_avg": 1.0,
+            "confidence_median": 1.0
+          }
+        }
+      }
+    ]
+  },
+  "records": [
+    {
+      "race_id": "2026-07-26-01-02",
+      "race_date": "2026-07-26",
+      "prediction_id": 9,
+      "tie_size": 5,
+      "winner": 6,
+      "prediction_pick": 5,
+      "shadow_pick": 6,
+      "outcome": "win",
+      "status": "resolved",
+      "used_feature": "trainer",
+      "used_tier": "S",
+      "cascade_stop": "trainer",
+      "prediction_winner_rank": 2,
+      "shadow_winner_rank": 1,
+      "tie_horse_numbers": [
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "shadow_top3": [
+        6,
+        5,
+        7
+      ],
+      "venue": "新潟",
+      "surface": null,
+      "distance": null,
+      "class_label": null,
+      "grade": null,
+      "confidence": 1.0,
+      "evidence_match_count": 1,
+      "evidence_match_ratio": 1.0,
+      "tier_agreement": 1.0,
+      "coverage_score": 1.0,
+      "missing_score": 1.0,
+      "used_feature_coverage": 1.0,
+      "used_feature_missing_rate": 0.0,
+      "used_feature_priority_rank": 1
+    },
+    {
+      "race_id": "2026-07-26-02-01",
+      "race_date": "2026-07-26",
+      "prediction_id": 11,
+      "tie_size": 5,
+      "winner": 8,
+      "prediction_pick": 5,
+      "shadow_pick": 5,
+      "outcome": "draw",
+      "status": "resolved",
+      "used_feature": "trainer",
+      "used_tier": "S",
+      "cascade_stop": "trainer",
+      "prediction_winner_rank": 4,
+      "shadow_winner_rank": 4,
+      "tie_horse_numbers": [
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "shadow_top3": [
+        5,
+        6,
+        7
+      ],
+      "venue": "中京",
+      "surface": null,
+      "distance": null,
+      "class_label": null,
+      "grade": null,
+      "confidence": 1.0,
+      "evidence_match_count": 1,
+      "evidence_match_ratio": 1.0,
+      "tier_agreement": 1.0,
+      "coverage_score": 1.0,
+      "missing_score": 1.0,
+      "used_feature_coverage": 1.0,
+      "used_feature_missing_rate": 0.0,
+      "used_feature_priority_rank": 1
+    },
+    {
+      "race_id": "2026-07-26-02-02",
+      "race_date": "2026-07-26",
+      "prediction_id": 12,
+      "tie_size": 2,
+      "winner": 3,
+      "prediction_pick": 5,
+      "shadow_pick": 6,
+      "outcome": "draw",
+      "status": "resolved",
+      "used_feature": "trainer",
+      "used_tier": "S",
+      "cascade_stop": "trainer",
+      "prediction_winner_rank": null,
+      "shadow_winner_rank": null,
+      "tie_horse_numbers": [
+        5,
+        6
+      ],
+      "shadow_top3": [
+        6,
+        5
+      ],
+      "venue": "中京",
+      "surface": null,
+      "distance": null,
+      "class_label": null,
+      "grade": null,
+      "confidence": 1.0,
+      "evidence_match_count": 1,
+      "evidence_match_ratio": 1.0,
+      "tier_agreement": 1.0,
+      "coverage_score": 1.0,
+      "missing_score": 1.0,
+      "used_feature_coverage": 1.0,
+      "used_feature_missing_rate": 0.0,
+      "used_feature_priority_rank": 1
+    },
+    {
+      "race_id": "2026-07-25-01-02",
+      "race_date": "2026-07-25",
+      "prediction_id": 20,
+      "tie_size": 4,
+      "winner": 12,
+      "prediction_pick": 11,
+      "shadow_pick": 14,
+      "outcome": "draw",
+      "status": "resolved",
+      "used_feature": "owner",
+      "used_tier": "S",
+      "cascade_stop": "owner",
+      "prediction_winner_rank": 2,
+      "shadow_winner_rank": 3,
+      "tie_horse_numbers": [
+        11,
+        12,
+        13,
+        14
+      ],
+      "shadow_top3": [
+        14,
+        11,
+        12
+      ],
+      "venue": "新潟",
+      "surface": null,
+      "distance": null,
+      "class_label": null,
+      "grade": null,
+      "confidence": 0.775,
+      "evidence_match_count": 1,
+      "evidence_match_ratio": 0.5,
+      "tier_agreement": 1.0,
+      "coverage_score": 1.0,
+      "missing_score": 1.0,
+      "used_feature_coverage": 1.0,
+      "used_feature_missing_rate": 0.0,
+      "used_feature_priority_rank": 2
+    },
+    {
+      "race_id": "2026-07-25-01-03",
+      "race_date": "2026-07-25",
+      "prediction_id": 21,
+      "tie_size": 4,
+      "winner": 4,
+      "prediction_pick": 5,
+      "shadow_pick": 5,
+      "outcome": "draw",
+      "status": "resolved",
+      "used_feature": "trainer",
+      "used_tier": "S",
+      "cascade_stop": "trainer",
+      "prediction_winner_rank": null,
+      "shadow_winner_rank": null,
+      "tie_horse_numbers": [
+        5,
+        6,
+        7,
+        8
+      ],
+      "shadow_top3": [
+        5,
+        6,
+        7
+      ],
+      "venue": "新潟",
+      "surface": null,
+      "distance": null,
+      "class_label": null,
+      "grade": null,
+      "confidence": 1.0,
+      "evidence_match_count": 1,
+      "evidence_match_ratio": 1.0,
+      "tier_agreement": 1.0,
+      "coverage_score": 1.0,
+      "missing_score": 1.0,
+      "used_feature_coverage": 1.0,
+      "used_feature_missing_rate": 0.0,
+      "used_feature_priority_rank": 1
+    },
+    {
+      "race_id": "2026-07-25-02-01",
+      "race_date": "2026-07-25",
+      "prediction_id": 31,
+      "tie_size": 5,
+      "winner": 1,
+      "prediction_pick": 5,
+      "shadow_pick": 7,
+      "outcome": "draw",
+      "status": "resolved",
+      "used_feature": "owner",
+      "used_tier": "S",
+      "cascade_stop": "owner",
+      "prediction_winner_rank": null,
+      "shadow_winner_rank": null,
+      "tie_horse_numbers": [
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "shadow_top3": [
+        7,
+        5,
+        6
+      ],
+      "venue": "中京",
+      "surface": null,
+      "distance": null,
+      "class_label": null,
+      "grade": null,
+      "confidence": 0.55,
+      "evidence_match_count": 0,
+      "evidence_match_ratio": 0.0,
+      "tier_agreement": 1.0,
+      "coverage_score": 1.0,
+      "missing_score": 1.0,
+      "used_feature_coverage": 1.0,
+      "used_feature_missing_rate": 0.0,
+      "used_feature_priority_rank": 2
+    },
+    {
+      "race_id": "2026-07-25-02-02",
+      "race_date": "2026-07-25",
+      "prediction_id": 32,
+      "tie_size": 8,
+      "winner": 11,
+      "prediction_pick": 6,
+      "shadow_pick": 7,
+      "outcome": "draw",
+      "status": "resolved",
+      "used_feature": "owner",
+      "used_tier": "S",
+      "cascade_stop": "owner",
+      "prediction_winner_rank": 6,
+      "shadow_winner_rank": 6,
+      "tie_horse_numbers": [
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13
+      ],
+      "shadow_top3": [
+        7,
+        6,
+        8
+      ],
+      "venue": "中京",
+      "surface": null,
+      "distance": null,
+      "class_label": null,
+      "grade": null,
+      "confidence": 0.55,
+      "evidence_match_count": 0,
+      "evidence_match_ratio": 0.0,
+      "tier_agreement": 1.0,
+      "coverage_score": 1.0,
+      "missing_score": 1.0,
+      "used_feature_coverage": 1.0,
+      "used_feature_missing_rate": 0.0,
+      "used_feature_priority_rank": 2
+    },
+    {
+      "race_id": "2026-07-25-03-05",
+      "race_date": "2026-07-25",
+      "prediction_id": 47,
+      "tie_size": 2,
+      "winner": 1,
+      "prediction_pick": 5,
+      "shadow_pick": 6,
+      "outcome": "draw",
+      "status": "resolved",
+      "used_feature": "trainer",
+      "used_tier": "S",
+      "cascade_stop": "trainer",
+      "prediction_winner_rank": null,
+      "shadow_winner_rank": null,
+      "tie_horse_numbers": [
+        5,
+        6
+      ],
+      "shadow_top3": [
+        6,
+        5
+      ],
+      "venue": "札幌",
+      "surface": null,
+      "distance": null,
+      "class_label": null,
+      "grade": null,
+      "confidence": 1.0,
+      "evidence_match_count": 1,
+      "evidence_match_ratio": 1.0,
+      "tier_agreement": 1.0,
+      "coverage_score": 1.0,
+      "missing_score": 1.0,
+      "used_feature_coverage": 1.0,
+      "used_feature_missing_rate": 0.0,
+      "used_feature_priority_rank": 1
+    },
+    {
+      "race_id": "2026-07-26-03-05",
+      "race_date": "2026-07-26",
+      "prediction_id": 58,
+      "tie_size": 6,
+      "winner": 9,
+      "prediction_pick": 5,
+      "shadow_pick": 9,
+      "outcome": "win",
+      "status": "resolved",
+      "used_feature": "trainer",
+      "used_tier": "S",
+      "cascade_stop": "trainer",
+      "prediction_winner_rank": 5,
+      "shadow_winner_rank": 1,
+      "tie_horse_numbers": [
+        5,
+        6,
+        7,
+        8,
+        9,
+        10
+      ],
+      "shadow_top3": [
+        9,
+        5,
+        6
+      ],
+      "venue": "札幌",
+      "surface": null,
+      "distance": null,
+      "class_label": null,
+      "grade": null,
+      "confidence": 1.0,
+      "evidence_match_count": 1,
+      "evidence_match_ratio": 1.0,
+      "tier_agreement": 1.0,
+      "coverage_score": 1.0,
+      "missing_score": 1.0,
+      "used_feature_coverage": 1.0,
+      "used_feature_missing_rate": 0.0,
+      "used_feature_priority_rank": 1
+    }
+  ],
+  "dashboard": {
+    "schema_version": "expect-resolver-governance-dashboard/1.0",
+    "generated_at": "2026-07-27T06:58:47+00:00",
+    "current_status": "sample_insufficient",
+    "eligible": false,
+    "watching": false,
+    "rejected": false,
+    "sample_insufficient": true,
+    "confidence": {
+      "p50": 1.0,
+      "p75": 1.0,
+      "min": 0.55,
+      "max": 1.0,
+      "avg": 0.875
+    },
+    "progress": {
+      "tie_races": 0.09,
+      "resolver_win_rate": 0.37037,
+      "resolver_lose_rate": 1.0,
+      "strict_improvement_rate": 1.0,
+      "coverage_avg": 1.0,
+      "confidence_median": 1.0
+    },
+    "summary": {
+      "tie_races": 9,
+      "resolver_win": 2,
+      "resolver_lose": 0,
+      "resolver_draw": 7,
+      "resolver_win_rate": 0.222222,
+      "resolver_lose_rate": 0.0,
+      "resolver_draw_rate": 0.777778,
+      "baseline_strict_hits": 0,
+      "shadow_strict_hits": 2,
+      "strict_improvement": 2,
+      "strict_improvement_rate": 0.222222,
+      "soft_improvement_rate": 0.0,
+      "roi_change": 0.222222,
+      "feature_usage_rate": {
+        "trainer": 0.666667,
+        "owner": 0.333333
+      },
+      "tier_usage_rate": {
+        "S": 1.0
+      },
+      "cascade_stop_rate": {
+        "trainer": 0.666667,
+        "owner": 0.333333
+      },
+      "feature_usage_count": {
+        "trainer": 6,
+        "owner": 3
+      },
+      "tier_usage_count": {
+        "S": 9
+      },
+      "cascade_stop_count": {
+        "trainer": 6,
+        "owner": 3
+      },
+      "coverage_avg": 1.0,
+      "used_feature_coverage_avg": 1.0,
+      "confidence_distribution": {
+        "p50": 1.0,
+        "p75": 1.0,
+        "min": 0.55,
+        "max": 1.0,
+        "avg": 0.875
+      },
+      "gate": {
+        "status": "sample_insufficient",
+        "checks": {
+          "tie_races": false,
+          "resolver_win_rate": false,
+          "resolver_lose_rate": true,
+          "strict_improvement_rate": true,
+          "roi_change": true,
+          "coverage_avg": true,
+          "confidence_median": true
+        },
+        "progress": {
+          "tie_races": 0.09,
+          "resolver_win_rate": 0.37037,
+          "resolver_lose_rate": 1.0,
+          "strict_improvement_rate": 1.0,
+          "coverage_avg": 1.0,
+          "confidence_median": 1.0
+        }
+      }
+    },
+    "top_segments": [
+      {
+        "segment": "age_group:unknown",
+        "tie_races": 9,
+        "resolver_win": 2,
+        "resolver_lose": 0,
+        "resolver_draw": 7,
+        "resolver_win_rate": 0.222222,
+        "resolver_lose_rate": 0.0,
+        "resolver_draw_rate": 0.777778,
+        "baseline_strict_hits": 0,
+        "shadow_strict_hits": 2,
+        "strict_improvement": 2,
+        "strict_improvement_rate": 0.222222,
+        "soft_improvement_rate": 0.0,
+        "roi_change": 0.222222,
+        "feature_usage_rate": {
+          "trainer": 0.666667,
+          "owner": 0.333333
+        },
+        "tier_usage_rate": {
+          "S": 1.0
+        },
+        "cascade_stop_rate": {
+          "trainer": 0.666667,
+          "owner": 0.333333
+        },
+        "feature_usage_count": {
+          "trainer": 6,
+          "owner": 3
+        },
+        "tier_usage_count": {
+          "S": 9
+        },
+        "cascade_stop_count": {
+          "trainer": 6,
+          "owner": 3
+        },
+        "coverage_avg": 1.0,
+        "used_feature_coverage_avg": 1.0,
+        "confidence_distribution": {
+          "p50": 1.0,
+          "p75": 1.0,
+          "min": 0.55,
+          "max": 1.0,
+          "avg": 0.875
+        },
+        "gate": {
+          "status": "sample_insufficient",
+          "checks": {
+            "tie_races": false,
+            "resolver_win_rate": false,
+            "resolver_lose_rate": true,
+            "strict_improvement_rate": true,
+            "roi_change": true,
+            "coverage_avg": true,
+            "confidence_median": true
+          },
+          "progress": {
+            "tie_races": 0.09,
+            "resolver_win_rate": 0.37037,
+            "resolver_lose_rate": 1.0,
+            "strict_improvement_rate": 1.0,
+            "coverage_avg": 1.0,
+            "confidence_median": 1.0
+          }
+        }
+      },
+      {
+        "segment": "all_tie",
+        "tie_races": 9,
+        "resolver_win": 2,
+        "resolver_lose": 0,
+        "resolver_draw": 7,
+        "resolver_win_rate": 0.222222,
+        "resolver_lose_rate": 0.0,
+        "resolver_draw_rate": 0.777778,
+        "baseline_strict_hits": 0,
+        "shadow_strict_hits": 2,
+        "strict_improvement": 2,
+        "strict_improvement_rate": 0.222222,
+        "soft_improvement_rate": 0.0,
+        "roi_change": 0.222222,
+        "feature_usage_rate": {
+          "trainer": 0.666667,
+          "owner": 0.333333
+        },
+        "tier_usage_rate": {
+          "S": 1.0
+        },
+        "cascade_stop_rate": {
+          "trainer": 0.666667,
+          "owner": 0.333333
+        },
+        "feature_usage_count": {
+          "trainer": 6,
+          "owner": 3
+        },
+        "tier_usage_count": {
+          "S": 9
+        },
+        "cascade_stop_count": {
+          "trainer": 6,
+          "owner": 3
+        },
+        "coverage_avg": 1.0,
+        "used_feature_coverage_avg": 1.0,
+        "confidence_distribution": {
+          "p50": 1.0,
+          "p75": 1.0,
+          "min": 0.55,
+          "max": 1.0,
+          "avg": 0.875
+        },
+        "gate": {
+          "status": "sample_insufficient",
+          "checks": {
+            "tie_races": false,
+            "resolver_win_rate": false,
+            "resolver_lose_rate": true,
+            "strict_improvement_rate": true,
+            "roi_change": true,
+            "coverage_avg": true,
+            "confidence_median": true
+          },
+          "progress": {
+            "tie_races": 0.09,
+            "resolver_win_rate": 0.37037,
+            "resolver_lose_rate": 1.0,
+            "strict_improvement_rate": 1.0,
+            "coverage_avg": 1.0,
+            "confidence_median": 1.0
+          }
+        }
+      },
+      {
+        "segment": "class:unknown",
+        "tie_races": 9,
+        "resolver_win": 2,
+        "resolver_lose": 0,
+        "resolver_draw": 7,
+        "resolver_win_rate": 0.222222,
+        "resolver_lose_rate": 0.0,
+        "resolver_draw_rate": 0.777778,
+        "baseline_strict_hits": 0,
+        "shadow_strict_hits": 2,
+        "strict_improvement": 2,
+        "strict_improvement_rate": 0.222222,
+        "soft_improvement_rate": 0.0,
+        "roi_change": 0.222222,
+        "feature_usage_rate": {
+          "trainer": 0.666667,
+          "owner": 0.333333
+        },
+        "tier_usage_rate": {
+          "S": 1.0
+        },
+        "cascade_stop_rate": {
+          "trainer": 0.666667,
+          "owner": 0.333333
+        },
+        "feature_usage_count": {
+          "trainer": 6,
+          "owner": 3
+        },
+        "tier_usage_count": {
+          "S": 9
+        },
+        "cascade_stop_count": {
+          "trainer": 6,
+          "owner": 3
+        },
+        "coverage_avg": 1.0,
+        "used_feature_coverage_avg": 1.0,
+        "confidence_distribution": {
+          "p50": 1.0,
+          "p75": 1.0,
+          "min": 0.55,
+          "max": 1.0,
+          "avg": 0.875
+        },
+        "gate": {
+          "status": "sample_insufficient",
+          "checks": {
+            "tie_races": false,
+            "resolver_win_rate": false,
+            "resolver_lose_rate": true,
+            "strict_improvement_rate": true,
+            "roi_change": true,
+            "coverage_avg": true,
+            "confidence_median": true
+          },
+          "progress": {
+            "tie_races": 0.09,
+            "resolver_win_rate": 0.37037,
+            "resolver_lose_rate": 1.0,
+            "strict_improvement_rate": 1.0,
+            "coverage_avg": 1.0,
+            "confidence_median": 1.0
+          }
+        }
+      },
+      {
+        "segment": "distance:unknown",
+        "tie_races": 9,
+        "resolver_win": 2,
+        "resolver_lose": 0,
+        "resolver_draw": 7,
+        "resolver_win_rate": 0.222222,
+        "resolver_lose_rate": 0.0,
+        "resolver_draw_rate": 0.777778,
+        "baseline_strict_hits": 0,
+        "shadow_strict_hits": 2,
+        "strict_improvement": 2,
+        "strict_improvement_rate": 0.222222,
+        "soft_improvement_rate": 0.0,
+        "roi_change": 0.222222,
+        "feature_usage_rate": {
+          "trainer": 0.666667,
+          "owner": 0.333333
+        },
+        "tier_usage_rate": {
+          "S": 1.0
+        },
+        "cascade_stop_rate": {
+          "trainer": 0.666667,
+          "owner": 0.333333
+        },
+        "feature_usage_count": {
+          "trainer": 6,
+          "owner": 3
+        },
+        "tier_usage_count": {
+          "S": 9
+        },
+        "cascade_stop_count": {
+          "trainer": 6,
+          "owner": 3
+        },
+        "coverage_avg": 1.0,
+        "used_feature_coverage_avg": 1.0,
+        "confidence_distribution": {
+          "p50": 1.0,
+          "p75": 1.0,
+          "min": 0.55,
+          "max": 1.0,
+          "avg": 0.875
+        },
+        "gate": {
+          "status": "sample_insufficient",
+          "checks": {
+            "tie_races": false,
+            "resolver_win_rate": false,
+            "resolver_lose_rate": true,
+            "strict_improvement_rate": true,
+            "roi_change": true,
+            "coverage_avg": true,
+            "confidence_median": true
+          },
+          "progress": {
+            "tie_races": 0.09,
+            "resolver_win_rate": 0.37037,
+            "resolver_lose_rate": 1.0,
+            "strict_improvement_rate": 1.0,
+            "coverage_avg": 1.0,
+            "confidence_median": 1.0
+          }
+        }
+      },
+      {
+        "segment": "surface:unknown",
+        "tie_races": 9,
+        "resolver_win": 2,
+        "resolver_lose": 0,
+        "resolver_draw": 7,
+        "resolver_win_rate": 0.222222,
+        "resolver_lose_rate": 0.0,
+        "resolver_draw_rate": 0.777778,
+        "baseline_strict_hits": 0,
+        "shadow_strict_hits": 2,
+        "strict_improvement": 2,
+        "strict_improvement_rate": 0.222222,
+        "soft_improvement_rate": 0.0,
+        "roi_change": 0.222222,
+        "feature_usage_rate": {
+          "trainer": 0.666667,
+          "owner": 0.333333
+        },
+        "tier_usage_rate": {
+          "S": 1.0
+        },
+        "cascade_stop_rate": {
+          "trainer": 0.666667,
+          "owner": 0.333333
+        },
+        "feature_usage_count": {
+          "trainer": 6,
+          "owner": 3
+        },
+        "tier_usage_count": {
+          "S": 9
+        },
+        "cascade_stop_count": {
+          "trainer": 6,
+          "owner": 3
+        },
+        "coverage_avg": 1.0,
+        "used_feature_coverage_avg": 1.0,
+        "confidence_distribution": {
+          "p50": 1.0,
+          "p75": 1.0,
+          "min": 0.55,
+          "max": 1.0,
+          "avg": 0.875
+        },
+        "gate": {
+          "status": "sample_insufficient",
+          "checks": {
+            "tie_races": false,
+            "resolver_win_rate": false,
+            "resolver_lose_rate": true,
+            "strict_improvement_rate": true,
+            "roi_change": true,
+            "coverage_avg": true,
+            "confidence_median": true
+          },
+          "progress": {
+            "tie_races": 0.09,
+            "resolver_win_rate": 0.37037,
+            "resolver_lose_rate": 1.0,
+            "strict_improvement_rate": 1.0,
+            "coverage_avg": 1.0,
+            "confidence_median": 1.0
+          }
+        }
+      },
+      {
+        "segment": "venue:中京",
+        "tie_races": 4,
+        "resolver_win": 0,
+        "resolver_lose": 0,
+        "resolver_draw": 4,
+        "resolver_win_rate": 0.0,
+        "resolver_lose_rate": 0.0,
+        "resolver_draw_rate": 1.0,
+        "baseline_strict_hits": 0,
+        "shadow_strict_hits": 0,
+        "strict_improvement": 0,
+        "strict_improvement_rate": 0.0,
+        "soft_improvement_rate": 0.0,
+        "roi_change": 0.0,
+        "feature_usage_rate": {
+          "trainer": 0.5,
+          "owner": 0.5
+        },
+        "tier_usage_rate": {
+          "S": 1.0
+        },
+        "cascade_stop_rate": {
+          "trainer": 0.5,
+          "owner": 0.5
+        },
+        "feature_usage_count": {
+          "trainer": 2,
+          "owner": 2
+        },
+        "tier_usage_count": {
+          "S": 4
+        },
+        "cascade_stop_count": {
+          "trainer": 2,
+          "owner": 2
+        },
+        "coverage_avg": 1.0,
+        "used_feature_coverage_avg": 1.0,
+        "confidence_distribution": {
+          "p50": 0.775,
+          "p75": 1.0,
+          "min": 0.55,
+          "max": 1.0,
+          "avg": 0.775
+        },
+        "gate": {
+          "status": "sample_insufficient",
+          "checks": {
+            "tie_races": false,
+            "resolver_win_rate": false,
+            "resolver_lose_rate": true,
+            "strict_improvement_rate": false,
+            "roi_change": true,
+            "coverage_avg": true,
+            "confidence_median": true
+          },
+          "progress": {
+            "tie_races": 0.04,
+            "resolver_win_rate": 0.0,
+            "resolver_lose_rate": 1.0,
+            "strict_improvement_rate": 0.0,
+            "coverage_avg": 1.0,
+            "confidence_median": 1.0
+          }
+        }
+      },
+      {
+        "segment": "venue:新潟",
+        "tie_races": 3,
+        "resolver_win": 1,
+        "resolver_lose": 0,
+        "resolver_draw": 2,
+        "resolver_win_rate": 0.333333,
+        "resolver_lose_rate": 0.0,
+        "resolver_draw_rate": 0.666667,
+        "baseline_strict_hits": 0,
+        "shadow_strict_hits": 1,
+        "strict_improvement": 1,
+        "strict_improvement_rate": 0.333333,
+        "soft_improvement_rate": 0.0,
+        "roi_change": 0.333333,
+        "feature_usage_rate": {
+          "trainer": 0.666667,
+          "owner": 0.333333
+        },
+        "tier_usage_rate": {
+          "S": 1.0
+        },
+        "cascade_stop_rate": {
+          "trainer": 0.666667,
+          "owner": 0.333333
+        },
+        "feature_usage_count": {
+          "trainer": 2,
+          "owner": 1
+        },
+        "tier_usage_count": {
+          "S": 3
+        },
+        "cascade_stop_count": {
+          "trainer": 2,
+          "owner": 1
+        },
+        "coverage_avg": 1.0,
+        "used_feature_coverage_avg": 1.0,
+        "confidence_distribution": {
+          "p50": 1.0,
+          "p75": 1.0,
+          "min": 0.775,
+          "max": 1.0,
+          "avg": 0.925
+        },
+        "gate": {
+          "status": "sample_insufficient",
+          "checks": {
+            "tie_races": false,
+            "resolver_win_rate": false,
+            "resolver_lose_rate": true,
+            "strict_improvement_rate": true,
+            "roi_change": true,
+            "coverage_avg": true,
+            "confidence_median": true
+          },
+          "progress": {
+            "tie_races": 0.03,
+            "resolver_win_rate": 0.555555,
+            "resolver_lose_rate": 1.0,
+            "strict_improvement_rate": 1.0,
+            "coverage_avg": 1.0,
+            "confidence_median": 1.0
+          }
+        }
+      },
+      {
+        "segment": "venue:札幌",
+        "tie_races": 2,
+        "resolver_win": 1,
+        "resolver_lose": 0,
+        "resolver_draw": 1,
+        "resolver_win_rate": 0.5,
+        "resolver_lose_rate": 0.0,
+        "resolver_draw_rate": 0.5,
+        "baseline_strict_hits": 0,
+        "shadow_strict_hits": 1,
+        "strict_improvement": 1,
+        "strict_improvement_rate": 0.5,
+        "soft_improvement_rate": 0.0,
+        "roi_change": 0.5,
+        "feature_usage_rate": {
+          "trainer": 1.0
+        },
+        "tier_usage_rate": {
+          "S": 1.0
+        },
+        "cascade_stop_rate": {
+          "trainer": 1.0
+        },
+        "feature_usage_count": {
+          "trainer": 2
+        },
+        "tier_usage_count": {
+          "S": 2
+        },
+        "cascade_stop_count": {
+          "trainer": 2
+        },
+        "coverage_avg": 1.0,
+        "used_feature_coverage_avg": 1.0,
+        "confidence_distribution": {
+          "p50": 1.0,
+          "p75": 1.0,
+          "min": 1.0,
+          "max": 1.0,
+          "avg": 1.0
+        },
+        "gate": {
+          "status": "sample_insufficient",
+          "checks": {
+            "tie_races": false,
+            "resolver_win_rate": false,
+            "resolver_lose_rate": true,
+            "strict_improvement_rate": true,
+            "roi_change": true,
+            "coverage_avg": true,
+            "confidence_median": true
+          },
+          "progress": {
+            "tie_races": 0.02,
+            "resolver_win_rate": 0.833333,
+            "resolver_lose_rate": 1.0,
+            "strict_improvement_rate": 1.0,
+            "coverage_avg": 1.0,
+            "confidence_median": 1.0
+          }
+        }
+      }
+    ]
+  }
+}

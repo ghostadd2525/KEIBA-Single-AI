@@ -1,0 +1,160 @@
+{
+  "schema_version": "expect-w-s0-baseline-freeze/1.0",
+  "generated_at": "2026-07-28T04:45:01+00:00",
+  "stage": "W-S0",
+  "fixture": "C:\\win5-ai\\KEIBA-Single-AI\\fixtures\\stats\\baseline-285r-evaluations.json",
+  "corpus": "C:\\win5-ai\\KEIBA-Single-AI\\research\\v3_lab\\baselines\\offline_gate\\real_285r_corpus.json",
+  "flags": {
+    "W_TRIGGER_SHADOW": false,
+    "W_TRIGGER_PATH": "legacy",
+    "W_DEFAULT_CORE": true,
+    "stage": "W-S0",
+    "decision_authority": "legacy",
+    "shadow_dual_eval_enabled": false
+  },
+  "before": {
+    "n": 285,
+    "hit": 218,
+    "hit_rate": 0.764912,
+    "purchase": 218,
+    "purchase_rate": 0.764912,
+    "rank710": 14,
+    "other_1_3": 1,
+    "other_10_13": 13,
+    "rank46": 35,
+    "other": 4,
+    "buckets": {
+      "hit": 218,
+      "rank710": 14,
+      "rank46": 35,
+      "other_10_13": 13,
+      "other_1_3": 1,
+      "other": 4
+    },
+    "prediction_fingerprint": "d3c43162ebf143239c456521a745d4af12d9cd53c78c561d351d559d88f93f2a"
+  },
+  "after": {
+    "n": 285,
+    "hit": 218,
+    "hit_rate": 0.764912,
+    "purchase": 218,
+    "purchase_rate": 0.764912,
+    "rank710": 14,
+    "other_1_3": 1,
+    "other_10_13": 13,
+    "rank46": 35,
+    "other": 4,
+    "buckets": {
+      "hit": 218,
+      "rank710": 14,
+      "rank46": 35,
+      "other_10_13": 13,
+      "other_1_3": 1,
+      "other": 4
+    },
+    "prediction_fingerprint": "d3c43162ebf143239c456521a745d4af12d9cd53c78c561d351d559d88f93f2a"
+  },
+  "world": {
+    "source": "legacy_identity_probe_plus_design_share_reference",
+    "flags": {
+      "W_TRIGGER_SHADOW": false,
+      "W_TRIGGER_PATH": "legacy",
+      "W_DEFAULT_CORE": true,
+      "stage": "W-S0",
+      "decision_authority": "legacy",
+      "shadow_dual_eval_enabled": false
+    },
+    "probe": {
+      "n": 3,
+      "all_identical": true,
+      "rows": [
+        {
+          "race_id": "ws0-probe-core",
+          "world_a": "core_world",
+          "world_b": "core_world",
+          "identical": true
+        },
+        {
+          "race_id": "ws0-probe-mid",
+          "world_a": "midupper_world",
+          "world_b": "midupper_world",
+          "identical": true
+        },
+        {
+          "race_id": "ws0-probe-chaos",
+          "world_a": "bug_world",
+          "world_b": "bug_world",
+          "identical": true
+        }
+      ],
+      "note": "Probe only — not 285R World Distribution (signals not in offline fixture)."
+    },
+    "world_counts_probe": {
+      "core_world": 1,
+      "midupper_world": 1,
+      "bug_world": 1
+    },
+    "entropy_bits_probe": 1.584962500721156,
+    "entropy_ratio_probe": 0.6131471927654584,
+    "design_share_reference": {
+      "core_world": 0.3,
+      "midupper_world": 0.35,
+      "rank7_world": 0.15,
+      "mixed_world": 0.1,
+      "bug_world": 0.05,
+      "midhole_world": 0.05
+    },
+    "positive_match": {
+      "evaluated": false,
+      "reason": "V44 Positive Match Dual-Eval is S1+; W-S0 freezes Legacy only",
+      "legacy_default_core_retained": true
+    },
+    "unsatisfied": {
+      "evaluated": false,
+      "reason": "Unsatisfied semantics are V46 S5 / Shadow S1+; not computed in W-S0"
+    },
+    "winner_alignment": {
+      "evaluated": false,
+      "reason": "Requires restored-signal World labels on 285R; deferred to Shadow stages"
+    }
+  },
+  "shadow": {
+    "log_dir": "C:\\win5-ai\\KEIBA-Single-AI\\var\\world_trigger_shadow",
+    "freeze_jsonl": "C:\\win5-ai\\KEIBA-Single-AI\\var\\world_trigger_shadow\\ws0_freeze_baseline.jsonl",
+    "manifest": "C:\\win5-ai\\KEIBA-Single-AI\\var\\world_trigger_shadow\\ws0_freeze_manifest.json",
+    "n_rows": 285,
+    "readable": true
+  },
+  "gate": {
+    "stage": "W-S0",
+    "pass": true,
+    "checks": {
+      "production_prediction_identical": true,
+      "prediction_changes": 0,
+      "hit_delta": 0,
+      "purchase_delta": 0,
+      "hit_delta_zero": true,
+      "purchase_delta_zero": true,
+      "shadow_log_ok": true,
+      "flag_off_compatible": true,
+      "s1_not_executed": true
+    },
+    "deltas": {
+      "hit": 0,
+      "purchase": 0,
+      "rank710": 0,
+      "other_1_3": 0,
+      "other_10_13": 0,
+      "rank46": 0
+    },
+    "rollback_required": false,
+    "next_stage_allowed": "W-S1"
+  },
+  "locks": {
+    "prediction": "unchanged",
+    "pe": "unchanged",
+    "ce": "unchanged",
+    "trigger_rules": "unchanged",
+    "s1": "forbidden"
+  }
+}

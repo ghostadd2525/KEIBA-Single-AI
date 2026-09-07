@@ -3,6 +3,8 @@
  *
  * 順序: 認証 → ロール解決 →（その後）公開制御
  * OPS-Monitor / Result Automation には影響しない。
+ *
+ * Version8.5.1: token.role による昇格は禁止。正本は user profile + allowlist のみ。
  */
 import { getUser } from "./userRepository.js";
 import { canBypassOpsMode, normalizeRole, Role } from "./roles.js";
@@ -34,10 +36,8 @@ export async function resolveAuthorization(context, beta) {
   if (profile && profile.role) {
     role = normalizeRole(profile.role);
     source = "user_profile";
-  } else if (session.role) {
-    role = normalizeRole(session.role);
-    source = "token";
   }
+  // Version8.5.1: session.role / stub token role claim は採用しない
 
   if (role === Role.USER && (await isListedAdmin(context, session.id, beta))) {
     role = Role.ADMIN;

@@ -1,0 +1,436 @@
+{
+  "overlap_improved": [],
+  "only_a01": [
+    "rev-285-219",
+    "rev-285-220",
+    "rev-285-221",
+    "rev-285-222",
+    "rev-285-223",
+    "rev-285-224",
+    "rev-285-225",
+    "rev-285-226",
+    "rev-285-227",
+    "rev-285-228",
+    "rev-285-229",
+    "rev-285-230",
+    "rev-285-231",
+    "rev-285-232",
+    "rev-285-233",
+    "rev-285-234",
+    "rev-285-235",
+    "rev-285-236",
+    "rev-285-237",
+    "rev-285-238",
+    "rev-285-239",
+    "rev-285-240",
+    "rev-285-241",
+    "rev-285-242",
+    "rev-285-243",
+    "rev-285-244",
+    "rev-285-245",
+    "rev-285-246"
+  ],
+  "only_a02": [
+    "rev-285-247",
+    "rev-285-248",
+    "rev-285-249",
+    "rev-285-250",
+    "rev-285-251",
+    "rev-285-252",
+    "rev-285-253",
+    "rev-285-254",
+    "rev-285-255",
+    "rev-285-256",
+    "rev-285-257",
+    "rev-285-258",
+    "rev-285-259",
+    "rev-285-260",
+    "rev-285-261",
+    "rev-285-262",
+    "rev-285-263",
+    "rev-285-264",
+    "rev-285-265",
+    "rev-285-266",
+    "rev-285-267",
+    "rev-285-268",
+    "rev-285-269",
+    "rev-285-270"
+  ],
+  "only_a01_layers": {
+    "Eval": 28
+  },
+  "only_a02_layers": {
+    "Boundary": 14,
+    "Reorder": 10
+  },
+  "a01_improved": [
+    {
+      "race_id": "rev-285-219",
+      "miss_layer": "Eval",
+      "winner_rank": 2,
+      "control_pick": "H218-1",
+      "treatment_pick": "H218-2"
+    },
+    {
+      "race_id": "rev-285-220",
+      "miss_layer": "Eval",
+      "winner_rank": 2,
+      "control_pick": "H219-1",
+      "treatment_pick": "H219-2"
+    },
+    {
+      "race_id": "rev-285-221",
+      "miss_layer": "Eval",
+      "winner_rank": 2,
+      "control_pick": "H220-1",
+      "treatment_pick": "H220-2"
+    },
+    {
+      "race_id": "rev-285-222",
+      "miss_layer": "Eval",
+      "winner_rank": 2,
+      "control_pick": "H221-1",
+      "treatment_pick": "H221-2"
+    },
+    {
+      "race_id": "rev-285-223",
+      "miss_layer": "Eval",
+      "winner_rank": 2,
+      "control_pick": "H222-1",
+      "treatment_pick": "H222-2"
+    },
+    {
+      "race_id": "rev-285-224",
+      "miss_layer": "Eval",
+      "winner_rank": 2,
+      "control_pick": "H223-1",
+      "treatment_pick": "H223-2"
+    },
+    {
+      "race_id": "rev-285-225",
+      "miss_layer": "Eval",
+      "winner_rank": 2,
+      "control_pick": "H224-1",
+      "treatment_pick": "H224-2"
+    },
+    {
+      "race_id": "rev-285-226",
+      "miss_layer": "Eval",
+      "winner_rank": 2,
+      "control_pick": "H225-1",
+      "treatment_pick": "H225-2"
+    },
+    {
+      "race_id": "rev-285-227",
+      "miss_layer": "Eval",
+      "winner_rank": 2,
+      "control_pick": "H226-1",
+      "treatment_pick": "H226-2"
+    },
+    {
+      "race_id": "rev-285-228",
+      "miss_layer": "Eval",
+      "winner_rank": 2,
+      "control_pick": "H227-1",
+      "treatment_pick": "H227-2"
+    },
+    {
+      "race_id": "rev-285-229",
+      "miss_layer": "Eval",
+      "winner_rank": 2,
+      "control_pick": "H228-1",
+      "treatment_pick": "H228-2"
+    },
+    {
+      "race_id": "rev-285-230",
+      "miss_layer": "Eval",
+      "winner_rank": 2,
+      "control_pick": "H229-1",
+      "treatment_pick": "H229-2"
+    },
+    {
+      "race_id": "rev-285-231",
+      "miss_layer": "Eval",
+      "winner_rank": 2,
+      "control_pick": "H230-1",
+      "treatment_pick": "H230-2"
+    },
+    {
+      "race_id": "rev-285-232",
+      "miss_layer": "Eval",
+      "winner_rank": 2,
+      "control_pick": "H231-1",
+      "treatment_pick": "H231-2"
+    },
+    {
+      "race_id": "rev-285-233",
+      "miss_layer": "Eval",
+      "winner_rank": 2,
+      "control_pick": "H232-1",
+      "treatment_pick": "H232-2"
+    },
+    {
+      "race_id": "rev-285-234",
+      "miss_layer": "Eval",
+      "winner_rank": 2,
+      "control_pick": "H233-1",
+      "treatment_pick": "H233-2"
+    },
+    {
+      "race_id": "rev-285-235",
+      "miss_layer": "Eval",
+      "winner_rank": 2,
+      "control_pick": "H234-1",
+      "treatment_pick": "H234-2"
+    },
+    {
+      "race_id": "rev-285-236",
+      "miss_layer": "Eval",
+      "winner_rank": 2,
+      "control_pick": "H235-1",
+      "treatment_pick": "H235-2"
+    },
+    {
+      "race_id": "rev-285-237",
+      "miss_layer": "Eval",
+      "winner_rank": 2,
+      "control_pick": "H236-1",
+      "treatment_pick": "H236-2"
+    },
+    {
+      "race_id": "rev-285-238",
+      "miss_layer": "Eval",
+      "winner_rank": 2,
+      "control_pick": "H237-1",
+      "treatment_pick": "H237-2"
+    },
+    {
+      "race_id": "rev-285-239",
+      "miss_layer": "Eval",
+      "winner_rank": 2,
+      "control_pick": "H238-1",
+      "treatment_pick": "H238-2"
+    },
+    {
+      "race_id": "rev-285-240",
+      "miss_layer": "Eval",
+      "winner_rank": 2,
+      "control_pick": "H239-1",
+      "treatment_pick": "H239-2"
+    },
+    {
+      "race_id": "rev-285-241",
+      "miss_layer": "Eval",
+      "winner_rank": 2,
+      "control_pick": "H240-1",
+      "treatment_pick": "H240-2"
+    },
+    {
+      "race_id": "rev-285-242",
+      "miss_layer": "Eval",
+      "winner_rank": 2,
+      "control_pick": "H241-1",
+      "treatment_pick": "H241-2"
+    },
+    {
+      "race_id": "rev-285-243",
+      "miss_layer": "Eval",
+      "winner_rank": 2,
+      "control_pick": "H242-1",
+      "treatment_pick": "H242-2"
+    },
+    {
+      "race_id": "rev-285-244",
+      "miss_layer": "Eval",
+      "winner_rank": 2,
+      "control_pick": "H243-1",
+      "treatment_pick": "H243-2"
+    },
+    {
+      "race_id": "rev-285-245",
+      "miss_layer": "Eval",
+      "winner_rank": 2,
+      "control_pick": "H244-1",
+      "treatment_pick": "H244-2"
+    },
+    {
+      "race_id": "rev-285-246",
+      "miss_layer": "Eval",
+      "winner_rank": 2,
+      "control_pick": "H245-1",
+      "treatment_pick": "H245-2"
+    }
+  ],
+  "a02_improved": [
+    {
+      "race_id": "rev-285-247",
+      "miss_layer": "Boundary",
+      "winner_rank": 3,
+      "control_pick": "H246-1",
+      "treatment_pick": "H246-3"
+    },
+    {
+      "race_id": "rev-285-248",
+      "miss_layer": "Boundary",
+      "winner_rank": 3,
+      "control_pick": "H247-1",
+      "treatment_pick": "H247-3"
+    },
+    {
+      "race_id": "rev-285-249",
+      "miss_layer": "Boundary",
+      "winner_rank": 3,
+      "control_pick": "H248-1",
+      "treatment_pick": "H248-3"
+    },
+    {
+      "race_id": "rev-285-250",
+      "miss_layer": "Boundary",
+      "winner_rank": 3,
+      "control_pick": "H249-1",
+      "treatment_pick": "H249-3"
+    },
+    {
+      "race_id": "rev-285-251",
+      "miss_layer": "Boundary",
+      "winner_rank": 3,
+      "control_pick": "H250-1",
+      "treatment_pick": "H250-3"
+    },
+    {
+      "race_id": "rev-285-252",
+      "miss_layer": "Boundary",
+      "winner_rank": 3,
+      "control_pick": "H251-1",
+      "treatment_pick": "H251-3"
+    },
+    {
+      "race_id": "rev-285-253",
+      "miss_layer": "Boundary",
+      "winner_rank": 3,
+      "control_pick": "H252-1",
+      "treatment_pick": "H252-3"
+    },
+    {
+      "race_id": "rev-285-254",
+      "miss_layer": "Boundary",
+      "winner_rank": 3,
+      "control_pick": "H253-1",
+      "treatment_pick": "H253-3"
+    },
+    {
+      "race_id": "rev-285-255",
+      "miss_layer": "Boundary",
+      "winner_rank": 3,
+      "control_pick": "H254-1",
+      "treatment_pick": "H254-3"
+    },
+    {
+      "race_id": "rev-285-256",
+      "miss_layer": "Boundary",
+      "winner_rank": 3,
+      "control_pick": "H255-1",
+      "treatment_pick": "H255-3"
+    },
+    {
+      "race_id": "rev-285-257",
+      "miss_layer": "Boundary",
+      "winner_rank": 3,
+      "control_pick": "H256-1",
+      "treatment_pick": "H256-3"
+    },
+    {
+      "race_id": "rev-285-258",
+      "miss_layer": "Boundary",
+      "winner_rank": 3,
+      "control_pick": "H257-1",
+      "treatment_pick": "H257-3"
+    },
+    {
+      "race_id": "rev-285-259",
+      "miss_layer": "Boundary",
+      "winner_rank": 3,
+      "control_pick": "H258-1",
+      "treatment_pick": "H258-3"
+    },
+    {
+      "race_id": "rev-285-260",
+      "miss_layer": "Boundary",
+      "winner_rank": 3,
+      "control_pick": "H259-1",
+      "treatment_pick": "H259-3"
+    },
+    {
+      "race_id": "rev-285-261",
+      "miss_layer": "Reorder",
+      "winner_rank": 2,
+      "control_pick": "H260-1",
+      "treatment_pick": "H260-2"
+    },
+    {
+      "race_id": "rev-285-262",
+      "miss_layer": "Reorder",
+      "winner_rank": 2,
+      "control_pick": "H261-1",
+      "treatment_pick": "H261-2"
+    },
+    {
+      "race_id": "rev-285-263",
+      "miss_layer": "Reorder",
+      "winner_rank": 2,
+      "control_pick": "H262-1",
+      "treatment_pick": "H262-2"
+    },
+    {
+      "race_id": "rev-285-264",
+      "miss_layer": "Reorder",
+      "winner_rank": 2,
+      "control_pick": "H263-1",
+      "treatment_pick": "H263-2"
+    },
+    {
+      "race_id": "rev-285-265",
+      "miss_layer": "Reorder",
+      "winner_rank": 2,
+      "control_pick": "H264-1",
+      "treatment_pick": "H264-2"
+    },
+    {
+      "race_id": "rev-285-266",
+      "miss_layer": "Reorder",
+      "winner_rank": 2,
+      "control_pick": "H265-1",
+      "treatment_pick": "H265-2"
+    },
+    {
+      "race_id": "rev-285-267",
+      "miss_layer": "Reorder",
+      "winner_rank": 2,
+      "control_pick": "H266-1",
+      "treatment_pick": "H266-2"
+    },
+    {
+      "race_id": "rev-285-268",
+      "miss_layer": "Reorder",
+      "winner_rank": 2,
+      "control_pick": "H267-1",
+      "treatment_pick": "H267-2"
+    },
+    {
+      "race_id": "rev-285-269",
+      "miss_layer": "Reorder",
+      "winner_rank": 2,
+      "control_pick": "H268-1",
+      "treatment_pick": "H268-2"
+    },
+    {
+      "race_id": "rev-285-270",
+      "miss_layer": "Reorder",
+      "winner_rank": 2,
+      "control_pick": "H269-1",
+      "treatment_pick": "H269-2"
+    }
+  ],
+  "a01_worsened": [],
+  "a02_worsened": []
+}

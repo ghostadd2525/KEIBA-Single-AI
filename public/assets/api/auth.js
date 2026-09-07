@@ -6,7 +6,7 @@
  * POST /api/auth/login
  * POST /api/auth/logout
  * GET  /api/auth/me
- * GET|PUT /api/auth/favorites
+ * GET|PUT /api/auth/favorites  (PUT = add|remove intent ops)
  */
 (function (global) {
   "use strict";
@@ -168,10 +168,15 @@
       });
     },
 
-    putFavorites: function (favorites) {
+    /**
+     * Intent 同期: { op, race_id } | { ops: [...] }
+     * フルリスト置換はサーバーが拒否する（stale overwrite 防止）。
+     */
+    putFavorites: function (payload) {
+      var body = payload && typeof payload === "object" ? payload : {};
       return api("/api/auth/favorites", {
         method: "PUT",
-        body: { favorites: favorites },
+        body: body,
       }).then(function (data) {
         return (data && data.favorites) || data;
       });

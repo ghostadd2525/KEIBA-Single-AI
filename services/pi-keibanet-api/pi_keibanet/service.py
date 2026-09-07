@@ -38,6 +38,8 @@ from .netkeiba.horse_history import (
 # 単勝オッズ / board メモリキャッシュ（netkeiba 負荷抑制・既定 5 分）
 _ODDS_CACHE_TTL_SEC = float(os.environ.get("PI_ODDS_CACHE_TTL_SEC", "300"))
 _BOARD_CACHE_TTL_SEC = float(os.environ.get("PI_BOARD_CACHE_TTL_SEC", "300"))
+_HORSE_HISTORY_TTL_SEC = float(os.environ.get("PI_HORSE_HISTORY_TTL_SEC", "3600"))
+_HORSE_HISTORY_WORKERS = int(os.environ.get("PI_HORSE_HISTORY_WORKERS", "6"))
 _ODDS_SERIES_MIN_GAP_SEC = float(os.environ.get("PI_ODDS_SERIES_MIN_GAP_SEC", "300"))
 _ODDS_SERIES_MAX_POINTS = int(os.environ.get("PI_ODDS_SERIES_MAX_POINTS", "48"))
 _ODDS_SERIES_DIR = Path(
@@ -48,9 +50,12 @@ _ODDS_SERIES_DIR = Path(
 )
 _odds_cache: dict[str, tuple[float, list[dict[str, Any]], str]] = {}
 _board_cache: dict[str, tuple[float, dict[str, Any]]] = {}
+_horse_history_cache: dict[str, tuple[float, Any]] = {}
+# Ready Prediction 応答キャッシュ（PE/CE 非変更・配信最適化のみ）
+_PRED_CACHE_TTL_SEC = float(os.environ.get("PI_PRED_CACHE_TTL_SEC", "120"))
+_prediction_cache: dict[str, tuple[float, dict[str, Any]]] = {}
 # numeric_race_id → [{ts, odds: {horse_number: win}}, ...]
 _odds_series: dict[str, list[dict[str, Any]]] = {}
-
 
 class RaceNotFoundError(LookupError):
     def __init__(self, reason: str, message: str) -> None:
@@ -293,7 +298,17 @@ class PiKeibaNetService:
         GET /v1/predictions/{race_id}
 
         Prediction uses race_id as key; course/race_number/race_label are display-only.
+        Ready 応答のみ短 TTL キャッシュ（PE/CE ロジック非変更）。
         """
+        from . import cache_metrics
+
+        rid = str(race_id).strip()
+        t0 = time.monotonic()
+        cached = _prediction_cache.get(rid)
+        if cached and time.monotonic() - cached[0] < _PRED_CACHE_TTL_SEC:
+            cache_metrics.note_prediction(hit=True, ms=(time.monotonic() - t0) * 1000)
+            return dict(cached[1])
+
         ref = self.resolve_race_ref(race_id)
         display_extra: dict[str, Any] = {"collector_race_id": ref["collector_race_id"]}
         if ref.get("post_time"):
@@ -310,6 +325,7 @@ class PiKeibaNetService:
 
         ai_root = _resolve_ai_platform_root()
         if ai_root is None:
+            cache_metrics.note_prediction(hit=False, ms=(time.monotonic() - t0) * 1000)
             return {
                 **display,
                 "prediction_available": False,
@@ -324,6 +340,7 @@ class PiKeibaNetService:
             from ai_platform.core.candidate_evaluation import CorePipeline
             from ai_platform.core.features.feature_loader import FeatureLoader, get_last_failure_reason
         except Exception as exc:
+            cache_metrics.note_prediction(hit=False, ms=(time.monotonic() - t0) * 1000)
             return {
                 **display,
                 "prediction_available": False,
@@ -336,6 +353,7 @@ class PiKeibaNetService:
         pipeline = CorePipeline(loader=loader)
         result = pipeline.evaluate(ref["race_id"])
         if result is None:
+            cache_metrics.note_prediction(hit=False, ms=(time.monotonic() - t0) * 1000)
             return {
                 **display,
                 "prediction_available": False,
@@ -343,7 +361,7 @@ class PiKeibaNetService:
                 "message": get_last_failure_reason() or "FeatureLoader returned None",
             }
 
-        return {
+        payload = {
             **display,
             "prediction_available": True,
             "prediction": {
@@ -367,6 +385,12 @@ class PiKeibaNetService:
                 ),
             },
         }
+        # candidates がある Ready のみキャッシュ
+        cands = (payload.get("prediction") or {}).get("candidates")
+        if isinstance(cands, list) and cands:
+            _prediction_cache[rid] = (time.monotonic(), dict(payload))
+        cache_metrics.note_prediction(hit=False, ms=(time.monotonic() - t0) * 1000)
+        return payload
 
     def race_meta(self, *, date: str, venue: str, race_no: int) -> dict[str, Any]:
         numeric, html = self.resolve(date=date, venue=venue, race_no=race_no)
@@ -442,9 +466,13 @@ class PiKeibaNetService:
         """
         rid = str(numeric_race_id)
         now = time.monotonic()
+        t0 = now
         if not force and rid in _odds_cache:
             ts, rows, status = _odds_cache[rid]
             if now - ts < _ODDS_CACHE_TTL_SEC:
+                from . import cache_metrics
+
+                cache_metrics.note_odds(hit=True, ms=(time.monotonic() - t0) * 1000)
                 return rows, status
 
         rows: list[dict[str, Any]] = []
@@ -470,6 +498,9 @@ class PiKeibaNetService:
         _odds_cache[rid] = (now, rows, status)
         if status == "published" and rows:
             self._record_odds_snapshot(rid, rows)
+        from . import cache_metrics
+
+        cache_metrics.note_odds(hit=False, ms=(time.monotonic() - t0) * 1000)
         return rows, status
 
     def _series_path(self, numeric_race_id: str) -> Path:
@@ -691,6 +722,7 @@ class PiKeibaNetService:
                 "frame_number": row.get("frame", 0),
                 "horse_name": row.get("horse_name", ""),
                 "jockey": row.get("jockey", ""),
+                "trainer": row.get("_trainer", "") or "",
                 "weight_carried": row.get("weight", 0.0),
                 "horse_id": row.get("horse_id", ""),
                 "horse_url": row.get("_horse_url", ""),
@@ -712,13 +744,17 @@ class PiKeibaNetService:
 
     def get_race_board(self, race_id: str, *, include_history: bool = False) -> dict[str, Any]:
         """Web GUI: 出馬表 + オッズ（entries_full）。optional 近走。"""
+        from . import cache_metrics
+
         rid = str(race_id).strip()
+        t0 = time.monotonic()
         # 近走なし board は 5 分キャッシュ（クライアント 5 分ポーリングと揃えて netkeiba 連打を防ぐ）
         if not include_history and rid in _board_cache:
             ts, cached = _board_cache[rid]
             if time.monotonic() - ts < _BOARD_CACHE_TTL_SEC:
                 out = dict(cached)
                 out["entries"] = [dict(e) for e in (cached.get("entries") or [])]
+                cache_metrics.note_board(hit=True, ms=(time.monotonic() - t0) * 1000)
                 return out
 
         ref = self.resolve_race_ref(rid)
@@ -788,6 +824,9 @@ class PiKeibaNetService:
                 time.monotonic(),
                 {**payload, "entries": [dict(e) for e in entries]},
             )
+            from . import cache_metrics
+
+            cache_metrics.note_board(hit=False, ms=(time.monotonic() - t0) * 1000)
         if include_history:
             payload["history"] = self._history_grouped(
                 entries,
@@ -804,16 +843,162 @@ class PiKeibaNetService:
         return payload
 
     def get_race_history(self, race_id: str, *, limit: int = 3) -> dict[str, Any]:
-        """Web GUI: 各馬の近走（日付新しい順に limit 件）。"""
-        board = self.get_race_board(race_id, include_history=True)
+        """Web GUI: 各馬の近走。Version7.4 CSV/DB First → Live fallback。"""
+        from . import cache_metrics
+        from .history_store import default_history_store
+
+        t0 = time.monotonic()
+        board = self.get_race_board(race_id, include_history=False)
+        day = str(board.get("date") or "").strip()
+        rid = str(board.get("race_id") or race_id).strip()
+        entries = list(board.get("entries") or [])
+        race_context = {
+            "date": board.get("date"),
+            "venue": board.get("venue"),
+            "race_no": board.get("race_no"),
+            "race_id": board.get("race_id"),
+            "numeric_race_id": board.get("numeric_race_id"),
+            "race_name": board.get("race_name"),
+        }
+
+        store = default_history_store()
+        static_rows, source = store.resolve_static(rid, date=day)
+        if static_rows is not None:
+            history = self._history_grouped_from_rows(
+                static_rows, entries=entries, limit=limit
+            )
+            cache_metrics.note_history(hit=True, ms=(time.monotonic() - t0) * 1000)
+            cache_metrics.note_history_source(source)
+            print(
+                f"[pi-keibanet] history source={source} race_id={rid} "
+                f"horses={len(history)} rows={len(static_rows)}"
+            )
+            hist_source = source
+        else:
+            history = self._history_grouped(
+                entries, race_context=race_context, limit=limit
+            )
+            cache_metrics.note_history_source("live")
+            print(
+                f"[pi-keibanet] history source=live race_id={rid} "
+                f"reason={source} horses={len(history)}"
+            )
+            hist_source = "live"
+
         return {
             "schema_version": "expect-race-history/1.0",
             "race_id": board.get("race_id"),
             "race_label": board.get("race_label"),
+            "race_name": board.get("race_name"),
+            "date": board.get("date"),
+            "venue": board.get("venue"),
+            "race_no": board.get("race_no"),
             "numeric_race_id": board.get("numeric_race_id"),
-            "history": board.get("history") or [],
-            "count": len(board.get("history") or []),
+            "history": history,
+            "count": len(history),
+            "history_source": hist_source,
         }
+
+    def _history_grouped_from_rows(
+        self,
+        rows: list[dict[str, Any]],
+        *,
+        entries: list[dict[str, Any]] | None = None,
+        limit: int = 3,
+    ) -> list[dict[str, Any]]:
+        """CSV/DB rows → GUI history buckets（契約維持）。"""
+        by_key: dict[str, dict[str, Any]] = {}
+
+        def date_key(val: Any) -> int:
+            s = str(val or "")
+            m = re.search(r"(\d{2,4})[/\-](\d{1,2})[/\-](\d{1,2})", s)
+            if not m:
+                return 0
+            year = int(m.group(1))
+            if year < 100:
+                year += 2000
+            return year * 10000 + int(m.group(2)) * 100 + int(m.group(3))
+
+        def ensure_bucket(
+            horse_id: str,
+            horse_number: Any,
+            horse_name: str,
+        ) -> dict[str, Any]:
+            key = horse_id or (f"n:{horse_number}" if horse_number is not None else "")
+            if not key:
+                return {}
+            if key not in by_key:
+                by_key[key] = {
+                    "horse_id": horse_id or None,
+                    "horse_number": horse_number,
+                    "horse_name": horse_name or "—",
+                    "recent": [],
+                }
+            return by_key[key]
+
+        for entry in entries or []:
+            ensure_bucket(
+                str(entry.get("horse_id") or "").strip(),
+                entry.get("horse_number"),
+                str(entry.get("horse_name") or "") or "—",
+            )
+
+        for row in rows:
+            horse_id = str(row.get("horse_id") or "").strip()
+            horse_number = row.get("horse_number")
+            try:
+                if horse_number is not None and str(horse_number).strip() != "":
+                    horse_number = int(float(str(horse_number)))
+            except (TypeError, ValueError):
+                pass
+            bucket = ensure_bucket(
+                horse_id,
+                horse_number,
+                str(row.get("horse_name") or "") or "—",
+            )
+            if not bucket:
+                continue
+            if (not bucket.get("horse_name") or bucket["horse_name"] == "—") and row.get(
+                "horse_name"
+            ):
+                bucket["horse_name"] = str(row.get("horse_name"))
+            finish = row.get("history_finish")
+            try:
+                if finish is not None and str(finish).strip() != "":
+                    finish = int(float(str(finish)))
+            except (TypeError, ValueError):
+                pass
+            distance = row.get("history_distance")
+            try:
+                if distance is not None and str(distance).strip() != "":
+                    distance = int(float(str(distance)))
+            except (TypeError, ValueError):
+                pass
+            bucket["recent"].append(
+                {
+                    "date": row.get("history_date"),
+                    "place": row.get("history_place"),
+                    "race_name": row.get("history_race_name"),
+                    "finish": finish,
+                    "odds": row.get("history_odds"),
+                    "distance": distance,
+                    "surface": row.get("history_surface"),
+                    "last3f": row.get("history_last3f"),
+                    "_sort": date_key(row.get("history_date")),
+                }
+            )
+
+        out: list[dict[str, Any]] = []
+        for bucket in by_key.values():
+            recent = sorted(
+                bucket["recent"], key=lambda r: int(r.get("_sort") or 0), reverse=True
+            )
+            bucket["recent"] = [
+                {k: v for k, v in r.items() if k != "_sort"} for r in recent[:limit]
+            ]
+            out.append(bucket)
+        out.sort(key=lambda b: int(b.get("horse_number") or 99))
+        return out
 
     def _history_grouped(
         self,
@@ -823,52 +1008,7 @@ class PiKeibaNetService:
         limit: int = 3,
     ) -> list[dict[str, Any]]:
         rows = self.horse_history(entries=entries, race_context=race_context)
-        by_key: dict[str, dict[str, Any]] = {}
-
-        def date_key(val: Any) -> int:
-            s = str(val or "")
-            m = re.search(r"(\d{4})[/\-]?(\d{1,2})[/\-]?(\d{1,2})", s)
-            if not m:
-                return 0
-            return int(m.group(1)) * 10000 + int(m.group(2)) * 100 + int(m.group(3))
-
-        for row in rows:
-            horse_id = str(row.get("horse_id") or "").strip()
-            horse_number = row.get("horse_number")
-            key = horse_id or (f"n:{horse_number}" if horse_number is not None else "")
-            if not key:
-                continue
-            if key not in by_key:
-                by_key[key] = {
-                    "horse_id": horse_id or None,
-                    "horse_number": horse_number,
-                    "horse_name": str(row.get("horse_name") or "") or "—",
-                    "recent": [],
-                }
-            bucket = by_key[key]
-            if (not bucket.get("horse_name") or bucket["horse_name"] == "—") and row.get("horse_name"):
-                bucket["horse_name"] = str(row.get("horse_name"))
-            bucket["recent"].append(
-                {
-                    "date": row.get("history_date"),
-                    "place": row.get("history_place"),
-                    "race_name": row.get("history_race_name"),
-                    "finish": row.get("history_finish"),
-                    "odds": row.get("history_odds"),
-                    "distance": row.get("history_distance"),
-                    "surface": row.get("history_surface"),
-                    "last3f": row.get("history_last3f"),
-                    "_sort": date_key(row.get("history_date")),
-                }
-            )
-
-        out: list[dict[str, Any]] = []
-        for bucket in by_key.values():
-            recent = sorted(bucket["recent"], key=lambda r: int(r.get("_sort") or 0), reverse=True)
-            bucket["recent"] = [{k: v for k, v in r.items() if k != "_sort"} for r in recent[:limit]]
-            out.append(bucket)
-        out.sort(key=lambda b: int(b.get("horse_number") or 99))
-        return out
+        return self._history_grouped_from_rows(rows, entries=entries, limit=limit)
 
     def horse_history(
         self,
@@ -876,23 +1016,109 @@ class PiKeibaNetService:
         entries: list[dict[str, Any]],
         race_context: dict[str, Any] | None = None,
     ) -> list[dict[str, Any]]:
-        """Fetch horse history for all entries — same as demo_horse_history_fetcher.py output."""
-        all_rows: list[dict[str, Any]] = []
+        """Live netkeiba fetch — History API fallback / pipeline 用。"""
+        from concurrent.futures import ThreadPoolExecutor, as_completed
+
+        from . import cache_metrics
+
+        targets: list[dict[str, Any]] = []
         for entry in entries:
             horse_id = str(entry.get("horse_id", "")).strip()
-            if not horse_id:
-                continue
-            try:
-                parsed = fetch_horse_history(self.client, horse_id)
-            except NetkeibaFetchError as exc:
-                print(f"[pi-keibanet] horse_history fetch failed: horse_id={horse_id}: {exc}")
-                continue
+            if horse_id:
+                targets.append(entry)
+        if not targets:
+            return []
+
+        def fetch_one(entry: dict[str, Any]) -> list[dict[str, Any]]:
+            horse_id = str(entry.get("horse_id", "")).strip()
+            now = time.monotonic()
+            t0 = now
+            cached = _horse_history_cache.get(horse_id)
+            if cached and now - cached[0] < _HORSE_HISTORY_TTL_SEC:
+                parsed = cached[1]
+                cache_metrics.note_history(hit=True, ms=(time.monotonic() - t0) * 1000)
+            else:
+                worker = NetkeibaClient(
+                    timeout=getattr(self.client, "timeout", 25),
+                    min_interval_sec=0.15,
+                )
+                try:
+                    parsed = fetch_horse_history(worker, horse_id)
+                except NetkeibaFetchError as exc:
+                    print(
+                        f"[pi-keibanet] horse_history fetch failed: horse_id={horse_id}: {exc}"
+                    )
+                    cache_metrics.note_history(hit=False, ms=(time.monotonic() - t0) * 1000)
+                    cache_metrics.note_history_source("fail")
+                    return []
+                _horse_history_cache[horse_id] = (time.monotonic(), parsed)
+                cache_metrics.note_history(hit=False, ms=(time.monotonic() - t0) * 1000)
             runner = {**entry}
             if race_context:
                 runner.update(race_context)
-            rows = build_history_rows(runner, parsed)
-            all_rows.extend(rows)
+            return build_history_rows(runner, parsed)
+
+        workers = max(1, min(_HORSE_HISTORY_WORKERS, len(targets)))
+        all_rows: list[dict[str, Any]] = []
+        if workers == 1:
+            for entry in targets:
+                all_rows.extend(fetch_one(entry))
+            return all_rows
+
+        with ThreadPoolExecutor(max_workers=workers) as pool:
+            futures = [pool.submit(fetch_one, entry) for entry in targets]
+            for fut in as_completed(futures):
+                try:
+                    all_rows.extend(fut.result() or [])
+                except Exception as exc:  # pragma: no cover
+                    print(f"[pi-keibanet] horse_history worker failed: {exc}")
         return all_rows
+
+    def get_horse_number_integrity(self, date: str = "") -> dict[str, Any]:
+        """Ops Health: Horse Number Integrity from latest report and/or runners.csv."""
+        from datetime import datetime
+        from zoneinfo import ZoneInfo
+
+        from .horse_number_integrity import (
+            load_integrity_report,
+            validate_runners_horse_number_integrity,
+            write_integrity_report,
+        )
+        from .race_refresh import RefreshConfig
+
+        cfg = RefreshConfig.from_env()
+        jst = ZoneInfo("Asia/Tokyo")
+        day = (date or "").strip() or datetime.now(jst).date().isoformat()
+        latest = cfg.state_root / day / "logs" / "horse_number_integrity_latest.json"
+        report = load_integrity_report(latest)
+        runners_path = cfg.state_root / day / "runners.csv"
+        live = None
+        if runners_path.is_file():
+            import pandas as pd
+
+            runners_df = pd.read_csv(runners_path, encoding="utf-8-sig")
+            live_obj = validate_runners_horse_number_integrity(runners_df, date=day)
+            live = live_obj.to_dict()
+            if report is None:
+                write_integrity_report(live_obj, latest)
+                report = live
+
+        ok = True
+        if live is not None:
+            ok = bool(live.get("ok"))
+        elif report is not None:
+            ok = bool(report.get("ok"))
+        else:
+            ok = True  # no race day data yet
+
+        return {
+            "check": "Horse Number Integrity",
+            "ok": ok,
+            "date": day,
+            "report_path": str(latest) if latest.is_file() else "",
+            "latest_report": report,
+            "live_runners": live,
+        }
 
 
 __all__ = ["NetkeibaFetchError", "PiKeibaNetService", "RaceNotFoundError"]

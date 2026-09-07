@@ -189,3 +189,9 @@
     --mascot-h: 140px;
   }
 }
+
+.mascot-ka0ba.is-mascot-suppressed,
+.mascot-ka0ba[data-mascot-page-allowed="0"],
+.mascot-ka0ba[data-mascot-user-enabled="0"] {
+  display: none !important;
+}
