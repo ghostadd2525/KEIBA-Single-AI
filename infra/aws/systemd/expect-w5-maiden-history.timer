@@ -1,0 +1,14 @@
+# /etc/systemd/system/expect-w5-maiden-history.timer
+# Offset from W4 (:25/:55). Lowest priority Research acquisition.
+[Unit]
+Description=Expect W5 Research timer - Bounded historical maiden horse-history
+
+[Timer]
+# Explicit minutes (avoid *:40/30 parse issues on some systemd builds)
+OnCalendar=*-*-* *:10:00
+OnCalendar=*-*-* *:40:00
+Persistent=false
+AccuracySec=1min
+
+[Install]
+WantedBy=timers.target

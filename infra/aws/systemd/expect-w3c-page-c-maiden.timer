@@ -1,0 +1,14 @@
+# /etc/systemd/system/expect-w3c-page-c-maiden.timer
+# CREATE ONLY — do NOT enable/start until Owner review after bounded live validation.
+[Unit]
+Description=Expect W3-C Shadow timer — Shared PAGE-C bounded maiden acquisition (disabled by default)
+
+[Timer]
+# Offset from W2 (:30) and C4 (:20/:50). Lower priority; yields at runtime to P1/W2/C4.
+# Bounded: max_races_per_run=2. Never bulk-fetch remaining pending.
+OnCalendar=*-*-* *:05/30:00
+Persistent=false
+AccuracySec=1min
+
+[Install]
+WantedBy=timers.target

@@ -6,6 +6,7 @@ import os
 import time
 import urllib.error
 import urllib.request
+from dataclasses import dataclass, field
 from typing import Callable
 
 from .debug_log import log_fetch
@@ -24,8 +25,28 @@ JRA_ODDS_API_URL = (
 )
 
 
+@dataclass
+class RaceListPart:
+    source: str
+    url: str
+    html: str
+
+
+@dataclass
+class RaceListFetchResult:
+    """Merged HTML for existing parsers + per-part RAW bodies (no extra HTTP)."""
+
+    merged_html: str
+    parts: list[RaceListPart] = field(default_factory=list)
+    kaisai_date: str = ""
+
+
 class NetkeibaFetchError(Exception):
-    pass
+    """Netkeiba HTTP/URL failure. ``http_status`` set for HTTPError responses."""
+
+    def __init__(self, message: str, *, http_status: int | None = None) -> None:
+        super().__init__(message)
+        self.http_status = http_status
 
 
 class NetkeibaClient:
@@ -78,7 +99,10 @@ class NetkeibaClient:
                 raw = resp.read()
                 self._last_fetch = time.monotonic()
         except urllib.error.HTTPError as exc:
-            raise NetkeibaFetchError(f"HTML取得失敗 HTTP {exc.code}: {url}") from exc
+            raise NetkeibaFetchError(
+                f"HTML取得失敗 HTTP {exc.code}: {url}",
+                http_status=int(exc.code),
+            ) from exc
         except urllib.error.URLError as exc:
             raise NetkeibaFetchError(f"HTML取得失敗: {url}: {exc.reason}") from exc
         for enc in ("utf-8", "euc-jp", "cp932"):
@@ -93,25 +117,37 @@ class NetkeibaClient:
         log_fetch(url=url, html=html, label=label)
         return html
 
-    def fetch_race_list(self, date_yyyy_mm_dd: str) -> str:
+    def fetch_race_list_result(self, date_yyyy_mm_dd: str) -> RaceListFetchResult:
+        """Fetch race_list with per-part RAW preserved (same GETs as fetch_race_list)."""
         token = date_yyyy_mm_dd.replace("-", "")
         sub_url = RACE_LIST_SUB_URL.format(date=token)
         sp_url = RACE_LIST_SP_URL.format(date=token)
-        parts: list[str] = []
+        parts: list[RaceListPart] = []
         # PC版 race_list_sub は 400 になることがある → SP を正にフォールバック
         try:
-            parts.append(self.fetch(sub_url, label=f"race_list_sub_{token}"))
+            html = self.fetch(sub_url, label=f"race_list_sub_{token}")
+            parts.append(RaceListPart(source="race_list_sub", url=sub_url, html=html))
         except NetkeibaFetchError as exc:
             print(f"[pi-keibanet] race_list_sub skipped: {exc}")
         try:
-            parts.append(self.fetch(sp_url, label=f"race_list_sp_{token}"))
+            html = self.fetch(sp_url, label=f"race_list_sp_{token}")
+            parts.append(RaceListPart(source="race_list_sp", url=sp_url, html=html))
         except NetkeibaFetchError as exc:
             print(f"[pi-keibanet] race_list_sp skipped: {exc}")
         if not parts:
             raise NetkeibaFetchError(
                 f"HTML取得失敗: race list unavailable for {date_yyyy_mm_dd}"
             )
-        return "\n<!-- merged -->\n".join(parts)
+        merged = "\n<!-- merged -->\n".join(p.html for p in parts)
+        return RaceListFetchResult(
+            merged_html=merged,
+            parts=parts,
+            kaisai_date=date_yyyy_mm_dd[:10],
+        )
+
+    def fetch_race_list(self, date_yyyy_mm_dd: str) -> str:
+        """Backward-compatible: returns merged HTML only (same HTTP as fetch_race_list_result)."""
+        return self.fetch_race_list_result(date_yyyy_mm_dd).merged_html
 
     def fetch_shutuba(self, numeric_race_id: str) -> str:
         url = SHUTUBA_URL.format(race_id=numeric_race_id)
