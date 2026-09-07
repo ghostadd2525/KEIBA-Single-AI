@@ -6,6 +6,7 @@ import os
 import time
 import urllib.error
 import urllib.request
+from dataclasses import dataclass, field
 from typing import Callable
 
 from .debug_log import log_fetch
@@ -24,8 +25,28 @@ JRA_ODDS_API_URL = (
 )
 
 
+@dataclass
+class RaceListPart:
+    source: str
+    url: str
+    html: str
+
+
+@dataclass
+class RaceListFetchResult:
+    """Merged HTML for existing parsers + per-part RAW bodies (no extra HTTP)."""
+
+    merged_html: str
+    parts: list[RaceListPart] = field(default_factory=list)
+    kaisai_date: str = ""
+
+
 class NetkeibaFetchError(Exception):
-    pass
+    """Netkeiba HTTP/URL failure. ``http_status`` set for HTTPError responses."""
+
+    def __init__(self, message: str, *, http_status: int | None = None) -> None:
+        super().__init__(message)
+        self.http_status = http_status
 
 
 class NetkeibaClient:

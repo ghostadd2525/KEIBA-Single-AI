@@ -20,7 +20,7 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from pi_keibanet.w3_maiden import W3AConfig, run_w3c_acquire
+from pi_keibanet.w3_maiden import W3AConfig, run_w3a_handoff, run_w3c_acquire
 
 _DEFAULT_W2_UNIT = "expect-w2-haron-shadow.service"
 _DEFAULT_C4_UNIT = "expect-c4-page-a1-calendar.service"
@@ -64,6 +64,22 @@ def main() -> int:
         cfg.max_requests_per_run = args.max_requests
     if args.max_runtime_sec is not None:
         cfg.max_runtime_sec = args.max_runtime_sec
+
+    # Fail-closed live HTTP. W3W5_LIVE_HTTP default 0; Production units do not set it.
+    # Turning real HTTP on is a later phase, after a Global HTTP budget exists.
+    if os.environ.get("W3W5_LIVE_HTTP", "0") not in ("1", "true", "True"):
+        cfg.w3c_fetch_enabled = False
+
+    # W3-A connection default OFF. Production units do not set W3A_BEFORE_W3C.
+    if os.environ.get("W3A_BEFORE_W3C", "0") in ("1", "true", "True"):
+        try:
+            handoff = run_w3a_handoff(cfg)
+        except Exception as exc:  # noqa: BLE001
+            print(json.dumps({"w3a_handoff_error": f"{type(exc).__name__}:{exc}"}, ensure_ascii=False))
+            return 1
+        print(json.dumps({"w3a_handoff": handoff.to_dict()}, ensure_ascii=False, indent=2))
+        if handoff.errors and handoff.queue_rows_total == 0 and not handoff.supply_skipped_reason:
+            return 1
 
     w2_unit = os.environ.get("W3C_W2_UNIT", _DEFAULT_W2_UNIT)
     c4_unit = os.environ.get("W3C_C4_UNIT", _DEFAULT_C4_UNIT)

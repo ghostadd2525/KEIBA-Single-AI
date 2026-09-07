@@ -28,6 +28,8 @@ class W5Config:
     cooldown_seconds: float = 86400.0
     fetch_failed_cooldown_sec: float = 3600.0
     min_interval_sec: float = 1.0
+    retry_fetch_failed: bool = False
+    max_attempts_per_horse: int = 3
 
     @classmethod
     def from_env(cls, *, data_root: Path | None = None) -> "W5Config":
@@ -74,6 +76,9 @@ class W5Config:
                 os.environ.get("W5_MIN_INTERVAL_SEC")
                 or os.environ.get("PI_NETKEIBA_MIN_INTERVAL_SEC", "1.0")
             ),
+            retry_fetch_failed=os.environ.get("W5_RETRY_FETCH_FAILED", "0")
+            in ("1", "true", "True"),
+            max_attempts_per_horse=int(os.environ.get("W5_MAX_ATTEMPTS_PER_HORSE", "3")),
         )
 
     @property
