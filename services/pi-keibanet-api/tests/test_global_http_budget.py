@@ -1,0 +1,556 @@
+# -*- coding: utf-8 -*-
+"""Process-shared Global HTTP budget tests. External HTTP is forbidden."""
+from __future__ import annotations
+
+import compileall
+import importlib.util
+import io
+import json
+import multiprocessing as mp
+import os
+import socket
+import sqlite3
+import subprocess
+import sys
+import tempfile
+import unittest
+import urllib.error
+import urllib.request
+from contextlib import contextmanager
+from datetime import datetime, timezone
+from pathlib import Path
+from unittest.mock import patch
+
+ROOT = Path(__file__).resolve().parents[1]
+REPO = ROOT.parents[1]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+
+from pi_keibanet.http_budget import (
+    BudgetDenied,
+    reserve,
+    window_usage,
+)
+from pi_keibanet.http_budget.audit import BUDGETED_FUNCTIONS, UNBUDGETED_HTTP_PATHS
+from pi_keibanet.http_budget.store import bootstrap, open_store
+from pi_keibanet.netkeiba.client import NetkeibaClient, NetkeibaFetchError
+from pi_keibanet.w3_maiden.acquisition import run_w3c_acquire
+from pi_keibanet.w3_maiden.config import W3AConfig
+from pi_keibanet.w3_maiden.queue import empty_row as w3_empty_row
+from pi_keibanet.w3_maiden.queue import save_queue as w3_save_queue
+
+
+def _pending_w3(race_id: str, kaisai_date: str = "2025-06-01") -> dict:
+    return w3_empty_row(
+        race_id=race_id,
+        kaisai_date=kaisai_date,
+        venue="東京",
+        race_number=1,
+        race_name="3歳未勝利",
+        c4_day_status="race_day_complete",
+        maiden_identification_basis="race_name_contains_literal_maiden",
+        source="fixture",
+        source_artifact_ref="fixture",
+        queue_status="pending",
+    )
+from pi_keibanet.w5_maiden_history.acquisition import run_w5_acquire
+from pi_keibanet.w5_maiden_history.config import W5Config
+from pi_keibanet.w5_maiden_history.queue import empty_row as w5_empty_row
+from pi_keibanet.w5_maiden_history.queue import save_queue as w5_save_queue
+
+EXTERNAL_HTTP_CALLS = 0
+SOCKET_CALLS = 0
+URLOPEN_CALLS = 0
+
+
+def _count_external(*_a, **_k):
+    global EXTERNAL_HTTP_CALLS, URLOPEN_CALLS
+    EXTERNAL_HTTP_CALLS += 1
+    URLOPEN_CALLS += 1
+    raise AssertionError("external HTTP is forbidden")
+
+
+def _count_socket(*_a, **_k):
+    global SOCKET_CALLS
+    SOCKET_CALLS += 1
+    raise AssertionError("socket is forbidden in budget tests")
+
+
+def _load_script(name: str):
+    path = ROOT / "scripts" / name
+    spec = importlib.util.spec_from_file_location(name.replace(".py", ""), path)
+    assert spec and spec.loader
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    return mod
+
+
+class _FakeResp:
+    def __init__(self, body: bytes = b"<html>ok</html>", code: int = 200) -> None:
+        self._body = body
+        self.code = code
+
+    def read(self) -> bytes:
+        return self._body
+
+    def __enter__(self) -> "_FakeResp":
+        return self
+
+    def __exit__(self, *_a) -> None:
+        return None
+
+
+class CountingOpener:
+    def __init__(self, exc: BaseException | None = None, body: bytes = b"<html>ok</html>") -> None:
+        self.calls = 0
+        self.exc = exc
+        self.body = body
+        self.reserved_before: list[bool] = []
+
+    def __call__(self, *_a, **_k):
+        self.calls += 1
+        if self.exc is not None:
+            raise self.exc
+        return _FakeResp(self.body)
+
+
+def _staging_env(state: Path, **overrides: str) -> dict[str, str]:
+    env = {
+        "GLOBAL_HTTP_BUDGET_ENABLED": "1",
+        "GLOBAL_HTTP_BUDGET_BOOTSTRAP": "1",
+        "GLOBAL_HTTP_BUDGET_STATE_PATH": str(state),
+        "GLOBAL_HTTP_BUDGET_TOTAL_LIMIT": "8",
+        "GLOBAL_HTTP_BUDGET_RESERVED_P1_C4": "3",
+        "GLOBAL_HTTP_BUDGET_LIMIT_P1": "5",
+        "GLOBAL_HTTP_BUDGET_LIMIT_C4": "3",
+        "GLOBAL_HTTP_BUDGET_LIMIT_W2": "2",
+        "GLOBAL_HTTP_BUDGET_LIMIT_W3C": "2",
+        "GLOBAL_HTTP_BUDGET_LIMIT_W4": "2",
+        "GLOBAL_HTTP_BUDGET_LIMIT_W5": "2",
+        "GLOBAL_HTTP_BUDGET_LIMIT_UNKNOWN": "1",
+        "GLOBAL_HTTP_BUDGET_BUSY_TIMEOUT_MS": "500",
+        "W3W5_LIVE_HTTP": "0",
+        "W3A_BEFORE_W3C": "0",
+        "W3A_HANDOFF_DRY_RUN": "1",
+    }
+    env.update(overrides)
+    return env
+
+
+@contextmanager
+def _budget_env(state: Path, **overrides: str):
+    applied = _staging_env(state, **overrides)
+    old = {key: os.environ.get(key) for key in applied}
+    os.environ.update(applied)
+    try:
+        yield
+    finally:
+        for key, value in old.items():
+            if value is None:
+                os.environ.pop(key, None)
+            else:
+                os.environ[key] = value
+
+
+def _url(component: str = "p1") -> str:
+    return f"https://race.netkeiba.com/race/result.html?race_id={component}secret=token"
+
+
+def _mp_reserve_one(payload: tuple[str, str, str]) -> str:
+    state_path, component, total = payload
+    os.environ["GLOBAL_HTTP_BUDGET_ENABLED"] = "1"
+    os.environ["GLOBAL_HTTP_BUDGET_BOOTSTRAP"] = "0"
+    os.environ["GLOBAL_HTTP_BUDGET_STATE_PATH"] = state_path
+    os.environ["GLOBAL_HTTP_BUDGET_TOTAL_LIMIT"] = total
+    os.environ["GLOBAL_HTTP_BUDGET_RESERVED_P1_C4"] = "0"
+    os.environ["GLOBAL_HTTP_BUDGET_LIMIT_P1"] = total
+    os.environ["GLOBAL_HTTP_BUDGET_LIMIT_C4"] = total
+    os.environ["GLOBAL_HTTP_BUDGET_LIMIT_W2"] = total
+    os.environ["GLOBAL_HTTP_BUDGET_LIMIT_W3C"] = total
+    os.environ["GLOBAL_HTTP_BUDGET_LIMIT_W4"] = total
+    os.environ["GLOBAL_HTTP_BUDGET_LIMIT_W5"] = total
+    os.environ["GLOBAL_HTTP_BUDGET_LIMIT_UNKNOWN"] = total
+    os.environ["GLOBAL_HTTP_BUDGET_BUSY_TIMEOUT_MS"] = "5000"
+    sys.path.insert(0, str(ROOT))
+    from pi_keibanet.http_budget import BudgetDenied, reserve
+
+    try:
+        reserve(url="https://race.netkeiba.com/race/result.html", component=component)
+        return "ok"
+    except BudgetDenied as exc:
+        return exc.reason
+
+
+def _w3_cfg(tmp: Path, **kwargs) -> W3AConfig:
+    dummy = tmp / "dummy"
+    dummy.mkdir(parents=True, exist_ok=True)
+    data = tmp / "data"
+    cfg = W3AConfig(
+        data_root=data,
+        w3_root=data / "var" / "w3_maiden",
+        race_refresh_state_root=data / "var" / "race_refresh",
+        c4_queue_path=data / "var" / "c4_calendar" / "calendar_queue.jsonl",
+        hbf_cache_root=dummy,
+        extsrc_cache_root=dummy,
+        w2_raw_root=dummy,
+        p1_lock_path=data / "var" / "locks" / "p1_refresh.lock.json",
+        page_c_health_path=data / "var" / "layer_b_haron" / "source_health_netkeiba_page_c.json",
+        w3c_fetch_enabled=True,
+        w3c_dry_run=False,
+        max_races_per_run=2,
+        max_requests_per_run=2,
+        min_interval_sec=0,
+    )
+    for key, value in kwargs.items():
+        setattr(cfg, key, value)
+    return cfg
+
+
+def _w5_cfg(tmp: Path, **kwargs) -> W5Config:
+    data = tmp / "data"
+    cfg = W5Config(
+        data_root=data,
+        w5_root=data / "var" / "w5_maiden_history",
+        w3_root=data / "var" / "w3_maiden",
+        p1_lock_path=data / "var" / "locks" / "p1_refresh.lock.json",
+        health_path=data / "var" / "w5_maiden_history" / "source_health_netkeiba_horse_history.json",
+        fetch_enabled=True,
+        dry_run=False,
+        max_horses_per_run=2,
+        max_requests_per_run=4,
+        min_interval_sec=0,
+    )
+    for key, value in kwargs.items():
+        setattr(cfg, key, value)
+    return cfg
+
+
+class GlobalHttpBudgetTests(unittest.TestCase):
+    def setUp(self) -> None:
+        self.tmp = Path(tempfile.mkdtemp(prefix="ghb-"))
+        self.state = self.tmp / "budget.sqlite"
+        self.urlopen_patch = patch("urllib.request.urlopen", side_effect=_count_external)
+        self.socket_patch = patch("socket.create_connection", side_effect=_count_socket)
+        self.urlopen_patch.start()
+        self.socket_patch.start()
+
+    def tearDown(self) -> None:
+        self.urlopen_patch.stop()
+        self.socket_patch.stop()
+
+    def test_audit_lists_real_budgeted_and_unbudgeted_paths(self) -> None:
+        text = (ROOT / "pi_keibanet" / "netkeiba" / "client.py").read_text(encoding="utf-8")
+        self.assertIn("def fetch(", text)
+        self.assertIn("def fetch_jra_odds_json(", text)
+        self.assertIn("reserve_for_request", text)
+        for name in BUDGETED_FUNCTIONS:
+            self.assertIn("NetkeibaClient", name)
+        for rel in UNBUDGETED_HTTP_PATHS:
+            self.assertTrue((REPO / rel).is_file(), rel)
+
+    def test_multiprocess_reserve_never_exceeds_total(self) -> None:
+        with _budget_env(self.state, GLOBAL_HTTP_BUDGET_TOTAL_LIMIT="5", GLOBAL_HTTP_BUDGET_LIMIT_P1="5"):
+            from pi_keibanet.http_budget.config import load_budget_config
+
+            bootstrap(load_budget_config())
+            ctx = mp.get_context("fork")
+            with ctx.Pool(8) as pool:
+                results = pool.map(
+                    _mp_reserve_one,
+                    [(str(self.state), "p1", "5")] * 16,
+                )
+        self.assertEqual(results.count("ok"), 5)
+        self.assertEqual(len(results) - results.count("ok"), 11)
+        with _budget_env(self.state, GLOBAL_HTTP_BUDGET_BOOTSTRAP="0"):
+            snap = window_usage()
+        self.assertEqual(snap["total"], 5)
+
+    def test_component_and_total_limits(self) -> None:
+        with _budget_env(self.state):
+            reserve(url=_url(), component="p1")
+            reserve(url=_url(), component="p1")
+            with self.assertRaises(BudgetDenied) as ctx:
+                # p1 limit 5, but use w3c limit 2
+                reserve(url=_url(), component="w3c")
+                reserve(url=_url(), component="w3c")
+                reserve(url=_url(), component="w3c")
+            self.assertEqual(ctx.exception.reason, "component_limit")
+
+    def test_p1_reserved_capacity_blocks_research(self) -> None:
+        with _budget_env(
+            self.state,
+            GLOBAL_HTTP_BUDGET_TOTAL_LIMIT="5",
+            GLOBAL_HTTP_BUDGET_RESERVED_P1_C4="3",
+            GLOBAL_HTTP_BUDGET_LIMIT_W5="5",
+            GLOBAL_HTTP_BUDGET_LIMIT_P1="5",
+        ):
+            reserve(url=_url(), component="w5")
+            reserve(url=_url(), component="w5")
+            with self.assertRaises(BudgetDenied) as denied:
+                reserve(url=_url(), component="w5")
+            self.assertEqual(denied.exception.reason, "reserved_capacity")
+            reserve(url=_url(), component="p1")
+            reserve(url=_url(), component="c4")
+            reserve(url=_url(), component="p1")
+            with self.assertRaises(BudgetDenied) as total:
+                reserve(url=_url(), component="p1")
+            self.assertEqual(total.exception.reason, "total_limit")
+            snap = window_usage()
+            self.assertEqual(snap["by_component"].get("w5"), 2)
+            self.assertEqual(snap["by_component"].get("p1"), 2)
+            self.assertEqual(snap["by_component"].get("c4"), 1)
+
+    def test_research_cannot_consume_p1_reserve(self) -> None:
+        with _budget_env(
+            self.state,
+            GLOBAL_HTTP_BUDGET_TOTAL_LIMIT="4",
+            GLOBAL_HTTP_BUDGET_RESERVED_P1_C4="3",
+            GLOBAL_HTTP_BUDGET_LIMIT_W4="4",
+            GLOBAL_HTTP_BUDGET_LIMIT_W3C="4",
+            GLOBAL_HTTP_BUDGET_LIMIT_W2="4",
+        ):
+            reserve(url=_url(), component="w2")
+            for component in ("w3c", "w4", "w5"):
+                with self.assertRaises(BudgetDenied) as ctx:
+                    reserve(url=_url(), component=component)
+                self.assertEqual(ctx.exception.reason, "reserved_capacity")
+            reserve(url=_url(), component="p1")
+            snap = window_usage()
+            self.assertEqual(snap["by_component"].get("p1"), 1)
+            self.assertNotIn("w3c", snap["by_component"])
+            self.assertNotIn("w4", snap["by_component"])
+            self.assertNotIn("w5", snap["by_component"])
+
+    def test_missing_state_research_fail_closed(self) -> None:
+        missing = self.tmp / "no-such" / "budget.sqlite"
+        with _budget_env(missing, GLOBAL_HTTP_BUDGET_BOOTSTRAP="0"):
+            for component in ("w2", "w3c", "w4", "w5"):
+                with self.assertRaises(BudgetDenied) as ctx:
+                    reserve(url=_url(), component=component)
+                self.assertEqual(ctx.exception.reason, "missing_state")
+
+    def test_corrupt_state_fail_closed(self) -> None:
+        self.state.write_text("not-a-sqlite-file", encoding="utf-8")
+        with _budget_env(self.state, GLOBAL_HTTP_BUDGET_BOOTSTRAP="0"):
+            with self.assertRaises(BudgetDenied) as ctx:
+                reserve(url=_url(), component="p1")
+            self.assertEqual(ctx.exception.reason, "corrupt_state")
+            with self.assertRaises(BudgetDenied) as research:
+                reserve(url=_url(), component="w5")
+            self.assertEqual(research.exception.reason, "corrupt_state")
+
+    def test_sqlite_busy_timeout_fail_closed(self) -> None:
+        with _budget_env(self.state, GLOBAL_HTTP_BUDGET_BUSY_TIMEOUT_MS="200"):
+            from pi_keibanet.http_budget.config import load_budget_config
+
+            cfg = load_budget_config()
+            bootstrap(cfg)
+            holder = sqlite3.connect(str(self.state), timeout=0, isolation_level=None)
+            holder.execute("BEGIN IMMEDIATE")
+            try:
+                with self.assertRaises(BudgetDenied) as ctx:
+                    reserve(url=_url(), component="p1")
+                self.assertEqual(ctx.exception.reason, "busy_timeout")
+            finally:
+                holder.execute("ROLLBACK")
+                holder.close()
+
+    def test_crash_after_reserve_still_consumed(self) -> None:
+        with _budget_env(self.state, GLOBAL_HTTP_BUDGET_TOTAL_LIMIT="1", GLOBAL_HTTP_BUDGET_LIMIT_P1="1"):
+            first = reserve(url=_url(), component="p1")
+            self.assertEqual(first.consumed, True)
+            with self.assertRaises(BudgetDenied) as ctx:
+                reserve(url=_url(), component="p1")
+            self.assertEqual(ctx.exception.reason, "total_limit")
+            snap = window_usage()
+            self.assertEqual(snap["total"], 1)
+
+    def test_utc_window_boundary(self) -> None:
+        before = datetime(2026, 9, 7, 23, 59, 59, tzinfo=timezone.utc)
+        after = datetime(2026, 9, 8, 0, 0, 1, tzinfo=timezone.utc)
+        with _budget_env(self.state, GLOBAL_HTTP_BUDGET_TOTAL_LIMIT="1", GLOBAL_HTTP_BUDGET_LIMIT_P1="1"):
+            reserve(url=_url(), component="p1", now=before)
+            with self.assertRaises(BudgetDenied):
+                reserve(url=_url(), component="p1", now=before)
+            reserve(url=_url(), component="p1", now=after)
+            self.assertEqual(window_usage(now=before)["total"], 1)
+            self.assertEqual(window_usage(now=after)["total"], 1)
+
+    def test_http_errors_and_timeout_consume(self) -> None:
+        cases = (
+            (urllib.error.HTTPError(_url(), 403, "no", hdrs=None, fp=io.BytesIO()), "http_403", 403),
+            (urllib.error.HTTPError(_url(), 429, "slow", hdrs=None, fp=io.BytesIO()), "http_429", 429),
+            (urllib.error.HTTPError(_url(), 500, "err", hdrs=None, fp=io.BytesIO()), "http_5xx", 500),
+            (urllib.error.URLError(TimeoutError("timed out")), "timeout", None),
+        )
+        with _budget_env(self.state, GLOBAL_HTTP_BUDGET_TOTAL_LIMIT="8", GLOBAL_HTTP_BUDGET_LIMIT_P1="8"):
+            for exc, result, status in cases:
+                opener = CountingOpener(exc=exc)
+                client = NetkeibaClient(min_interval_sec=0, opener=opener, component="p1")
+                with self.assertRaises(NetkeibaFetchError):
+                    client.fetch("https://race.netkeiba.com/race/result.html")
+                self.assertEqual(opener.calls, 1)
+            snap = window_usage()
+            self.assertEqual(snap["total"], 4)
+            conn = sqlite3.connect(str(self.state))
+            rows = conn.execute("SELECT result, http_status FROM reservations ORDER BY reserved_at").fetchall()
+            conn.close()
+            self.assertEqual([r[0] for r in rows], ["http_403", "http_429", "http_5xx", "timeout"])
+            self.assertEqual([r[1] for r in rows], [403, 429, 500, None])
+
+    def test_reserve_happens_before_opener(self) -> None:
+        seen = {"reserved": False}
+
+        def opener(*_a, **_k):
+            snap = window_usage()
+            seen["reserved"] = snap["total"] == 1
+            return _FakeResp()
+
+        with _budget_env(self.state):
+            client = NetkeibaClient(min_interval_sec=0, opener=opener, component="p1")
+            html = client.fetch("https://race.netkeiba.com/top/race_list_sub.html")
+        self.assertTrue(seen["reserved"])
+        self.assertIn("ok", html)
+
+    def test_deny_means_zero_http(self) -> None:
+        opener = CountingOpener()
+        missing = self.tmp / "absent.sqlite"
+        with _budget_env(missing, GLOBAL_HTTP_BUDGET_BOOTSTRAP="0"):
+            client = NetkeibaClient(min_interval_sec=0, opener=opener, component="w5")
+            with self.assertRaises(BudgetDenied):
+                client.fetch("https://db.netkeiba.com/horse/ajax_horse_results.html")
+        self.assertEqual(opener.calls, 0)
+
+    def test_w3c_runner_deny_exit_and_report(self) -> None:
+        cfg = _w3_cfg(self.tmp)
+        rid = "202506010101"
+        cfg.w3_root.mkdir(parents=True, exist_ok=True)
+        w3_save_queue(cfg.queue_path, {rid: _pending_w3(rid)})
+        opener = CountingOpener()
+        client = NetkeibaClient(min_interval_sec=0, opener=opener, component="w3c")
+        missing = self.tmp / "missing-w3c.sqlite"
+        with _budget_env(missing, GLOBAL_HTTP_BUDGET_BOOTSTRAP="0"):
+            report = run_w3c_acquire(cfg, client=client)
+        self.assertTrue(report.stopped_global_budget)
+        self.assertEqual(report.global_budget_reason, "missing_state")
+        self.assertEqual(report.http_request_count, 0)
+        self.assertEqual(report.stop_reason, "global_http_budget")
+        self.assertEqual(opener.calls, 0)
+        runner = _load_script("w3_maiden_page_c_acquire_run.py")
+        with patch.object(runner, "W3AConfig") as cfg_cls, patch.object(
+            runner, "run_w3c_acquire", return_value=report
+        ), patch.object(runner, "_unit_busy", return_value=False), patch.object(
+            sys, "argv", ["w3c", "--data-root", str(cfg.data_root)]
+        ):
+            cfg_cls.from_env.return_value = cfg
+            self.assertEqual(runner.main(), 5)
+
+    def test_w5_runner_deny_exit_and_report(self) -> None:
+        cfg = _w5_cfg(self.tmp)
+        hid = "2021107235"
+        cfg.w5_root.mkdir(parents=True, exist_ok=True)
+        w5_save_queue(cfg.queue_path, {hid: w5_empty_row(horse_id=hid, source="fixture")})
+        opener = CountingOpener()
+        client = NetkeibaClient(min_interval_sec=0, opener=opener, component="w5")
+        missing = self.tmp / "missing-w5.sqlite"
+        with _budget_env(missing, GLOBAL_HTTP_BUDGET_BOOTSTRAP="0"):
+            report = run_w5_acquire(cfg, client=client)
+        self.assertTrue(report.stopped_global_budget)
+        self.assertEqual(report.http_request_count, 0)
+        self.assertEqual(opener.calls, 0)
+        runner = _load_script("w5_maiden_history_acquire_run.py")
+        from pi_keibanet.w5_maiden_history.gate_monitor import GateMonitorState
+
+        gate = GateMonitorState(reevaluation_ready=False)
+        with patch.object(runner, "W5Config") as cfg_cls, patch.object(
+            runner, "run_w5_acquire", return_value=report
+        ), patch.object(runner, "run_w5_handoff"), patch.object(
+            runner, "update_gate_monitor", return_value=gate
+        ), patch.object(runner, "_busy", return_value=False), patch.object(
+            sys, "argv", ["w5", "--data-root", str(cfg.data_root)]
+        ):
+            cfg_cls.from_env.return_value = cfg
+            self.assertEqual(runner.main(), 5)
+
+    def test_w4_probe_deny_exit(self) -> None:
+        missing = self.tmp / "missing-w4.sqlite"
+        env = os.environ.copy()
+        env.update(
+            _staging_env(
+                missing,
+                GLOBAL_HTTP_BUDGET_BOOTSTRAP="0",
+                GLOBAL_HTTP_BUDGET_COMPONENT="w4",
+            )
+        )
+        env["PYTHONPATH"] = str(ROOT) + (os.pathsep + env["PYTHONPATH"] if env.get("PYTHONPATH") else "")
+        proc = subprocess.run(
+            [sys.executable, str(ROOT / "scripts" / "w4_global_budget_deny_probe.py")],
+            cwd=str(ROOT),
+            env=env,
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        self.assertEqual(proc.returncode, 5, proc.stdout + proc.stderr)
+        payload = json.loads(proc.stdout)
+        self.assertTrue(payload["stopped_global_budget"])
+        self.assertEqual(payload["http_request_count"], 0)
+        self.assertEqual(payload["global_budget_reason"], "missing_state")
+
+    def test_live_http_default_still_blocks_even_with_budget(self) -> None:
+        cfg = _w3_cfg(self.tmp, w3c_fetch_enabled=False)
+        rid = "202506010102"
+        cfg.w3_root.mkdir(parents=True, exist_ok=True)
+        w3_save_queue(cfg.queue_path, {rid: _pending_w3(rid)})
+        opener = CountingOpener()
+        client = NetkeibaClient(min_interval_sec=0, opener=opener, component="w3c")
+        with _budget_env(self.state):
+            report = run_w3c_acquire(cfg, client=client)
+        self.assertEqual(opener.calls, 0)
+        self.assertEqual(report.http_request_count, 0)
+        self.assertNotEqual(os.environ.get("W3W5_LIVE_HTTP", "0"), "1")
+
+    def test_ledger_has_no_query_or_secrets(self) -> None:
+        with _budget_env(self.state):
+            reserve(url="https://race.netkeiba.com/api/api_get_jra_odds.html?race_id=1&token=secret", component="p1")
+            conn = sqlite3.connect(str(self.state))
+            row = conn.execute("SELECT host, path, source FROM reservations").fetchone()
+            conn.close()
+        self.assertEqual(row[0], "race.netkeiba.com")
+        self.assertEqual(row[1], "/api/api_get_jra_odds.html")
+        self.assertEqual(row[2], "netkeiba")
+        self.assertNotIn("token", row[1])
+        self.assertNotIn("?", row[1])
+
+    def test_defaults_do_not_authorize_http(self) -> None:
+        with _budget_env(
+            self.state,
+            GLOBAL_HTTP_BUDGET_TOTAL_LIMIT="0",
+            GLOBAL_HTTP_BUDGET_RESERVED_P1_C4="0",
+            GLOBAL_HTTP_BUDGET_LIMIT_P1="0",
+        ):
+            with self.assertRaises(BudgetDenied) as ctx:
+                reserve(url=_url(), component="p1")
+            self.assertEqual(ctx.exception.reason, "total_limit")
+
+    def test_compileall_and_diff_check(self) -> None:
+        pkg = ROOT / "pi_keibanet" / "http_budget"
+        self.assertTrue(compileall.compile_dir(str(pkg), quiet=1, force=True))
+        self.assertTrue(compileall.compile_file(str(ROOT / "pi_keibanet" / "netkeiba" / "client.py"), quiet=1))
+        proc = subprocess.run(
+            ["git", "diff", "--check"],
+            cwd=str(REPO),
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        self.assertEqual(proc.returncode, 0, proc.stdout + proc.stderr)
+
+    def test_external_http_remains_zero(self) -> None:
+        self.assertEqual(EXTERNAL_HTTP_CALLS, 0)
+        self.assertEqual(URLOPEN_CALLS, 0)
+        self.assertEqual(SOCKET_CALLS, 0)
+
+
+if __name__ == "__main__":
+    unittest.main()
