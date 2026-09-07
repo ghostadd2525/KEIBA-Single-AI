@@ -134,11 +134,13 @@ class NetkeibaClient:
             raise
         except urllib.error.HTTPError as exc:
             raise NetkeibaFetchError(
-                f"HTML取得失敗 HTTP {exc.code}: {url}",
+                f"HTML取得失敗 HTTP {exc.code}: {url.split('?', 1)[0]}",
                 http_status=int(exc.code),
             ) from exc
         except urllib.error.URLError as exc:
-            raise NetkeibaFetchError(f"HTML取得失敗: {url}: {exc.reason}") from exc
+            raise NetkeibaFetchError(
+                f"HTML取得失敗: {url.split('?', 1)[0]}: {exc.reason}"
+            ) from exc
         for enc in ("utf-8", "euc-jp", "cp932"):
             try:
                 html = raw.decode(enc)
@@ -216,11 +218,13 @@ class NetkeibaClient:
             raise
         except urllib.error.HTTPError as exc:
             raise NetkeibaFetchError(
-                f"オッズ取得失敗 HTTP {exc.code}: {url}",
+                f"オッズ取得失敗 HTTP {exc.code}: {url.split('?', 1)[0]}",
                 http_status=int(exc.code),
             ) from exc
         except urllib.error.URLError as exc:
-            raise NetkeibaFetchError(f"オッズ取得失敗: {url}: {exc.reason}") from exc
+            raise NetkeibaFetchError(
+                f"オッズ取得失敗: {url.split('?', 1)[0]}: {exc.reason}"
+            ) from exc
         text = raw.decode("utf-8", errors="replace")
         log_fetch(url=url, html=text[:4000], label=f"jra_odds_{numeric_race_id}")
         return text
