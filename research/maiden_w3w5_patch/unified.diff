@@ -1,0 +1,1144 @@
+# Unified diff: maiden-prod-snapshot-20260907 READONLY vs WORK
+# ZIP SHA256: 27e730218fe0a25220377ecc7b33cb49b5ac36eb53329dba63c01c8e229eb2be
+# pycache excluded. Production apply is NOT included.
+
+--- /workspace/tmp/maiden-prod-snapshot-20260907-READONLY/services/pi-keibanet-api/pi_keibanet/w3_maiden/config.py	2026-09-07 12:04:14.376786113 +0000
++++ /workspace/tmp/maiden-prod-work-20260907/services/pi-keibanet-api/pi_keibanet/w3_maiden/config.py	2026-09-07 12:05:57.965385274 +0000
+@@ -33,6 +33,9 @@
+     page_c_health_path: Path | None = None
+     extra_cache_roots: list[Path] = field(default_factory=list)
+     enabled: bool = True  # W3-A
++    # W3-A supply bounds / fail-closed (new; systemd does not set these)
++    w3a_handoff_dry_run: bool = True
++    w3a_max_enqueue_per_run: int = 2
+     # W3-C bounds (safe defaults — never bulk 56)
+     w3c_enabled: bool = True
+     w3c_fetch_enabled: bool = True
+@@ -114,6 +117,9 @@
+             page_c_health_path=health,
+             extra_cache_roots=extra,
+             enabled=os.environ.get("W3A_ENABLED", "1") not in ("0", "false", "False"),
++            w3a_handoff_dry_run=os.environ.get("W3A_HANDOFF_DRY_RUN", "1")
++            not in ("0", "false", "False"),
++            w3a_max_enqueue_per_run=int(os.environ.get("W3A_MAX_ENQUEUE_PER_RUN", "2")),
+             w3c_enabled=os.environ.get("W3C_ENABLED", "1") not in ("0", "false", "False"),
+             w3c_fetch_enabled=os.environ.get("W3C_FETCH_ENABLED", "1")
+             not in ("0", "false", "False"),
+--- /workspace/tmp/maiden-prod-snapshot-20260907-READONLY/services/pi-keibanet-api/pi_keibanet/w3_maiden/handoff.py	2026-09-07 12:04:14.376786113 +0000
++++ /workspace/tmp/maiden-prod-work-20260907/services/pi-keibanet-api/pi_keibanet/w3_maiden/handoff.py	2026-09-07 12:06:20.309606787 +0000
+@@ -53,11 +53,26 @@
+     errors: list[str] = field(default_factory=list)
+     queue_path: str = ""
+     run_report_path: str = ""
++    dry_run: bool = False
++    queue_written: bool = False
++    supply_skipped_reason: str | None = None
++    c4_source_health_state: str | None = None
++    planned_new_race_ids: list[str] = field(default_factory=list)
++    enqueue_capped: bool = False
+ 
+     def to_dict(self) -> dict[str, Any]:
+         return asdict(self)
+ 
+ 
++def _c4_page_a1_health_state(cfg: W3AConfig) -> str:
++    """Read-only C4 PAGE-A1 SourceHealth. Does not create or rewrite the health file."""
++    from ..c4_calendar.config import C4Config
++    from ..c4_calendar.source_health import load_health
++
++    c4 = C4Config.from_env(data_root=cfg.data_root)
++    return str(load_health(c4.health_path).state)
++
++
+ def _is_race_day_complete(index: dict[str, Any] | None) -> bool:
+     if not index:
+         return False
+@@ -143,14 +158,23 @@
+         started_at=_utc_iso(),
+         enabled=cfg.enabled,
+         queue_path=str(cfg.queue_path),
++        dry_run=bool(cfg.w3a_handoff_dry_run),
+     )
+     if not cfg.enabled:
+         report.finished_at = _utc_iso()
+         report.errors.append("W3A_ENABLED=0")
+         return report
+ 
+-    cfg.w3_root.mkdir(parents=True, exist_ok=True)
+-    cfg.runs_dir.mkdir(parents=True, exist_ok=True)
++    report.c4_source_health_state = _c4_page_a1_health_state(cfg)
++    if report.c4_source_health_state == "DEGRADED":
++        report.supply_skipped_reason = "c4_degraded"
++        report.finished_at = _utc_iso()
++        report.http_request_count = 0
++        return report
++
++    if not cfg.w3a_handoff_dry_run:
++        cfg.w3_root.mkdir(parents=True, exist_ok=True)
++        cfg.runs_dir.mkdir(parents=True, exist_ok=True)
+ 
+     complete_dates = _discover_complete_dates(
+         cfg.race_refresh_state_root, cfg.c4_queue_path
+@@ -264,6 +288,19 @@
+             }
+ 
+             existing = rows.get(rid)
++            if existing is not None:
++                # Do not rewrite existing rows (including result_complete).
++                report.maidens_refreshed += 1
++                continue
++
++            if len(report.planned_new_race_ids) >= cfg.w3a_max_enqueue_per_run:
++                report.enqueue_capped = True
++                continue
++
++            report.planned_new_race_ids.append(rid)
++            if cfg.w3a_handoff_dry_run:
++                continue
++
+             merged, action = merge_row(existing, incoming)
+             rows[rid] = merged
+             if action == "inserted":
+@@ -271,7 +308,9 @@
+             else:
+                 report.maidens_refreshed += 1
+ 
+-    save_queue(cfg.queue_path, rows)
++    if (not cfg.w3a_handoff_dry_run) and report.planned_new_race_ids:
++        save_queue(cfg.queue_path, rows)
++        report.queue_written = True
+     stats = queue_stats(rows)
+     report.queue_rows_total = len(rows)
+     report.queue_status_counts = stats
+@@ -280,8 +319,9 @@
+     report.finished_at = _utc_iso()
+     report.http_request_count = 0  # hard guarantee for W3-A
+ 
+-    stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+-    run_path = cfg.runs_dir / f"w3a_handoff_{stamp}.json"
+-    write_run_report(run_path, report.to_dict())
+-    report.run_report_path = str(run_path)
++    if not cfg.w3a_handoff_dry_run:
++        stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
++        run_path = cfg.runs_dir / f"w3a_handoff_{stamp}.json"
++        write_run_report(run_path, report.to_dict())
++        report.run_report_path = str(run_path)
+     return report
+--- /workspace/tmp/maiden-prod-snapshot-20260907-READONLY/services/pi-keibanet-api/scripts/w3_maiden_page_c_acquire_run.py	2026-09-07 12:04:14.388786127 +0000
++++ /workspace/tmp/maiden-prod-work-20260907/services/pi-keibanet-api/scripts/w3_maiden_page_c_acquire_run.py	2026-09-07 12:06:20.645610295 +0000
+@@ -20,7 +20,7 @@
+ if str(ROOT) not in sys.path:
+     sys.path.insert(0, str(ROOT))
+ 
+-from pi_keibanet.w3_maiden import W3AConfig, run_w3c_acquire
++from pi_keibanet.w3_maiden import W3AConfig, run_w3a_handoff, run_w3c_acquire
+ 
+ _DEFAULT_W2_UNIT = "expect-w2-haron-shadow.service"
+ _DEFAULT_C4_UNIT = "expect-c4-page-a1-calendar.service"
+@@ -65,6 +65,21 @@
+     if args.max_runtime_sec is not None:
+         cfg.max_runtime_sec = args.max_runtime_sec
+ 
++    # Fail-closed live HTTP: systemd already sets W3C_FETCH_ENABLED=1.
++    # This new switch is unset on Production units, so apply does not fetch.
++    if os.environ.get("W3W5_LIVE_HTTP", "0") not in ("1", "true", "True"):
++        cfg.w3c_fetch_enabled = False
++
++    if os.environ.get("W3A_BEFORE_W3C", "0") in ("1", "true", "True"):
++        try:
++            handoff = run_w3a_handoff(cfg)
++        except Exception as exc:  # noqa: BLE001
++            print(json.dumps({"w3a_handoff_error": f"{type(exc).__name__}:{exc}"}, ensure_ascii=False))
++            return 1
++        print(json.dumps({"w3a_handoff": handoff.to_dict()}, ensure_ascii=False, indent=2))
++        if handoff.errors and handoff.queue_rows_total == 0 and not handoff.supply_skipped_reason:
++            return 1
++
+     w2_unit = os.environ.get("W3C_W2_UNIT", _DEFAULT_W2_UNIT)
+     c4_unit = os.environ.get("W3C_C4_UNIT", _DEFAULT_C4_UNIT)
+     report = run_w3c_acquire(
+--- /workspace/tmp/maiden-prod-snapshot-20260907-READONLY/services/pi-keibanet-api/pi_keibanet/w5_maiden_history/config.py	2026-09-07 12:04:14.380786118 +0000
++++ /workspace/tmp/maiden-prod-work-20260907/services/pi-keibanet-api/pi_keibanet/w5_maiden_history/config.py	2026-09-07 12:06:34.553759587 +0000
+@@ -28,6 +28,8 @@
+     cooldown_seconds: float = 86400.0
+     fetch_failed_cooldown_sec: float = 3600.0
+     min_interval_sec: float = 1.0
++    retry_fetch_failed: bool = False
++    max_attempts_per_horse: int = 3
+ 
+     @classmethod
+     def from_env(cls, *, data_root: Path | None = None) -> "W5Config":
+@@ -74,6 +76,9 @@
+                 os.environ.get("W5_MIN_INTERVAL_SEC")
+                 or os.environ.get("PI_NETKEIBA_MIN_INTERVAL_SEC", "1.0")
+             ),
++            retry_fetch_failed=os.environ.get("W5_RETRY_FETCH_FAILED", "0")
++            in ("1", "true", "True"),
++            max_attempts_per_horse=int(os.environ.get("W5_MAX_ATTEMPTS_PER_HORSE", "3")),
+         )
+ 
+     @property
+--- /workspace/tmp/maiden-prod-snapshot-20260907-READONLY/services/pi-keibanet-api/pi_keibanet/w5_maiden_history/acquisition.py	2026-09-07 12:04:14.380786118 +0000
++++ /workspace/tmp/maiden-prod-work-20260907/services/pi-keibanet-api/pi_keibanet/w5_maiden_history/acquisition.py	2026-09-07 12:06:34.981764299 +0000
+@@ -136,6 +136,41 @@
+             self.stop_reason = "completed"
+ 
+ 
++RETRYABLE_TIMEOUT_CODES = frozenset({"TimeoutError", "ReadTimeout", "ConnectTimeout"})
++
++
++def _is_retryable_fetch_failed(
++    row: dict[str, Any],
++    *,
++    now: datetime,
++    max_attempts: int,
++) -> bool:
++    if str(row.get("queue_status") or "") != "fetch_failed":
++        return False
++    if int(row.get("attempt_count") or 0) >= max_attempts:
++        return False
++    nxt = _parse_iso(row.get("next_eligible_at"))
++    if nxt is None or now < nxt:
++        return False
++    code = str(row.get("error_code") or "")
++    if code in RETRYABLE_TIMEOUT_CODES:
++        return True
++    if code.startswith("HTTP_"):
++        try:
++            status = int(code.split("_", 1)[1])
++        except ValueError:
++            return False
++        return status not in BLOCK_HTTP_STATUSES
++    return False
++
++
++def _is_pending_eligible(row: dict[str, Any], *, now: datetime) -> bool:
++    if str(row.get("queue_status") or "") != "pending":
++        return False
++    nxt = _parse_iso(row.get("next_eligible_at"))
++    return nxt is None or now >= nxt
++
++
+ def select_pending(
+     rows: dict[str, dict[str, Any]],
+     *,
+@@ -145,10 +180,7 @@
+     now = now or _utc_now()
+     out: list[str] = []
+     for hid, row in sorted(rows.items(), key=lambda kv: (str(kv[1].get("created_at") or ""), kv[0])):
+-        if str(row.get("queue_status") or "") != "pending":
+-            continue
+-        nxt = _parse_iso(row.get("next_eligible_at"))
+-        if nxt is not None and now < nxt:
++        if not _is_pending_eligible(row, now=now):
+             continue
+         out.append(hid)
+         if len(out) >= max_horses:
+@@ -156,6 +188,32 @@
+     return out
+ 
+ 
++def select_eligible(
++    rows: dict[str, dict[str, Any]],
++    *,
++    max_horses: int,
++    now: datetime | None = None,
++    retry_fetch_failed: bool = False,
++    max_attempts: int = 3,
++) -> list[str]:
++    """Select pending, and optionally retryable fetch_failed. Never complete."""
++    now = now or _utc_now()
++    out: list[str] = []
++    for hid, row in sorted(rows.items(), key=lambda kv: (str(kv[1].get("created_at") or ""), kv[0])):
++        status = str(row.get("queue_status") or "")
++        if status == "complete":
++            continue
++        if _is_pending_eligible(row, now=now):
++            out.append(hid)
++        elif retry_fetch_failed and _is_retryable_fetch_failed(
++            row, now=now, max_attempts=max_attempts
++        ):
++            out.append(hid)
++        if len(out) >= max_horses:
++            break
++    return out
++
++
+ def _cache_paths(cfg: W5Config, horse_id: str) -> list[Path]:
+     return [
+         cfg.cache_dir / f"{horse_id}.json",
+@@ -299,10 +357,30 @@
+         return report
+ 
+     if horse_ids:
+-        candidates = [h for h in horse_ids if h in rows and rows[h].get("queue_status") == "pending"]
+-        candidates = candidates[: cfg.max_horses_per_run]
++        candidates = []
++        for hid in horse_ids:
++            if hid not in rows:
++                continue
++            row = rows[hid]
++            if str(row.get("queue_status") or "") == "complete":
++                continue
++            if _is_pending_eligible(row, now=started) or (
++                cfg.retry_fetch_failed
++                and _is_retryable_fetch_failed(
++                    row, now=started, max_attempts=cfg.max_attempts_per_horse
++                )
++            ):
++                candidates.append(hid)
++            if len(candidates) >= cfg.max_horses_per_run:
++                break
+     else:
+-        candidates = select_pending(rows, max_horses=cfg.max_horses_per_run, now=started)
++        candidates = select_eligible(
++            rows,
++            max_horses=cfg.max_horses_per_run,
++            now=started,
++            retry_fetch_failed=cfg.retry_fetch_failed,
++            max_attempts=cfg.max_attempts_per_horse,
++        )
+     report.candidate_horses = len(candidates)
+     if not candidates:
+         report.queue_stats = queue_stats(rows)
+@@ -424,6 +502,9 @@
+                 row["queue_status"] = "fetch_failed"
+                 row["error_code"] = type(exc).__name__
+                 row["error_reason"] = str(exc)[:300]
++                row["next_eligible_at"] = _iso(
++                    _utc_now() + timedelta(seconds=cfg.fetch_failed_cooldown_sec)
++                )
+                 report.fetch_failed += 1
+                 consecutive += 1
+                 report.errors.append(f"{hid}:{type(exc).__name__}")
+--- /workspace/tmp/maiden-prod-snapshot-20260907-READONLY/services/pi-keibanet-api/scripts/w5_maiden_history_acquire_run.py	2026-09-07 12:04:14.388786127 +0000
++++ /workspace/tmp/maiden-prod-work-20260907/services/pi-keibanet-api/scripts/w5_maiden_history_acquire_run.py	2026-09-07 12:06:34.957764034 +0000
+@@ -59,6 +59,8 @@
+     cfg = W5Config.from_env(data_root=Path(args.data_root) if args.data_root else None)
+     if args.w5_root:
+         cfg.w5_root = Path(args.w5_root)
++    if os.environ.get("W3W5_LIVE_HTTP", "0") not in ("1", "true", "True"):
++        cfg.fetch_enabled = False
+     if args.dry_run:
+         cfg.dry_run = True
+         cfg.fetch_enabled = False
+@@ -101,11 +103,22 @@
+         "state_path": str(cfg.w5_root / "gate_monitor_state.json"),
+     }
+     print(json.dumps(out, ensure_ascii=False, indent=2))
++    if gate.reevaluation_ready:
++        # Visibility only — do not fail systemd for a research gate.
++        print(
++            json.dumps(
++                {
++                    "alert": "PHASE2_REEVALUATION_GATE",
++                    "reevaluation_ready": True,
++                    "cohort_acquisition_complete": gate.cohort_acquisition_complete,
++                },
++                ensure_ascii=False,
++            )
++        )
+     if report.stopped_block:
+         return 2
+-    if gate.reevaluation_ready:
+-        # Non-zero for operator visibility; acquisition itself is not stopped.
+-        return 3
++    if report.fetch_failed > 0:
++        return 4
+     return 0
+ 
+ 
+--- /dev/null	2026-09-04 20:40:21.977280133 +0000
++++ /workspace/tmp/maiden-prod-work-20260907/services/pi-keibanet-api/scripts/w5_fetch_failed_retry_migrate.py	2026-09-07 12:08:49.167497313 +0000
+@@ -0,0 +1,121 @@
++#!/usr/bin/env python3
++"""Staging-only migration for the 3 W5 TimeoutError fetch_failed horses.
++
++Uses the real W5 JSONL queue (load_queue / save_queue).
++Default: dry-run. --apply writes only the allowlisted horse_ids.
++Does not write W4 pedigree files.
++"""
++from __future__ import annotations
++
++import argparse
++import json
++import os
++import sys
++from datetime import datetime, timedelta, timezone
++from pathlib import Path
++
++ROOT = Path(__file__).resolve().parents[1]
++if str(ROOT) not in sys.path:
++    sys.path.insert(0, str(ROOT))
++
++from pi_keibanet.w5_maiden_history.queue import load_queue, save_queue
++
++ALLOWED_HORSE_IDS = ("2021107235", "2021107273", "2021100988")
++
++
++def _utc_now() -> datetime:
++    return datetime.now(timezone.utc)
++
++
++def _iso(dt: datetime) -> str:
++    return dt.astimezone(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
++
++
++def _int_env(name: str, default: int) -> int:
++    raw = os.environ.get(name, "").strip()
++    if not raw:
++        return default
++    try:
++        return int(raw)
++    except ValueError:
++        return default
++
++
++def migrate(queue_path: Path, *, apply: bool) -> dict:
++    if not queue_path.is_file():
++        raise FileNotFoundError(f"queue not found: {queue_path}")
++    rows = load_queue(queue_path)
++
++    now = _utc_now()
++    cooldown = _int_env("W5_FETCH_FAILED_COOLDOWN_SEC", 3600)
++    next_eligible = _iso(now + timedelta(seconds=cooldown))
++    planned: list[dict] = []
++    applied: list[str] = []
++    skipped: list[dict] = []
++
++    for horse_id in ALLOWED_HORSE_IDS:
++        rec = rows.get(horse_id)
++        if rec is None:
++            skipped.append({"horse_id": horse_id, "reason": "missing"})
++            continue
++        status = rec.get("queue_status")
++        if status == "complete":
++            skipped.append({"horse_id": horse_id, "reason": "complete_protected"})
++            continue
++        if status != "fetch_failed":
++            skipped.append({"horse_id": horse_id, "reason": f"status_{status}"})
++            continue
++        error_code = rec.get("error_code")
++        if error_code != "TimeoutError":
++            skipped.append({"horse_id": horse_id, "reason": f"error_code_{error_code}"})
++            continue
++        before = {
++            "horse_id": horse_id,
++            "queue_status": status,
++            "error_code": error_code,
++            "attempt_count": rec.get("attempt_count"),
++            "next_eligible_at": rec.get("next_eligible_at"),
++        }
++        after = {
++            **before,
++            "next_eligible_at": next_eligible,
++            "updated_at": _iso(now),
++        }
++        planned.append({"before": before, "after": after})
++        if apply:
++            rec["next_eligible_at"] = next_eligible
++            rec["updated_at"] = _iso(now)
++            rec["queue_status"] = "fetch_failed"
++            applied.append(horse_id)
++
++    if apply and applied:
++        save_queue(queue_path, rows)
++
++    return {
++        "ok": True,
++        "apply": apply,
++        "queue_path": str(queue_path),
++        "allowed_horse_ids": list(ALLOWED_HORSE_IDS),
++        "planned_count": len(planned),
++        "applied_count": len(applied),
++        "applied_horse_ids": applied,
++        "planned": planned,
++        "skipped": skipped,
++        "cooldown_seconds": cooldown,
++        "env_names": ["W5_FETCH_FAILED_COOLDOWN_SEC", "W5_COOLDOWN_SECONDS"],
++        "w4_pedigree_writes": 0,
++    }
++
++
++def main() -> int:
++    parser = argparse.ArgumentParser(description="Staging-only W5 fetch_failed retry migration")
++    parser.add_argument("--queue", required=True, help="Path to horse_history_queue.jsonl")
++    parser.add_argument("--apply", action="store_true", help="Write allowlisted rows (staging only)")
++    args = parser.parse_args()
++    report = migrate(Path(args.queue), apply=args.apply)
++    print(json.dumps(report, ensure_ascii=False, indent=2), flush=True)
++    return 0
++
++
++if __name__ == "__main__":
++    sys.exit(main())
+--- /dev/null	2026-09-04 20:40:21.977280133 +0000
++++ /workspace/tmp/maiden-prod-work-20260907/services/pi-keibanet-api/scripts/w3_maiden_historical_dry_run.py	2026-09-07 12:08:49.211497940 +0000
+@@ -0,0 +1,170 @@
++#!/usr/bin/env python3
++"""Historical maiden dry-run from local C4 / race_refresh artifacts only.
++
++Uses real page_a1_store paths (kaisai_day_index.json + page_a1/listed_races.json)
++and the real W3 JSONL queue. Does not invent race IDs.
++Unknown days stay unknown (not zero maidens). HTTP is forbidden.
++"""
++from __future__ import annotations
++
++import json
++import sys
++from collections import Counter
++from pathlib import Path
++
++ROOT = Path(__file__).resolve().parents[1]
++if str(ROOT) not in sys.path:
++    sys.path.insert(0, str(ROOT))
++
++from pi_keibanet.c4_calendar.config import C4Config
++from pi_keibanet.page_a1_store import listed_path, load_index
++from pi_keibanet.w3_maiden.config import MAIDEN_TOKEN, W3AConfig
++from pi_keibanet.w3_maiden.handoff import (
++    _discover_complete_dates,
++    _is_race_day_complete,
++    _load_listed,
++)
++from pi_keibanet.w3_maiden.queue import load_queue
++
++YEAR_START = "2024-01-01"
++YEAR_END = "2026-12-31"
++
++
++def _load_json(path: Path) -> object | None:
++    if not path.is_file():
++        return None
++    try:
++        return json.loads(path.read_text(encoding="utf-8"))
++    except json.JSONDecodeError:
++        return None
++
++
++def _year_of(date_s: str) -> str:
++    return date_s[:4] if len(date_s) >= 4 else "unknown"
++
++
++def _week_calendar_dates(c4_root: Path) -> dict[str, str]:
++    dates: dict[str, str] = {}
++    weeks_dir = c4_root / "weeks"
++    if not weeks_dir.is_dir():
++        return dates
++    for week_dir in sorted(p for p in weeks_dir.iterdir() if p.is_dir()):
++        cal = _load_json(week_dir / "calendar.json")
++        if not isinstance(cal, dict):
++            continue
++        days = cal.get("days")
++        if not isinstance(days, list):
++            continue
++        for day in days:
++            if not isinstance(day, dict):
++                continue
++            date_s = day.get("date")
++            if not isinstance(date_s, str):
++                continue
++            if date_s < YEAR_START or date_s > YEAR_END:
++                continue
++            dates[date_s] = "week_calendar"
++    return dates
++
++
++def _maiden_ids_from_listed(path: Path) -> list[str]:
++    ids: list[str] = []
++    for race in _load_listed(path):
++        name = str(race.get("race_name") or "")
++        if MAIDEN_TOKEN not in name:
++            continue
++        race_id = str(race.get("race_id") or "").strip()
++        if race_id:
++            ids.append(race_id)
++    return ids
++
++
++def _existing_w3_years(queue_path: Path) -> dict[str, int]:
++    counts: dict[str, int] = {"2024": 0, "2025": 0, "2026": 0}
++    for race_id, rec in load_queue(queue_path).items():
++        date_s = rec.get("kaisai_date") or rec.get("date")
++        if isinstance(date_s, str) and date_s[:4] in counts:
++            counts[date_s[:4]] += 1
++            continue
++        if isinstance(race_id, str) and race_id[:4] in counts:
++            counts[race_id[:4]] += 1
++    return counts
++
++
++def run_historical_dry_run(cfg: W3AConfig | None = None) -> dict:
++    cfg = cfg or W3AConfig.from_env()
++    c4_cfg = C4Config.from_env(data_root=cfg.data_root)
++    known_complete = _discover_complete_dates(cfg.race_refresh_state_root, cfg.c4_queue_path)
++    week_dates = _week_calendar_dates(c4_cfg.c4_root)
++
++    planned_by_year: Counter[str] = Counter()
++    planned_ids: list[str] = []
++    missing_listed: list[str] = []
++    unknown_days: list[str] = []
++
++    for date_s in known_complete:
++        if date_s < YEAR_START or date_s > YEAR_END:
++            continue
++        idx = load_index(cfg.race_refresh_state_root, date_s)
++        if not _is_race_day_complete(idx):
++            unknown_days.append(date_s)
++            continue
++        listed = listed_path(cfg.race_refresh_state_root, date_s)
++        if not listed.is_file():
++            missing_listed.append(date_s)
++            continue
++        ids = _maiden_ids_from_listed(listed)
++        planned_ids.extend(ids)
++        planned_by_year[_year_of(date_s)] += len(ids)
++
++    refresh_dirs: set[str] = set()
++    if cfg.race_refresh_state_root.is_dir():
++        for child in cfg.race_refresh_state_root.iterdir():
++            if child.is_dir() and len(child.name) == 10 and child.name[4] == "-":
++                refresh_dirs.add(child.name)
++
++    week_only = [
++        d
++        for d in week_dates
++        if d not in known_complete and d not in refresh_dirs
++    ]
++    unknown = sorted(set(unknown_days + week_only))
++    existing = _existing_w3_years(cfg.queue_path)
++
++    return {
++        "ok": True,
++        "http_calls": 0,
++        "maiden_token": MAIDEN_TOKEN,
++        "year_window": {"start": YEAR_START, "end": YEAR_END},
++        "known_complete_dates": list(known_complete),
++        "known_complete_count": len(known_complete),
++        "planned_maiden_race_ids": planned_ids,
++        "planned_maiden_count": len(planned_ids),
++        "planned_by_year": {
++            "2024": planned_by_year.get("2024", 0),
++            "2025": planned_by_year.get("2025", 0),
++            "2026": planned_by_year.get("2026", 0),
++        },
++        "existing_w3_queue_by_year": existing,
++        "unknown_days": unknown,
++        "unknown_day_count": len(unknown),
++        "missing_listed_races": missing_listed,
++        "note": "unknown days are not treated as 0 maidens; no race-id brute force",
++        "artifacts_used": [
++            "PI_RACE_REFRESH_STATE_ROOT/*/kaisai_day_index.json",
++            "PI_RACE_REFRESH_STATE_ROOT/*/page_a1/listed_races.json",
++            "C4 calendar_queue.jsonl",
++            "C4 weeks/*/calendar.json",
++            "W3 maiden_result_queue.jsonl",
++        ],
++    }
++
++
++def main() -> int:
++    report = run_historical_dry_run()
++    print(json.dumps(report, ensure_ascii=False, indent=2), flush=True)
++    return 0
++
++
++if __name__ == "__main__":
++    sys.exit(main())
+--- /dev/null	2026-09-04 20:40:21.977280133 +0000
++++ /workspace/tmp/maiden-prod-work-20260907/services/pi-keibanet-api/tests/test_maiden_w3w5_staging_patch.py	2026-09-07 12:09:29.147847979 +0000
+@@ -0,0 +1,494 @@
++# -*- coding: utf-8 -*-
++"""Offline staging tests for the W3-A / W5 maiden patch (HTTP forbidden)."""
++from __future__ import annotations
++
++import hashlib
++import importlib.util
++import json
++import os
++import sys
++import tempfile
++import unittest
++from datetime import datetime, timedelta, timezone
++from pathlib import Path
++from unittest.mock import patch
++
++ROOT = Path(__file__).resolve().parents[1]
++if str(ROOT) not in sys.path:
++    sys.path.insert(0, str(ROOT))
++
++from pi_keibanet.netkeiba.client import NetkeibaClient, NetkeibaFetchError
++from pi_keibanet.w3_maiden.config import W3AConfig
++from pi_keibanet.w3_maiden.handoff import run_w3a_handoff
++from pi_keibanet.w3_maiden.queue import load_queue, save_queue
++from pi_keibanet.w5_maiden_history.acquisition import (
++    run_w5_acquire,
++    select_eligible,
++    select_pending,
++)
++from pi_keibanet.w5_maiden_history.config import W5Config
++from pi_keibanet.w5_maiden_history.queue import (
++    empty_row as w5_empty_row,
++)
++from pi_keibanet.w5_maiden_history.queue import (
++    load_queue as w5_load_queue,
++)
++from pi_keibanet.w5_maiden_history.queue import (
++    save_queue as w5_save_queue,
++)
++
++HTTP_CALLS = 0
++EXISTING_W3 = 59
++COMPLETE_W5 = 835
++FAILED_W5 = ("2021107235", "2021107273", "2021100988")
++
++
++def _forbid_http(*_a, **_k):
++    global HTTP_CALLS
++    HTTP_CALLS += 1
++    raise AssertionError("HTTP is forbidden in staging tests")
++
++
++def _load_script(name: str):
++    path = ROOT / "scripts" / name
++    spec = importlib.util.spec_from_file_location(name.replace(".py", ""), path)
++    assert spec and spec.loader
++    mod = importlib.util.module_from_spec(spec)
++    spec.loader.exec_module(mod)
++    return mod
++
++
++class ForbiddenClient(NetkeibaClient):
++    def fetch(self, url: str, *, label: str = "netkeiba", accept: str | None = None) -> str:
++        _forbid_http(url, label=label)
++
++
++def _sha256(path: Path) -> str:
++    return hashlib.sha256(path.read_bytes()).hexdigest()
++
++
++def _write_json(path: Path, payload: object) -> None:
++    path.parent.mkdir(parents=True, exist_ok=True)
++    path.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
++
++
++def _w3_cfg(tmp: Path, **kwargs) -> W3AConfig:
++    data = tmp / "data"
++    dummy = tmp / "dummy"
++    dummy.mkdir(parents=True, exist_ok=True)
++    cfg = W3AConfig(
++        data_root=data,
++        w3_root=data / "var" / "w3_maiden",
++        race_refresh_state_root=data / "var" / "race_refresh",
++        c4_queue_path=data / "var" / "c4_calendar" / "calendar_queue.jsonl",
++        hbf_cache_root=dummy,
++        extsrc_cache_root=dummy,
++        w2_raw_root=dummy,
++        w3a_handoff_dry_run=True,
++        w3a_max_enqueue_per_run=2,
++        enabled=True,
++        w3c_fetch_enabled=False,
++    )
++    for key, value in kwargs.items():
++        setattr(cfg, key, value)
++    return cfg
++
++
++def _w5_cfg(tmp: Path, **kwargs) -> W5Config:
++    data = tmp / "data"
++    cfg = W5Config(
++        data_root=data,
++        w5_root=data / "var" / "w5_maiden_history",
++        w3_root=data / "var" / "w3_maiden",
++        p1_lock_path=data / "var" / "locks" / "p1_refresh.lock.json",
++        health_path=data / "var" / "w5_maiden_history" / "source_health_netkeiba_horse_history.json",
++        enabled=True,
++        fetch_enabled=False,
++        dry_run=False,
++        retry_fetch_failed=False,
++        max_attempts_per_horse=3,
++        max_horses_per_run=2,
++        max_requests_per_run=4,
++    )
++    for key, value in kwargs.items():
++        setattr(cfg, key, value)
++    return cfg
++
++
++def _write_c4_health(tmp: Path, state: str) -> None:
++    path = tmp / "data" / "var" / "c4_calendar" / "source_health_netkeiba_page_a1.json"
++    _write_json(
++        path,
++        {
++            "source": "netkeiba_page_a1",
++            "state": state,
++            "reason": f"fixture_{state}",
++            "consecutive_failures": 0,
++        },
++    )
++
++
++def _write_complete_day(cfg: W3AConfig, date_s: str, races: list[dict]) -> None:
++    day = cfg.race_refresh_state_root / date_s
++    _write_json(
++        day / "kaisai_day_index.json",
++        {"completeness_state": "COMPLETE", "day_kind": "RACE_DAY", "date": date_s},
++    )
++    _write_json(day / "page_a1" / "listed_races.json", {"races": races})
++
++
++def _existing_w3_rows() -> dict[str, dict]:
++    rows: dict[str, dict] = {}
++    for i in range(EXISTING_W3):
++        rid = f"20240101{i + 1:04d}"
++        rows[rid] = {
++            "race_id": rid,
++            "kaisai_date": "2024-01-06",
++            "venue": "中山",
++            "race_number": 1,
++            "race_name": "3歳未勝利",
++            "queue_status": "result_complete",
++            "updated_at": "2024-01-07T00:00:00Z",
++            "created_at": "2024-01-06T00:00:00Z",
++        }
++    return rows
++
++
++def _seed_w3_world(cfg: W3AConfig, tmp: Path) -> list[str]:
++    _write_c4_health(tmp, "HEALTHY")
++    cfg.w3_root.mkdir(parents=True, exist_ok=True)
++    cfg.c4_queue_path.parent.mkdir(parents=True, exist_ok=True)
++    existing = _existing_w3_rows()
++    save_queue(cfg.queue_path, existing)
++    listed_existing = [
++        {
++            "race_id": rid,
++            "race_name": rec["race_name"],
++            "venue": rec["venue"],
++            "race_number": rec["race_number"],
++        }
++        for rid, rec in existing.items()
++    ]
++    new_ids = ["202506010101", "202506010102", "202606010101"]
++    _write_complete_day(cfg, "2024-01-06", listed_existing)
++    _write_complete_day(
++        cfg,
++        "2025-06-01",
++        [
++            {"race_id": "202506010101", "race_name": "3歳未勝利", "venue": "東京", "race_number": 1},
++            {"race_id": "202506010102", "race_name": "3歳未勝利", "venue": "東京", "race_number": 2},
++            {"race_id": "202506010199", "race_name": "3歳1勝クラス", "venue": "東京", "race_number": 3},
++        ],
++    )
++    _write_complete_day(
++        cfg,
++        "2026-06-01",
++        [
++            {"race_id": "202606010101", "race_name": "3歳未勝利", "venue": "阪神", "race_number": 1},
++        ],
++    )
++    cfg.c4_queue_path.write_text(
++        json.dumps({"date": "2025-06-01", "state": "race_day_complete"}, ensure_ascii=False)
++        + "\n",
++        encoding="utf-8",
++    )
++    return new_ids
++
++
++def _seed_w5_queue(cfg: W5Config) -> None:
++    rows: dict[str, dict] = {}
++    for i in range(COMPLETE_W5):
++        hid = f"2010000{i:03d}"
++        rec = w5_empty_row(horse_id=hid, source="fixture")
++        rec["queue_status"] = "complete"
++        rec["attempt_count"] = 1
++        rows[hid] = rec
++    for hid in FAILED_W5:
++        rec = w5_empty_row(horse_id=hid, source="fixture")
++        rec["queue_status"] = "fetch_failed"
++        rec["error_code"] = "TimeoutError"
++        rec["error_reason"] = "timeout"
++        rec["attempt_count"] = 1
++        rec["next_eligible_at"] = None
++        rows[hid] = rec
++    cfg.w5_root.mkdir(parents=True, exist_ok=True)
++    w5_save_queue(cfg.queue_path, rows)
++
++
++class MaidenW3W5StagingTests(unittest.TestCase):
++    def setUp(self) -> None:
++        global HTTP_CALLS
++        HTTP_CALLS = 0
++        self._tmp = tempfile.TemporaryDirectory()
++        self.tmp = Path(self._tmp.name)
++        self.w4_pedigree = self.tmp / "data" / "var" / "w4_horse" / "pedigree.json"
++        _write_json(self.w4_pedigree, {"protected": True, "horses": 838})
++        self.w4_hash = _sha256(self.w4_pedigree)
++        self.urlopen_patch = patch("urllib.request.urlopen", side_effect=_forbid_http)
++        self.urlopen_patch.start()
++        os.environ["C4_ROOT"] = str(self.tmp / "data" / "var" / "c4_calendar")
++        os.environ["PI_DATA_ROOT"] = str(self.tmp / "data")
++        os.environ["W3W5_LIVE_HTTP"] = "0"
++        os.environ["W3A_HANDOFF_DRY_RUN"] = "1"
++        os.environ["W5_RETRY_FETCH_FAILED"] = "0"
++
++    def tearDown(self) -> None:
++        self.urlopen_patch.stop()
++        self.assertEqual(HTTP_CALLS, 0)
++        self.assertEqual(_sha256(self.w4_pedigree), self.w4_hash)
++        self._tmp.cleanup()
++
++    def test_w3a_dry_run_plans_cap_and_skips_existing(self) -> None:
++        cfg = _w3_cfg(self.tmp, w3a_handoff_dry_run=True, w3a_max_enqueue_per_run=2)
++        _seed_w3_world(cfg, self.tmp)
++        before = cfg.queue_path.read_bytes()
++        before_rows = load_queue(cfg.queue_path)
++        report = run_w3a_handoff(cfg)
++        after_rows = load_queue(cfg.queue_path)
++        self.assertTrue(report.dry_run)
++        self.assertFalse(report.queue_written)
++        self.assertEqual(report.http_request_count, 0)
++        self.assertEqual(report.planned_new_race_ids, ["202506010101", "202506010102"])
++        self.assertTrue(report.enqueue_capped)
++        self.assertEqual(report.maidens_enqueued_new, 0)
++        self.assertEqual(len(after_rows), EXISTING_W3)
++        self.assertEqual(before, cfg.queue_path.read_bytes())
++        for rid, rec in before_rows.items():
++            self.assertEqual(after_rows[rid]["updated_at"], rec["updated_at"])
++            self.assertEqual(after_rows[rid]["queue_status"], "result_complete")
++
++    def test_w3a_degraded_stops_new_supply_without_queue_write(self) -> None:
++        cfg = _w3_cfg(self.tmp, w3a_handoff_dry_run=False)
++        _seed_w3_world(cfg, self.tmp)
++        _write_c4_health(self.tmp, "DEGRADED")
++        before = cfg.queue_path.read_bytes()
++        report = run_w3a_handoff(cfg)
++        self.assertEqual(report.c4_source_health_state, "DEGRADED")
++        self.assertEqual(report.supply_skipped_reason, "c4_degraded")
++        self.assertEqual(report.planned_new_race_ids, [])
++        self.assertFalse(report.queue_written)
++        self.assertEqual(cfg.queue_path.read_bytes(), before)
++
++    def test_w3a_apply_inserts_only_cap_and_leaves_existing(self) -> None:
++        cfg = _w3_cfg(self.tmp, w3a_handoff_dry_run=False, w3a_max_enqueue_per_run=2)
++        _seed_w3_world(cfg, self.tmp)
++        before_rows = load_queue(cfg.queue_path)
++        report = run_w3a_handoff(cfg)
++        after_rows = load_queue(cfg.queue_path)
++        self.assertTrue(report.queue_written)
++        self.assertEqual(report.maidens_enqueued_new, 2)
++        self.assertEqual(set(report.planned_new_race_ids), {"202506010101", "202506010102"})
++        self.assertNotIn("202606010101", after_rows)
++        self.assertEqual(len(after_rows), EXISTING_W3 + 2)
++        for rid, rec in before_rows.items():
++            self.assertEqual(after_rows[rid]["updated_at"], rec["updated_at"])
++            self.assertEqual(after_rows[rid]["queue_status"], "result_complete")
++
++    def test_w3c_runner_skips_w3c_on_w3a_failure(self) -> None:
++        runner = _load_script("w3_maiden_page_c_acquire_run.py")
++        os.environ["W3A_BEFORE_W3C"] = "1"
++        os.environ["W3W5_LIVE_HTTP"] = "0"
++        cfg = _w3_cfg(self.tmp)
++        called = {"w3c": 0}
++
++        def boom(_cfg):
++            raise RuntimeError("handoff_boom")
++
++        def w3c(*_a, **_k):
++            called["w3c"] += 1
++            raise AssertionError("W3-C must not run after W3-A failure")
++
++        with patch.object(runner, "W3AConfig") as cfg_cls, patch.object(
++            runner, "run_w3a_handoff", side_effect=boom
++        ), patch.object(runner, "run_w3c_acquire", side_effect=w3c), patch.object(
++            runner, "_unit_busy", return_value=False
++        ), patch.object(sys, "argv", ["w3_maiden_page_c_acquire_run.py", "--data-root", str(cfg.data_root)]):
++            cfg_cls.from_env.return_value = cfg
++            rc = runner.main()
++        self.assertEqual(rc, 1)
++        self.assertEqual(called["w3c"], 0)
++
++    def test_w3c_runner_degraded_still_runs_w3c(self) -> None:
++        runner = _load_script("w3_maiden_page_c_acquire_run.py")
++        os.environ["W3A_BEFORE_W3C"] = "1"
++        cfg = _w3_cfg(self.tmp)
++        from pi_keibanet.w3_maiden.handoff import HandoffReport
++        from pi_keibanet.w3_maiden.acquisition import AcquireReport
++
++        handoff = HandoffReport(
++            supply_skipped_reason="c4_degraded",
++            c4_source_health_state="DEGRADED",
++            queue_rows_total=0,
++        )
++        w3c_report = AcquireReport(enabled=True, fetch_enabled=False)
++
++        with patch.object(runner, "W3AConfig") as cfg_cls, patch.object(
++            runner, "run_w3a_handoff", return_value=handoff
++        ), patch.object(runner, "run_w3c_acquire", return_value=w3c_report) as w3c, patch.object(
++            runner, "_unit_busy", return_value=False
++        ), patch.object(sys, "argv", ["w3_maiden_page_c_acquire_run.py", "--data-root", str(cfg.data_root)]):
++            cfg_cls.from_env.return_value = cfg
++            rc = runner.main()
++        self.assertEqual(rc, 0)
++        self.assertEqual(w3c.call_count, 1)
++        self.assertFalse(cfg.w3c_fetch_enabled)
++
++    def test_w5_select_never_complete_and_retry_gate(self) -> None:
++        now = datetime(2026, 9, 7, 12, 0, tzinfo=timezone.utc)
++        past = (now - timedelta(seconds=10)).strftime("%Y-%m-%dT%H:%M:%SZ")
++        future = (now + timedelta(hours=1)).strftime("%Y-%m-%dT%H:%M:%SZ")
++        rows = {
++            "c1": {"queue_status": "complete", "attempt_count": 1, "created_at": "1"},
++            "p1": {"queue_status": "pending", "attempt_count": 0, "created_at": "2"},
++            "f_ready": {
++                "queue_status": "fetch_failed",
++                "error_code": "TimeoutError",
++                "attempt_count": 1,
++                "next_eligible_at": past,
++                "created_at": "3",
++            },
++            "f_wait": {
++                "queue_status": "fetch_failed",
++                "error_code": "TimeoutError",
++                "attempt_count": 1,
++                "next_eligible_at": future,
++                "created_at": "4",
++            },
++            "f_max": {
++                "queue_status": "fetch_failed",
++                "error_code": "TimeoutError",
++                "attempt_count": 3,
++                "next_eligible_at": past,
++                "created_at": "5",
++            },
++        }
++        self.assertEqual(select_pending(rows, max_horses=10, now=now), ["p1"])
++        self.assertEqual(
++            select_eligible(rows, max_horses=10, now=now, retry_fetch_failed=False),
++            ["p1"],
++        )
++        self.assertEqual(
++            select_eligible(rows, max_horses=10, now=now, retry_fetch_failed=True, max_attempts=3),
++            ["p1", "f_ready"],
++        )
++
++    def test_w5_invariants_and_exception_sets_next_eligible(self) -> None:
++        cfg = _w5_cfg(self.tmp, fetch_enabled=True, retry_fetch_failed=True, max_horses_per_run=1)
++        _seed_w5_queue(cfg)
++        before = w5_load_queue(cfg.queue_path)
++        self.assertEqual(sum(1 for r in before.values() if r["queue_status"] == "complete"), COMPLETE_W5)
++
++        def boom(_client, _hid):
++            raise TimeoutError("read timed out")
++
++        with patch(
++            "pi_keibanet.w5_maiden_history.acquisition.fetch_horse_history",
++            side_effect=boom,
++        ):
++            report = run_w5_acquire(
++                cfg,
++                client=ForbiddenClient(min_interval_sec=0),
++                w2_busy=False,
++                c4_busy=False,
++                w3c_busy=False,
++                w4_busy=False,
++                horse_ids=["2010000000"],
++            )
++        self.assertEqual(report.fetch_failed, 0)
++        self.assertNotIn("2010000000", report.processed_horse_ids)
++
++        pending = w5_empty_row(horse_id="2021999999", source="fixture")
++        rows = w5_load_queue(cfg.queue_path)
++        rows["2021999999"] = pending
++        w5_save_queue(cfg.queue_path, rows)
++        with patch(
++            "pi_keibanet.w5_maiden_history.acquisition.fetch_horse_history",
++            side_effect=boom,
++        ):
++            report2 = run_w5_acquire(
++                cfg,
++                client=ForbiddenClient(min_interval_sec=0),
++                horse_ids=["2021999999"],
++            )
++        after = w5_load_queue(cfg.queue_path)
++        rec = after["2021999999"]
++        self.assertEqual(rec["queue_status"], "fetch_failed")
++        self.assertEqual(rec["error_code"], "TimeoutError")
++        self.assertTrue(rec.get("next_eligible_at"))
++        self.assertEqual(report2.fetch_failed, 1)
++        self.assertEqual(
++            sum(1 for r in after.values() if r["queue_status"] == "complete"),
++            COMPLETE_W5,
++        )
++
++    def test_w5_migrate_default_dry_run_then_apply(self) -> None:
++        migrate = _load_script("w5_fetch_failed_retry_migrate.py")
++        cfg = _w5_cfg(self.tmp)
++        _seed_w5_queue(cfg)
++        before = cfg.queue_path.read_bytes()
++        dry = migrate.migrate(cfg.queue_path, apply=False)
++        self.assertEqual(dry["planned_count"], 3)
++        self.assertEqual(dry["applied_count"], 0)
++        self.assertEqual(cfg.queue_path.read_bytes(), before)
++        applied = migrate.migrate(cfg.queue_path, apply=True)
++        self.assertEqual(applied["applied_count"], 3)
++        rows = w5_load_queue(cfg.queue_path)
++        for hid in FAILED_W5:
++            self.assertEqual(rows[hid]["queue_status"], "fetch_failed")
++            self.assertTrue(rows[hid]["next_eligible_at"])
++            self.assertEqual(rows[hid]["error_code"], "TimeoutError")
++        self.assertEqual(
++            sum(1 for r in rows.values() if r["queue_status"] == "complete"),
++            COMPLETE_W5,
++        )
++
++    def test_w5_runner_gate_ready_exits_zero(self) -> None:
++        runner = _load_script("w5_maiden_history_acquire_run.py")
++        from pi_keibanet.w5_maiden_history.acquisition import AcquireReport
++        from pi_keibanet.w5_maiden_history.gate_monitor import GateMonitorState
++
++        cfg = _w5_cfg(self.tmp, fetch_enabled=True)
++        report = AcquireReport(enabled=True, fetch_enabled=False, fetch_failed=0)
++        gate = GateMonitorState(reevaluation_ready=True)
++
++        with patch.object(runner, "W5Config") as cfg_cls, patch.object(
++            runner, "run_w5_acquire", return_value=report
++        ), patch.object(runner, "run_w5_handoff"), patch.object(
++            runner, "update_gate_monitor", return_value=gate
++        ), patch.object(runner, "_busy", return_value=False), patch.object(
++            sys, "argv", ["w5_maiden_history_acquire_run.py", "--data-root", str(cfg.data_root)]
++        ):
++            cfg_cls.from_env.return_value = cfg
++            rc = runner.main()
++        self.assertEqual(rc, 0)
++        self.assertFalse(cfg.fetch_enabled)
++
++    def test_historical_unknown_days_are_not_zero_maidens(self) -> None:
++        hist = _load_script("w3_maiden_historical_dry_run.py")
++        cfg = _w3_cfg(self.tmp)
++        _seed_w3_world(cfg, self.tmp)
++        week_dir = self.tmp / "data" / "var" / "c4_calendar" / "weeks" / "2024-W02"
++        _write_json(
++            week_dir / "calendar.json",
++            {"days": [{"date": "2024-01-08", "kind": "unknown_local_only"}]},
++        )
++        os.environ["W3_ROOT"] = str(cfg.w3_root)
++        os.environ["PI_RACE_REFRESH_STATE_ROOT"] = str(cfg.race_refresh_state_root)
++        os.environ["W3_C4_QUEUE_PATH"] = str(cfg.c4_queue_path)
++        report = hist.run_historical_dry_run(cfg)
++        self.assertEqual(report["http_calls"], 0)
++        self.assertEqual(report["existing_w3_queue_by_year"]["2024"], EXISTING_W3)
++        self.assertEqual(report["existing_w3_queue_by_year"]["2025"], 0)
++        self.assertEqual(report["existing_w3_queue_by_year"]["2026"], 0)
++        self.assertGreaterEqual(report["planned_maiden_count"], 3)
++        self.assertIn("2024-01-08", report["unknown_days"])
++        self.assertGreater(report["unknown_day_count"], 0)
++        self.assertIn("not treated as 0 maidens", report["note"])
++
++    def test_live_http_switch_defaults_off(self) -> None:
++        os.environ.pop("W3W5_LIVE_HTTP", None)
++        self.assertNotEqual(os.environ.get("W3W5_LIVE_HTTP", "0"), "1")
++
++
++if __name__ == "__main__":
++    unittest.main()
