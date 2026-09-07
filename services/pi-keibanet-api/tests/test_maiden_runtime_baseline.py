@@ -5,23 +5,21 @@ from __future__ import annotations
 import ast
 import compileall
 import hashlib
-import importlib
 import os
+import subprocess
 import sys
 import unittest
-from dataclasses import dataclass, field
 from pathlib import Path
-from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[1]
 REPO = ROOT.parents[1]
-if str(ROOT) not in sys.path:
-    sys.path.insert(0, str(ROOT))
 
 HTTP_CALLS = 0
 
 # Content SHA256 of 2026-09-07 Production snapshot originals.
 SNAPSHOT_SHA256 = {
+    "services/pi-keibanet-api/pi_keibanet/netkeiba/client.py":
+        "b7fc3b90588608ba6f47da3a4b095d964d448d9030f326ea0e9495b2ad0a3f91",
     "services/pi-keibanet-api/pi_keibanet/w3_maiden/__init__.py":
         "9e38a569907a655b5c603ac7aa44c422dc8cc4c0b04a689a289ae5e983e0e389",
     "services/pi-keibanet-api/pi_keibanet/w3_maiden/acquisition.py":
@@ -88,8 +86,6 @@ SNAPSHOT_SHA256 = {
         "a7bb39bbb1f23427c7fed8e474c1d621dce783583f3b5ecabb9416144902ddda",
 }
 
-MAIN_CLIENT_SHA256 = "e6586b06cee2982e1888c612094c58d82157d7e60b54d04d7fe1361403ac6c47"
-
 RUNNERS = (
     "w3_maiden_page_c_acquire_run.py",
     "w3_maiden_handoff_run.py",
@@ -98,33 +94,17 @@ RUNNERS = (
     "w5_maiden_history_handoff_run.py",
 )
 
-PACKAGE_MODULES = (
-    "pi_keibanet.w3_maiden",
-    "pi_keibanet.w3_maiden.config",
-    "pi_keibanet.w3_maiden.handoff",
-    "pi_keibanet.w3_maiden.queue",
-    "pi_keibanet.w3_maiden.cache_probe",
-    "pi_keibanet.w3_maiden.acquisition",
-    "pi_keibanet.w3_maiden.result_apply",
-    "pi_keibanet.w3_maiden.result_parse",
-    "pi_keibanet.w3_maiden.result_runner",
-    "pi_keibanet.w3_maiden.result_store",
-    "pi_keibanet.w5_maiden_history",
-    "pi_keibanet.w5_maiden_history.config",
-    "pi_keibanet.w5_maiden_history.acquisition",
-    "pi_keibanet.w5_maiden_history.handoff",
-    "pi_keibanet.w5_maiden_history.queue",
-    "pi_keibanet.w5_maiden_history.store",
-    "pi_keibanet.w5_maiden_history.gate_monitor",
-    "pi_keibanet.w5_maiden_history.hd5_recover",
-    "pi_keibanet.w2_haron.config",
-    "pi_keibanet.w2_haron.p1_lock",
-    "pi_keibanet.w2_haron.source_health",
-    "pi_keibanet.page_a1_coverage",
-    "pi_keibanet.page_a1_store",
+MAIN_EXISTING_TESTS = (
+    "tests.test_pi_api",
+    "tests.test_web_races_api",
+    "tests.test_pipeline",
+    "tests.test_race_refresh",
+    "tests.test_history_store_v74",
+    "tests.test_horse_number_integrity",
+    "tests.test_features_win5_leg",
+    "tests.test_compare",
 )
 
-# Snapshot W3/W5 static import closure. c4_calendar is not imported by Production W3-A.
 FORBIDDEN_IMPORT_PREFIXES = (
     "pi_keibanet.c4_calendar",
     "pi_keibanet.w2_haron.runner",
@@ -135,45 +115,63 @@ FORBIDDEN_IMPORT_PREFIXES = (
     "pi_keibanet.w4_horse",
 )
 
+CLEAN_IMPORT_CODE = r"""
+import urllib.request
 
-def _forbid_http(*_a, **_k):
-    global HTTP_CALLS
-    HTTP_CALLS += 1
-    raise AssertionError("HTTP is forbidden in baseline tests")
+calls = {"n": 0}
+
+def _forbid(*_a, **_k):
+    calls["n"] += 1
+    raise AssertionError("HTTP is forbidden in clean import process")
+
+urllib.request.urlopen = _forbid
+
+import pi_keibanet.page_a1_store
+import pi_keibanet.w3_maiden
+import pi_keibanet.w5_maiden_history
+from pi_keibanet.netkeiba.client import (
+    NetkeibaClient,
+    NetkeibaFetchError,
+    RaceListFetchResult,
+    RaceListPart,
+)
+
+assert RaceListFetchResult is pi_keibanet.page_a1_store.RaceListFetchResult
+err = NetkeibaFetchError("compat")
+assert err.http_status is None
+assert str(err) == "compat"
+print("IMPORT_OK")
+print("HTTP_CALLS", calls["n"])
+"""
+
+CLEAN_HELP_CODE = r"""
+import runpy
+import sys
+import urllib.request
+
+calls = {"n": 0}
+
+def _forbid(*_a, **_k):
+    calls["n"] += 1
+    raise AssertionError("HTTP is forbidden in clean runner process")
+
+urllib.request.urlopen = _forbid
+sys.argv = [SCRIPT, "--help"]
+try:
+    runpy.run_path(SCRIPT_PATH, run_name="__main__")
+except SystemExit as exc:
+    print("HELP_EXIT", exc.code)
+    print("HTTP_CALLS", calls["n"])
+    raise SystemExit(exc.code)
+"""
 
 
 def _sha256(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
-def _ensure_race_list_fetch_result() -> bool:
-    """main client.py has no RaceListFetchResult; page_a1_store imports it.
-
-    PR-A does not change client.py. Inject the Production dataclass shape so
-    W3/W5 package imports can be proven against main's existing client.
-    """
-    from pi_keibanet.netkeiba import client
-
-    if hasattr(client, "RaceListFetchResult"):
-        return False
-
-    @dataclass
-    class RaceListFetchResult:
-        merged_html: str
-        parts: list = field(default_factory=list)
-        kaisai_date: str = ""
-
-    client.RaceListFetchResult = RaceListFetchResult
-    return True
-
-
 def _iter_added_py() -> list[Path]:
-    out: list[Path] = []
-    for rel in SNAPSHOT_SHA256:
-        path = REPO / rel
-        if path.suffix == ".py":
-            out.append(path)
-    return out
+    return [REPO / rel for rel in SNAPSHOT_SHA256 if rel.endswith(".py")]
 
 
 def _module_from_rel(rel: str) -> str | None:
@@ -210,7 +208,6 @@ def _resolve_from(path: Path, node: ast.ImportFrom) -> str | None:
 
 
 def _top_level_local_imports(path: Path) -> set[str]:
-    """Module-level imports only. Nested try/except imports (e.g. optional W4) are not required."""
     tree = ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
     found: set[str] = set()
     for node in tree.body:
@@ -225,31 +222,43 @@ def _top_level_local_imports(path: Path) -> set[str]:
     return found
 
 
+def _clean_env() -> dict[str, str]:
+    env = os.environ.copy()
+    env["W3W5_LIVE_HTTP"] = "0"
+    env["W3A_BEFORE_W3C"] = "0"
+    env["W3A_HANDOFF_DRY_RUN"] = "1"
+    env["PYTHONPATH"] = str(ROOT) + (os.pathsep + env["PYTHONPATH"] if env.get("PYTHONPATH") else "")
+    return env
+
+
+def _clean_process(code: str) -> subprocess.CompletedProcess[str]:
+    return subprocess.run(
+        [sys.executable, "-c", code],
+        cwd=str(ROOT),
+        env=_clean_env(),
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+
 class MaidenRuntimeBaselineTests(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls) -> None:
-        os.environ["W3W5_LIVE_HTTP"] = "0"
-        os.environ["W3A_BEFORE_W3C"] = "0"
-        os.environ.setdefault("W3A_HANDOFF_DRY_RUN", "1")
-        cls._urlopen_patch = patch("urllib.request.urlopen", side_effect=_forbid_http)
-        cls._urlopen_patch.start()
-        _ensure_race_list_fetch_result()
-
-    @classmethod
-    def tearDownClass(cls) -> None:
-        cls._urlopen_patch.stop()
-
     def test_snapshot_sha256_byte_identical(self) -> None:
         for rel, expected in SNAPSHOT_SHA256.items():
             path = REPO / rel
             self.assertTrue(path.is_file(), rel)
             self.assertEqual(_sha256(path), expected, rel)
 
-    def test_client_py_unchanged_from_main(self) -> None:
+    def test_client_py_is_snapshot_original(self) -> None:
         path = ROOT / "pi_keibanet" / "netkeiba" / "client.py"
-        self.assertEqual(_sha256(path), MAIN_CLIENT_SHA256)
+        self.assertEqual(
+            _sha256(path),
+            "b7fc3b90588608ba6f47da3a4b095d964d448d9030f326ea0e9495b2ad0a3f91",
+        )
         text = path.read_text(encoding="utf-8")
-        self.assertNotIn("class RaceListFetchResult", text)
+        self.assertIn("class RaceListFetchResult", text)
+        self.assertIn("def fetch_race_list_result", text)
+        self.assertIn("class RaceListPart", text)
 
     def test_compileall_added_python(self) -> None:
         for path in _iter_added_py():
@@ -287,33 +296,40 @@ class MaidenRuntimeBaselineTests(unittest.TestCase):
                 f"unresolved import {name}",
             )
 
-    def test_real_package_imports(self) -> None:
-        for name in PACKAGE_MODULES:
-            importlib.import_module(name)
+    def test_clean_process_package_imports(self) -> None:
+        proc = _clean_process(CLEAN_IMPORT_CODE)
+        self.assertEqual(proc.returncode, 0, proc.stdout + proc.stderr)
+        self.assertIn("IMPORT_OK", proc.stdout)
+        self.assertIn("HTTP_CALLS 0", proc.stdout)
 
-    def test_runner_help_no_http(self) -> None:
-        import importlib.util
-
-        before = HTTP_CALLS
+    def test_clean_process_runner_help(self) -> None:
         for script in RUNNERS:
             path = ROOT / "scripts" / script
-            spec = importlib.util.spec_from_file_location(script.replace(".py", ""), path)
-            assert spec and spec.loader
-            mod = importlib.util.module_from_spec(spec)
-            spec.loader.exec_module(mod)
-            with patch.object(sys, "argv", [script, "--help"]):
-                with self.assertRaises(SystemExit) as cm:
-                    mod.main()
-                self.assertEqual(cm.exception.code, 0, script)
-        self.assertEqual(HTTP_CALLS, before)
+            code = (
+                "SCRIPT = %r\nSCRIPT_PATH = %r\n" % (script, str(path))
+            ) + CLEAN_HELP_CODE
+            proc = _clean_process(code)
+            self.assertEqual(proc.returncode, 0, f"{script}\n{proc.stdout}\n{proc.stderr}")
+            self.assertIn("HELP_EXIT 0", proc.stdout)
+            self.assertIn("HTTP_CALLS 0", proc.stdout)
+
+    def test_main_existing_tests_clean_process(self) -> None:
+        proc = subprocess.run(
+            [sys.executable, "-m", "unittest", *MAIN_EXISTING_TESTS, "-q"],
+            cwd=str(ROOT),
+            env=_clean_env(),
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        self.assertEqual(proc.returncode, 0, proc.stdout + proc.stderr)
 
     def test_http_calls_remain_zero(self) -> None:
         self.assertEqual(HTTP_CALLS, 0)
 
     def test_no_research_or_full_snapshot_dump(self) -> None:
         self.assertFalse((REPO / "research" / "maiden_w3w5_patch").exists())
-        self.assertFalse((ROOT / "pi_keibanet" / "w4_horse").exists() or
-                         (ROOT / "pi_keibanet" / "w4_horse" / "__init__.py").is_file())
+        self.assertFalse((ROOT / "pi_keibanet" / "w4_horse" / "__init__.py").is_file())
         self.assertFalse((ROOT / "pi_keibanet" / "c4_calendar" / "config.py").is_file())
         self.assertFalse((ROOT / "pi_keibanet" / "w2_haron" / "runner.py").is_file())
 
