@@ -53,9 +53,35 @@ class HandoffReport:
     errors: list[str] = field(default_factory=list)
     queue_path: str = ""
     run_report_path: str = ""
+    dry_run: bool = False
+    queue_written: bool = False
+    supply_skipped_reason: str | None = None
+    c4_source_health_state: str | None = None
+    planned_new_race_ids: list[str] = field(default_factory=list)
+    enqueue_capped: bool = False
 
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)
+
+
+def _c4_page_a1_health_state(cfg: W3AConfig) -> str:
+    """Read-only raw C4 PAGE-A1 health state. Does not create or rewrite the file."""
+    from ..c4_calendar.config import C4Config
+
+    c4 = C4Config.from_env(data_root=cfg.data_root)
+    path = c4.health_path
+    if not path.is_file():
+        return "UNAVAILABLE"
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return "UNAVAILABLE"
+    if not isinstance(data, dict):
+        return "UNKNOWN"
+    raw = data.get("state")
+    if raw is None or str(raw).strip() == "":
+        return "UNKNOWN"
+    return str(raw)
 
 
 def _is_race_day_complete(index: dict[str, Any] | None) -> bool:
@@ -143,14 +169,24 @@ def run_w3a_handoff(cfg: W3AConfig) -> HandoffReport:
         started_at=_utc_iso(),
         enabled=cfg.enabled,
         queue_path=str(cfg.queue_path),
+        dry_run=bool(cfg.w3a_handoff_dry_run),
     )
     if not cfg.enabled:
         report.finished_at = _utc_iso()
         report.errors.append("W3A_ENABLED=0")
         return report
 
-    cfg.w3_root.mkdir(parents=True, exist_ok=True)
-    cfg.runs_dir.mkdir(parents=True, exist_ok=True)
+    report.c4_source_health_state = _c4_page_a1_health_state(cfg)
+    if report.c4_source_health_state != "HEALTHY":
+        report.supply_skipped_reason = f"c4_not_healthy:{report.c4_source_health_state}"
+        report.finished_at = _utc_iso()
+        report.http_request_count = 0
+        report.queue_written = False
+        return report
+
+    if not cfg.w3a_handoff_dry_run:
+        cfg.w3_root.mkdir(parents=True, exist_ok=True)
+        cfg.runs_dir.mkdir(parents=True, exist_ok=True)
 
     complete_dates = _discover_complete_dates(
         cfg.race_refresh_state_root, cfg.c4_queue_path
@@ -264,6 +300,19 @@ def run_w3a_handoff(cfg: W3AConfig) -> HandoffReport:
             }
 
             existing = rows.get(rid)
+            if existing is not None:
+                # Do not rewrite existing rows (including result_complete).
+                report.maidens_refreshed += 1
+                continue
+
+            if len(report.planned_new_race_ids) >= cfg.w3a_max_enqueue_per_run:
+                report.enqueue_capped = True
+                continue
+
+            report.planned_new_race_ids.append(rid)
+            if cfg.w3a_handoff_dry_run:
+                continue
+
             merged, action = merge_row(existing, incoming)
             rows[rid] = merged
             if action == "inserted":
@@ -271,7 +320,9 @@ def run_w3a_handoff(cfg: W3AConfig) -> HandoffReport:
             else:
                 report.maidens_refreshed += 1
 
-    save_queue(cfg.queue_path, rows)
+    if (not cfg.w3a_handoff_dry_run) and report.planned_new_race_ids:
+        save_queue(cfg.queue_path, rows)
+        report.queue_written = True
     stats = queue_stats(rows)
     report.queue_rows_total = len(rows)
     report.queue_status_counts = stats
@@ -280,8 +331,9 @@ def run_w3a_handoff(cfg: W3AConfig) -> HandoffReport:
     report.finished_at = _utc_iso()
     report.http_request_count = 0  # hard guarantee for W3-A
 
-    stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
-    run_path = cfg.runs_dir / f"w3a_handoff_{stamp}.json"
-    write_run_report(run_path, report.to_dict())
-    report.run_report_path = str(run_path)
+    if not cfg.w3a_handoff_dry_run:
+        stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+        run_path = cfg.runs_dir / f"w3a_handoff_{stamp}.json"
+        write_run_report(run_path, report.to_dict())
+        report.run_report_path = str(run_path)
     return report

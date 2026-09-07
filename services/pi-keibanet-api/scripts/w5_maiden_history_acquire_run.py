@@ -59,6 +59,10 @@ def main() -> int:
     cfg = W5Config.from_env(data_root=Path(args.data_root) if args.data_root else None)
     if args.w5_root:
         cfg.w5_root = Path(args.w5_root)
+    # Fail-closed live HTTP. W3W5_LIVE_HTTP default 0; Production units do not set it.
+    # Turning real HTTP on is a later phase, after a Global HTTP budget exists.
+    if os.environ.get("W3W5_LIVE_HTTP", "0") not in ("1", "true", "True"):
+        cfg.fetch_enabled = False
     if args.dry_run:
         cfg.dry_run = True
         cfg.fetch_enabled = False
@@ -101,11 +105,22 @@ def main() -> int:
         "state_path": str(cfg.w5_root / "gate_monitor_state.json"),
     }
     print(json.dumps(out, ensure_ascii=False, indent=2))
+    if gate.reevaluation_ready:
+        # Visibility only — do not fail systemd for a research gate.
+        print(
+            json.dumps(
+                {
+                    "alert": "PHASE2_REEVALUATION_GATE",
+                    "reevaluation_ready": True,
+                    "cohort_acquisition_complete": gate.cohort_acquisition_complete,
+                },
+                ensure_ascii=False,
+            )
+        )
     if report.stopped_block:
         return 2
-    if gate.reevaluation_ready:
-        # Non-zero for operator visibility; acquisition itself is not stopped.
-        return 3
+    if report.fetch_failed > 0:
+        return 4
     return 0
 
 

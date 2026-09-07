@@ -30,8 +30,15 @@ from .config import W5Config
 from .queue import load_queue, queue_stats, save_queue, write_run_report
 from .store import load_by_horse, upsert_horse_history
 
-BLOCK_HTTP_STATUSES = frozenset({400, 403, 429})
+PERMANENT_HTTP_STATUSES = frozenset({400, 401, 403, 404})
+RETRYABLE_TIMEOUT_CODES = frozenset({"TimeoutError", "ReadTimeout", "ConnectTimeout"})
 LogFn = Callable[[str], None]
+
+
+def _is_retryable_http_status(status: int) -> bool:
+    if status == 429:
+        return True
+    return 500 <= status <= 599
 
 
 def _utc_now() -> datetime:
@@ -136,6 +143,38 @@ class AcquireReport:
             self.stop_reason = "completed"
 
 
+def _is_retryable_fetch_failed(
+    row: dict[str, Any],
+    *,
+    now: datetime,
+    max_attempts: int,
+) -> bool:
+    if str(row.get("queue_status") or "") != "fetch_failed":
+        return False
+    if int(row.get("attempt_count") or 0) >= max_attempts:
+        return False
+    nxt = _parse_iso(row.get("next_eligible_at"))
+    if nxt is None or now < nxt:
+        return False
+    code = str(row.get("error_code") or "")
+    if code in RETRYABLE_TIMEOUT_CODES:
+        return True
+    if code.startswith("HTTP_"):
+        try:
+            status = int(code.split("_", 1)[1])
+        except ValueError:
+            return False
+        return _is_retryable_http_status(status)
+    return False
+
+
+def _is_pending_eligible(row: dict[str, Any], *, now: datetime) -> bool:
+    if str(row.get("queue_status") or "") != "pending":
+        return False
+    nxt = _parse_iso(row.get("next_eligible_at"))
+    return nxt is None or now >= nxt
+
+
 def select_pending(
     rows: dict[str, dict[str, Any]],
     *,
@@ -145,12 +184,35 @@ def select_pending(
     now = now or _utc_now()
     out: list[str] = []
     for hid, row in sorted(rows.items(), key=lambda kv: (str(kv[1].get("created_at") or ""), kv[0])):
-        if str(row.get("queue_status") or "") != "pending":
-            continue
-        nxt = _parse_iso(row.get("next_eligible_at"))
-        if nxt is not None and now < nxt:
+        if not _is_pending_eligible(row, now=now):
             continue
         out.append(hid)
+        if len(out) >= max_horses:
+            break
+    return out
+
+
+def select_eligible(
+    rows: dict[str, dict[str, Any]],
+    *,
+    max_horses: int,
+    now: datetime | None = None,
+    retry_fetch_failed: bool = False,
+    max_attempts: int = 3,
+) -> list[str]:
+    """Select pending, and optionally retryable fetch_failed. Never complete."""
+    now = now or _utc_now()
+    out: list[str] = []
+    for hid, row in sorted(rows.items(), key=lambda kv: (str(kv[1].get("created_at") or ""), kv[0])):
+        status = str(row.get("queue_status") or "")
+        if status == "complete":
+            continue
+        if _is_pending_eligible(row, now=now):
+            out.append(hid)
+        elif retry_fetch_failed and _is_retryable_fetch_failed(
+            row, now=now, max_attempts=max_attempts
+        ):
+            out.append(hid)
         if len(out) >= max_horses:
             break
     return out
@@ -299,10 +361,30 @@ def run_w5_acquire(
         return report
 
     if horse_ids:
-        candidates = [h for h in horse_ids if h in rows and rows[h].get("queue_status") == "pending"]
-        candidates = candidates[: cfg.max_horses_per_run]
+        candidates = []
+        for hid in horse_ids:
+            if hid not in rows:
+                continue
+            row = rows[hid]
+            if str(row.get("queue_status") or "") == "complete":
+                continue
+            if _is_pending_eligible(row, now=started) or (
+                cfg.retry_fetch_failed
+                and _is_retryable_fetch_failed(
+                    row, now=started, max_attempts=cfg.max_attempts_per_horse
+                )
+            ):
+                candidates.append(hid)
+            if len(candidates) >= cfg.max_horses_per_run:
+                break
     else:
-        candidates = select_pending(rows, max_horses=cfg.max_horses_per_run, now=started)
+        candidates = select_eligible(
+            rows,
+            max_horses=cfg.max_horses_per_run,
+            now=started,
+            retry_fetch_failed=cfg.retry_fetch_failed,
+            max_attempts=cfg.max_attempts_per_horse,
+        )
     report.candidate_horses = len(candidates)
     if not candidates:
         report.queue_stats = queue_stats(rows)
@@ -374,7 +456,7 @@ def run_w5_acquire(
             except NetkeibaFetchError as exc:
                 report.http_request_count += 1
                 status = _extract_http_status(exc)
-                if status in BLOCK_HTTP_STATUSES:
+                if status in PERMANENT_HTTP_STATUSES:
                     row["queue_status"] = "blocked"
                     row["error_code"] = f"HTTP_{status}"
                     row["error_reason"] = str(exc)[:300]
@@ -424,6 +506,9 @@ def run_w5_acquire(
                 row["queue_status"] = "fetch_failed"
                 row["error_code"] = type(exc).__name__
                 row["error_reason"] = str(exc)[:300]
+                row["next_eligible_at"] = _iso(
+                    _utc_now() + timedelta(seconds=cfg.fetch_failed_cooldown_sec)
+                )
                 report.fetch_failed += 1
                 consecutive += 1
                 report.errors.append(f"{hid}:{type(exc).__name__}")
