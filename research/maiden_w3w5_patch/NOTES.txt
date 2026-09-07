@@ -3,22 +3,11 @@ ZIP SHA256 MATCH: 27e730218fe0a25220377ecc7b33cb49b5ac36eb53329dba63c01c8e229eb2
 READONLY original was not modified. Implementation is on the work copy only.
 PRODUCTION_APPLY_READY=NO
 
-Changed (work copy):
-- pi_keibanet/w3_maiden/config.py
-- pi_keibanet/w3_maiden/handoff.py
-- scripts/w3_maiden_page_c_acquire_run.py
-- pi_keibanet/w5_maiden_history/config.py
-- pi_keibanet/w5_maiden_history/acquisition.py
-- scripts/w5_maiden_history_acquire_run.py
-New:
-- scripts/w5_fetch_failed_retry_migrate.py
-- scripts/w3_maiden_historical_dry_run.py
-- tests/test_maiden_w3w5_staging_patch.py
+Third-party review package:
+  /workspace/tmp/maiden-patch-review-20260907/
+  (not committed; download the ZIP artifact)
 
-Tests: 11 passed. HTTP_CALLS_DURING_TEST=0
+Tests: 22 passed. HTTP_CALLS_DURING_TEST=0
 W3 first-enqueue planned count from this ZIP: null (no var/ listed_races)
 W5 migrate planned count on fixtures: 3
-W3 existing 59 result_complete unchanged in tests
-W5 835 complete unchanged in tests
-W4 pedigree writes: 0
 systemd units: unchanged

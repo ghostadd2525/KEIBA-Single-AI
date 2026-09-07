@@ -646,8 +646,8 @@
 +if __name__ == "__main__":
 +    sys.exit(main())
 --- /dev/null	2026-09-04 20:40:21.977280133 +0000
-+++ /workspace/tmp/maiden-prod-work-20260907/services/pi-keibanet-api/tests/test_maiden_w3w5_staging_patch.py	2026-09-07 12:09:29.147847979 +0000
-@@ -0,0 +1,494 @@
++++ /workspace/tmp/maiden-prod-work-20260907/services/pi-keibanet-api/tests/test_maiden_w3w5_staging_patch.py	2026-09-07 12:15:14.876098202 +0000
+@@ -0,0 +1,746 @@
 +# -*- coding: utf-8 -*-
 +"""Offline staging tests for the W3-A / W5 maiden patch (HTTP forbidden)."""
 +from __future__ import annotations
@@ -1138,6 +1138,258 @@
 +    def test_live_http_switch_defaults_off(self) -> None:
 +        os.environ.pop("W3W5_LIVE_HTTP", None)
 +        self.assertNotEqual(os.environ.get("W3W5_LIVE_HTTP", "0"), "1")
++
++    def test_w3w5_live_http_zero_fail_closes_w3c_and_w5(self) -> None:
++        os.environ.pop("W3W5_LIVE_HTTP", None)
++        os.environ["W3C_FETCH_ENABLED"] = "1"
++        os.environ["W5_FETCH_ENABLED"] = "1"
++        w3 = _load_script("w3_maiden_page_c_acquire_run.py")
++        w5 = _load_script("w5_maiden_history_acquire_run.py")
++        cfg3 = _w3_cfg(self.tmp, w3c_fetch_enabled=True)
++        cfg5 = _w5_cfg(self.tmp, fetch_enabled=True)
++        from pi_keibanet.w3_maiden.acquisition import AcquireReport as W3Rep
++        from pi_keibanet.w5_maiden_history.acquisition import AcquireReport as W5Rep
++        from pi_keibanet.w5_maiden_history.gate_monitor import GateMonitorState
++
++        with patch.object(w3, "W3AConfig") as c3, patch.object(
++            w3, "run_w3c_acquire", return_value=W3Rep()
++        ), patch.object(w3, "_unit_busy", return_value=False), patch.object(
++            sys, "argv", ["w3", "--data-root", str(cfg3.data_root)]
++        ):
++            c3.from_env.return_value = cfg3
++            self.assertEqual(w3.main(), 0)
++        self.assertFalse(cfg3.w3c_fetch_enabled)
++
++        with patch.object(w5, "W5Config") as c5, patch.object(
++            w5, "run_w5_acquire", return_value=W5Rep(fetch_failed=0)
++        ), patch.object(w5, "run_w5_handoff"), patch.object(
++            w5, "update_gate_monitor", return_value=GateMonitorState()
++        ), patch.object(w5, "_busy", return_value=False), patch.object(
++            sys, "argv", ["w5", "--data-root", str(cfg5.data_root)]
++        ):
++            c5.from_env.return_value = cfg5
++            self.assertEqual(w5.main(), 0)
++        self.assertFalse(cfg5.fetch_enabled)
++
++    def test_w3a_dry_run_zero_writes(self) -> None:
++        cfg = _w3_cfg(self.tmp, w3a_handoff_dry_run=True, w3a_max_enqueue_per_run=2)
++        _seed_w3_world(cfg, self.tmp)
++        root = self.tmp / "data"
++
++        def snap() -> dict[str, str]:
++            out: dict[str, str] = {}
++            for p in sorted(root.rglob("*")):
++                if p.is_file():
++                    out[str(p.relative_to(root))] = _sha256(p)
++            return out
++
++        before = snap()
++        report = run_w3a_handoff(cfg)
++        after = snap()
++        self.assertTrue(report.dry_run)
++        self.assertFalse(report.queue_written)
++        self.assertEqual(report.run_report_path, "")
++        self.assertEqual(list(cfg.runs_dir.glob("w3a_handoff_*.json")) if cfg.runs_dir.exists() else [], [])
++        self.assertEqual(before, after)
++
++    def test_w3a_apply_keeps_existing_row_bytes(self) -> None:
++        cfg = _w3_cfg(self.tmp, w3a_handoff_dry_run=False, w3a_max_enqueue_per_run=2)
++        _seed_w3_world(cfg, self.tmp)
++
++        def lines_by_id(path: Path) -> dict[str, str]:
++            out: dict[str, str] = {}
++            for line in path.read_text(encoding="utf-8").splitlines():
++                rec = json.loads(line)
++                out[str(rec["race_id"])] = line
++            return out
++
++        before = lines_by_id(cfg.queue_path)
++        self.assertEqual(len(before), EXISTING_W3)
++        report = run_w3a_handoff(cfg)
++        after = lines_by_id(cfg.queue_path)
++        self.assertTrue(report.queue_written)
++        for rid, line in before.items():
++            self.assertEqual(after[rid], line)
++        self.assertEqual(len(after), EXISTING_W3 + 2)
++
++    def test_w3a_cap_scan_order_is_deterministic(self) -> None:
++        planned = []
++        for _ in range(5):
++            tmp = Path(tempfile.mkdtemp(dir=self.tmp))
++            os.environ["C4_ROOT"] = str(tmp / "data" / "var" / "c4_calendar")
++            cfg = _w3_cfg(tmp, w3a_handoff_dry_run=True, w3a_max_enqueue_per_run=2)
++            _seed_w3_world(cfg, tmp)
++            planned.append(run_w3a_handoff(cfg).planned_new_race_ids)
++        self.assertTrue(all(p == ["202506010101", "202506010102"] for p in planned))
++
++    def test_c4_health_path_matches_production_contract(self) -> None:
++        from pi_keibanet.c4_calendar.config import C4Config
++        from pi_keibanet.w3_maiden.handoff import _c4_page_a1_health_state
++
++        os.environ.pop("C4_ROOT", None)
++        data = Path("/opt/expect-ai/platform/data")
++        c4 = C4Config.from_env(data_root=data)
++        self.assertEqual(
++            str(c4.health_path),
++            "/opt/expect-ai/platform/data/var/c4_calendar/source_health_netkeiba_page_a1.json",
++        )
++        cfg = _w3_cfg(self.tmp)
++        os.environ["C4_ROOT"] = str(self.tmp / "data" / "var" / "c4_calendar")
++        _write_c4_health(self.tmp, "HEALTHY")
++        self.assertEqual(_c4_page_a1_health_state(cfg), "HEALTHY")
++
++    def test_w5_attempt_count_single_increment_on_exception_and_http(self) -> None:
++        from pi_keibanet.netkeiba.client import NetkeibaFetchError
++        from pi_keibanet.w5_maiden_history import acquisition as acq
++
++        cfg = _w5_cfg(
++            self.tmp,
++            fetch_enabled=True,
++            retry_fetch_failed=True,
++            max_horses_per_run=1,
++            fetch_failed_cooldown_sec=3600,
++            cooldown_seconds=86400,
++        )
++        cfg.w5_root.mkdir(parents=True, exist_ok=True)
++        frozen = datetime(2026, 9, 7, 12, 0, tzinfo=timezone.utc)
++
++        def run_one(hid: str, exc: BaseException) -> dict:
++            rec = w5_empty_row(horse_id=hid, source="fixture")
++            rec["attempt_count"] = 1
++            w5_save_queue(cfg.queue_path, {hid: rec})
++            with patch.object(acq, "fetch_horse_history", side_effect=exc), patch.object(
++                acq, "_utc_now", return_value=frozen
++            ):
++                run_w5_acquire(
++                    cfg,
++                    client=ForbiddenClient(min_interval_sec=0),
++                    horse_ids=[hid],
++                    now=frozen,
++                )
++            return w5_load_queue(cfg.queue_path)[hid]
++
++        timeout = run_one("2021000001", TimeoutError("x"))
++        self.assertEqual(timeout["attempt_count"], 2)
++        self.assertEqual(timeout["queue_status"], "fetch_failed")
++        self.assertEqual(timeout["next_eligible_at"], "2026-09-07T13:00:00Z")
++
++        http500 = run_one("2021000002", NetkeibaFetchError("HTTP 500", http_status=500))
++        self.assertEqual(http500["attempt_count"], 2)
++        self.assertEqual(http500["queue_status"], "fetch_failed")
++        self.assertEqual(http500["error_code"], "HTTP_500")
++        self.assertEqual(http500["next_eligible_at"], "2026-09-07T13:00:00Z")
++
++        http403 = run_one("2021000003", NetkeibaFetchError("HTTP 403", http_status=403))
++        self.assertEqual(http403["attempt_count"], 2)
++        self.assertEqual(http403["queue_status"], "blocked")
++        self.assertEqual(http403["next_eligible_at"], "2026-09-08T12:00:00Z")
++
++    def test_w5_retry_stops_at_max_three_attempts(self) -> None:
++        now = datetime(2026, 9, 7, 12, 0, tzinfo=timezone.utc)
++        past = "2026-09-07T11:00:00Z"
++        hid = "2021107235"
++        row = {
++            "queue_status": "fetch_failed",
++            "error_code": "TimeoutError",
++            "attempt_count": 2,
++            "next_eligible_at": past,
++            "created_at": "1",
++        }
++        self.assertEqual(
++            select_eligible({hid: row}, max_horses=10, now=now, retry_fetch_failed=True, max_attempts=3),
++            [hid],
++        )
++        cfg = _w5_cfg(self.tmp, fetch_enabled=True, retry_fetch_failed=True, max_horses_per_run=1)
++        cfg.w5_root.mkdir(parents=True, exist_ok=True)
++        rec = w5_empty_row(horse_id=hid, source="fixture")
++        rec.update(row)
++        w5_save_queue(cfg.queue_path, {hid: rec})
++        with patch(
++            "pi_keibanet.w5_maiden_history.acquisition.fetch_horse_history",
++            side_effect=TimeoutError("again"),
++        ):
++            run_w5_acquire(cfg, client=ForbiddenClient(min_interval_sec=0), horse_ids=[hid], now=now)
++        after = w5_load_queue(cfg.queue_path)[hid]
++        self.assertEqual(after["attempt_count"], 3)
++        self.assertEqual(
++            select_eligible(
++                {hid: after},
++                max_horses=10,
++                now=now + timedelta(hours=2),
++                retry_fetch_failed=True,
++                max_attempts=3,
++            ),
++            [],
++        )
++
++    def test_next_eligible_at_uses_datetime_not_string(self) -> None:
++        from pi_keibanet.w5_maiden_history.acquisition import _is_retryable_fetch_failed
++
++        now = datetime(2026, 9, 7, 6, 0, tzinfo=timezone.utc)
++        row = {
++            "queue_status": "fetch_failed",
++            "error_code": "TimeoutError",
++            "attempt_count": 1,
++            "next_eligible_at": "2026-09-07T12:30:00+09:00",
++        }
++        self.assertTrue(_is_retryable_fetch_failed(row, now=now, max_attempts=3))
++        now_s = now.strftime("%Y-%m-%dT%H:%M:%SZ")
++        nxt_s = row["next_eligible_at"]
++        self.assertLess(now_s, nxt_s)
++
++    def test_w5_runner_exit4_is_this_run_only(self) -> None:
++        runner = _load_script("w5_maiden_history_acquire_run.py")
++        from pi_keibanet.w5_maiden_history.acquisition import AcquireReport
++        from pi_keibanet.w5_maiden_history.gate_monitor import GateMonitorState
++
++        cfg = _w5_cfg(self.tmp)
++        gate = GateMonitorState(reevaluation_ready=False)
++        queued_fail = AcquireReport(fetch_failed=0)
++        this_run_fail = AcquireReport(fetch_failed=1)
++        with patch.object(runner, "W5Config") as cfg_cls, patch.object(
++            runner, "run_w5_handoff"
++        ), patch.object(runner, "update_gate_monitor", return_value=gate), patch.object(
++            runner, "_busy", return_value=False
++        ):
++            cfg_cls.from_env.return_value = cfg
++            with patch.object(runner, "run_w5_acquire", return_value=queued_fail), patch.object(
++                sys, "argv", ["w5", "--data-root", str(cfg.data_root)]
++            ):
++                self.assertEqual(runner.main(), 0)
++            with patch.object(runner, "run_w5_acquire", return_value=this_run_fail), patch.object(
++                sys, "argv", ["w5", "--data-root", str(cfg.data_root)]
++            ):
++                self.assertEqual(runner.main(), 4)
++
++    def test_w3a_before_w3c_unset_keeps_old_behavior(self) -> None:
++        runner = _load_script("w3_maiden_page_c_acquire_run.py")
++        os.environ.pop("W3A_BEFORE_W3C", None)
++        cfg = _w3_cfg(self.tmp)
++        from pi_keibanet.w3_maiden.acquisition import AcquireReport
++
++        with patch.object(runner, "W3AConfig") as cfg_cls, patch.object(
++            runner, "run_w3a_handoff"
++        ) as handoff, patch.object(
++            runner, "run_w3c_acquire", return_value=AcquireReport()
++        ), patch.object(runner, "_unit_busy", return_value=False), patch.object(
++            sys, "argv", ["w3", "--data-root", str(cfg.data_root)]
++        ):
++            cfg_cls.from_env.return_value = cfg
++            self.assertEqual(runner.main(), 0)
++        handoff.assert_not_called()
++
++    def test_w5_fetch_disabled_does_not_call_http(self) -> None:
++        cfg = _w5_cfg(self.tmp, fetch_enabled=False)
++        rec = w5_empty_row(horse_id="2021999998", source="fixture")
++        cfg.w5_root.mkdir(parents=True, exist_ok=True)
++        w5_save_queue(cfg.queue_path, {rec["horse_id"]: rec})
++        with patch(
++            "pi_keibanet.w5_maiden_history.acquisition.fetch_horse_history",
++            side_effect=_forbid_http,
++        ) as fetch:
++            report = run_w5_acquire(cfg, client=ForbiddenClient(min_interval_sec=0))
++        fetch.assert_not_called()
++        self.assertEqual(report.http_request_count, 0)
 +
 +
 +if __name__ == "__main__":
