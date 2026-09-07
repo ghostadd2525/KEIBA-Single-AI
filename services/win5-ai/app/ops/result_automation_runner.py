@@ -23,6 +23,10 @@ if str(ROOT) not in sys.path:
 
 from app.data import db as app_db
 from app.ops import state_machine as sm
+from app.ops.netkeiba_results import (
+    NO_MEETING,
+    classify_pi_race_catalog,
+)
 from app.ops.result_automation import get_result_automation
 from app.ops.run_recovery import fail_orphan_active_runs
 from app.ops import ra_cadence
@@ -98,6 +102,31 @@ def recover_orphan_runs() -> list[dict]:
     return fail_orphan_active_runs(reason="orphan_active_on_startup")
 
 
+def _local_idle_for_no_meeting(race_date: str) -> dict:
+    local = ra_cadence.count_unsettled_races(race_date)
+    return {
+        "idle": int(local.get("predictions") or 0) == 0
+        and int(local.get("results") or 0) == 0,
+        "unsettled": local,
+    }
+
+
+def _noop_no_meeting(race_date: str, *, reason_extra: str | None = None, **extra) -> dict:
+    payload = {
+        "status": "skipped",
+        "run_status": "NOOP",
+        "race_date": race_date,
+        "reason": "NO_MEETING",
+        "catalog_state": NO_MEETING,
+        "expected_race_ids": [],
+        "result_sync": False,
+    }
+    if reason_extra:
+        payload["reason_extra"] = reason_extra
+    payload.update(extra)
+    return payload
+
+
 def run_auto() -> list[dict]:
     """
     Scheduler modes:
@@ -124,49 +153,74 @@ def run_auto() -> list[dict]:
     mode = os_environ("EXPECT_RA_AUTO_MODE", "all")  # post|morning|recovery|all
 
     if mode in ("post", "all") and (not days or today in days):
-        is_race_day = (not days) or (today in days)
-        decision = ra_cadence.decide_today_run(today, is_race_day=is_race_day)
-        results.append(
-            {
-                "status": "cadence",
-                "run_status": "CADENCE",
-                "decision": decision,
-            }
-        )
-        if decision.get("run"):
-            out = svc.run(today, trigger=sm.TRIGGER_SCHEDULED, force=True)
-            ra_cadence.mark_ran(
-                today,
-                {
-                    "run_status": out.get("run_status"),
-                    "reason": decision.get("reason"),
-                    "cadence": decision.get("cadence"),
-                },
+        catalog = classify_pi_race_catalog(today)
+        local = _local_idle_for_no_meeting(today)
+        if catalog.get("state") == NO_MEETING and local["idle"]:
+            results.append(
+                _noop_no_meeting(
+                    today,
+                    reason_extra="post_idle",
+                    unsettled=local["unsettled"],
+                    catalog_count=catalog.get("count") or 0,
+                )
             )
-            results.append(out)
         else:
+            is_race_day = (not days) or (today in days)
+            decision = ra_cadence.decide_today_run(today, is_race_day=is_race_day)
             results.append(
                 {
-                    "status": "skipped",
-                    "run_status": "SKIPPED",
-                    "race_date": today,
-                    "reason": decision.get("reason"),
-                    "cadence": decision.get("cadence"),
-                    "unsettled": decision.get("unsettled"),
+                    "status": "cadence",
+                    "run_status": "CADENCE",
+                    "decision": decision,
+                    "catalog_state": catalog.get("state"),
                 }
             )
+            if decision.get("run"):
+                out = svc.run(today, trigger=sm.TRIGGER_SCHEDULED, force=True)
+                ra_cadence.mark_ran(
+                    today,
+                    {
+                        "run_status": out.get("run_status"),
+                        "reason": decision.get("reason"),
+                        "cadence": decision.get("cadence"),
+                    },
+                )
+                results.append(out)
+            else:
+                results.append(
+                    {
+                        "status": "skipped",
+                        "run_status": "SKIPPED",
+                        "race_date": today,
+                        "reason": decision.get("reason"),
+                        "cadence": decision.get("cadence"),
+                        "unsettled": decision.get("unsettled"),
+                    }
+                )
 
     if mode in ("morning", "all") and (not days or yesterday in days):
         if not _has_terminal_success(yesterday):
-            parent = _latest_failed_parent(yesterday)
-            results.append(
-                svc.run(
-                    yesterday,
-                    trigger=sm.TRIGGER_RETRY if parent else sm.TRIGGER_SCHEDULED,
-                    parent_run_id=parent,
-                    force=True,
+            catalog = classify_pi_race_catalog(yesterday)
+            local = _local_idle_for_no_meeting(yesterday)
+            if catalog.get("state") == NO_MEETING and local["idle"]:
+                results.append(
+                    _noop_no_meeting(
+                        yesterday,
+                        reason_extra="morning_idle",
+                        unsettled=local["unsettled"],
+                        catalog_count=catalog.get("count") or 0,
+                    )
                 )
-            )
+            else:
+                parent = _latest_failed_parent(yesterday)
+                results.append(
+                    svc.run(
+                        yesterday,
+                        trigger=sm.TRIGGER_RETRY if parent else sm.TRIGGER_SCHEDULED,
+                        parent_run_id=parent,
+                        force=True,
+                    )
+                )
 
     if mode in ("recovery", "all"):
         # OPS-Monitor recovery: retry most recent FAILED date
@@ -182,14 +236,27 @@ def run_auto() -> list[dict]:
         finally:
             conn.close()
         if row:
-            results.append(
-                svc.run(
-                    row["race_date"],
-                    trigger=sm.TRIGGER_RETRY,
-                    parent_run_id=int(row["id"]),
-                    force=True,
+            failed_date = str(row["race_date"])
+            catalog = classify_pi_race_catalog(failed_date)
+            if catalog.get("state") == NO_MEETING:
+                results.append(
+                    _noop_no_meeting(
+                        failed_date,
+                        reason_extra="recovery_no_meeting",
+                        parent_run_id=int(row["id"]),
+                        recovery_skipped=True,
+                        catalog_count=catalog.get("count") or 0,
+                    )
                 )
-            )
+            else:
+                results.append(
+                    svc.run(
+                        failed_date,
+                        trigger=sm.TRIGGER_RETRY,
+                        parent_run_id=int(row["id"]),
+                        force=True,
+                    )
+                )
 
     return results
 

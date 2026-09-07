@@ -154,7 +154,8 @@ class NetkeibaResultProvider(ResultProvider):
 
         catalog = fetch_pi_race_catalog(race_date)
         if not catalog:
-            raise NetkeibaResultError(f"PI catalog empty for {race_date}")
+            # Successful empty catalog = no meeting that day. Not a sync failure.
+            return []
 
         rows: list[RaceResultRow] = []
         errors: list[str] = []
