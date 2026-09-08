@@ -1,0 +1,14 @@
+# /etc/systemd/system/expect-w4-horse-d1d2.timer
+# Owner-approved: incremental bounded D1/D2 only. Never bulk-fetch remaining pending.
+[Unit]
+Description=Expect W4 timer — Bounded incremental horse D1/D2 RAW acquisition
+
+[Timer]
+# Offset from W2 (:30), C4 (:20/:50), W3-C (:05/:35). Lowest priority; yields at runtime.
+# Bounded: max_horses_per_run=2. Manual bulk forbidden.
+OnCalendar=*-*-* *:25/30:00
+Persistent=false
+AccuracySec=1min
+
+[Install]
+WantedBy=timers.target
