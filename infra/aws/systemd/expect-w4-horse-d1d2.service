@@ -1,0 +1,35 @@
+# /etc/systemd/system/expect-w4-horse-d1d2.service
+# Owner-approved scheduled incremental D1/D2 RAW acquisition (Research only).
+[Unit]
+Description=Expect W4 — Bounded incremental horse D1/D2 RAW acquisition (Research only)
+After=network-online.target expect-pi-race-refresh.service expect-w2-haron-shadow.service expect-c4-page-a1-calendar.service expect-w3c-page-c-maiden.service
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=ubuntu
+Group=ubuntu
+WorkingDirectory=/home/ubuntu/KEIBA-Single-AI/services/pi-keibanet-api
+Environment=PI_DATA_ROOT=/opt/expect-ai/platform/data
+Environment=PI_RACE_REFRESH_STATE_ROOT=/opt/expect-ai/platform/data/var/race_refresh
+Environment=W3_ROOT=/opt/expect-ai/platform/data/var/w3_maiden
+Environment=W4_ROOT=/opt/expect-ai/platform/data/var/w4_horse
+Environment=W4A_ENABLED=1
+Environment=W4CD_ENABLED=1
+Environment=W4CD_FETCH_ENABLED=1
+Environment=W4_MAX_HORSES_PER_RUN=2
+Environment=W4_MAX_REQUESTS_PER_RUN=4
+Environment=W4_MAX_RUNTIME_SEC=120
+Environment=W4_MAX_CONSECUTIVE_FAILURES=3
+Environment=W4_STOP_ON_BLOCK=1
+Environment=W4_COOLDOWN_SECONDS=86400
+Environment=W4_MIN_INTERVAL_SEC=1.0
+# Priority yield units (runtime systemctl is-active checks)
+Environment=W4_W2_UNIT=expect-w2-haron-shadow.service
+Environment=W4_C4_UNIT=expect-c4-page-a1-calendar.service
+Environment=W4_W3C_UNIT=expect-w3c-page-c-maiden.service
+# Rollback: W4CD_ENABLED=0 or systemctl disable --now expect-w4-horse-d1d2.timer
+ExecStart=/usr/bin/python3 scripts/w4_horse_d1d2_acquire_run.py
+
+[Install]
+WantedBy=multi-user.target

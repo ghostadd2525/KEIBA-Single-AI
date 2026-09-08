@@ -1,2 +1,7 @@
 # Auto detect text files and perform LF normalization
 * text=auto
+
+# Production snapshot 2026-09-07: keep exact bytes (W2 runner is CRLF on EC2).
+# whitespace flags only suppress git diff --check on snapshot-original endings.
+services/pi-keibanet-api/pi_keibanet/w2_haron/runner.py -text whitespace=-trailing-space,-cr-at-eol
+services/pi-keibanet-api/pi_keibanet/w4_horse/d1_parse.py whitespace=-trailing-space

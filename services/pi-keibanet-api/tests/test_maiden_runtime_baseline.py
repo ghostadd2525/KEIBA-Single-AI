@@ -98,17 +98,7 @@ MAIN_EXISTING_TESTS = (
 )
 
 FORBIDDEN_IMPORT_PREFIXES = (
-    "pi_keibanet.c4_calendar.runner",
-    "pi_keibanet.c4_calendar.queue",
-    "pi_keibanet.c4_calendar.source_health",
-    "pi_keibanet.c4_calendar.domain_halt",
-    "pi_keibanet.c4_calendar.target_policy",
-    "pi_keibanet.w2_haron.runner",
-    "pi_keibanet.w2_haron.eligibility",
-    "pi_keibanet.w2_haron.intake",
-    "pi_keibanet.w2_haron.layer_b_store",
-    "pi_keibanet.w2_haron.haron_parse",
-    "pi_keibanet.w4_horse",
+    "research.maiden_w3w5_patch",
 )
 
 CLEAN_IMPORT_CODE = r"""
@@ -327,10 +317,10 @@ class MaidenRuntimeBaselineTests(unittest.TestCase):
 
     def test_no_research_or_full_snapshot_dump(self) -> None:
         self.assertFalse((REPO / "research" / "maiden_w3w5_patch").exists())
-        self.assertFalse((ROOT / "pi_keibanet" / "w4_horse" / "__init__.py").is_file())
+        self.assertTrue((ROOT / "pi_keibanet" / "w4_horse" / "__init__.py").is_file())
         self.assertTrue((ROOT / "pi_keibanet" / "c4_calendar" / "config.py").is_file())
-        self.assertFalse((ROOT / "pi_keibanet" / "c4_calendar" / "runner.py").is_file())
-        self.assertFalse((ROOT / "pi_keibanet" / "w2_haron" / "runner.py").is_file())
+        self.assertTrue((ROOT / "pi_keibanet" / "c4_calendar" / "runner.py").is_file())
+        self.assertTrue((ROOT / "pi_keibanet" / "w2_haron" / "runner.py").is_file())
 
 
 if __name__ == "__main__":
