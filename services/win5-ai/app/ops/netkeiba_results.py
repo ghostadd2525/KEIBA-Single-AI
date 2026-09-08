@@ -38,6 +38,11 @@ class NetkeibaResultError(Exception):
     pass
 
 
+MEETING_PRESENT = "MEETING_PRESENT"
+NO_MEETING = "NO_MEETING"
+CATALOG_FAILURE = "CATALOG_FAILURE"
+
+
 def _strip_html(raw: str) -> str:
     text = re.sub(r"<[^>]+>", " ", raw or "")
     return re.sub(r"\s+", " ", text).strip()
@@ -284,6 +289,8 @@ def fetch_pi_race_catalog(race_date: str) -> list[dict[str, Any]]:
     # unwrap ok/data envelopes if present
     if isinstance(doc, dict) and "data" in doc and isinstance(doc["data"], dict):
         doc = doc["data"]
+    if not isinstance(doc, dict):
+        raise NetkeibaResultError("PI catalog contract invalid")
     races: list[dict[str, Any]] = []
     for venue in (doc.get("venues") or []):
         for race in (venue.get("races") or []):
@@ -296,6 +303,49 @@ def fetch_pi_race_catalog(race_date: str) -> list[dict[str, Any]]:
                 if isinstance(race, dict):
                     races.append(race)
     return races
+
+
+def classify_pi_race_catalog(race_date: str) -> dict[str, Any]:
+    """
+    Classify a PI catalog fetch without treating a successful empty day as failure.
+
+    MEETING_PRESENT: HTTP+JSON OK and at least one race
+    NO_MEETING: HTTP+JSON OK and zero races (non-race day)
+    CATALOG_FAILURE: HTTP/timeout/connection/JSON/contract error
+    """
+    try:
+        races = fetch_pi_race_catalog(race_date)
+    except NetkeibaResultError as exc:
+        return {
+            "state": CATALOG_FAILURE,
+            "races": [],
+            "count": 0,
+            "error": str(exc),
+            "race_date": race_date,
+        }
+    except Exception as exc:
+        return {
+            "state": CATALOG_FAILURE,
+            "races": [],
+            "count": 0,
+            "error": f"PI catalog failed: {exc}",
+            "race_date": race_date,
+        }
+    if races:
+        return {
+            "state": MEETING_PRESENT,
+            "races": races,
+            "count": len(races),
+            "error": None,
+            "race_date": race_date,
+        }
+    return {
+        "state": NO_MEETING,
+        "races": [],
+        "count": 0,
+        "error": None,
+        "race_date": race_date,
+    }
 
 
 def pi_payload_to_bundle(pi_payload: dict[str, Any]) -> dict[str, Any] | None:
