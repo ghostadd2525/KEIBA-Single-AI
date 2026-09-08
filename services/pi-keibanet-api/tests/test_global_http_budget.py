@@ -1185,21 +1185,14 @@ class GlobalHttpBudgetTests(unittest.TestCase):
         self.assertEqual(dirty.returncode, 0, dirty.stdout + dirty.stderr)
         c0 = _c0_tip()
         ranged = subprocess.run(
-            [
-                "git",
-                "diff",
-                "--check",
-                f"{c0}...HEAD",
-                "--",
-                ".",
-                ":(exclude)services/pi-keibanet-api/pi_keibanet/w2_haron/runner.py",
-            ],
+            ["git", "diff", "--check", f"{c0}...HEAD"],
             cwd=str(REPO),
             capture_output=True,
             text=True,
             check=False,
         )
         self.assertEqual(ranged.returncode, 0, ranged.stdout + ranged.stderr)
+        self.assertEqual((ranged.stdout + ranged.stderr).strip(), "")
 
     def test_external_http_remains_zero(self) -> None:
         self.assertEqual(EXTERNAL_HTTP_CALLS, 0)

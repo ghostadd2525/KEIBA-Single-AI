@@ -1,6 +1,6 @@
 # Auto detect text files and perform LF normalization
 * text=auto
 
-# Production snapshot 2026-09-07: keep exact CRLF bytes for the W2 runner.
-# Do not hide whitespace problems with attribute suppression.
-services/pi-keibanet-api/pi_keibanet/w2_haron/runner.py -text
+# W2 runner checkouts as CRLF to match C0/Production.
+# Do not add whitespace=-trailing-space or whitespace=-cr-at-eol.
+services/pi-keibanet-api/pi_keibanet/w2_haron/runner.py text eol=crlf
