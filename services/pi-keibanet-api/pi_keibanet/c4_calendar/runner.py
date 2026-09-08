@@ -9,6 +9,7 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any, Callable
 
+from ..http_budget import BudgetDenied
 from ..netkeiba.client import NetkeibaClient, NetkeibaFetchError, RaceListFetchResult
 from ..netkeiba.parse import parse_list_races_from_race_list, parse_meetings_from_race_list
 from ..page_a1_store import persist_page_a1_after_fetch
@@ -68,6 +69,9 @@ class RunReport:
     yielded_w2: bool = False
     stopped_block: bool = False
     stopped_budget: bool = False
+    stopped_global_budget: bool = False
+    global_budget_reason: str = ""
+    stop_reason: str | None = None
     dry_run: bool = False
     seeded_n: int = 0
     queue_n: int = 0
@@ -196,7 +200,7 @@ def run_c4_shadow(
             return report
 
 
-    net = client or NetkeibaClient(min_interval_sec=cfg.min_interval_sec)
+    net = client or NetkeibaClient(min_interval_sec=cfg.min_interval_sec, component="c4")
     do_fetch: FetchFn = fetch_fn or (lambda d: net.fetch_race_list_result(d))
 
     consecutive_failures = 0
@@ -235,6 +239,14 @@ def run_c4_shadow(
 
         try:
             fr = do_fetch(kaisai_date)
+        except BudgetDenied as exc:
+            report.stopped_global_budget = True
+            report.global_budget_reason = exc.reason
+            report.stop_reason = "global_http_budget"
+            report.errors.append(f"global_budget_denied:{exc.reason}")
+            log(f"[c4] global budget denied reason={exc.reason}")
+            break
+        try:
             # count HTTP parts (sub+sp) as requests
             n_req = max(1, len(fr.parts) or 1)
             requests_used += n_req

@@ -11,28 +11,20 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
+from pi_keibanet.http_budget.probes import ProbeRefused, budgeted_probe_client, exit_refused
+
 UA = "Mozilla/5.0 (compatible; Expect-PI-KeibaNet/1.0)"
 
 
 def get(url: str, params: dict | None = None) -> tuple[int, str]:
     if params:
         url = url + "?" + urllib.parse.urlencode(params)
-    req = urllib.request.Request(
-        url,
-        headers={
-            "User-Agent": UA,
-            "Accept": "*/*",
-            "Referer": "https://race.netkeiba.com/top/race_list.html",
-        },
-    )
-    with urllib.request.urlopen(req, timeout=25) as resp:
-        raw = resp.read()
-    for enc in ("utf-8", "euc-jp", "cp932"):
-        try:
-            return resp.status, raw.decode(enc)
-        except UnicodeDecodeError:
-            continue
-    return resp.status, raw.decode("utf-8", errors="replace")
+    try:
+        client = budgeted_probe_client()
+    except ProbeRefused as exc:
+        exit_refused(exc)
+    html = client.fetch(url, label="probe_netkeiba_api")
+    return 200, html
 
 
 candidates = [

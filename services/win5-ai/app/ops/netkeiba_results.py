@@ -15,6 +15,8 @@ import urllib.error
 import urllib.request
 from typing import Any, Callable
 
+from app.netkeiba_budget import BudgetDenied, classify_http_result, public_url, reserve_win5
+
 RESULT_URL = "https://race.netkeiba.com/race/result.html?race_id={race_id}"
 DEFAULT_UA = (
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
@@ -225,14 +227,26 @@ class NetkeibaHttp:
             },
             method="GET",
         )
+        reservation = reserve_win5(url, component="win5_results")
         try:
             with self._opener(req, timeout=self.timeout) as resp:
                 raw = resp.read()
                 self._last = time.monotonic()
+        except BudgetDenied:
+            raise
         except urllib.error.HTTPError as exc:
-            raise NetkeibaResultError(f"HTTP {exc.code}: {url}") from exc
+            reservation.complete(
+                result=classify_http_result(http_status=int(exc.code)),
+                http_status=int(exc.code),
+            )
+            raise NetkeibaResultError(f"HTTP {exc.code}: {public_url(url)}") from exc
         except urllib.error.URLError as exc:
-            raise NetkeibaResultError(f"URL error: {url}: {exc.reason}") from exc
+            reservation.complete(result=classify_http_result(timeout=isinstance(exc.reason, TimeoutError)))
+            raise NetkeibaResultError(f"URL error: {public_url(url)}: {exc.reason}") from exc
+        except Exception:
+            reservation.complete(result="reserved_no_http")
+            raise
+        reservation.complete(result="success", http_status=200)
         for enc in ("utf-8", "euc-jp", "cp932"):
             try:
                 return raw.decode(enc)

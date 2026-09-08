@@ -11,15 +11,18 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
-from pi_keibanet.netkeiba.client import NetkeibaClient, SHUTUBA_URL
+from pi_keibanet.http_budget.probes import ProbeRefused, budgeted_probe_client, exit_refused
+from pi_keibanet.netkeiba.client import SHUTUBA_URL
 
 DATE = "20260725"
 UA = "Mozilla/5.0 (compatible; Expect-PI-KeibaNet/1.0)"
 
 def get(url: str) -> str:
-    req = urllib.request.Request(url, headers={"User-Agent": UA, "Referer": "https://race.netkeiba.com/"})
-    with urllib.request.urlopen(req, timeout=25) as resp:
-        return resp.read().decode("utf-8", errors="replace")
+    try:
+        client = budgeted_probe_client()
+    except ProbeRefused as exc:
+        exit_refused(exc)
+    return client.fetch(url, label="probe_full_list")
 
 # Try alternate list URLs
 urls = [

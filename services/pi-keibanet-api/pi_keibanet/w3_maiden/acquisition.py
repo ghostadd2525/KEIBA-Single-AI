@@ -14,6 +14,7 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any, Callable
 
+from ..http_budget import BudgetDenied
 from ..netkeiba.client import NetkeibaClient, NetkeibaFetchError
 from ..w2_haron.p1_lock import p1_allows_w2, read_p1_lock
 from ..w2_haron.source_health import (
@@ -80,6 +81,8 @@ class AcquireReport:
     yielded_c4: bool = False
     stopped_block: bool = False
     stopped_budget: bool = False
+    stopped_global_budget: bool = False
+    global_budget_reason: str = ""
     stopped_runtime: bool = False
     stopped_consecutive: bool = False
     stop_reason: str | None = None
@@ -132,6 +135,8 @@ class AcquireReport:
             self.stop_reason = "yielded_c4"
         elif self.stopped_block:
             self.stop_reason = "blocked_source_health"
+        elif self.stopped_global_budget:
+            self.stop_reason = "global_http_budget"
         elif self.stopped_runtime:
             self.stop_reason = "max_runtime"
         elif self.stopped_consecutive:
@@ -320,7 +325,7 @@ def run_w3c_acquire(
         log("[w3c] no pending eligible")
         return report
 
-    net = client or NetkeibaClient(min_interval_sec=cfg.min_interval_sec)
+    net = client or NetkeibaClient(min_interval_sec=cfg.min_interval_sec, component="w3c")
     consecutive_failures = 0
     run_t0 = time.monotonic()
     cache_roots = cfg.cache_roots()
@@ -382,6 +387,12 @@ def run_w3c_acquire(
         try:
             html = net.fetch(url, label=f"w3c_page_c_{rid}")
             report.http_request_count += 1
+        except BudgetDenied as exc:
+            report.stopped_global_budget = True
+            report.global_budget_reason = exc.reason
+            report.errors.append(f"global_budget_denied:{exc.reason}")
+            log(f"[w3c] global budget denied reason={exc.reason}")
+            break
         except NetkeibaFetchError as exc:
             report.http_request_count += 1
             status = _extract_http_status(exc)

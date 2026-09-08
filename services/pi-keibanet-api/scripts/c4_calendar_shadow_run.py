@@ -66,6 +66,8 @@ def main() -> int:
 
     report = run_c4_shadow(cfg, w2_busy=_w2_service_busy())
     print(json.dumps(report.to_dict(), ensure_ascii=False, indent=2))
+    if getattr(report, "stopped_global_budget", False):
+        return 5
     if report.stopped_block:
         return 2
     if report.paused_p1 or report.yielded_w2:

@@ -56,6 +56,7 @@ def main() -> int:
     parser.add_argument("--horse-id", action="append", default=None)
     args = parser.parse_args()
 
+    os.environ.setdefault("GLOBAL_HTTP_BUDGET_COMPONENT", "w5")
     cfg = W5Config.from_env(data_root=Path(args.data_root) if args.data_root else None)
     if args.w5_root:
         cfg.w5_root = Path(args.w5_root)
@@ -117,6 +118,8 @@ def main() -> int:
                 ensure_ascii=False,
             )
         )
+    if report.stopped_global_budget:
+        return 5
     if report.stopped_block:
         return 2
     if report.fetch_failed > 0:

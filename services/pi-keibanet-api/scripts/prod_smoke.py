@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
-"""Production smoke test for PI API Version 1."""
+"""Production smoke test for PI API Version 1.
+
+Localhost PI only (EXPECT_KEIBANET_BASE_URL, default 127.0.0.1:8081).
+This is not a Netkeiba path and is not part of the Global HTTP budget.
+"""
 from __future__ import annotations
 
 import json

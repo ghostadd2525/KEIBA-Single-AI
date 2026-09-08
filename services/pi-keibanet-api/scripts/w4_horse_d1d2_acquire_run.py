@@ -84,6 +84,8 @@ def main() -> int:
         horse_ids=args.horse_id,
     )
     print(json.dumps(report.to_dict(), ensure_ascii=False, indent=2))
+    if getattr(report, "stopped_global_budget", False):
+        return 5
     if report.stopped_block:
         return 2
     if report.paused_p1 or report.yielded_w2 or report.yielded_c4 or report.yielded_w3c:

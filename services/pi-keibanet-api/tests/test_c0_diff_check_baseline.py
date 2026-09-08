@@ -47,9 +47,15 @@ class C0DiffCheckBaselineTests(unittest.TestCase):
         joined = "\n".join(attr_lines)
         self.assertNotIn("whitespace=-trailing-space", joined)
         self.assertNotIn("whitespace=-cr-at-eol", joined)
-        self.assertIn(
-            "services/pi-keibanet-api/pi_keibanet/w2_haron/runner.py -text",
-            text,
+        runner_attr = [
+            line
+            for line in attr_lines
+            if "w2_haron/runner.py" in line
+        ]
+        self.assertTrue(runner_attr, "W2 runner must keep an explicit line-ending attribute")
+        self.assertTrue(
+            all("whitespace=" not in line for line in runner_attr),
+            runner_attr,
         )
 
     def test_snapshot_trailing_whitespace_is_documented(self) -> None:

@@ -9,6 +9,7 @@ import urllib.request
 from dataclasses import dataclass, field
 from typing import Callable
 
+from ..http_budget import BudgetDenied, classify_http_result, public_url, reserve_for_request
 from .debug_log import log_fetch
 
 DEFAULT_UA = (
@@ -56,6 +57,7 @@ class NetkeibaClient:
         timeout: float | None = None,
         min_interval_sec: float | None = None,
         opener: Callable[..., object] | None = None,
+        component: str | None = None,
     ) -> None:
         self.timeout = float(timeout or os.environ.get("PI_NETKEIBA_TIMEOUT", "25"))
         self.min_interval = float(
@@ -64,11 +66,43 @@ class NetkeibaClient:
         self.user_agent = os.environ.get("PI_NETKEIBA_USER_AGENT", DEFAULT_UA)
         self._last_fetch = 0.0
         self._opener = opener or urllib.request.urlopen
+        self.component = component
 
-    def fetch(self, url: str, *, label: str = "netkeiba", accept: str | None = None) -> str:
+    def _throttle(self) -> None:
         elapsed = time.monotonic() - self._last_fetch
         if elapsed < self.min_interval:
             time.sleep(self.min_interval - elapsed)
+
+    def _open_budgeted(self, req: urllib.request.Request, *, url: str, label: str) -> bytes:
+        """Reserve immediately before opener. No reserve ⇒ no HTTP."""
+        reservation = reserve_for_request(url=url, component=self.component, label=label)
+        try:
+            with self._opener(req, timeout=self.timeout) as resp:
+                raw = resp.read()
+                self._last_fetch = time.monotonic()
+        except BudgetDenied:
+            raise
+        except urllib.error.HTTPError as exc:
+            reservation.complete(
+                result=classify_http_result(http_status=int(exc.code)),
+                http_status=int(exc.code),
+            )
+            raise
+        except urllib.error.URLError as exc:
+            timeout = _is_timeout(exc)
+            reservation.complete(result=classify_http_result(timeout=timeout))
+            raise
+        except TimeoutError:
+            reservation.complete(result="timeout")
+            raise
+        except Exception:
+            reservation.complete(result="reserved_no_http")
+            raise
+        reservation.complete(result="success", http_status=200)
+        return raw
+
+    def fetch(self, url: str, *, label: str = "netkeiba", accept: str | None = None) -> str:
+        self._throttle()
         is_db_pc = "db.netkeiba.com" in url and "db.sp.netkeiba.com" not in url
         is_db_sp = "db.sp.netkeiba.com" in url
         if accept:
@@ -95,16 +129,18 @@ class NetkeibaClient:
             method="GET",
         )
         try:
-            with self._opener(req, timeout=self.timeout) as resp:
-                raw = resp.read()
-                self._last_fetch = time.monotonic()
+            raw = self._open_budgeted(req, url=url, label=label)
+        except BudgetDenied:
+            raise
         except urllib.error.HTTPError as exc:
             raise NetkeibaFetchError(
-                f"HTML取得失敗 HTTP {exc.code}: {url}",
+                f"HTML取得失敗 HTTP {exc.code}: {public_url(url)}",
                 http_status=int(exc.code),
             ) from exc
         except urllib.error.URLError as exc:
-            raise NetkeibaFetchError(f"HTML取得失敗: {url}: {exc.reason}") from exc
+            raise NetkeibaFetchError(
+                f"HTML取得失敗: {public_url(url)}: {exc.reason}"
+            ) from exc
         for enc in ("utf-8", "euc-jp", "cp932"):
             try:
                 html = raw.decode(enc)
@@ -161,9 +197,7 @@ class NetkeibaClient:
     def fetch_jra_odds_json(self, numeric_race_id: str) -> str:
         """単勝オッズ JSON（api_get_jra_odds）。HTML 出馬表には載らないことが多い。"""
         url = JRA_ODDS_API_URL.format(race_id=numeric_race_id)
-        elapsed = time.monotonic() - self._last_fetch
-        if elapsed < self.min_interval:
-            time.sleep(self.min_interval - elapsed)
+        self._throttle()
         req = urllib.request.Request(
             url,
             headers={
@@ -179,13 +213,28 @@ class NetkeibaClient:
             method="GET",
         )
         try:
-            with self._opener(req, timeout=self.timeout) as resp:
-                raw = resp.read()
-                self._last_fetch = time.monotonic()
+            raw = self._open_budgeted(req, url=url, label=f"jra_odds_{numeric_race_id}")
+        except BudgetDenied:
+            raise
         except urllib.error.HTTPError as exc:
-            raise NetkeibaFetchError(f"オッズ取得失敗 HTTP {exc.code}: {url}") from exc
+            raise NetkeibaFetchError(
+                f"オッズ取得失敗 HTTP {exc.code}: {public_url(url)}",
+                http_status=int(exc.code),
+            ) from exc
         except urllib.error.URLError as exc:
-            raise NetkeibaFetchError(f"オッズ取得失敗: {url}: {exc.reason}") from exc
+            raise NetkeibaFetchError(
+                f"オッズ取得失敗: {public_url(url)}: {exc.reason}"
+            ) from exc
         text = raw.decode("utf-8", errors="replace")
         log_fetch(url=url, html=text[:4000], label=f"jra_odds_{numeric_race_id}")
         return text
+
+
+def _is_timeout(exc: BaseException) -> bool:
+    if isinstance(exc, TimeoutError):
+        return True
+    reason = getattr(exc, "reason", None)
+    if isinstance(reason, TimeoutError):
+        return True
+    text = str(exc).lower()
+    return "timed out" in text or "timeout" in type(exc).__name__.lower()
