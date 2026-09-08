@@ -583,7 +583,8 @@ def run_refresh(
         log("[race-refresh] skipped: outside refresh window")
         return report
 
-    net_client = client or NetkeibaClient(min_interval_sec=cfg.min_interval_sec)
+    os.environ.setdefault("GLOBAL_HTTP_BUDGET_COMPONENT", "p1")
+    net_client = client or NetkeibaClient(min_interval_sec=cfg.min_interval_sec, component="p1")
     snapshot = load_snapshot(cfg, date)
 
     try:

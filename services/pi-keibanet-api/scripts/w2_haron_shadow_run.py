@@ -60,6 +60,8 @@ def main() -> int:
         date=args.date,
     )
     print(json.dumps(report.to_dict(), ensure_ascii=False, indent=2))
+    if getattr(report, "stopped_global_budget", False):
+        return 5
     if report.stopped_block:
         return 2
     if report.errors and report.http_request_count == 0 and not report.paused_p1:

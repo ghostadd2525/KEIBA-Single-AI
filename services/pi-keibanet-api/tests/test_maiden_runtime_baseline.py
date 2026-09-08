@@ -18,16 +18,12 @@ HTTP_CALLS = 0
 
 # Snapshot-identical files that P0 does not rewrite.
 SNAPSHOT_SHA256 = {
-    "services/pi-keibanet-api/pi_keibanet/netkeiba/client.py":
-        "b7fc3b90588608ba6f47da3a4b095d964d448d9030f326ea0e9495b2ad0a3f91",
     "services/pi-keibanet-api/pi_keibanet/c4_calendar/__init__.py":
         "0d55f913cd6ecc003f537a02d1140b58f8b4d4ea5dacd44f77c3aa5233f81dd2",
     "services/pi-keibanet-api/pi_keibanet/c4_calendar/config.py":
         "a324bca38da42920683e8cb618d6faa09e8a642166eecc5dd345c012a8809d68",
     "services/pi-keibanet-api/pi_keibanet/w3_maiden/__init__.py":
         "9e38a569907a655b5c603ac7aa44c422dc8cc4c0b04a689a289ae5e983e0e389",
-    "services/pi-keibanet-api/pi_keibanet/w3_maiden/acquisition.py":
-        "5e18f37373cca74e9670805e47ee8e3227f884c5d219924a9a56817b23320ea2",
     "services/pi-keibanet-api/pi_keibanet/w3_maiden/cache_probe.py":
         "4930f8d5ba52fcc3d925837f06c8b7363c16623e339ebb53f0d89a4b041124f4",
     "services/pi-keibanet-api/pi_keibanet/w3_maiden/queue.py":
@@ -230,15 +226,12 @@ class MaidenRuntimeBaselineTests(unittest.TestCase):
             self.assertTrue(path.is_file(), rel)
             self.assertEqual(_sha256(path), expected, rel)
 
-    def test_client_py_is_snapshot_original(self) -> None:
+    def test_client_py_keeps_race_list_contract(self) -> None:
         path = ROOT / "pi_keibanet" / "netkeiba" / "client.py"
-        self.assertEqual(
-            _sha256(path),
-            "b7fc3b90588608ba6f47da3a4b095d964d448d9030f326ea0e9495b2ad0a3f91",
-        )
         text = path.read_text(encoding="utf-8")
         self.assertIn("class RaceListFetchResult", text)
         self.assertIn("def fetch_race_list_result", text)
+        self.assertIn("reserve_for_request", text)
 
     def test_compileall_added_python(self) -> None:
         for path in _iter_added_py():

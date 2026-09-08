@@ -9,6 +9,7 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any, Callable
 
+from ..http_budget import BudgetDenied
 from ..netkeiba.client import NetkeibaClient, NetkeibaFetchError
 from .config import PARSER_VERSION, RESULT_URL, SOURCE_NAME, W2Config
 from .eligibility import select_eligible_race_ids
@@ -64,6 +65,8 @@ class RunReport:
     paused_p1: bool = False
     stopped_block: bool = False
     stopped_budget: bool = False
+    stopped_global_budget: bool = False
+    global_budget_reason: str = ""
     stopped_runtime: bool = False
     stopped_consecutive: bool = False
     source_health_state: str | None = None
@@ -102,6 +105,8 @@ class RunReport:
             "p1_state": self.p1_state,
             "stopped_block": self.stopped_block,
             "stopped_budget": self.stopped_budget,
+            "stopped_global_budget": self.stopped_global_budget,
+            "global_budget_reason": self.global_budget_reason,
             "stopped_runtime": self.stopped_runtime,
             "stopped_consecutive": self.stopped_consecutive,
             "stop_reason": self.stop_reason,
@@ -121,6 +126,8 @@ class RunReport:
             self.stop_reason = "disabled"
         elif self.paused_p1:
             self.stop_reason = "p1_active"
+        elif self.stopped_global_budget:
+            self.stop_reason = "global_http_budget"
         elif self.stopped_block:
             self.stop_reason = "source_blocked"
         elif self.stopped_runtime:
@@ -260,7 +267,7 @@ def run_w2_shadow(
         log("[w2-haron] no eligible races")
         return report
 
-    net = client or NetkeibaClient(min_interval_sec=cfg.min_interval_sec)
+    net = client or NetkeibaClient(min_interval_sec=cfg.min_interval_sec, component="w2")
     consecutive_failures = 0
     run_t0 = time.monotonic()
 
@@ -310,6 +317,12 @@ def run_w2_shadow(
         try:
             html = net.fetch(url, label=f"w2_result_{rid}")
             report.http_request_count += 1
+        except BudgetDenied as exc:
+            report.stopped_global_budget = True
+            report.global_budget_reason = exc.reason
+            report.errors.append(f"global_budget_denied:{exc.reason}")
+            log(f"[w2-haron] global budget denied reason={exc.reason}")
+            break
         except NetkeibaFetchError as exc:
             report.http_request_count += 1
             status = _extract_http_status(exc)

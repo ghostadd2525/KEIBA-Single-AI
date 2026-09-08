@@ -97,7 +97,8 @@ def _resolve_prediction_data_root() -> Path | None:
 
 class PiKeibaNetService:
     def __init__(self, client: NetkeibaClient | None = None) -> None:
-        self.client = client or NetkeibaClient()
+        os.environ.setdefault("GLOBAL_HTTP_BUDGET_COMPONENT", "p1")
+        self.client = client or NetkeibaClient(component="p1")
 
     def resolve(self, *, date: str, venue: str, race_no: int) -> tuple[str, str]:
         if venue not in COURSE_NAME_TO_CODE:
@@ -1041,6 +1042,7 @@ class PiKeibaNetService:
                 worker = NetkeibaClient(
                     timeout=getattr(self.client, "timeout", 25),
                     min_interval_sec=0.15,
+                    component="p1",
                 )
                 try:
                     parsed = fetch_horse_history(worker, horse_id)

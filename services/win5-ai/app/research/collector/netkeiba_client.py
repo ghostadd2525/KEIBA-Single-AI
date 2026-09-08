@@ -7,6 +7,8 @@ import time
 import urllib.error
 import urllib.request
 
+from app.netkeiba_budget import BudgetDenied, classify_http_result, reserve_win5
+
 DEFAULT_UA = (
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
     "(KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
@@ -62,14 +64,26 @@ class ResearchNetkeibaClient:
             },
             method="GET",
         )
+        reservation = reserve_win5(url, component="win5_research")
         try:
             with urllib.request.urlopen(req, timeout=self.timeout) as resp:
                 raw = resp.read()
                 self._last_fetch = time.monotonic()
+        except BudgetDenied:
+            raise
         except urllib.error.HTTPError as exc:
+            reservation.complete(
+                result=classify_http_result(http_status=int(exc.code)),
+                http_status=int(exc.code),
+            )
             raise ResearchNetkeibaError(f"HTTP {exc.code}: {url} ({label})") from exc
         except urllib.error.URLError as exc:
+            reservation.complete(result=classify_http_result(timeout=isinstance(exc.reason, TimeoutError)))
             raise ResearchNetkeibaError(f"URL error: {url}: {exc.reason}") from exc
+        except Exception:
+            reservation.complete(result="reserved_no_http")
+            raise
+        reservation.complete(result="success", http_status=200)
 
         for enc in ("utf-8", "euc-jp", "cp932"):
             try:
