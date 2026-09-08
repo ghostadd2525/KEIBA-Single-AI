@@ -18,7 +18,9 @@ def debug_dir() -> Path | None:
 
 
 def log_fetch(*, url: str, html: str, label: str) -> None:
-    public = url.split("?", 1)[0]
+    from ..http_budget.sanitize import public_url
+
+    public = public_url(url)
     print(f"[pi-keibanet] fetch {label}: {public} (bytes={len(html.encode('utf-8', errors='replace'))})")
     out = debug_dir()
     if out is None:

@@ -14,6 +14,7 @@ from pi_keibanet.http_budget import (  # noqa: E402
     BudgetDenied,
     Reservation,
     classify_http_result,
+    public_url,
     reserve_for_request,
 )
 
@@ -21,6 +22,7 @@ __all__ = [
     "BudgetDenied",
     "Reservation",
     "classify_http_result",
+    "public_url",
     "reserve_win5",
 ]
 

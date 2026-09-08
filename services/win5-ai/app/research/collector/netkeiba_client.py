@@ -7,7 +7,7 @@ import time
 import urllib.error
 import urllib.request
 
-from app.netkeiba_budget import BudgetDenied, classify_http_result, reserve_win5
+from app.netkeiba_budget import BudgetDenied, classify_http_result, public_url, reserve_win5
 
 DEFAULT_UA = (
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
@@ -76,10 +76,10 @@ class ResearchNetkeibaClient:
                 result=classify_http_result(http_status=int(exc.code)),
                 http_status=int(exc.code),
             )
-            raise ResearchNetkeibaError(f"HTTP {exc.code}: {url} ({label})") from exc
+            raise ResearchNetkeibaError(f"HTTP {exc.code}: {public_url(url)}") from exc
         except urllib.error.URLError as exc:
             reservation.complete(result=classify_http_result(timeout=isinstance(exc.reason, TimeoutError)))
-            raise ResearchNetkeibaError(f"URL error: {url}: {exc.reason}") from exc
+            raise ResearchNetkeibaError(f"URL error: {public_url(url)}: {exc.reason}") from exc
         except Exception:
             reservation.complete(result="reserved_no_http")
             raise

@@ -11,6 +11,7 @@ from typing import Any
 from .config import (
     KNOWN_COMPONENTS,
     MODE_ENFORCE,
+    MODE_INVALID,
     MODE_OBSERVE,
     MODE_OFF,
     PRODUCTION_CRITICAL,
@@ -117,6 +118,13 @@ def reserve(
     name = resolve_component(component)
     if name not in KNOWN_COMPONENTS:
         name = "unknown"
+    if config.mode == MODE_INVALID:
+        _audit_invalid_mode(config, url=url, component=name)
+        raise BudgetDenied(
+            "invalid_mode",
+            component=name,
+            detail=config.mode_invalid_reason or "invalid_mode",
+        )
     if config.mode == MODE_OFF:
         return _passthrough(url, name, MODE_OFF)
     source, host, path = public_target(url)
@@ -302,7 +310,55 @@ def _short_decision(
                 short_p1c4_needed + short_win5_needed
             ):
                 return "short_reserved_capacity"
+        elif component == WIN5_RESULTS_COMPONENT:
+            if short_free <= short_p1c4_needed and (
+                short_reserved_win5 <= 0 or short_win5 >= short_reserved_win5
+            ):
+                return "short_reserved_capacity"
+        elif component in PRODUCTION_CRITICAL:
+            if short_free <= short_win5_needed and (
+                short_reserved_p1c4 <= 0 or short_p1c4 >= short_reserved_p1c4
+            ):
+                return "short_reserved_capacity"
     return None
+
+
+def _audit_invalid_mode(config: BudgetConfig, *, url: str, component: str) -> None:
+    """Best-effort ledger row so the invalid mode reason is reviewable."""
+    source, host, path = public_target(url)
+    try:
+        conn = open_store(config)
+    except StoreError:
+        return
+    try:
+        conn.execute("BEGIN IMMEDIATE")
+        conn.execute(
+            """
+            INSERT INTO reservations(
+                reservation_id, window_id, component, source, host, path,
+                run_id, reserved_at, result, completed_at, http_status, consumed
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, NULL, NULL, 0)
+            """,
+            (
+                uuid.uuid4().hex,
+                utc_window_id(),
+                component,
+                source,
+                host,
+                path,
+                config.run_id,
+                utc_iso(),
+                config.mode_invalid_reason or "invalid_mode",
+            ),
+        )
+        conn.execute("COMMIT")
+    except sqlite3.Error:
+        try:
+            conn.execute("ROLLBACK")
+        except sqlite3.Error:
+            pass
+    finally:
+        conn.close()
 
 
 def _reserve_row(

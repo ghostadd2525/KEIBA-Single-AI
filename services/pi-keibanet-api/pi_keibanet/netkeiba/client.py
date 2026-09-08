@@ -9,7 +9,7 @@ import urllib.request
 from dataclasses import dataclass, field
 from typing import Callable
 
-from ..http_budget import BudgetDenied, classify_http_result, reserve_for_request
+from ..http_budget import BudgetDenied, classify_http_result, public_url, reserve_for_request
 from .debug_log import log_fetch
 
 DEFAULT_UA = (
@@ -134,12 +134,12 @@ class NetkeibaClient:
             raise
         except urllib.error.HTTPError as exc:
             raise NetkeibaFetchError(
-                f"HTML取得失敗 HTTP {exc.code}: {url.split('?', 1)[0]}",
+                f"HTML取得失敗 HTTP {exc.code}: {public_url(url)}",
                 http_status=int(exc.code),
             ) from exc
         except urllib.error.URLError as exc:
             raise NetkeibaFetchError(
-                f"HTML取得失敗: {url.split('?', 1)[0]}: {exc.reason}"
+                f"HTML取得失敗: {public_url(url)}: {exc.reason}"
             ) from exc
         for enc in ("utf-8", "euc-jp", "cp932"):
             try:
@@ -218,12 +218,12 @@ class NetkeibaClient:
             raise
         except urllib.error.HTTPError as exc:
             raise NetkeibaFetchError(
-                f"オッズ取得失敗 HTTP {exc.code}: {url.split('?', 1)[0]}",
+                f"オッズ取得失敗 HTTP {exc.code}: {public_url(url)}",
                 http_status=int(exc.code),
             ) from exc
         except urllib.error.URLError as exc:
             raise NetkeibaFetchError(
-                f"オッズ取得失敗: {url.split('?', 1)[0]}: {exc.reason}"
+                f"オッズ取得失敗: {public_url(url)}: {exc.reason}"
             ) from exc
         text = raw.decode("utf-8", errors="replace")
         log_fetch(url=url, html=text[:4000], label=f"jra_odds_{numeric_race_id}")

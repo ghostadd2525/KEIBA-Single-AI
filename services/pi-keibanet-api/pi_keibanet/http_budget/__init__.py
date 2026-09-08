@@ -7,6 +7,7 @@ Default mode is off so a code-only deploy does not stop existing P1.
 """
 from .config import (
     MODE_ENFORCE,
+    MODE_INVALID,
     MODE_OBSERVE,
     MODE_OFF,
     PRODUCTION_CRITICAL,
@@ -26,12 +27,13 @@ from .guard import (
     reserve_for_request,
     window_usage,
 )
-from .sanitize import public_target
+from .sanitize import public_target, public_url
 
 __all__ = [
     "BudgetConfig",
     "BudgetDenied",
     "MODE_ENFORCE",
+    "MODE_INVALID",
     "MODE_OBSERVE",
     "MODE_OFF",
     "PRODUCTION_CRITICAL",
@@ -42,6 +44,7 @@ __all__ = [
     "complete_reservation",
     "load_budget_config",
     "public_target",
+    "public_url",
     "reserve",
     "reserve_for_request",
     "resolve_component",

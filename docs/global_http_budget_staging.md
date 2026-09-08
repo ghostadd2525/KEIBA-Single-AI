@@ -8,11 +8,13 @@ Default budget mode is `off` so a code-only deploy does not stop existing P1.
 
 | Mode | HTTP | State missing / corrupt |
 |---|---|---|
-| `off` (default, invalid values too) | Existing P1/C4/W2/W4 behavior. Research is not extra-enabled. | Do not stop P1 |
+| unset / empty → `off` | Existing P1/C4/W2/W4 behavior. Research is not extra-enabled. | Do not stop P1 |
+| explicit `off` | Same as unset | Do not stop P1 |
 | `observe` | Unchanged. Reserve judgment is audited with `consumed=0`. | Do not stop HTTP |
 | `enforce` | Budget forced when state/schema/config are valid | HTTP 0 |
+| explicit invalid (`enfroce`, unknown, padded junk) | HTTP 0 (`invalid_mode`). Never rewritten to `off`. | HTTP 0; reason stays on BudgetDenied and audit |
 
-`GLOBAL_HTTP_BUDGET_ENABLED=0` forces `off`.
+`GLOBAL_HTTP_BUDGET_ENABLED=0` is an explicit off switch.
 Switching Production to `enforce` is a separate Owner approval.
 
 ## Short-window rate limit
@@ -26,7 +28,13 @@ Daily UTC quota is unchanged. Extra burst control is a rolling UTC window:
 Production numbers stay 0 / unset. Staging tests only use small values.
 Rolling `reserved_at` comparison blocks UTC-midnight double burst.
 P1/C4 and `win5_results` reserved slices are applied inside the short window
-the same way as the daily remainder rule.
+the same way as the daily mutual-protection rule:
+
+- research / remainder cannot consume either reserved slice
+- P1/C4 cannot consume unused Win5 reserved
+- Win5 results cannot consume unused P1/C4 reserved
+- after a reserved slice is used, only the unprotected common remainder is shared
+- the short total limit is never exceeded
 
 ## Shared hook
 

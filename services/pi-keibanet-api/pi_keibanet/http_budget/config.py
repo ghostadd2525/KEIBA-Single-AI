@@ -15,6 +15,7 @@ DEFAULT_STATE_PATH = Path("/var/lib/keiba-single-ai/http_budget/budget.sqlite")
 MODE_OFF = "off"
 MODE_OBSERVE = "observe"
 MODE_ENFORCE = "enforce"
+MODE_INVALID = "invalid"
 VALID_MODES = frozenset({MODE_OFF, MODE_OBSERVE, MODE_ENFORCE})
 
 # Production-critical components may use their reserved capacity.
@@ -61,11 +62,22 @@ def resolve_component(value: str | None = None) -> str:
 
 
 def resolve_mode(value: str | None = None) -> str:
-    """Invalid values fall to off: do not stop P1, do not enable research."""
-    raw = (value if value is not None else os.environ.get("GLOBAL_HTTP_BUDGET_MODE", "")).strip().lower()
-    if raw in VALID_MODES:
-        return raw
-    return MODE_OFF
+    """Unset/empty → off. Known modes stay as-is. Explicit typos stay invalid.
+
+    Invalid values are never rewritten to off. Callers must fail closed.
+    """
+    if value is not None:
+        raw = value
+    else:
+        raw = os.environ.get("GLOBAL_HTTP_BUDGET_MODE")
+        if raw is None:
+            return MODE_OFF
+    stripped = raw.strip().lower()
+    if stripped == "":
+        return MODE_OFF
+    if stripped in VALID_MODES:
+        return stripped
+    return MODE_INVALID
 
 
 @dataclass(frozen=True)
@@ -83,6 +95,8 @@ class BudgetConfig:
     busy_timeout_ms: int
     ledger_retention_days: int
     run_id: str
+    mode_raw: str = ""
+    mode_invalid_reason: str = ""
 
     @property
     def busy_timeout_sec(self) -> float:
@@ -107,9 +121,16 @@ def load_budget_config() -> BudgetConfig:
     path_raw = (os.environ.get("GLOBAL_HTTP_BUDGET_STATE_PATH") or "").strip()
     state_path = Path(path_raw) if path_raw else DEFAULT_STATE_PATH
     run_id = (os.environ.get("GLOBAL_HTTP_BUDGET_RUN_ID") or "").strip() or f"pid-{os.getpid()}"
+    raw_mode = os.environ.get("GLOBAL_HTTP_BUDGET_MODE")
     mode = resolve_mode()
+    mode_raw = "" if raw_mode is None else str(raw_mode)
+    mode_invalid_reason = ""
+    if mode == MODE_INVALID:
+        shown = mode_raw.strip()[:64] or "<non-empty-invalid>"
+        mode_invalid_reason = f"invalid_mode:{shown}"
     if os.environ.get("GLOBAL_HTTP_BUDGET_ENABLED", "") in ("0", "false", "False"):
         mode = MODE_OFF
+        mode_invalid_reason = ""
     limits = {
         "p1": _int("GLOBAL_HTTP_BUDGET_LIMIT_P1", "0"),
         "c4": _int("GLOBAL_HTTP_BUDGET_LIMIT_C4", "0"),
@@ -135,4 +156,6 @@ def load_budget_config() -> BudgetConfig:
         busy_timeout_ms=max(1, _int("GLOBAL_HTTP_BUDGET_BUSY_TIMEOUT_MS", "5000")),
         ledger_retention_days=max(1, _int("GLOBAL_HTTP_BUDGET_LEDGER_RETENTION_DAYS", "3")),
         run_id=run_id,
+        mode_raw=mode_raw,
+        mode_invalid_reason=mode_invalid_reason,
     )
