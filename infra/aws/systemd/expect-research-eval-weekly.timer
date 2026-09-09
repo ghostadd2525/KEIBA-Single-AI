@@ -1,0 +1,12 @@
+[Unit]
+Description=Expect Research Forward-Shadow Weekly Evaluation Timer (Sunday 03:30 JST)
+Requires=expect-research-eval-weekly.service
+
+[Timer]
+OnCalendar=Sun *-*-* 03:30:00
+Persistent=true
+AccuracySec=5min
+Unit=expect-research-eval-weekly.service
+
+[Install]
+WantedBy=timers.target

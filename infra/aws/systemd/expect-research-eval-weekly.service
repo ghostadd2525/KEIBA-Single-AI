@@ -1,0 +1,24 @@
+[Unit]
+Description=Expect Research Forward-Shadow Weekly Evaluation Sidecar (V110)
+After=network-online.target expect-research-evidence-collector.service
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=ubuntu
+Group=ubuntu
+Nice=10
+WorkingDirectory=/home/ubuntu/KEIBA-Single-AI/services/win5-ai
+EnvironmentFile=-/opt/expect-ai/shared/.env
+EnvironmentFile=-/etc/expect-ai/research-evidence.env
+Environment=PYTHONPATH=/home/ubuntu/KEIBA-Single-AI/services/win5-ai
+Environment=PYTHONDONTWRITEBYTECODE=1
+ExecStart=/usr/bin/python3 -m app.research.eval_automation_runner --weekly
+TimeoutStartSec=600
+TimeoutStopSec=30
+Restart=no
+StartLimitIntervalSec=604800
+StartLimitBurst=2
+
+[Install]
+WantedBy=multi-user.target
