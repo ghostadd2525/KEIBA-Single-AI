@@ -115,6 +115,54 @@ def _cell_text(cells: list, idx: Optional[int]) -> str:
     return _strip(cells[idx])
 
 
+_ALLOWED_RACE_HOSTS = frozenset({"db.netkeiba.com", "db.sp.netkeiba.com"})
+_HREF_RE = re.compile(r"""href\s*=\s*["']([^"']+)["']""", re.I)
+_ABS_URL_RE = re.compile(
+    r"^(?:https?:)?//(?P<host>[^/]+)(?P<path>/.*)$",
+    re.I,
+)
+
+
+def _history_race_id_from_href(href: str) -> str:
+    """Return a 12-digit race id from an allowed race href, else empty.
+
+    Accepts relative /race/{12}/ and absolute http(s) URLs on db.netkeiba.com
+    or db.sp.netkeiba.com. Query strings and a trailing slash are ignored.
+    Date/venue/race-name text is never synthesized into an id.
+    """
+    raw = unescape((href or "").strip())
+    if not raw:
+        return ""
+    no_query = raw.split("?", 1)[0]
+    host = ""
+    path = no_query
+    abs_m = _ABS_URL_RE.match(no_query)
+    if abs_m:
+        host = (abs_m.group("host") or "").lower()
+        if host not in _ALLOWED_RACE_HOSTS:
+            return ""
+        path = abs_m.group("path") or ""
+    elif no_query.startswith("/"):
+        path = no_query
+    else:
+        return ""
+    path = path.rstrip("/")
+    m = re.fullmatch(r"/race/(\d{12})", path)
+    if not m:
+        return ""
+    return m.group(1)
+
+
+def _extract_history_race_id_from_cell(cell_html: str) -> str:
+    if not cell_html:
+        return ""
+    for href in _HREF_RE.findall(cell_html):
+        rid = _history_race_id_from_href(href)
+        if rid:
+            return rid
+    return ""
+
+
 def parse_history_table_html(html: str) -> List[Dict[str, Any]]:
     """Parse the horse page HTML to extract race history rows.
 
@@ -183,8 +231,11 @@ def parse_history_table_html(html: str) -> List[Dict[str, Any]]:
 
         surface, distance = _split_course_distance(dist_val)
         c1, c2, c3, c4, passing_raw = _parse_passing(_cell_text(cells_raw, passing_idx))
+        race_cell = cells_raw[race_name_idx] if race_name_idx is not None and 0 <= race_name_idx < len(cells_raw) else ""
+        history_race_id = _extract_history_race_id_from_cell(race_cell)
 
         rows.append({
+            "history_race_id": history_race_id,
             "history_date": date_val,
             "history_place": _cell_text(cells_raw, place_idx),
             "history_race_name": _cell_text(cells_raw, race_name_idx),

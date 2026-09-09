@@ -173,6 +173,23 @@ def _is_retryable_fetch_failed(
     return False
 
 
+PARSE_FAILED_RETRY_CODES = frozenset({"NO_HISTORY_RACE_ID"})
+
+
+def _is_retryable_parse_failed(
+    row: dict[str, Any],
+    *,
+    max_attempts: int,
+) -> bool:
+    """Limited retry: parse_failed + NO_HISTORY_RACE_ID only, when flag is on."""
+    if str(row.get("queue_status") or "") != "parse_failed":
+        return False
+    if int(row.get("attempt_count") or 0) >= max_attempts:
+        return False
+    code = str(row.get("error_code") or "")
+    return code in PARSE_FAILED_RETRY_CODES
+
+
 def _is_pending_eligible(row: dict[str, Any], *, now: datetime) -> bool:
     if str(row.get("queue_status") or "") != "pending":
         return False
@@ -205,7 +222,11 @@ def select_eligible(
     retry_fetch_failed: bool = False,
     max_attempts: int = 3,
 ) -> list[str]:
-    """Select pending, and optionally retryable fetch_failed. Never complete."""
+    """Select pending, retryable fetch_failed, and limited parse_failed.
+
+    parse_failed is retried only when retry_fetch_failed is on and
+    error_code is NO_HISTORY_RACE_ID. Never complete. Never rewrite queue.
+    """
     now = now or _utc_now()
     out: list[str] = []
     for hid, row in sorted(rows.items(), key=lambda kv: (str(kv[1].get("created_at") or ""), kv[0])):
@@ -216,6 +237,10 @@ def select_eligible(
             out.append(hid)
         elif retry_fetch_failed and _is_retryable_fetch_failed(
             row, now=now, max_attempts=max_attempts
+        ):
+            out.append(hid)
+        elif retry_fetch_failed and _is_retryable_parse_failed(
+            row, max_attempts=max_attempts
         ):
             out.append(hid)
         if len(out) >= max_horses:
@@ -375,8 +400,13 @@ def run_w5_acquire(
                 continue
             if _is_pending_eligible(row, now=started) or (
                 cfg.retry_fetch_failed
-                and _is_retryable_fetch_failed(
-                    row, now=started, max_attempts=cfg.max_attempts_per_horse
+                and (
+                    _is_retryable_fetch_failed(
+                        row, now=started, max_attempts=cfg.max_attempts_per_horse
+                    )
+                    or _is_retryable_parse_failed(
+                        row, max_attempts=cfg.max_attempts_per_horse
+                    )
                 )
             ):
                 candidates.append(hid)
