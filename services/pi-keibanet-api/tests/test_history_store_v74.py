@@ -11,6 +11,7 @@ from unittest import mock
 from pi_keibanet.history_store import (
     CompositeHistoryStore,
     CsvHistoryStore,
+    csv_has_history_rows,
     is_weekend_jst,
 )
 from pi_keibanet.service import PiKeibaNetService
@@ -129,6 +130,24 @@ class CompositeOrderTest(unittest.TestCase):
         self.assertEqual(source, "csv")
         self.assertEqual(rows[0]["horse_id"], "1")
         db_store.load_race_rows.assert_not_called()
+
+
+class CsvHasHistoryRowsTest(unittest.TestCase):
+    def test_header_only_is_missing(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            hist = Path(tmp) / "horse_history_raw.csv"
+            hist.write_text("race_id,horse_id\n", encoding="utf-8-sig")
+            self.assertFalse(csv_has_history_rows(hist, "2026-09-06-02-10"))
+
+    def test_data_row_is_present(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            hist = Path(tmp) / "horse_history_raw.csv"
+            with hist.open("w", encoding="utf-8-sig", newline="") as fh:
+                w = csv.DictWriter(fh, fieldnames=["race_id", "horse_id"])
+                w.writeheader()
+                w.writerow({"race_id": "2026-09-06-02-10", "horse_id": "2019105747"})
+            self.assertTrue(csv_has_history_rows(hist, "2026-09-06-02-10"))
+            self.assertFalse(csv_has_history_rows(hist, "2026-09-06-01-01"))
 
 
 if __name__ == "__main__":

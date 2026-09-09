@@ -27,6 +27,7 @@ from pi_keibanet.race_refresh import (
     load_snapshot,
     merge_daily_features,
     merge_day_frames,
+    race_needs_history_repair,
     run_refresh,
     save_snapshot,
     select_races_for_update,
@@ -293,6 +294,262 @@ class RunRefreshIntegrationTest(unittest.TestCase):
             json_path = write_report_json(report, cfg)
             payload = json.loads(json_path.read_text(encoding="utf-8"))
             self.assertEqual(payload["updated_count"], 1)
+
+
+class HistoryRepairPredicateTest(unittest.TestCase):
+    def _cfg(self, tmp: str) -> RefreshConfig:
+        return RefreshConfig(data_root=Path(tmp) / "data", state_root=Path(tmp) / "state")
+
+    def test_history_ok_is_legal_empty_not_repair(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            cfg = self._cfg(tmp)
+            date = "2026-09-06"
+            (cfg.state_root / date).mkdir(parents=True)
+            (cfg.state_root / date / "horse_history_raw.csv").write_text(
+                "race_id,horse_id\n", encoding="utf-8-sig"
+            )
+            entry = RaceSnapshotEntry(
+                race_id="2026-09-06-02-10",
+                numeric_race_id="N",
+                course="阪神",
+                race_number=10,
+                fingerprint="x",
+                features_ok=True,
+                history_ok=True,
+            )
+            self.assertFalse(
+                race_needs_history_repair(cfg, date, "2026-09-06-02-10", entry)
+            )
+
+    def test_existing_csv_rows_skip_repair(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            cfg = self._cfg(tmp)
+            date = "2026-09-06"
+            (cfg.state_root / date).mkdir(parents=True)
+            (cfg.state_root / date / "horse_history_raw.csv").write_text(
+                "race_id,horse_id\n2026-09-06-02-10,2019105747\n",
+                encoding="utf-8-sig",
+            )
+            entry = RaceSnapshotEntry(
+                race_id="2026-09-06-02-10",
+                numeric_race_id="N",
+                course="阪神",
+                race_number=10,
+                fingerprint="x",
+                features_ok=True,
+                history_ok=False,
+            )
+            self.assertFalse(
+                race_needs_history_repair(cfg, date, "2026-09-06-02-10", entry)
+            )
+
+    def test_header_only_without_history_ok_needs_repair(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            cfg = self._cfg(tmp)
+            date = "2026-09-06"
+            (cfg.state_root / date).mkdir(parents=True)
+            (cfg.state_root / date / "horse_history_raw.csv").write_text(
+                "race_id,horse_id\n", encoding="utf-8-sig"
+            )
+            entry = RaceSnapshotEntry(
+                race_id="2026-09-06-02-10",
+                numeric_race_id="N",
+                course="阪神",
+                race_number=10,
+                fingerprint="x",
+                features_ok=True,
+                history_ok=False,
+            )
+            self.assertTrue(
+                race_needs_history_repair(cfg, date, "2026-09-06-02-10", entry)
+            )
+
+
+class StaticHoldHistoryRepairRefreshTest(unittest.TestCase):
+    def _published(self) -> list[dict]:
+        entries = [
+            {
+                "horse_id": "2019105747",
+                "horse_number": 1,
+                "_odds": 2.0,
+                "_popularity": 1,
+                "jockey": "A",
+                "weight": 57,
+            }
+        ]
+        return [
+            {
+                "race_id": "2026-09-06-02-10",
+                "numeric_race_id": "202609060210",
+                "course": "阪神",
+                "race_number": 10,
+                "race_name": "阪神11R",
+                "entries": entries,
+                "shutuba_html": "<html></html>",
+            }
+        ]
+
+    def _process_return(self):
+        return (
+            [
+                {
+                    "race_id": "2026-09-06-02-10",
+                    "horse_id": "2019105747",
+                    "horse_number": 1,
+                    "horse_number_source": "umaban",
+                    "frame_number": 1,
+                    "date": "2026-09-06",
+                }
+            ],
+            [
+                {
+                    "race_id": "2026-09-06-02-10",
+                    "horse_id": "2019105747",
+                    "history_date": "26/08/01",
+                    "history_place": "新潟",
+                    "history_race_name": "新潟記念",
+                    "history_finish": "3",
+                }
+            ],
+            {},
+        )
+
+    @patch("pi_keibanet.race_refresh.verify_feature_loader", return_value=[])
+    @patch("pi_keibanet.race_refresh.process_race_pipeline")
+    @patch("pi_keibanet.race_refresh.discover_published_races")
+    @patch("pi_keibanet.race_refresh.build_features")
+    def test_weekend_missing_history_uses_existing_fetch_path(
+        self,
+        mock_build_features,
+        mock_discover,
+        mock_process,
+        _mock_verify,
+    ):
+        published = self._published()
+        mock_discover.return_value = ([MagicMock()], published, 0)
+        mock_process.return_value = self._process_return()
+        mock_build_features.return_value = pd.DataFrame(
+            [
+                {
+                    "race_id": "2026-09-06-02-10",
+                    "horse_id": "2019105747",
+                    "horse_number": 1,
+                    "history_count": 1,
+                }
+            ]
+        )
+        fp = compute_entries_fingerprint(published[0]["entries"])
+        with tempfile.TemporaryDirectory() as tmp:
+            cfg = RefreshConfig(data_root=Path(tmp) / "data", state_root=Path(tmp) / "state")
+            day = cfg.state_root / "2026-09-06"
+            day.mkdir(parents=True)
+            (day / "horse_history_raw.csv").write_text("race_id,horse_id\n", encoding="utf-8-sig")
+            save_snapshot(
+                cfg,
+                "2026-09-06",
+                {
+                    "2026-09-06-02-10": RaceSnapshotEntry(
+                        race_id="2026-09-06-02-10",
+                        numeric_race_id="202609060210",
+                        course="阪神",
+                        race_number=10,
+                        fingerprint=fp,
+                        features_ok=True,
+                        history_ok=False,
+                    )
+                },
+            )
+            now = datetime(2026, 9, 6, 10, 0, tzinfo=ZoneInfo("Asia/Tokyo"))
+            report = run_refresh("2026-09-06", config=cfg, now=now, force=True)
+            self.assertEqual(report.updated_count, 1)
+            self.assertEqual(report.skipped_unchanged, 0)
+            mock_process.assert_called_once()
+            self.assertTrue(mock_process.call_args.kwargs.get("fetch_history"))
+            snap = load_snapshot(cfg, "2026-09-06")
+            self.assertTrue(snap["2026-09-06-02-10"].history_ok)
+
+    @patch("pi_keibanet.race_refresh.verify_feature_loader", return_value=[])
+    @patch("pi_keibanet.race_refresh.process_race_pipeline")
+    @patch("pi_keibanet.race_refresh.discover_published_races")
+    @patch("pi_keibanet.race_refresh.build_features")
+    def test_legal_empty_maiden_does_not_refetch(
+        self,
+        mock_build_features,
+        mock_discover,
+        mock_process,
+        _mock_verify,
+    ):
+        published = self._published()
+        mock_discover.return_value = ([MagicMock()], published, 0)
+        fp = compute_entries_fingerprint(published[0]["entries"])
+        with tempfile.TemporaryDirectory() as tmp:
+            cfg = RefreshConfig(data_root=Path(tmp) / "data", state_root=Path(tmp) / "state")
+            day = cfg.state_root / "2026-09-06"
+            day.mkdir(parents=True)
+            (day / "horse_history_raw.csv").write_text("race_id,horse_id\n", encoding="utf-8-sig")
+            save_snapshot(
+                cfg,
+                "2026-09-06",
+                {
+                    "2026-09-06-02-10": RaceSnapshotEntry(
+                        race_id="2026-09-06-02-10",
+                        numeric_race_id="202609060210",
+                        course="阪神",
+                        race_number=10,
+                        fingerprint=fp,
+                        features_ok=True,
+                        history_ok=True,
+                    )
+                },
+            )
+            now = datetime(2026, 9, 6, 10, 15, tzinfo=ZoneInfo("Asia/Tokyo"))
+            report = run_refresh("2026-09-06", config=cfg, now=now, force=True)
+            self.assertEqual(report.updated_count, 0)
+            self.assertEqual(report.skipped_unchanged, 1)
+            mock_process.assert_not_called()
+            mock_build_features.assert_not_called()
+
+    @patch("pi_keibanet.race_refresh.verify_feature_loader", return_value=[])
+    @patch("pi_keibanet.race_refresh.process_race_pipeline")
+    @patch("pi_keibanet.race_refresh.discover_published_races")
+    @patch("pi_keibanet.race_refresh.build_features")
+    def test_existing_history_rows_not_refetched_on_weekend(
+        self,
+        mock_build_features,
+        mock_discover,
+        mock_process,
+        _mock_verify,
+    ):
+        published = self._published()
+        mock_discover.return_value = ([MagicMock()], published, 0)
+        fp = compute_entries_fingerprint(published[0]["entries"])
+        with tempfile.TemporaryDirectory() as tmp:
+            cfg = RefreshConfig(data_root=Path(tmp) / "data", state_root=Path(tmp) / "state")
+            day = cfg.state_root / "2026-09-06"
+            day.mkdir(parents=True)
+            (day / "horse_history_raw.csv").write_text(
+                "race_id,horse_id\n2026-09-06-02-10,2019105747\n",
+                encoding="utf-8-sig",
+            )
+            save_snapshot(
+                cfg,
+                "2026-09-06",
+                {
+                    "2026-09-06-02-10": RaceSnapshotEntry(
+                        race_id="2026-09-06-02-10",
+                        numeric_race_id="202609060210",
+                        course="阪神",
+                        race_number=10,
+                        fingerprint=fp,
+                        features_ok=True,
+                    )
+                },
+            )
+            now = datetime(2026, 9, 6, 10, 30, tzinfo=ZoneInfo("Asia/Tokyo"))
+            report = run_refresh("2026-09-06", config=cfg, now=now, force=True)
+            self.assertEqual(report.updated_count, 0)
+            self.assertEqual(report.skipped_unchanged, 1)
+            mock_process.assert_not_called()
 
 
 if __name__ == "__main__":
