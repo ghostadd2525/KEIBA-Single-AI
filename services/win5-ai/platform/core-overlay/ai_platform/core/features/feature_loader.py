@@ -47,8 +47,13 @@ class FeatureLoader:
     def __init__(self, *, data_root: Path | None = None) -> None:
         self._data_root = data_root or _resolve_data_root()
 
-    def load(self, core_race_id: str) -> FeatureLoadResult | None:
-        rid = str(core_race_id or "").strip()
+    def load(self, lookup_key: str, *, numeric_race_id: str = "") -> FeatureLoadResult | None:
+        """
+        lookup_key は FeatureLookupRef（Production では Catalog/Win5 race_id）。
+        CoreRaceRef を渡してはならない。numeric_race_id は列マッチの補助のみ。
+        """
+        rid = str(lookup_key or "").strip()
+        numeric = "".join(ch for ch in str(numeric_race_id or "") if ch.isdigit())
         if not rid:
             _set_failure("race_not_found")
             return None
@@ -62,12 +67,12 @@ class FeatureLoader:
             except Exception:
                 pass
 
-        daily = self._load_daily_csv(rid)
+        daily = self._load_daily_csv(rid, numeric_race_id=numeric)
         if daily is not None:
             _set_failure("")
             return daily
 
-        global_csv = self._load_global_csv(rid)
+        global_csv = self._load_global_csv(rid, numeric_race_id=numeric)
         if global_csv is not None:
             _set_failure("")
             return global_csv
@@ -80,30 +85,32 @@ class FeatureLoader:
             _set_failure("market_feature_missing")
         return None
 
-    def classify_unavailable(self, core_race_id: str) -> str | None:
+    def classify_unavailable(self, lookup_key: str, *, numeric_race_id: str = "") -> str | None:
         """None if loadable; otherwise fallback_reason code."""
-        if self.load(core_race_id) is not None:
+        if self.load(lookup_key, numeric_race_id=numeric_race_id) is not None:
             return None
         return get_last_failure_reason() or "market_feature_missing"
 
-    def _load_daily_csv(self, core_race_id: str) -> FeatureLoadResult | None:
+    def _load_daily_csv(self, lookup_key: str, *, numeric_race_id: str = "") -> FeatureLoadResult | None:
         if not self._data_root:
             return None
-        date = core_race_id[:10]
+        date = _date_from_lookup_key(lookup_key)
+        if not date:
+            return None
         daily_dir = self._data_root / "demo_daily_outputs" / date
         candidates = (
             daily_dir / "demo_runners_pace_market_features.csv",
             daily_dir / "Demo_runners_pace_market_features.csv",
         )
         for path in candidates:
-            loaded = self._read_csv_race(path, core_race_id)
+            loaded = self._read_csv_race(path, lookup_key, numeric_race_id=numeric_race_id)
             if loaded is not None:
                 loaded.feature_source = self.SOURCE_DAILY_CSV
                 loaded.metadata["path"] = str(path)
                 return loaded
         return None
 
-    def _load_global_csv(self, core_race_id: str) -> FeatureLoadResult | None:
+    def _load_global_csv(self, lookup_key: str, *, numeric_race_id: str = "") -> FeatureLoadResult | None:
         if not self._data_root:
             return None
         candidates = (
@@ -113,26 +120,30 @@ class FeatureLoader:
             self._data_root / "Demo_runners_pace_market_features.csv",
         )
         for path in candidates:
-            loaded = self._read_csv_race(path, core_race_id)
+            loaded = self._read_csv_race(path, lookup_key, numeric_race_id=numeric_race_id)
             if loaded is not None:
                 loaded.feature_source = self.SOURCE_GLOBAL_CSV
                 loaded.metadata["path"] = str(path)
                 return loaded
         return None
 
-    def _read_csv_race(self, path: Path, core_race_id: str) -> FeatureLoadResult | None:
+    def _read_csv_race(
+        self,
+        path: Path,
+        lookup_key: str,
+        *,
+        numeric_race_id: str = "",
+    ) -> FeatureLoadResult | None:
         if not path.exists():
             return None
         frame = _read_csv(path)
-        if "race_id" not in frame.columns:
-            return None
-        race = frame[frame["race_id"].astype(str) == str(core_race_id)].copy()
-        if race.empty:
+        race = _match_feature_rows(frame, lookup_key, numeric_race_id=numeric_race_id)
+        if race is None or race.empty:
             return None
         return FeatureLoadResult(
             frame=race,
             feature_source="",
-            metadata={"path": str(path), "row_count": len(race)},
+            metadata={"path": str(path), "row_count": len(race), "lookup_key": lookup_key},
         )
 
     def _any_csv_exists(self) -> bool:
@@ -148,6 +159,37 @@ class FeatureLoader:
     @staticmethod
     def _read_csv(path: Path) -> pd.DataFrame:
         return _read_csv(path)
+
+
+def _date_from_lookup_key(lookup_key: str) -> str:
+    text = str(lookup_key or "").strip()
+    if len(text) >= 10 and text[4] == "-" and text[7] == "-":
+        return text[:10]
+    return ""
+
+
+def _match_feature_rows(
+    frame: pd.DataFrame,
+    lookup_key: str,
+    *,
+    numeric_race_id: str = "",
+) -> pd.DataFrame | None:
+    """CSV の race_id（Catalog/Win5）または numeric_race_id 列で照合。スコア列は触らない。"""
+    if frame is None or frame.empty:
+        return None
+    key = str(lookup_key or "").strip()
+    numeric = "".join(ch for ch in str(numeric_race_id or "") if ch.isdigit())
+    if "race_id" in frame.columns and key:
+        race = frame[frame["race_id"].astype(str) == key].copy()
+        if not race.empty:
+            return race
+    if "numeric_race_id" in frame.columns and numeric:
+        race = frame[
+            frame["numeric_race_id"].astype(str).str.replace(r"\D", "", regex=True) == numeric
+        ].copy()
+        if not race.empty:
+            return race
+    return None
 
 
 def _read_csv(path: Path) -> pd.DataFrame:
