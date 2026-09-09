@@ -1,0 +1,14 @@
+[Unit]
+Description=Expect Research Forward-Shadow Evaluation Sidecar Timer (hourly)
+Requires=expect-research-eval-sidecar.service
+
+[Timer]
+# Hourly. Analyzer duration on 301 snapshots is seconds-class; 120s is forbidden.
+OnCalendar=hourly
+Persistent=true
+AccuracySec=5min
+RandomizedDelaySec=60
+Unit=expect-research-eval-sidecar.service
+
+[Install]
+WantedBy=timers.target

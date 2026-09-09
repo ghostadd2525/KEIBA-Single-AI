@@ -1,0 +1,28 @@
+[Unit]
+Description=Expect Research Forward-Shadow Evaluation Sidecar (V110)
+Documentation=file:///home/ubuntu/KEIBA-Single-AI/docs
+After=network-online.target expect-research-evidence-collector.service
+# Do not Require the collector: eval failure must not stop collector, and collector
+# restart must not be blocked by eval.
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=ubuntu
+Group=ubuntu
+Nice=10
+WorkingDirectory=/home/ubuntu/KEIBA-Single-AI/services/win5-ai
+EnvironmentFile=-/opt/expect-ai/shared/.env
+EnvironmentFile=-/etc/expect-ai/research-evidence.env
+Environment=PYTHONPATH=/home/ubuntu/KEIBA-Single-AI/services/win5-ai
+Environment=PYTHONDONTWRITEBYTECODE=1
+ExecStart=/usr/bin/python3 -m app.research.eval_automation_runner --once
+TimeoutStartSec=300
+TimeoutStopSec=30
+Restart=no
+StartLimitIntervalSec=86400
+StartLimitBurst=3
+# flock is also taken inside Python; RemainAfterExit=no so timer can re-run.
+
+[Install]
+WantedBy=multi-user.target
