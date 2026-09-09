@@ -8,6 +8,10 @@ from typing import Any
 from .auth import UserAuth
 from .password import hash_password, is_strong_enough_password, is_valid_login_id
 from .progress import points_from_profit, progress_payload
+from .purchase_amount import (
+    DEFAULT_MAX_PURCHASE_AMOUNT_PER_RACE,
+    validate_purchase_unit_amount,
+)
 from .race_result_settle import (
     build_purchase_snapshot,
     normalize_strategy_snapshot,
@@ -355,11 +359,20 @@ class UserService:
         if not race_id:
             raise ValueError("race_id required")
 
-        unit_stake = int(body.get("unit_stake") or body.get("purchase_unit") or 0)
-        if unit_stake < 100 or unit_stake % 100 != 0:
-            raise ValueError("unit_stake must be a multiple of 100 (min 100)")
+        max_amount = int(
+            self.settings.get(
+                "max_purchase_amount_per_race",
+                DEFAULT_MAX_PURCHASE_AMOUNT_PER_RACE,
+            )
+            or DEFAULT_MAX_PURCHASE_AMOUNT_PER_RACE
+        )
+        raw_unit = body.get("unit_stake")
+        if raw_unit is None:
+            raw_unit = body.get("purchase_unit")
+        unit_stake = validate_purchase_unit_amount(
+            raw_unit, max_amount=max_amount, field_name="unit_stake"
+        )
 
-        max_amount = int(self.settings.get("max_purchase_amount_per_race", 50000) or 50000)
         bet_types = body.get("bet_types") or body.get("selected_bet_types") or []
         if not isinstance(bet_types, list) or not bet_types:
             raise ValueError("bet_types required")
@@ -383,12 +396,11 @@ class UserService:
         divergence_ratio = float(self.settings.get("purchase_amount_divergence_ratio", 3) or 3)
         override_amount = body.get("override_purchase_amount")
         if override_amount is not None:
-            try:
-                override_amount = int(override_amount)
-            except (TypeError, ValueError):
-                raise ValueError("override_purchase_amount invalid") from None
-            if override_amount > max_amount:
-                raise ValueError(f"purchase_amount exceeds max ({max_amount})")
+            override_amount = validate_purchase_unit_amount(
+                override_amount,
+                max_amount=max_amount,
+                field_name="override_purchase_amount",
+            )
             # Scale ticket stakes proportionally to override total
             if purchase > 0 and override_amount != purchase:
                 ratio = override_amount / purchase
@@ -456,10 +468,20 @@ class UserService:
                 },
             }
         )
+        lifecycle = None
+        try:
+            from ..challenge.lifecycle import get_lifecycle_service
+
+            lifecycle = get_lifecycle_service().ensure_active_for_purchase(
+                user_id, race_id
+            )
+        except Exception:
+            lifecycle = {"ok": False, "error": "lifecycle_active_failed"}
         return {
             "schema_version": self.SCHEMA,
             "item": row,
             "progress": progress_payload(self.progress.ensure(user_id)),
+            "lifecycle": lifecycle,
         }
 
     def get_progress(self, user_id: str) -> dict[str, Any]:
@@ -550,11 +572,19 @@ class UserService:
                 "reason": "purchase not registered",
             }
         if row.get("settled") and not body.get("force"):
+            lifecycle = None
+            try:
+                from ..challenge.lifecycle import get_lifecycle_service
+
+                lifecycle = get_lifecycle_service().on_settled(user_id, race_id)
+            except Exception:
+                lifecycle = None
             return {
                 "schema_version": self.SCHEMA,
                 "item": row,
                 "already_settled": True,
                 "progress": progress_payload(self.progress.ensure(user_id)),
+                "lifecycle": lifecycle,
             }
 
         official = _load_official_result(race_id) or {}
@@ -593,13 +623,29 @@ class UserService:
 
         points_awarded = 0
         anomaly = False
+        challenge_lifecycle = None
+        try:
+            from ..challenge.lifecycle import get_lifecycle_service
+
+            challenge_lifecycle = get_lifecycle_service().repo.get(user_id, race_id)
+        except Exception:
+            challenge_lifecycle = None
+        suppress_legacy_points = challenge_lifecycle is not None
+
         if settled.get("settled") and not int(row.get("points_awarded") or 0):
             profit = int(settled.get("profit") or 0)
-            points_awarded = points_from_profit(profit)
-            self.progress.add_profit_and_points(
-                user_id, profit_delta=profit, points_delta=points_awarded
-            )
-            self.race_results.mark_points_awarded(user_id, race_id, points_awarded)
+            if suppress_legacy_points:
+                points_awarded = 0
+                self.progress.add_profit_and_points(
+                    user_id, profit_delta=profit, points_delta=0
+                )
+                self.race_results.mark_points_awarded(user_id, race_id, 0)
+            else:
+                points_awarded = points_from_profit(profit)
+                self.progress.add_profit_and_points(
+                    user_id, profit_delta=profit, points_delta=points_awarded
+                )
+                self.race_results.mark_points_awarded(user_id, race_id, points_awarded)
 
             purchase = int(settled.get("purchase_amount") or 0)
             payout = int(settled.get("payout_amount") or 0)
@@ -622,10 +668,14 @@ class UserService:
                         "meta": {
                             "multiple": round(payout / purchase, 2) if purchase else None,
                             "threshold_multiple": mult,
+                            "challenge_legacy_points_suppressed": suppress_legacy_points,
                         },
                     }
                 )
 
+            settle_meta: dict[str, Any] = {"anomaly": anomaly}
+            if suppress_legacy_points:
+                settle_meta["challenge_legacy_points_suppressed"] = True
             self.audit.append(
                 {
                     "user_id": user_id,
@@ -639,10 +689,19 @@ class UserService:
                     "user_bets": settled.get("bet_results"),
                     "ip_address": ip_address,
                     "user_agent": user_agent,
-                    "meta": {"anomaly": anomaly},
+                    "meta": settle_meta,
                 }
             )
             updated = self.race_results.get(user_id, race_id)
+
+        lifecycle = None
+        if settled.get("settled"):
+            try:
+                from ..challenge.lifecycle import get_lifecycle_service
+
+                lifecycle = get_lifecycle_service().on_settled(user_id, race_id)
+            except Exception:
+                lifecycle = {"ok": False, "error": "lifecycle_ready_failed"}
 
         return {
             "schema_version": self.SCHEMA,
@@ -652,6 +711,7 @@ class UserService:
             "points_awarded": points_awarded,
             "anomaly": anomaly,
             "progress": progress_payload(self.progress.ensure(user_id)),
+            "lifecycle": lifecycle,
         }
 
     def settle_pending_race_results(
