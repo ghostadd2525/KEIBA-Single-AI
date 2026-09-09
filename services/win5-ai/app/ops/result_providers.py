@@ -27,8 +27,17 @@ class RaceResultRow:
 
 class ResultProvider(ABC):
     @abstractmethod
-    def fetch(self, race_date: str) -> list[RaceResultRow]:
-        """Fetch official results for a race date. Raises on hard failure."""
+    def fetch(
+        self,
+        race_date: str,
+        *,
+        pending_race_ids: list[str] | None = None,
+        now: Any | None = None,
+    ) -> list[RaceResultRow]:
+        """Fetch official results for a race date. Raises on hard failure.
+
+        pending_race_ids: if set, only these race_ids are fetched (settled excluded).
+        """
 
 
 class CsvResultProvider(ResultProvider):
@@ -56,7 +65,13 @@ class CsvResultProvider(ResultProvider):
                     files.append(c)
         return [f for f in files if f.is_file()]
 
-    def fetch(self, race_date: str) -> list[RaceResultRow]:
+    def fetch(
+        self,
+        race_date: str,
+        *,
+        pending_race_ids: list[str] | None = None,
+        now: Any | None = None,
+    ) -> list[RaceResultRow]:
         files = self._resolve_files(race_date)
         if not files:
             raise FileNotFoundError(
@@ -67,10 +82,15 @@ class CsvResultProvider(ResultProvider):
             rows.extend(self._read_csv(path, race_date))
         # de-dupe by race_id (last wins)
         by_id: dict[str, RaceResultRow] = {}
+        pending = set(pending_race_ids) if pending_race_ids is not None else None
         for r in rows:
             if r.race_date == race_date:
+                if pending is not None and r.race_id not in pending:
+                    continue
                 by_id[r.race_id] = r
         if not by_id:
+            if pending is not None:
+                return []
             raise ValueError(f"CSV has no rows for race_date={race_date}")
         return list(by_id.values())
 
@@ -145,23 +165,36 @@ class NetkeibaResultProvider(ResultProvider):
 
         self.http = http or NetkeibaHttp()
 
-    def fetch(self, race_date: str) -> list[RaceResultRow]:
+    def fetch(
+        self,
+        race_date: str,
+        *,
+        pending_race_ids: list[str] | None = None,
+        now: Any | None = None,
+    ) -> list[RaceResultRow]:
         from .netkeiba_results import (
             NetkeibaResultError,
             fetch_pi_race_catalog,
             parse_result_html,
         )
+        from .result_day_contract import should_skip_pre_post_time
 
         catalog = fetch_pi_race_catalog(race_date)
         if not catalog:
-            raise NetkeibaResultError(f"PI catalog empty for {race_date}")
+            return []
 
+        pending = set(pending_race_ids) if pending_race_ids is not None else None
         rows: list[RaceResultRow] = []
         errors: list[str] = []
         for race in catalog:
             race_id = str(race.get("race_id") or "").strip()
             numeric = str(race.get("numeric_race_id") or "").strip()
             if not race_id or not numeric:
+                continue
+            if pending is not None and race_id not in pending:
+                continue
+            post_time = str(race.get("post_time") or "").strip() or None
+            if should_skip_pre_post_time(post_time, now=now, race_date=race_date):
                 continue
             try:
                 html = self.http.fetch_result_html(numeric)
@@ -212,12 +245,20 @@ class CompositeResultProvider(ResultProvider):
     def __init__(self, providers: list[ResultProvider]):
         self.providers = providers
 
-    def fetch(self, race_date: str) -> list[RaceResultRow]:
+    def fetch(
+        self,
+        race_date: str,
+        *,
+        pending_race_ids: list[str] | None = None,
+        now: Any | None = None,
+    ) -> list[RaceResultRow]:
         errors: list[str] = []
         empty_ok = False
         for p in self.providers:
             try:
-                rows = p.fetch(race_date)
+                rows = p.fetch(
+                    race_date, pending_race_ids=pending_race_ids, now=now
+                )
                 if rows:
                     return rows
                 empty_ok = True

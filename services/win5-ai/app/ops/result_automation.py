@@ -552,6 +552,21 @@ class ResultAutomationService:
                         ),
                     )
 
+                # Challenge lifecycle V6: auto-consume READY past +5min (additive; non-fatal)
+                try:
+                    from ..challenge.lifecycle import get_lifecycle_service
+
+                    lifecycle_sweep = get_lifecycle_service().sweep_auto_consume()
+                    if isinstance(settlement_meta, dict):
+                        settlement_meta["lifecycle_auto_consume"] = {
+                            "due": lifecycle_sweep.get("due"),
+                            "consumed": lifecycle_sweep.get("consumed"),
+                            "already_consumed": lifecycle_sweep.get("already_consumed"),
+                            "errors": len(lifecycle_sweep.get("errors") or []),
+                        }
+                except Exception as life_exc:
+                    warnings.append(f"challenge_lifecycle_sweep:{life_exc}")
+
                 self._set_status(conn, run_id, sm.USER_SETTLING, sm.POINT_UPDATING)
                 conn.commit()
                 points_n = int(settlement_meta.get("points_awarded_total") or 0)

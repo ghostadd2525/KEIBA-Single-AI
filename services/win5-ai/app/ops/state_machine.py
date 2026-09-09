@@ -18,10 +18,13 @@ LEVEL_UPDATING = "LEVEL_UPDATING"
 ARCHIVING = "ARCHIVING"
 COMPLETED = "COMPLETED"
 DEGRADED = "DEGRADED"
+PARTIAL = "PARTIAL"  # run finished; day result acquisition still pending
 FAILED = "FAILED"
 SUPERSEDED = "SUPERSEDED"
 
-TERMINAL: FrozenSet[str] = frozenset({COMPLETED, DEGRADED, FAILED, SUPERSEDED})
+TERMINAL: FrozenSet[str] = frozenset(
+    {COMPLETED, DEGRADED, PARTIAL, FAILED, SUPERSEDED}
+)
 ACTIVE: FrozenSet[str] = frozenset(
     {
         PENDING,
@@ -75,7 +78,7 @@ TRANSITIONS: dict[str, FrozenSet[str]] = {
     USER_SETTLING: frozenset({POINT_UPDATING, FAILED}),
     POINT_UPDATING: frozenset({LEVEL_UPDATING, FAILED}),
     LEVEL_UPDATING: frozenset({ARCHIVING, FAILED}),
-    ARCHIVING: frozenset({COMPLETED, DEGRADED, FAILED}),
+    ARCHIVING: frozenset({COMPLETED, DEGRADED, PARTIAL, FAILED}),
 }
 
 
