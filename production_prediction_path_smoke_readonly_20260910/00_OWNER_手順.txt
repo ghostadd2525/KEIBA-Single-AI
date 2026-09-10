@@ -1,0 +1,34 @@
+Owner 手順（read-only · 1本）
+============================
+
+1. このフォルダを Windows に置く。
+2. 02_powershell\OWNER_READONLY.ps1 を実行する。
+3. Downloads の output txt を返す。既存同名は上書きせず失敗。
+
+Cursor は実行しない。EC2 接続もしない。
+Production 変更・DB 書込み・POST・APPLY・学習・GitHub は禁止。
+
+返却必須フラグ（REMOTE_STDOUT から）
+  CURRENT_PRODUCTION_PREDICTION_HTTP_OK
+  FRONTEND_API_TARGET_CONFIRMED   （本 pack の 01_docs と CURSOR 側で確定済）
+  BUNDLE_SCHEMA_VALID
+  RUNNER_COUNT
+  HORSE_NUMBER_UNIQUE
+  WIN_PROB_VALID
+  MODEL_RANK_VALID
+  MARK_VALID
+  REAL_AI_CONFIRMED
+  FALLBACK_USED
+  GET_DB_WRITE_COUNT
+  SYSTEMD_ACTIVE
+  RECENT_RUNTIME_ERROR_COUNT
+  CURRENT_PRODUCTION_PREDICTION_HEALTH_VERIFIED
+  PRODUCTION_CHANGED=NO
+  DB_CHANGED=NO
+  POST_ENDPOINT_CALLED=NO
+
+公開サイト補足（Cursor が 2026-09-10 に確認）
+  pages / race.html = HTTP 200
+  GET /api/predictions = 503 OPS_CLOSED（Research Week 〜 2026-09-12 00:00 JST）
+  /api/health = 200 · ai_proxy_configured=true · result_automation ok
+  内部 :8000 は Cursor から到達不能 → 本 pack で確認

@@ -1,0 +1,20 @@
+ALLOWED
+  GET frontend HTML (Cursor already did)
+  GET /api/health /api/system/status /api/ops/public-status (exempt)
+  Owner remote GET http://127.0.0.1:8000/health
+  Owner remote GET http://127.0.0.1:8000/v1/predictions
+  Owner remote GET http://127.0.0.1:8000/v1/predictions/{existing_race_id}
+  sqlite3 mode=ro SELECT/PRAGMA
+  systemctl show / status
+  journalctl -u expect-ai.service --no-pager (read)
+
+FORBIDDEN
+  POST /v1/prediction-runs
+  POST any
+  INSERT / UPDATE / DELETE / migrate
+  systemctl start|stop|restart|reload|enable|disable|mask
+  Conversation / Challenge / Result Automation write
+  Production file / env / service edit
+  Invented race_id
+  SCP / remote mkdir / sudo
+  Printing secrets or .env

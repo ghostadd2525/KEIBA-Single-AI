@@ -1,0 +1,42 @@
+{
+  "observed_at_utc": "2026-09-10T14:44:19Z",
+  "observer": "cursor_read_only_http",
+  "production_changed": false,
+  "db_changed": false,
+  "post_endpoint_called": false,
+  "pages": {
+    "https://keiba-single-ai.pages.dev/": 200,
+    "https://keiba-single-ai.pages.dev/race.html": 200,
+    "https://keiba-single-ai.pages.dev/races.html": 200,
+    "https://expect-keiba.com/": 200,
+    "https://expect-keiba.com/race.html": 200
+  },
+  "bff": {
+    "https://keiba-single-ai.pages.dev/api/health": {
+      "http": 200,
+      "expect_env": "production",
+      "ai_proxy_configured": true,
+      "pi_proxy_configured": true,
+      "result_automation_ok": true,
+      "pi_ok": true
+    },
+    "https://keiba-single-ai.pages.dev/api/system/status": {
+      "http": 200,
+      "ops_mode": "CLOSED",
+      "reason": "research_week_maintenance",
+      "maintenance_end": "2026-09-12T00:00:00+09:00",
+      "is_race_day": false
+    },
+    "https://keiba-single-ai.pages.dev/api/predictions": {
+      "http": 503,
+      "code": "OPS_CLOSED"
+    },
+    "https://expect-keiba.com/api/predictions": {
+      "http": 503,
+      "code": "OPS_CLOSED"
+    }
+  },
+  "internal_python": {
+    "http://127.0.0.1:8000/health": "unreachable_from_cursor"
+  }
+}
