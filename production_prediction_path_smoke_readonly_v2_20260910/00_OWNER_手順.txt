@@ -1,0 +1,24 @@
+Owner 手順 v2（read-only · 1本）
+==============================
+
+v1 pack は実行しないでください。
+
+1. この v2 フォルダだけを使う。
+2. 02_powershell\OWNER_READONLY.ps1 を実行する。
+3. Downloads の v2 output txt を返す。
+
+禁止
+  v1 OWNER_READONLY.ps1
+  POST /v1/prediction-runs
+  推測 race_id
+  DB の過去 race_id で detail GET
+  Production 変更
+  PR #23 の merge
+
+Cursor 判定（公開経路・訂正済）
+  FRONTEND_STATIC_HTTP_OK=YES
+  PUBLIC_API_HEALTH_OK=YES
+  PUBLIC_PREDICTION_GATE_STATUS=EXPECTED_OPS_CLOSED
+  PUBLIC_PREDICTION_BUNDLE_RETURNED=NO
+  CURRENT_PRODUCTION_PREDICTION_HTTP_OK=N_A_OPS_CLOSED
+  CURRENT_PRODUCTION_PREDICTION_HEALTH_VERIFIED=NO

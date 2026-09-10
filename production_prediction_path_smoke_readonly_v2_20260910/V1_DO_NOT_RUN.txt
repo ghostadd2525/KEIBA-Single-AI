@@ -1,0 +1,7 @@
+DO NOT RUN v1
+production_prediction_path_smoke_readonly_20260910
+
+Reason: v1 pick_existing_race_id can fall back to read-only DB
+historical race_id and then live GET /v1/predictions/{race_id}.
+
+Use this v2 pack only.
