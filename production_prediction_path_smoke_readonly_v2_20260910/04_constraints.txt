@@ -1,0 +1,23 @@
+ALLOWED
+  Owner remote GET http://127.0.0.1:8000/health
+  Owner remote GET http://127.0.0.1:8000/v1/predictions
+  Owner remote GET http://127.0.0.1:8000/v1/predictions/{race_id}
+    only if race_id was returned by the same-run list GET
+  sqlite3 mode=ro SELECT COUNT(*) FROM predictions
+  existing-path snapshot compare (no mkdir)
+  systemctl show / status
+  journalctl -u expect-ai.service --no-pager
+
+FORBIDDEN
+  Running v1 pack
+  POST /v1/prediction-runs
+  POST any
+  Live detail GET using DB historical race_id
+  Invented race_id
+  INSERT / UPDATE / DELETE / migrate
+  systemctl start|stop|restart|reload|enable|disable
+  Conversation / Result Automation write
+  Production file / env / service edit
+  Cursor connecting to :8000
+  Merging PR #23
+  Mixing this pack into persist/POST PRs

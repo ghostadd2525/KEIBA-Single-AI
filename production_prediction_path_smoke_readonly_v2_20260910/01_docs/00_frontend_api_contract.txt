@@ -1,0 +1,29 @@
+Frontend → BFF → Python 契約（コード正本）
+公開判定は訂正済。v1 FLAGS の HTTP_OK=YES は使わない。
+
+FRONTEND_STATIC_HTTP_OK=YES
+  / /race.html /races.html = 200
+
+PUBLIC_API_HEALTH_OK=YES
+  GET /api/health = 200
+  ai_proxy_configured=true
+
+PUBLIC_PREDICTION_GATE_STATUS=EXPECTED_OPS_CLOSED
+  Research Week USER /api/predictions = 503 OPS_CLOSED
+  再開 2026-09-12 00:00 JST
+
+PUBLIC_PREDICTION_BUNDLE_RETURNED=NO
+CURRENT_PRODUCTION_PREDICTION_HTTP_OK=N_A_OPS_CLOSED
+CURRENT_PRODUCTION_PREDICTION_HEALTH_VERIFIED=NO
+
+Browser
+  GET /api/predictions
+  GET /api/predictions/:id
+  schema: single-prediction-bundle/2.0
+
+BFF（AI_BASE_URL 設定時）
+  GET {AI_BASE_URL}/v1/predictions
+  GET {AI_BASE_URL}/v1/predictions/{race_id}
+
+Python GET は predictions INSERT しない。
+v2 Owner pack は list が返した race_id だけを detail に使う。

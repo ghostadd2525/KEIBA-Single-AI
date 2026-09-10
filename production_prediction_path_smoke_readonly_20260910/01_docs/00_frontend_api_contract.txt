@@ -1,0 +1,52 @@
+Frontend → BFF → Python 契約（コード正本）
+========================================
+
+公開サイト
+  https://expect-keiba.com/
+  https://keiba-single-ai.pages.dev/
+  予想ページ: /race.html （public/race.html）
+  一覧: / および /races.html
+
+Browser client
+  public/assets/api/prediction.js
+  GET /api/predictions           → PredictionBundle[]
+  GET /api/predictions/:id       → PredictionBundle
+  schema_version 固定: single-prediction-bundle/2.0
+  画面は ExpectApi.Prediction 以外から fetch しない
+
+BFF
+  functions/api/predictions/index.js   → PredictionAdapter.list
+  functions/api/predictions/[id].js    → PredictionAdapter.get
+  functions/_lib/adapters/predictionAdapter.js
+  AI_BASE_URL 設定時（useAiProxy）:
+    GET {AI_BASE_URL}/v1/predictions
+    GET {AI_BASE_URL}/v1/predictions/{race_id}
+    via functions/_lib/aiProxy.js aiFetch
+  PI /v1/predictions/{id} は PREDICTION_ALLOW_PI_FALLBACK=1 のときだけ
+  AI_BASE_URL 未設定時のみ PI または bff_mock
+
+Pages [vars]（wrangler.toml）
+  AI_ENGINE=real
+  EXPECT_ENV=production
+  実切替は AI_BASE_URL（env.js useAiProxy）
+
+Python（EC2 expect-ai.service · loopback :8000）
+  services/win5-ai/app/main.py
+  GET /v1/predictions            → list_with_meta
+  GET /v1/predictions/{race_id}  → get_with_meta
+  GET は predictions INSERT しない
+  認証時のみ record_prediction_view（user history）。本 pack は Authorization を送らない
+  AI_ENGINE=real → RealAiPredictionSource
+    成功: engine_source=real_ai
+    失敗: engine_source=mock_fallback + fallback_reason
+
+Research Week
+  functions/_middleware.js
+  USER の /api/predictions は OPS_CLOSED → 503
+  exempt: /api/health /api/system/status /api/ops/public-status 等
+  ADMIN は bypass。本 pack は ADMIN トークンを使わない
+  公開再開: 2026-09-12 00:00 JST（Cursor 確認時点）
+
+許可 mark
+  honmei | taikou | ana | chuuken | none
+  mapper: rank 1-4 → honmei/taikou/ana/chuuken、それ以外 none
