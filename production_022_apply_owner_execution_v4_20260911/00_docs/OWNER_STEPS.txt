@@ -1,0 +1,81 @@
+Owner steps (do not run until independent v4 review)
+===================================================
+
+This agent must not apply 022 on Production.
+This pack does not set OWNER_PRODUCTION_022_APPLY_APPROVED.
+PRODUCTION_022_APPLY_EXECUTION_ALLOWED=NO
+OWNER_APPLY_APPROVED=NO
+APPLY_EXECUTED=NO
+
+1. Keep v1/v2/v3 APPLY ZIPs, v1-v4 backup ZIPs, and the APPLY plan ZIP.
+   Do not overwrite them.
+2. Independent review of this v4 APPLY execution pack must pass first.
+   After unzip, `sha256sum -c SHA256SUMS.txt` must PASS.
+3. After review, Owner confirms Windows PowerShell 5.1 Parser.ParseFile
+   on the real OWNER_APPLY.ps1. Linux pwsh parse is not that confirmation.
+4. After review + that Windows confirm, Owner may later set
+   OWNER_PRODUCTION_022_APPLY_APPROVED=1 in their own Windows session and
+   run only:
+     02_powershell/OWNER_APPLY.ps1
+5. Wrapper forwards that exact 1. It never sets EXPECT_AI_ALLOW_MIGRATION_022
+   or PREDICTION_RUNS_ENABLED.
+6. Remote hard deadline is 120s. Wrapper timeout is 240s, which is longer
+   than remote + drain 20s + kill-drain 8s + 40s buffer.
+7. Remote HALTs before COMMIT if:
+   backup missing / SHA mismatch / dest/ino drift
+   live dest/ino != 66305:349935
+   transaction-time schema is not Owner 22-migration / 8-column canon
+   existing idx_predictions_race missing
+   022 already present
+   PREDICTION_RUNS_ENABLED effective 1
+   EXPECT_AI_ALLOW_MIGRATION_022 or _019 effective 1 on Production
+   Production env cannot be determined
+   service ActiveState is not active
+   localhost /health or GET /v1/predictions baseline fails
+   remaining time is below 70s (INSUFFICIENT_TIME_BEFORE_APPLY)
+8. APPLY uses one RW connection:
+   PRAGMA busy_timeout=8000
+   BEGIN IMMEDIATE
+   re-check identity + pre-schema inside the write transaction
+   add 4 nullable columns, partial UNIQUE index, one 022 migration row
+   re-check post-schema / row count / NULL compat in the same transaction
+   COMMIT only if those checks pass
+   any pre-COMMIT failure does an explicit ROLLBACK
+   immediately after COMMIT emit APPLY_EXECUTED=YES and APPLY_PHASE=COMMITTED
+9. APPLY window sets EXPECT_AI_ALLOW_MIGRATION_022=1 in the python3 process
+   only, then unsets it. systemd / EnvironmentFile are not written.
+10. Immediate required post-apply checks in this same remote payload:
+   remaining time after COMMIT must be >= 25s or HALT with
+   APPLY_EXECUTED=YES / APPLY_PHASE=COMMITTED already returned
+   service ActiveState=active
+   localhost /health
+   GET /v1/predictions envelope key/shape compare
+   GET before/after predictions row count delta=0
+   detail GET only from that list's current race_id; skip if list empty
+   journal error count after APPLY_STARTED_UTC
+   GET https://expect-keiba.com/ /race.html /races.html
+   GET https://keiba-single-ai.pages.dev/ /race.html /races.html
+   GET /api/health and /api/predictions on both public origins
+   /api/health: HTTP 200 + JSON + known BFF health contract
+   /api/predictions: 200 JSON envelope, or 503 error.code=OPS_CLOSED only
+   static HTML: 200 + text/html + site identifiers Expect and KEIBA
+   body reads are capped; unexpected redirects are refused
+   SITE_UI_VISUAL_CHECKED=NO; Owner browser review is a later step
+   POST /v1/prediction-runs is not called
+   Conversation / RA / Challenge writes are not called
+11. If those public GETs cannot be performed in this same procedure:
+      POST_APPLY_REGRESSION_PASS=PENDING_PUBLIC_SMOKE
+      PRODUCTION_IMPACT_VERIFIED=PARTIAL
+      OWNER_APPLY_STATUS=PENDING_PUBLIC_SMOKE
+    That is not final success. Do not emit POST_APPLY_REGRESSION_PASS=YES.
+12. After schema SUCCESS, POST remains disabled. Do not enable POST.
+    Do not switch site. Do not merge PR #23-#36.
+13. If COMMIT succeeded and a later check or public smoke fails:
+      APPLY_EXECUTED=YES
+      APPLY_PHASE=COMMITTED
+      POST_APPLY_REGRESSION_PASS=NO
+      ROLLBACK_REVIEW_REQUIRED=YES
+    Do not auto-drop columns, rows, bundle_json, or schema_migrations.
+    Do not auto-restore backup. Index DROP is an Owner decision.
+    Wrapper timeout after those lines still records REMOTE_APPLY_EXECUTED
+    and REMOTE_APPLY_PHASE from drained stdout.

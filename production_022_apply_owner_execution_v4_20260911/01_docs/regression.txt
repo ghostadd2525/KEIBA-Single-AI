@@ -1,0 +1,58 @@
+Required runtime regression in this pack
+=======================================
+
+Checked by owner_apply_stdin.py after COMMIT, same procedure:
+
+  service ActiveState=active
+  GET http://127.0.0.1:${AI_PORT}/health
+  GET http://127.0.0.1:${AI_PORT}/v1/predictions
+  envelope key/type compare before vs after APPLY
+  predictions row count before vs after each GET; delta must be 0
+  detail GET only with a race_id taken from that list
+  empty list => detail skipped
+  journalctl -p err since APPLY_STARTED_UTC; new error count must be 0
+  new-column NULL compat on existing rows (DB, not HTTP)
+  GET https://expect-keiba.com/
+  GET https://expect-keiba.com/race.html
+  GET https://expect-keiba.com/races.html
+  GET https://keiba-single-ai.pages.dev/
+  GET https://keiba-single-ai.pages.dev/race.html
+  GET https://keiba-single-ai.pages.dev/races.html
+  GET https://expect-keiba.com/api/health
+  GET https://expect-keiba.com/api/predictions
+  GET https://keiba-single-ai.pages.dev/api/health
+  GET https://keiba-single-ai.pages.dev/api/predictions
+
+Public HTTP content contract
+----------------------------
+  /api/health: HTTP 200, JSON parse, ok=true,
+    data.status in {ok, degraded}, data.service=bff
+  /api/predictions: 200 => JSON envelope ok=true and data present
+    503 => error.code=OPS_CLOSED only is known-good Research Week
+    any other 503 code fails
+  static HTML: 200, Content-Type contains html,
+    body contains Expect and KEIBA
+  body read caps: JSON 262144 bytes, HTML 524288 bytes
+  unexpected final origin/path redirect is refused
+  SITE_UI_VISUAL_CHECKED=NO
+  Public HTTP smoke is not Owner browser visual confirmation.
+
+Not called
+----------
+  POST /v1/prediction-runs
+  Conversation / RA / Challenge writes
+  authenticated detail GET (no Authorization header)
+
+PASS rules
+----------
+  POST_APPLY_REGRESSION_PASS=YES only if localhost + public smoke all pass
+  If public smoke cannot run in this same procedure:
+    POST_APPLY_REGRESSION_PASS=PENDING_PUBLIC_SMOKE
+    PRODUCTION_IMPACT_VERIFIED=PARTIAL
+    not final SUCCESS
+  If public smoke fails after COMMIT:
+    APPLY_EXECUTED=YES
+    APPLY_PHASE=COMMITTED
+    POST_APPLY_REGRESSION_PASS=NO
+    ROLLBACK_REVIEW_REQUIRED=YES
+  Unchecked Conversation / RA / Challenge UI is UNCHECKED, never CHANGED=NO

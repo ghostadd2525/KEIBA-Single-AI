@@ -1,0 +1,22 @@
+v3 APPLY Owner execution pack — independent review
+==================================================
+
+ZIP_SHA256=e1adb68671a18847a1eb162cbb0d16ff6fc950b783a234ec93f811ff62ec788e
+STDIN_PAYLOAD_SHA256=f381cd24a179580cf3722a6468d09f939d7927002ee3eed4dd6e595f918dccb3
+PRODUCTION_022_APPLY_PACK_REVIEW=CHANGES_REQUIRED
+V3_ZIP_OVERWRITE=NO
+
+Confirmed PASS: ZIP/stdin hashes, unzip -t, independent sha256sum -c,
+transaction/rollback/commit state, public smoke SUCCESS/FAIL/PENDING,
+parser-unavailable clean fail.
+
+P0 wrapper timeout
+  OWNER_APPLY.ps1 TimeoutMs=180000 could be exceeded by remote HTTP
+  (10 public URLs x 15s) plus local health/list/detail and DB work.
+  A committed APPLY could be killed before the final audit.
+
+P1 public smoke content
+  Status-only checks were insufficient. Need JSON/HTML contract,
+  bounded body reads, redirect audit, and SITE_UI_VISUAL_CHECKED=NO.
+
+v4 answers those defects. v1/v2/v3 ZIPs are retained.
