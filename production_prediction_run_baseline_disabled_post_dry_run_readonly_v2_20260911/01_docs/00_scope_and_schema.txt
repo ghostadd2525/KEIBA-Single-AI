@@ -1,0 +1,37 @@
+GET envelope (Python ok())
+  keys: ok, data  plus optional meta
+  ok=true on 200
+  data=list for GET /v1/predictions
+
+GET /v1/predictions list item (catalog / mock projection)
+  race_id
+  schema_version (single-prediction-bundle/2.0 when full bundle)
+  This pack records observed keys. It does not call detail GET.
+
+Conversation persist
+  conversation/service.py uses PredictionRepository.save()
+  save() INSERT is race_id, core_race_id, engine_source, fallback_reason,
+  model_version, bundle_json, created_at
+  persist_source / idempotency_key are NOT written
+  This pack does not POST chat. Existing rows must have persist_source NULL
+  or the column must be absent.
+
+RA persist
+  result_automation INSERT INTO predictions uses the same legacy columns
+  persist_source is not stamped
+  Do not run RA. Health GET already includes result_automation snapshot
+  and may call migrate(); 019 remains gated by EXPECT_AI_ALLOW_MIGRATION_019.
+
+Challenge persist
+  challenge/service.py INSERT INTO predictions is legacy columns
+  GET /v1/challenge/monthly can settle_pending (WRITE) so this pack skips it
+
+019
+  columns: idempotency_key persist_source input_snapshot_hash prediction_semantic_hash
+  index: uq_predictions_idempotency_key_not_null
+        UNIQUE ON predictions(idempotency_key) WHERE idempotency_key IS NOT NULL
+  Expected at this step: absent
+
+Rollback target
+  DROP INDEX IF EXISTS uq_predictions_idempotency_key_not_null
+  columns stay. rows stay. bundle_json stays.

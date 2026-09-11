@@ -1,0 +1,69 @@
+PARSER_ENGINE=/usr/bin/pwsh
+PS_VERSION=7.6.6
+PS_EDITION=Core
+POWERSHELL_EXE_AVAILABLE=NO
+NOTE=This Linux host has pwsh 7 Language.Parser, not Windows powershell.exe 5.1. Same ParseFile API reproduced Owner v1 errors exactly (MissingCatchOrFinally + missing closing }).
+----- V1_PARSEFILE -----
+PARSE_ERROR_COUNT=4
+ERR=At /tmp/tmpdjwms1my/v1.ps1:155 char:10
++         }
++          ~
+The Try statement is missing its Catch or Finally block.
+ERR=At /tmp/tmpdjwms1my/v1.ps1:164 char:6
++     }
++      ~
+The Try statement is missing its Catch or Finally block.
+ERR=At /tmp/tmpdjwms1my/v1.ps1:150 char:13
++     } catch {
++             ~
+Missing closing '}' in statement block or type definition.
+ERR=At /tmp/tmpdjwms1my/v1.ps1:84 char:30
++ function Invoke-TimedProcess {
++                              ~
+Missing closing '}' in statement block or type definition.
+----- V2_PARSEFILE -----
+PARSE_ERROR_COUNT=0
+----- PATHS_FILE powershell/pwsh -NoProfile -File test_wrapper_paths.ps1 -----
+INVOCATION=/usr/bin/pwsh -NoProfile -File /workspace/production_prediction_run_baseline_disabled_post_dry_run_readonly_v2_20260911/02_powershell/test_wrapper_paths.ps1
+PS_EDITION=Core
+PS_VERSION=7.6.6
+PS_MAJOR=7
+PASS parsefile_error_count_0
+PARSE_ERROR_COUNT=0
+PASS ast_has_Stop-ProcessTree
+PASS ast_has_Get-TaskText
+PASS ast_has_Get-WrapperAuditStatus
+PASS ast_has_Invoke-TimedProcess
+PASS ast_stdout_drain_before_wait
+PASS ast_stderr_drain_before_wait
+PASS ast_outer_try_present
+PASS path_success_not_timeout
+PASS path_success_exit0
+PASS path_success_drain_started
+PASS path_success_stdout
+PASS path_success_stderr
+PASS path_success_wrapper
+PASS path_success_wrapper_exit
+PASS path_nonzero_not_timeout
+PASS path_nonzero_exit7
+PASS path_nonzero_drain_started
+PASS path_nonzero_stdout
+PASS path_nonzero_stderr
+PASS path_nonzero_wrapper_failed
+PASS path_nonzero_reason_ssh_exit
+PASS path_nonzero_wrapper_exit1
+PASS path_timeout_flag
+PASS path_timeout_drain_started
+PASS path_timeout_partial_stdout
+PASS path_timeout_wrapper_failed
+PASS path_timeout_reason
+PASS path_timeout_wrapper_exit1
+PASS path_startfail_not_timeout
+PASS path_startfail_code
+PASS path_startfail_wrapper_failed
+PASS path_startfail_reason
+PATH_TEST_FAIL_COUNT=0
+REMOTE_PYTHON_SHA256=24a4037f3f5afa587959e1748d11dbeb39e54203b6015f45db8b1fe38f528b8b
+V1_PYTHON_SHA256=24a4037f3f5afa587959e1748d11dbeb39e54203b6015f45db8b1fe38f528b8b
+REMOTE_PYTHON_BYTE_IDENTICAL_V1=YES
+V1_ZIP_SHA256=2930e43193ca8e17abbc4d0ec2eff79090070efc5bc44727e3e16e866e546663

@@ -1,0 +1,22 @@
+Archive:  production_prediction_run_baseline_disabled_post_dry_run_readonly_v2_20260911.zip
+    testing: production_prediction_run_baseline_disabled_post_dry_run_readonly_v2_20260911/   OK
+    testing: production_prediction_run_baseline_disabled_post_dry_run_readonly_v2_20260911/02_powershell/   OK
+    testing: production_prediction_run_baseline_disabled_post_dry_run_readonly_v2_20260911/02_powershell/test_wrapper_paths.ps1   OK
+    testing: production_prediction_run_baseline_disabled_post_dry_run_readonly_v2_20260911/02_powershell/OWNER_READONLY.ps1   OK
+    testing: production_prediction_run_baseline_disabled_post_dry_run_readonly_v2_20260911/02_powershell/baseline_disabled_post_dry_run.py   OK
+    testing: production_prediction_run_baseline_disabled_post_dry_run_readonly_v2_20260911/run_tests.py   OK
+    testing: production_prediction_run_baseline_disabled_post_dry_run_readonly_v2_20260911/SHA256SUMS.txt   OK
+    testing: production_prediction_run_baseline_disabled_post_dry_run_readonly_v2_20260911/03_tests/   OK
+    testing: production_prediction_run_baseline_disabled_post_dry_run_readonly_v2_20260911/03_tests/test_pack_contract.py   OK
+    testing: production_prediction_run_baseline_disabled_post_dry_run_readonly_v2_20260911/03_tests/parser_and_paths_evidence.txt   OK
+    testing: production_prediction_run_baseline_disabled_post_dry_run_readonly_v2_20260911/V1_DO_NOT_OVERWRITE.txt   OK
+    testing: production_prediction_run_baseline_disabled_post_dry_run_readonly_v2_20260911/00_README.txt   OK
+    testing: production_prediction_run_baseline_disabled_post_dry_run_readonly_v2_20260911/FLAGS.txt   OK
+    testing: production_prediction_run_baseline_disabled_post_dry_run_readonly_v2_20260911/00_OWNER_手順.txt   OK
+    testing: production_prediction_run_baseline_disabled_post_dry_run_readonly_v2_20260911/01_docs/   OK
+    testing: production_prediction_run_baseline_disabled_post_dry_run_readonly_v2_20260911/01_docs/review_file_hashes.txt   OK
+    testing: production_prediction_run_baseline_disabled_post_dry_run_readonly_v2_20260911/01_docs/rollback_target.txt   OK
+    testing: production_prediction_run_baseline_disabled_post_dry_run_readonly_v2_20260911/01_docs/v1_syntax_defect.txt   OK
+    testing: production_prediction_run_baseline_disabled_post_dry_run_readonly_v2_20260911/01_docs/00_scope_and_schema.txt   OK
+    testing: production_prediction_run_baseline_disabled_post_dry_run_readonly_v2_20260911/04_constraints.txt   OK
+No errors detected in compressed data of production_prediction_run_baseline_disabled_post_dry_run_readonly_v2_20260911.zip.
