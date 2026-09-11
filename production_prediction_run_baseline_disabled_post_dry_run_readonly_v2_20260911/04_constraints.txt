@@ -1,0 +1,31 @@
+ALLOWED
+  Owner remote GET http://127.0.0.1:8000/health
+  Owner remote GET http://127.0.0.1:8000/v1/predictions
+    unfiltered only when live AI_ENGINE is not real
+    otherwise GET /v1/predictions?date=2099-01-01 (empty list, no infer)
+  sqlite3 mode=ro PRAGMA / SELECT COUNT / SELECT schema_migrations / persist_source inventory
+  systemctl show / status (read-only)
+  journalctl -u expect-ai.service --no-pager
+  read systemd FragmentPath / WorkingDirectory / ExecStart / Environment
+  sha256sum of live source files (read-only)
+  os.access backup-possibility check without copying
+
+FORBIDDEN
+  POST any, including POST /v1/prediction-runs
+  GET /v1/predictions/{race_id}
+  GET /v1/challenge/monthly (settle_pending can write)
+  POST /v1/conversation / /v1/conversation/chat
+  POST /v1/admin/results/run
+  EXPECT_AI_ALLOW_MIGRATION_019 enable
+  019 apply / migrate write
+  ALTER TABLE / CREATE INDEX / DROP INDEX / INSERT / UPDATE / DELETE
+  sqlite .backup / cp of live DB
+  systemctl start|stop|restart|reload|enable|disable
+  env / unit file edit
+  git push to Production / merge PR #23 / update PR #24
+  Overwriting v1-v4 review ZIP
+  Overwriting v1 dry-run ZIP
+  Running v1 dry-run pack (parse error)
+  Running v1 prediction-path smoke
+  Cursor connecting to :8000
+  Treating Research Week today-prediction as success

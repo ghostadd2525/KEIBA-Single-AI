@@ -1,0 +1,21 @@
+Owner 手順（Step 2-4 · read-only / DRY_RUN · v2 · 1本）
+======================================================
+
+v1 pack は実行しないでください（構文エラー）。
+v1 ZIP を上書きしないでください。
+
+1. この v2 フォルダだけを使う。
+2. 02_powershell\OWNER_READONLY.ps1 を実行する。
+3. Downloads の v2 output txt を返す。
+
+禁止は v1 と同じ
+  POST /v1/prediction-runs
+  EXPECT_AI_ALLOW_MIGRATION_019
+  sqlite 書き込み / .backup
+  GET prediction detail
+  GET /v1/challenge/monthly
+  POST conversation chat
+  POST /v1/admin/results/run
+  systemctl 変更
+  Production 変更
+  PR #23 / #24 の変更・merge

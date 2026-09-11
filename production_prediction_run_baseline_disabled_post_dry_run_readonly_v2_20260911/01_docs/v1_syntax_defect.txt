@@ -1,0 +1,16 @@
+v1 OWNER_READONLY.ps1 syntax defect (do not run v1)
+
+Broken lines (inner try missing closing brace before catch):
+
+  try { if ($null -ne $stdoutTask) { [void]$stdoutTask.Wait(2000) } catch { }
+  try { if ($null -ne $stderrTask) { [void]$stderrTask.Wait(2000) } catch { }
+
+Required PS 5.1 form (outer catch body):
+
+  try { if ($null -ne $stdoutTask) { [void]$stdoutTask.Wait(2000) } } catch { }
+  try { if ($null -ne $stderrTask) { [void]$stderrTask.Wait(2000) } } catch { }
+
+Parser.ParseFile on v1 reports 4 errors:
+  MissingCatchOrFinally at function / outer catch close
+  Missing closing } at catch and function
+SSH never started. Production unchanged.
