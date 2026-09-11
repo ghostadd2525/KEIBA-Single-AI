@@ -1,0 +1,26 @@
+v2 backup Owner pack independent review
+=======================================
+
+ZIP_SHA256=5675a8a3f4171e466620dc51c6e626667417a8f57e2df769730129da6da0409a
+ZIP_INTEGRITY=PASS
+SHA256SUMS=PASS
+CONTRACT_BYTE_IDENTICAL=YES
+BACKUP_OWNER_V2_INDEPENDENT_REVIEW_COMPLETE=YES
+BACKUP_OWNER_V2_REVIEW=CHANGES_REQUIRED
+
+P0-1
+  Claiming Owner inventory lacked dest/ino was wrong.
+  Canon identity:
+    DB_DEV=66305
+    DB_INO=349935
+    DB_SIZE_BYTES=105783296
+    DB_MTIME_EPOCH=1789143980
+  v2 INVENTORY_SOURCE_DEV=None / INVENTORY_DEV_INO_ABSENT is withdrawn.
+  That gate made the pack unexecutable after approval.
+
+P0-2
+  v2 checked Windows local env or SSH login shell env only.
+  That is not Production systemd / EnvironmentFiles / process evidence.
+  v2 PS1 forwarded only OWNER_PRODUCTION_BACKUP_APPROVED.
+
+v2 ZIP remains audit trail. Do not overwrite. Do not execute.
