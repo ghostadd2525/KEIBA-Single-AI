@@ -1,0 +1,34 @@
+Isolated rehearsal scope
+========================
+
+Current schema constructed locally
+  001-018 from 02_code/repo_migrations (copies of this tree)
+  019_final_predictions stub → final_predictions(race_id, source_race_id, ...)
+  020_live_schema_unknown stub → live_020_placeholder
+  021_live_schema_unknown stub → live_021_placeholder
+  300 NULL-compatible prediction fixtures (legacy columns only)
+
+Persist 019 applied via official migrate()
+  services/win5-ai/app/data/db.py::migrate()
+  gated by EXPECT_AI_ALLOW_MIGRATION_019=1 on the isolated process only
+  SQL SHA256=d8fc71e316d7819a4dcfc0977bf6444308410144b62fd29a33ca764ea853370f
+
+GET envelope
+  ok=true, data=list, optional meta
+  Safe date 2099-01-01 returns empty list
+  Unfiltered list uses AI_ENGINE=mock (no live infer)
+  predictions row count must stay 300 across 019
+  GET must not write predictions
+
+Legacy writes (isolated only)
+  Conversation persist = PredictionRepository.save()
+    INSERT race_id, core_race_id, engine_source, fallback_reason,
+           model_version, bundle_json, created_at
+  Conversation history = ConversationRepository.append / ConversationService.chat
+  Challenge = latest_prediction_bundle PI-cache INSERT (same six columns)
+  RA = ResultAutomationService._cache_pi_prediction INSERT (same six columns)
+  New columns omitted → NULL
+
+POST
+  Local Handler present. PREDICTION_RUNS_ENABLED unset → 503
+  Production live route remains absent per Owner DRY_RUN

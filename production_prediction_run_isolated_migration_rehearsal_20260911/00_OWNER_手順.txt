@@ -1,0 +1,23 @@
+Owner 手順（Step 5 · 隔離 rehearsal · レビューのみ）
+====================================================
+
+Production では何も実行しないでください。
+このパックはローカル隔離 rehearsal の証拠と設計です。
+
+1. 既存 v1-v4 review ZIP / DRY_RUN v1 v2 ZIP を上書きしない。
+2. PR #23 / #24 / #25 を更新・merge しない。
+3. evidence/rehearsal_kv.txt を読む。
+4. 01_docs/collision.txt / rollback_order.txt / backup_without_sqlite3_cli.txt を読む。
+5. APPLY 判定は NO のまま返す。
+
+次工程（Owner 承認後）
+  A. sqlite3 CLI 不在時の本番バックアップ方式の承認
+     （Python sqlite3.Connection.backup。承認前に Production で作らない）
+  B. その後でも APPLY は別承認
+     OWNER_APPLY_APPROVED が NO の間は Production へ 019 を入れない
+
+必須 rollback 順（将来 APPLY した場合のみ。今は実行しない）
+  1. PREDICTION_RUNS_ENABLED=0
+  2. EXPECT_AI_ALLOW_MIGRATION_019 を解除
+  3. DROP INDEX IF EXISTS uq_predictions_idempotency_key_not_null
+  2 を残すと migrate() が index を再生成する。

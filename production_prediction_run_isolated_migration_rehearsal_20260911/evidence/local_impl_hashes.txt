@@ -1,0 +1,14 @@
+Local persist implementation files used by this rehearsal (not copied into Production).
+These hashes are recorded for review. This pack does not change Production.
+
+5793addab3cc9c39dd7efd759cefc2fc38390da2329ef09feac4dc8d4464b12f  app/data/db.py
+70fab66425a142307eab738783e32fbb93ec8fb6859c438007c7c6cd94165f77  app/data/repository/__init__.py
+d8fc71e316d7819a4dcfc0977bf6444308410144b62fd29a33ca764ea853370f  app/data/migrations/019_prediction_run_idempotency.sql
+d85c039c8a27a74242876f1e631d5ef84e6845b3ffc495d61c5d88b228580d15  app/main.py
+6ba1e27cc78633f11af505db9133e1a8c933031aa6cb8b5237ebd036221d9c49  app/challenge/service.py
+1c7f1812b20235918ce2ccf76709237db29e3de5f43f0fb65b1dc5b4bf016192  app/ops/result_automation.py
+b3d091c10cbc1ad5c0d9c1765d971f9706343bec94aa848b1273a535a859d266  app/conversation/service.py
+
+WIN5_AI_ROOT=/workspace/services/win5-ai
+FIRST_APPLY_VIA=app.data.db.migrate
+PRODUCTION_APPLY_READY=NO

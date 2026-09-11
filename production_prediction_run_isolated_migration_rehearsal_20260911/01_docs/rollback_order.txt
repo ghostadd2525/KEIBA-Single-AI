@@ -1,0 +1,31 @@
+Rollback order (future APPLY only — do not run on Production now)
+================================================================
+
+Rollback target
+  DROP INDEX IF EXISTS uq_predictions_idempotency_key_not_null
+  ROLLBACK_TARGET=PARTIAL_UNIQUE_INDEX_ONLY
+
+Do not
+  DROP COLUMN
+  DELETE FROM predictions
+  UPDATE predictions SET bundle_json=...
+  change GET envelope
+  change Conversation / Challenge / RA INSERT lists
+
+Why order is mandatory
+  app.data.db.migrate() gates 019_prediction_run_idempotency on
+  EXPECT_AI_ALLOW_MIGRATION_019.
+  If the allow flag remains set, migrate() sees status=partial after DROP INDEX
+  and repair_prediction_run_schema() recreates the index.
+  Isolated rehearsal confirms:
+    ALLOW remains → index regenerated
+    ALLOW unset after PREDICTION_RUNS_ENABLED=0 → index stays dropped
+    POST remains 503 because PREDICTION_RUNS_ENABLED is not 1
+
+Required order
+  1. PREDICTION_RUNS_ENABLED=0
+  2. unset EXPECT_AI_ALLOW_MIGRATION_019
+  3. DROP INDEX IF EXISTS uq_predictions_idempotency_key_not_null
+  4. keep POST disabled; do not re-enable allow
+
+This pack does not execute rollback on Production.
