@@ -1,0 +1,28 @@
+ALLOWED
+  Local isolated temp DB (mkdtemp prefix isolated-019-rehearse-)
+  Reconstruct 001-018 from this git tree
+  Reconstruct 019_final_predictions / 020 / 021 as STUBS only (not live SQL)
+  Call app.data.db.migrate() against that isolated DB
+  Local ThreadingHTTPServer GET /health GET /v1/predictions
+  Local POST /v1/prediction-runs expecting 503
+  ConversationService / PredictionRepository.save / Challenge latest_prediction_bundle
+    / RA _cache_pi_prediction on the isolated DB
+  Local sqlite3.Connection.backup of the isolated temp DB
+  Document Production backup design without executing it
+
+FORBIDDEN
+  Opening or copying any Production DB path
+  Creating a Production backup
+  Setting EXPECT_AI_ALLOW_MIGRATION_019 on Production
+  Applying 019 on Production
+  Enabling or calling Production POST /v1/prediction-runs
+  GET Production prediction detail
+  GET Production /v1/challenge/monthly
+  POST Production conversation / RA run
+  systemctl start|stop|restart|reload|enable|disable
+  env / unit file edit
+  Updating or merging PR #23 / #24 / #25
+  Overwriting existing review ZIP v1-v4
+  Overwriting DRY_RUN ZIP v1 or v2
+  Treating this rehearsal as PRODUCTION_APPLY_READY
+  Treating isolated PASS as Owner APPLY approval

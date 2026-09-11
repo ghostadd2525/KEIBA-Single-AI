@@ -1,0 +1,26 @@
+{
+  "safe": {
+    "ok": true,
+    "data": [],
+    "meta": {
+      "service": "PredictionService",
+      "adapter": "PredictionAdapter",
+      "provider": "python",
+      "engine": "mock",
+      "items": []
+    }
+  },
+  "list_keys": [
+    "data",
+    "meta",
+    "ok"
+  ],
+  "post": {
+    "ok": false,
+    "error": {
+      "code": "PREDICTION_RUNS_DISABLED",
+      "message": "PREDICTION_RUNS_ENABLED is not 1",
+      "details": null
+    }
+  }
+}

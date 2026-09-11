@@ -1,0 +1,44 @@
+Production backup design without sqlite3 CLI
+===========================================
+
+Owner DRY_RUN 正本
+  SQLITE3_CLI_PRESENT=NO
+  DB_BACKUP_POSSIBLE=NO
+  DB_BACKUP_POSSIBLE_REASON=SQLITE3_CLI_MISSING
+
+This pack does not create a Production backup.
+PRODUCTION_BACKUP_READY=NO
+OWNER approval is required before any Production backup.
+
+Candidate (design + local test only)
+  Python sqlite3.Connection.backup
+  Binding to SQLite Online Backup API
+  Works without the sqlite3 CLI
+  Can copy a live DB page-by-page while writers exist
+  pages=64 sleep=0.05 recommended to bound I/O
+  After copy: PRAGMA integrity_check
+  Compare COUNT(*) on predictions / schema_migrations / conversation_history
+
+Refused on Production until Owner approval
+  sqlite3 .backup
+  cp / rsync of a live DB file
+  filesystem snapshot without Owner design
+  running 02_code/python_backup_design.py against
+    /home/ubuntu/KEIBA-Single-AI/services/win5-ai/var/expect_ai.db
+    /opt/expect-ai/current/services/win5-ai/var/expect_ai.db
+    /var/lib/expect-ai/expect_ai.db
+
+Local proof in this pack
+  rehearse.py copies an isolated temp DB via Connection.backup
+  PYTHON_CONNECTION_BACKUP_LOCAL_PASS must be YES
+  PYTHON_BACKUP_USED_ON_PRODUCTION=NO
+
+Suggested future Production script (do not run now)
+  1. confirm PREDICTION_RUNS_ENABLED is not 1
+  2. confirm EXPECT_AI_ALLOW_MIGRATION_019 is unset
+  3. set ALLOW_LOCAL_SQLITE_BACKUP=1 only on a dedicated helper host copy
+  4. src = live EXPECT_AI_DB_PATH (Owner-confirmed)
+  5. dst = timestamped file on the same host, not in-place
+  6. Connection.backup + integrity_check + row-count compare
+  7. record SHA256 of dst
+  8. do not apply 019 in the same window

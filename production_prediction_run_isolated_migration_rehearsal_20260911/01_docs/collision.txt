@@ -1,0 +1,41 @@
+Current main / live migration order vs persist 019
+=================================================
+
+origin/main (this git tree)
+  001_init
+  ...
+  018_research_candidate_review
+  Live files 019_final_predictions / 020-series / 021-series are NOT in git.
+
+Owner DRY_RUN 正本 (Production)
+  MIGRATION_019_STATUS=absent
+  MIGRATION_019_APPLIED=NO
+  persist columns absent
+  Production already has a later live set: 019_final_predictions, 020-series, 021-series
+  Those SQL files were not recovered from remotes in this workspace.
+  Isolated stubs reconstruct only enough tables for migrate() to see those stems.
+
+sorted() of stems if persist 019 is placed in the same directory
+  018_research_candidate_review
+  019_final_predictions
+  019_prediction_run_idempotency
+  020_*
+  021_*
+
+Collision
+  Two different 019-* versions.
+  migrate() keys versions by full stem, so they are distinct rows in schema_migrations.
+  persist 019 would sort AFTER live 019_final_predictions and BEFORE 020.
+  Official app.data.db.migrate() in this tree walks services/win5-ai/app/data/migrations
+  which currently has 001-018 + gated 019_prediction_run_idempotency only.
+  On a Production-shaped DB that already has 019_final / 020 / 021 applied,
+  calling migrate() with EXPECT_AI_ALLOW_MIGRATION_019=1 applies persist 019
+  without re-running 020/021.
+
+Recommended before any future Production APPLY (not done here)
+  Rename persist file to 022_prediction_run_idempotency after live 021.
+  Do not silently rename in this rehearsal.
+  Do not treat this finding as APPLY-ready.
+
+STUBS_ARE_LIVE_SQL=NO
+PRODUCTION_SCHEMA_COPIED=NO
