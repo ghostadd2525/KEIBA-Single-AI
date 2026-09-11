@@ -1,0 +1,7 @@
+This directory is a review plan.
+It is not an Owner execution pack.
+It must not APPLY 022.
+It must not change systemd or env.
+It must not enable POST.
+PRODUCTION_APPLY_READY=NO
+OWNER_APPLY_APPROVED=NO

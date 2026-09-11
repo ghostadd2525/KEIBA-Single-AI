@@ -1,0 +1,56 @@
+Owner Production backup — 作成済み / 未承認 / 未実行
+======================================================
+
+このファイルは手順書です。このパックを開いただけでは backup は走りません。
+
+まだ実行しない
+--------------
+PRODUCTION_BACKUP_EXECUTION_ALLOWED=NO
+PRODUCTION_BACKUP_EXECUTED=NO
+OWNER_PRODUCTION_BACKUP_APPROVED=NO（このパックは立てない）
+EXPECT_AI_ALLOW_MIGRATION_022 を立てない
+PREDICTION_RUNS_ENABLED=1 にしない
+022 APPLY / systemd / env 変更を同時に行わない
+
+承認後の実行（Owner のみ / このエージェントは実行しない）
+----------------------------------------------------------
+1. 独立レビュー済み backup v2 contract SHA を確認
+   55890bbdff280548c43bb53f80930049e83ba16fb7d2abe2b7c1c7e34b91c66e
+2. source は Owner inventory 正本のみ
+   /home/ubuntu/KEIBA-Single-AI/services/win5-ai/var/expect_ai.db
+3. dest-root は source 親でも共有 directory でもない専用親
+   推奨: /home/ubuntu/KEIBA-Single-AI/var/sqlite_backups
+   wrapper が UTC timestamp directory を新規作成する（0700）
+   dest file: <dest-root>/<UTC>/expect_ai.db（0600）
+4. 環境（backup 中のみ）
+   OWNER_PRODUCTION_BACKUP_APPROVED=1
+   ALLOW_LOCAL_SQLITE_BACKUP=1
+   PREDICTION_RUNS_ENABLED は 0 のまま / 未設定
+   EXPECT_AI_ALLOW_MIGRATION_022 は未設定
+5. 実行
+   python3 02_code/owner_backup.py --dest-root /home/ubuntu/KEIBA-Single-AI/var/sqlite_backups
+6. 成功判定（すべて必須）
+   OWNER_BACKUP_STATUS=SUCCESS
+   BACKUP_INTEGRITY_OK=YES
+   BACKUP_SCHEMA_OK=YES
+   BACKUP_MIGRATION_SET_OK=YES
+   BACKUP_MASTER_SHA_MATCH=YES
+   BACKUP_SHA256_RECORDED=YES
+   BACKUP_DISTINCT_INODE=YES
+   APPLY_PRECONDITION_BACKUP_PASS=YES
+   PRODUCTION_APPLY_READY=NO のまま
+7. 失敗時
+   APPLY_PRECONDITION_BACKUP_PASS=NO
+   APPLY_FORBIDDEN_AFTER_BACKUP_FAIL=YES
+   MIGRATION_MAY_PROCEED=NO
+   022 APPLY 禁止。完成 dest は残さない（v2 contract）。
+
+禁止
+----
+source を mode=rw で開く
+PRAGMA query_only なし
+dest を source と同じ path / inode にする
+既存 dest 上書き
+誤 seed rehearsal v1 ZIP の再利用
+既存成果物 ZIP の上書き
+PR #23〜#29 の merge

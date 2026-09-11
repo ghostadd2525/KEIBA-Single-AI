@@ -1,0 +1,15 @@
+Owner: do not run this backup pack on Production until you
+explicitly set OWNER_PRODUCTION_BACKUP_APPROVED=1 yourself.
+
+This pack never sets that flag.
+This agent must not execute Production backup.
+This agent must not APPLY 022.
+This agent must not change systemd or env.
+
+Claimed rehearsal v1 ZIP remains an audit artifact:
+  SHA256=7981db7fff2d8a8d0a057bf66aeddca72a37c842cdf66c926dd5d3f9ac4c1037
+Do not reuse or overwrite it.
+
+Reviewed backup v2 ZIP remains the contract source:
+  SHA256=9653f26224679d750ea1c3f578a0b8dda0e2178dab5b8ad464ee8cf9a42b9a5a
+Do not overwrite it.

@@ -1,0 +1,41 @@
+Scope (review plan only)
+========================
+
+In scope
+--------
+- Document Production 022 APPLY preconditions
+- Document rollback order
+- Document regression comparisons
+- Document site UI / /api/health / Research Week / systemd / journal checks
+- Keep POST disabled before and after 022
+- Keep GET / UI / Conversation / RA / Challenge unchanged
+
+Out of scope
+------------
+- Creating an APPLY execution pack
+- Running Production backup
+- Running 022 on Production
+- Changing systemd unit or EnvironmentFile
+- Enabling PREDICTION_RUNS_ENABLED
+- Calling POST /v1/prediction-runs
+- Changing site routing or BFF prediction switch
+- Dropping columns, deleting rows, updating bundle_json
+- Merging PR #23-#29
+- Reusing or overwriting claimed rehearsal v1 ZIP
+- Overwriting backup v2 ZIP or rehearsal v2 ZIP
+
+Canonical apply name (local persist, not executed here)
+  022_prediction_run_idempotency
+Gate
+  EXPECT_AI_ALLOW_MIGRATION_022
+Columns added (nullable)
+  idempotency_key
+  persist_source
+  input_snapshot_hash
+  prediction_semantic_hash
+Index
+  uq_predictions_idempotency_key_not_null
+  UNIQUE(idempotency_key) WHERE idempotency_key IS NOT NULL
+
+Legacy PredictionRepository.save omits the new columns (NULL).
+save_idempotent is POST-only and stays unreachable while POST is disabled.

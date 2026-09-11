@@ -1,0 +1,36 @@
+022 APPLY sequence (review only / do not execute)
+=================================================
+
+This is a review sequence, not a runnable Owner pack.
+
+0. Stop if backup did not pass.
+   APPLY_PRECONDITION_BACKUP_PASS must be YES from the backup Owner pack.
+   Do not start 022 in the same command as backup.
+
+1. Confirm PREDICTION_RUNS_ENABLED=0
+   systemd Environment and process environ
+   POST must already 503 PREDICTION_RUNS_DISABLED
+
+2. Confirm GET / UI / Conversation / RA / Challenge are the current live code
+   No deploy of persist POST enable in this step
+
+3. Open APPLY window only after a future Owner-approved execution pack exists
+   Set EXPECT_AI_ALLOW_MIGRATION_022=1 only for the migrate window
+   Apply 022_prediction_run_idempotency
+   Confirm schema_migrations gains exactly that version
+   Confirm four new columns exist and are nullable
+   Confirm partial UNIQUE index SQL matches rehearsal
+   Unset EXPECT_AI_ALLOW_MIGRATION_022 after apply
+   Leave PREDICTION_RUNS_ENABLED=0
+
+4. Do not enable POST
+   Do not switch site BFF / frontend to call POST
+   Do not merge PR #23-#29 as the enablement vehicle in this step
+
+5. Record before/after comparisons (see 04_regression_compare.txt)
+
+Fail closed
+-----------
+Backup fail => do not APPLY
+Index mismatch => repair is DROP INDEX + recreate only; no column drop
+Unexpected write on GET => abort and review; do not continue to POST enable
