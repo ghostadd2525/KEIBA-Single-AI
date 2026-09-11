@@ -1,0 +1,37 @@
+v3 backup Owner pack runtime failure
+====================================
+
+ZIP_SHA256=6a36403eb758fb2a176480bd8fb05fc001a1d878888513e49588ca18cc6327f8
+OUTPUT_SHA256=5b7bbea040506c0fdd1d8afec976bac7c6264bd7753ecc497ea5b024a4448dd3
+AUDIT_STATUS=FAILED
+SSH_STARTED=YES
+SSH_EXIT=1
+PRODUCTION_BACKUP_EXECUTED=NO
+BACKUP_COPY_EXECUTED=NO
+PRODUCTION_CHANGED=NO
+DB_CHANGED=NO
+PRODUCTION_APPLY_READY=NO
+BACKUP_OWNER_V3_REVIEW=FAILED_RUNTIME_PAYLOAD_SYNTAX
+
+Owner canon log: Parser.ParseFile on Windows 5.1 had already passed.
+The runtime failure was the SSH stdin Python payload.
+
+v3 OWNER_BACKUP.ps1 concatenated:
+  __name__ = "backup_contract"
+  <backup_contract.py>
+  __name__ = "__main__"
+  <owner_backup_remote.py>
+
+Both source files contain:
+  from __future__ import annotations
+
+That placed a future import after assignment statements and in the
+middle of the concatenated file. Python stopped at parse time:
+
+  SyntaxError: from __future__ imports must occur at the beginning of the file
+
+Because parse failed, Production DB was not opened, schema was not
+read, and no backup directory/file/copy was created. SSH connected.
+
+Do not overwrite v3. Do not rerun v3. Do not invent dest/ino.
+v4 sends one pregenerated owner_backup_stdin.py byte-for-byte.
