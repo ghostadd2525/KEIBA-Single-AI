@@ -1,0 +1,23 @@
+Owner steps (do not run until independent review)
+================================================
+
+This agent must not apply 022 on Production.
+This pack does not set OWNER_PRODUCTION_022_APPLY_APPROVED.
+
+1. Keep v1-v4 backup ZIPs and the APPLY plan ZIP. Do not overwrite them.
+2. Independent review of this APPLY execution pack must pass first.
+3. After review, Owner may later set OWNER_PRODUCTION_022_APPLY_APPROVED=1
+   in their own Windows session and run only:
+     02_powershell/OWNER_APPLY.ps1
+4. Wrapper forwards that exact 1. It never sets EXPECT_AI_ALLOW_MIGRATION_022
+   or PREDICTION_RUNS_ENABLED.
+5. Remote HALTs before APPLY if:
+   backup missing / SHA mismatch / dest/ino drift
+   live dest/ino != 66305:349935
+   schema is not Owner 22-migration canon
+   PREDICTION_RUNS_ENABLED effective 1
+   EXPECT_AI_ALLOW_MIGRATION_022 or _019 effective 1 on Production
+   Production env cannot be determined
+6. APPLY window sets EXPECT_AI_ALLOW_MIGRATION_022=1 in the python3 process
+   only, then unsets it. systemd / EnvironmentFile are not written.
+7. After success, POST remains disabled. Do not enable POST. Do not switch site.
