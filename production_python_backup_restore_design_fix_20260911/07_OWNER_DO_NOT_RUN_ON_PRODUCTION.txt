@@ -1,0 +1,23 @@
+OWNER 手順（このパック）
+========================
+
+実行してよいもの
+  production_live_schema_inventory_readonly_20260911
+  （独立確認 LIVE_SCHEMA_INVENTORY_PACK_REVIEW=PASS）
+
+実行してはいけないもの
+  この backup design fix パックを Production で走らせること
+  v5 022 rebase を Production で走らせること
+  backup rehearsal v1 を Production で走らせること
+  Production backup / migrate / POST /v1/prediction-runs
+  EXPECT_AI_ALLOW_MIGRATION_019 または _022 の有効化
+
+理由
+  sqlite3 CLI 不在のまま Production backup を実行する許可は出ていない
+  PRODUCTION_BACKUP_EXECUTION_ALLOWED=NO
+  PRODUCTION_BACKUP_DESIGN_APPROVED=NO
+  このパックは設計修正と隔離テストだけ
+
+返却後
+  live schema inventory 出力を受けて rehearsal fixture を live に合わせる
+  それまで LIVE_SCHEMA_EXACT_COMPATIBILITY=UNCONFIRMED

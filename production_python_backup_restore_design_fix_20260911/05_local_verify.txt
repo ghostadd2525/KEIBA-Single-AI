@@ -1,0 +1,32 @@
+LOCAL VERIFY (isolated temp DB only)
+====================================
+
+python3 03_tests/test_backup_contract.py -v
+Ran 18 tests: OK
+
+Covered
+  source open file:?mode=ro + uri=True + query_only=ON
+  dest dir 0700 / dest file 0600
+  PRODUCTION_BACKUP_EXECUTED=NO on design tests
+  WAL committed snapshot excludes uncommitted row
+  overwrite / disk full / mid-backup ENOSPC
+  integrity failure quarantine
+  schema mismatch dispose
+  permission mismatch dir/file
+  dest same path / same inode
+  source dev/ino change around open
+  tests do not import or open a workspace app migrations tree
+
+Unpack re-exec
+  copied pack to /tmp/backup-pack-reexec (no /workspace checkout)
+  python3 run_tests.py -> ALL_PASS
+
+Not run
+  Production source
+  Production execution pack
+  v5 022 on Production
+  live schema alignment (waiting Owner inventory)
+
+PRODUCTION_BACKUP_EXECUTED=NO
+PRODUCTION_BACKUP_DESIGN_APPROVED=NO
+PRODUCTION_APPLY_READY=NO
