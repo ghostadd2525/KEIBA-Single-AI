@@ -1,0 +1,22 @@
+Owner steps (do not run until independent review of this v3 pack)
+================================================================
+
+This agent must not execute Production backup.
+This pack does not set OWNER_PRODUCTION_BACKUP_APPROVED.
+
+1. Keep v1 and v2 ZIPs as audit trail. Do not run them.
+2. Keep APPLY plan ZIP unchanged. Do not APPLY 022 here.
+3. Independent review of this v3 ZIP must pass first.
+4. After review, Owner may later set OWNER_PRODUCTION_BACKUP_APPROVED=1
+   in their own Windows session and run only:
+     02_powershell/OWNER_BACKUP.ps1
+5. Wrapper forwards that exact 1 to remote. It never assigns the variable.
+6. Remote will HALT before backup if:
+   dest/ino != 66305/349935
+   schema != Owner 22-migration canon
+   Production effective PREDICTION_RUNS_ENABLED=1
+   Production effective EXPECT_AI_ALLOW_MIGRATION_022=1
+   Production effective EXPECT_AI_ALLOW_MIGRATION_019=1
+   Production env cannot be determined
+7. Audit log is written under Windows Downloads.
+   The backup DB stays on Production.
