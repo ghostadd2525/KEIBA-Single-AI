@@ -1,0 +1,50 @@
+Regression compare (before vs after 022 APPLY)
+==============================================
+
+Compare these surfaces. Do not change them as part of APPLY.
+
+A. GET envelope
+   GET /v1/predictions
+   GET /v1/predictions/{id}
+   BFF GET /api/predictions (Research Week may 503 OPS_CLOSED — that is expected)
+   Envelope keys, status, and payload shape must match the pre-APPLY capture
+   GET must perform 0 prediction INSERTs
+
+B. DB writes during GET / UI / Conversation / RA / Challenge
+   predictions INSERT count delta = 0
+   bundle_json updates = 0
+   schema_migrations changes besides the single 022 row = 0
+
+C. Existing write paths
+   Conversation / RA / Challenge / PredictionRepository.save
+   continue to INSERT without the new columns
+   new columns stay NULL
+   multiple NULL idempotency_key rows remain allowed (partial UNIQUE)
+
+D. New-column NULL compatibility
+   300-row NULL rehearsal already passed in isolated v2
+   Production compare: existing rows keep NULL on the four new columns
+   no backfill
+
+E. Site UI
+   / /race.html /races.html render as before
+   no frontend switch to POST /v1/prediction-runs
+
+F. GET /api/health
+   200
+   ai_proxy_configured remains true if it was true
+   result_automation summary still attached or null-on-failure as today
+   /api/health stays Research Week exempt
+
+G. Research Week gate
+   USER /api/predictions remains OPS_CLOSED while Research Week is closed
+   exempt paths unchanged: /api/health /api/system/status /api/ops/public-status
+   APPLY must not alter maintenanceSchedule or opsMode
+
+H. systemd / journal
+   unit ActiveState=active
+   no new error-level journal lines caused by APPLY
+   Environment PREDICTION_RUNS_ENABLED is not 1
+   EXPECT_AI_ALLOW_MIGRATION_022 is unset after the window
+
+Do not log bundle_json values, race_id values, or horse names.

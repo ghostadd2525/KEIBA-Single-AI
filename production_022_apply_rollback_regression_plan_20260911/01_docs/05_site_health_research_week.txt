@@ -1,0 +1,21 @@
+Site UI / health / Research Week (observe only)
+===============================================
+
+Site UI
+  Confirm static pages still 200
+  Confirm no new POST prediction CTA is wired
+  Confirm Conversation / Challenge / RA screens still load
+
+GET /api/health
+  functions/api/health.js — BFF liveness, auth not required
+  exempt from Research Week OPS_CLOSED
+  expected 200
+  do not treat health 200 as prediction-path ready
+
+Research Week
+  schedule: Sun 21:00 JST — Sat 00:00 JST CLOSED when auto-maintenance is on
+  USER prediction API 503 OPS_CLOSED is expected during CLOSED
+  022 APPLY must not change that gate
+  do not "fix" OPS_CLOSED by enabling POST or merging site PRs
+
+022 APPLY is schema-only. Site switch is a later step.

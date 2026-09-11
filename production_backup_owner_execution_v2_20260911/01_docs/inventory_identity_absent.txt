@@ -1,0 +1,20 @@
+Owner inventory identity
+========================
+
+The independently reviewed live schema inventory recorded schema facts
+but did not record SOURCE_DEV / SOURCE_INO.
+
+This pack therefore stores:
+  INVENTORY_SOURCE_DEV=ABSENT
+  INVENTORY_SOURCE_INO=ABSENT
+
+It will not invent dest/ino to make backup succeed.
+Before backup copy starts it records the live dest/ino/size/mtime.
+If inventory dest/ino is absent: HALT_REASON=INVENTORY_DEV_INO_ABSENT
+  NEW_READONLY_INVENTORY_REQUIRED=YES
+If inventory dest/ino is present and differs: HALT_REASON=DB_DRIFT
+  DB_DRIFT=YES
+  NEW_READONLY_INVENTORY_REQUIRED=YES
+
+Do not treat a matching source/dest schema pair as identity.
+Canonical path plus Owner schema plus inventory dest/ino are all required.

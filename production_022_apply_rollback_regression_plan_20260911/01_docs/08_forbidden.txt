@@ -1,0 +1,22 @@
+Forbidden
+=========
+
+DROP COLUMN *
+DELETE FROM predictions
+UPDATE predictions SET bundle_json=...
+Reuse claimed rehearsal v1 ZIP
+  SHA256=7981db7fff2d8a8d0a057bf66aeddca72a37c842cdf66c926dd5d3f9ac4c1037
+Overwrite backup v2 ZIP
+  SHA256=9653f26224679d750ea1c3f578a0b8dda0e2178dab5b8ad464ee8cf9a42b9a5a
+Overwrite rehearsal v2 ZIP
+  SHA256=0ae58ef51b41336f2d71f761dc391aef5ede9cc8a29889c0d8eeb236bc6c8ee3
+Merge PR #23 #24 #25 #26 #27 #28 #29
+Set PRODUCTION_APPLY_READY=YES in this pack
+Set OWNER_APPLY_APPROVED=YES in this pack
+Run migrate() against Production from this pack
+systemctl edit / restart from this pack
+Enable PREDICTION_RUNS_ENABLED as part of 022
+Call POST /v1/prediction-runs
+Change GET / UI / Conversation / RA / Challenge
+Treat backup failure as APPLY-ready
+Run backup and 022 in one script
