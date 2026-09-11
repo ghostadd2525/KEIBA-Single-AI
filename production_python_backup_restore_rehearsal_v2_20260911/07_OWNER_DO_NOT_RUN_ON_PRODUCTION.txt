@@ -1,0 +1,5 @@
+Owner: do not run this v2 backup rehearsal on Production.
+Do not set OWNER_PRODUCTION_BACKUP_APPROVED.
+Do not APPLY 019/022.
+Live schema inventory was imported as read-only facts only.
+v1 rehearsal ZIP remains CHANGES_REQUIRED and is not overwritten.

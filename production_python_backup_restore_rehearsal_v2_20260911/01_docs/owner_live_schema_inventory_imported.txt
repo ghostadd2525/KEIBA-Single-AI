@@ -1,0 +1,28 @@
+OWNER LIVE SCHEMA INVENTORY (canonical import)
+==============================================
+
+Imported from Owner read-only inventory return.
+Not a Production write. Not an APPLY.
+
+AUDIT_STATUS=SUCCESS
+SQLITE_VERSION=3.45.1
+SCHEMA_MIGRATIONS_COUNT=22
+HAS_019_FINAL_PREDICTIONS=YES
+HAS_020_SERIES=YES
+HAS_021_SERIES=YES
+HAS_PERSIST_019=NO
+HAS_PERSIST_022=NO
+PREDICTIONS_COLUMN_COUNT=8
+PREDICTIONS_EXISTING_COLUMNS=id,race_id,core_race_id,engine_source,fallback_reason,model_version,bundle_json,created_at
+PREDICTIONS_EXISTING_INDEX=idx_predictions_race(race_id,created_at)
+PRODUCTION_CHANGED=NO
+DB_CHANGED=NO
+BACKUP_COPY_EXECUTED=NO
+APPLY_EXECUTED=NO
+
+v5 022 four nullable columns and the partial UNIQUE index are absent
+on live. They do not collide with existing columns or idx_predictions_race.
+
+LIVE_SCHEMA_022_STRUCTURAL_COMPATIBILITY=YES
+PRODUCTION_SCHEMA_EXACTLY_REHEARSED=STRUCTURAL_YES_FULL_SQLITE_MASTER_LIST_NOT_IN_PASTE
+SCHEMA_MIGRATIONS_NAME_LIST_IN_PASTE=NO
