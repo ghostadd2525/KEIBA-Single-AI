@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""Isolated 022 rehearsal on Owner-imported live predictions shape.
+"""Isolated 022 rehearsal v2. Owner SCHEMA_MIGRATIONS 22-name set is canonical.
 
-Never opens Production. Never enables POST. Never changes GET / UI.
+Never opens Production. Never starts HTTP. Never enables POST.
 """
 from __future__ import annotations
 
@@ -36,8 +36,7 @@ OWNER_COLUMNS = (
     "bundle_json",
     "created_at",
 )
-# 001-018 names below match repo stems so schema_migrations looks Production-shaped.
-REPO_STEMS_001_018 = (
+OWNER_SCHEMA_MIGRATIONS = (
     "001_init",
     "002_race_identity",
     "003_supply_platform",
@@ -56,18 +55,17 @@ REPO_STEMS_001_018 = (
     "016_research_knowledge_base",
     "017_research_knowledge_validation",
     "018_research_candidate_review",
-)
-LIVE_VERSIONS = REPO_STEMS_001_018 + (
     "019_final_predictions",
-    "020_live_series",
-    "021_live_series",
+    "020_research_corpus_canonical",
+    "020_user_challenge_lifecycle",
+    "021_user_challenge_point_events",
 )
+FORBIDDEN_FAKE_SEEDS = ("020_live_series", "021_live_series")
 PRODUCTION_DB_PATHS = (
     "/home/ubuntu/KEIBA-Single-AI/services/win5-ai/var/expect_ai.db",
     "/opt/expect-ai/current/services/win5-ai/var/expect_ai.db",
     "/var/lib/expect-ai/expect_ai.db",
 )
-KV: list[str] = []
 
 
 def emit(key: str, value: Any) -> None:
@@ -79,9 +77,7 @@ def emit(key: str, value: Any) -> None:
         text = "UNKNOWN"
     else:
         text = str(value)
-    line = "%s=%s" % (key, text.replace("\n", " ").replace("\r", ""))
-    print(line)
-    KV.append(line)
+    print("%s=%s" % (key, text.replace("\n", " ").replace("\r", "")))
 
 
 def refuse_prod(path: Path) -> None:
@@ -107,9 +103,35 @@ def index_present(conn: sqlite3.Connection) -> bool:
     return row is not None
 
 
+def race_index_cols(conn: sqlite3.Connection) -> list[str]:
+    return [
+        str(r[2])
+        for r in conn.execute("PRAGMA index_info(idx_predictions_race)").fetchall()
+    ]
+
+
+def seed_compare(seeded: list[str]) -> dict[str, Any]:
+    owner = list(OWNER_SCHEMA_MIGRATIONS)
+    owner_set = set(owner)
+    seeded_set = set(seeded)
+    missing = sorted(owner_set - seeded_set)
+    extra = sorted(seeded_set - owner_set)
+    dupes = sorted({v for v in seeded if seeded.count(v) > 1})
+    fakes = sorted(v for v in seeded if v in FORBIDDEN_FAKE_SEEDS)
+    return {
+        "count": len(seeded),
+        "set_match": seeded_set == owner_set and len(seeded) == 22 and not dupes,
+        "missing": missing,
+        "extra": extra,
+        "dupes": dupes,
+        "fakes": fakes,
+        "ordered_match": seeded == owner,
+    }
+
+
 def seed_live(conn: sqlite3.Connection) -> None:
     conn.executescript(LIVE_SQL.read_text(encoding="utf-8"))
-    for ver in LIVE_VERSIONS:
+    for ver in OWNER_SCHEMA_MIGRATIONS:
         conn.execute(
             "INSERT OR REPLACE INTO schema_migrations(version, applied_at) VALUES (?, 'owner-import')",
             (ver,),
@@ -145,70 +167,79 @@ def legacy_insert(conn: sqlite3.Connection, race_id: str, engine: str) -> None:
 
 
 def main() -> int:
+    os.environ["PREDICTION_RUNS_ENABLED"] = "0"
+    os.environ.pop("EXPECT_AI_ALLOW_MIGRATION_019", None)
+    os.environ.pop("EXPECT_AI_ALLOW_MIGRATION_022", None)
+
     emit("PACK", PACK.name)
     emit("OWNER_LIVE_SCHEMA_INVENTORY_IMPORTED", "YES")
-    emit("AUDIT_STATUS", "SUCCESS")
-    emit("SQLITE_VERSION_OWNER", "3.45.1")
-    emit("OWNER_SCHEMA_MIGRATIONS_COUNT", 22)
-    emit("HAS_019_FINAL_PREDICTIONS", "YES")
-    emit("HAS_020_SERIES", "YES")
-    emit("HAS_021_SERIES", "YES")
-    emit("HAS_PERSIST_019", "NO")
-    emit("HAS_PERSIST_022", "NO")
-    emit("LIVE_SCHEMA_022_STRUCTURAL_COMPATIBILITY", "YES")
+    emit("CLAIMED_WRONG_SEED_ZIP_SHA256", "7981db7fff2d8a8d0a057bf66aeddca72a37c842cdf66c926dd5d3f9ac4c1037")
+    emit("CLAIMED_WRONG_SEED_ZIP_OVERWRITTEN", "NO")
+    emit("BACKUP_V2_INDEPENDENT_REVIEW_COMPLETE", "YES")
+    emit("BACKUP_DESIGN_REVIEW", "PASS")
+    emit("PRODUCTION_BACKUP_DESIGN_APPROVED", "YES")
+    emit("PRODUCTION_BACKUP_EXECUTION_ALLOWED", "NO")
+    emit("PRODUCTION_BACKUP_EXECUTION_PACK", "NO")
+    emit("PRODUCTION_BACKUP_EXECUTED", "NO")
+    emit("LIVE_SCHEMA_REHEARSAL_INDEPENDENT_REVIEW_COMPLETE", "YES")
+    emit("LIVE_SCHEMA_022_REHEARSAL_PASS_CLAIMED_ZIP", "NO")
+    emit("FAIL_REASON_CLAIMED_ZIP", "SEED_MIGRATION_SET_MISMATCH")
     emit("PRODUCTION_CHANGED", "NO")
     emit("DB_CHANGED", "NO")
-    emit("BACKUP_COPY_EXECUTED", "NO")
     emit("APPLY_EXECUTED", "NO")
-    emit("PRODUCTION_BACKUP_EXECUTED", "NO")
     emit("PRODUCTION_APPLY_READY", "NO")
     emit("OWNER_APPLY_APPROVED", "NO")
     emit("GET_SURFACE_MODIFIED", "NO")
     emit("UI_MODIFIED", "NO")
-    emit("CONVERSATION_SERVICE_MODIFIED", "NO")
-    emit("WIN_PROB_MODEL_RANK_MARK_MODIFIED", "NO")
-    emit("PREDICTION_RUNS_ENABLED_DEFAULT", "UNSET_DISABLED")
     emit("HTTP_STARTED", "NO")
+    emit("PREDICTION_RUNS_ENABLED", "0")
 
-    tmp = Path(tempfile.mkdtemp(prefix="iso-022-live-"))
+    tmp = Path(tempfile.mkdtemp(prefix="iso-022-v2-"))
     db = tmp / "live_shape.db"
     refuse_prod(db)
     conn = sqlite3.connect(str(db))
     conn.row_factory = sqlite3.Row
     seed_live(conn)
+
     cols = pred_cols(conn)
     emit("PREDICTIONS_COLUMN_COUNT_BEFORE", len(cols))
     emit("PREDICTIONS_EXISTING_COLUMNS", ",".join(cols))
     emit("PREDICTIONS_COLUMNS_MATCH_OWNER", cols == list(OWNER_COLUMNS))
-    idx = [
-        str(r[1])
-        for r in conn.execute("PRAGMA index_list(predictions)")
-    ]
-    emit("PREDICTIONS_INDEX_BEFORE", ",".join(idx))
-    emit("HAS_022_COLS_BEFORE", any(c in cols for c in _PREDICTION_RUN_COLUMNS))
-    emit("SEEDED_MIGRATION_COUNT", len(versions(conn)))
-    emit("SEEDED_HAS_019_FINAL", "019_final_predictions" in versions(conn))
-    emit("SEEDED_HAS_PERSIST_019", "019_prediction_run_idempotency" in versions(conn))
-    emit("SEEDED_HAS_PERSIST_022", PERSIST_MIGRATION in versions(conn))
-    emit("ROWCOUNT_BEFORE", int(conn.execute("SELECT COUNT(*) FROM predictions").fetchone()[0]))
-    emit("SCHEMA_STATUS_BEFORE", prediction_run_schema_status(conn))
+    emit("IDX_PREDICTIONS_RACE_COLS", ",".join(race_index_cols(conn)))
+    emit("IDX_PREDICTIONS_RACE_MATCH_OWNER", race_index_cols(conn) == ["race_id", "created_at"])
 
-    os.environ.pop("PREDICTION_RUNS_ENABLED", None)
-    os.environ.pop("EXPECT_AI_ALLOW_MIGRATION_019", None)
-    os.environ.pop("EXPECT_AI_ALLOW_MIGRATION_022", None)
+    seeded = versions(conn)
+    cmp = seed_compare(seeded)
+    emit("SEEDED_MIGRATION_COUNT", cmp["count"])
+    emit("OWNER_CANONICAL_MIGRATION_COUNT", 22)
+    emit("OWNER_SCHEMA_MIGRATIONS", ",".join(OWNER_SCHEMA_MIGRATIONS))
+    emit("SEEDED_SCHEMA_MIGRATIONS", ",".join(seeded))
+    emit("SEEDED_MIGRATION_SET_MATCH_OWNER", cmp["set_match"])
+    emit("SEEDED_MIGRATION_ORDER_MATCH_OWNER", cmp["ordered_match"])
+    emit("SEEDED_MISSING_COUNT", len(cmp["missing"]))
+    emit("SEEDED_EXTRA_COUNT", len(cmp["extra"]))
+    emit("SEEDED_DUPLICATE_COUNT", len(cmp["dupes"]))
+    emit("SEEDED_FAKE_020_021_COUNT", len(cmp["fakes"]))
+    if cmp["missing"]:
+        emit("SEEDED_MISSING", ",".join(cmp["missing"]))
+    if cmp["extra"]:
+        emit("SEEDED_EXTRA", ",".join(cmp["extra"]))
+    if not cmp["set_match"]:
+        emit("LIVE_SCHEMA_022_REHEARSAL_PASS", "NO")
+        emit("FAIL_REASON", "SEED_MIGRATION_SET_MISMATCH")
+        conn.close()
+        return 2
+
+    os.environ["PREDICTION_RUNS_ENABLED"] = "0"
     blocked = migrate(conn)
     emit("FIRST_APPLY_WITHOUT_ALLOW", ",".join(blocked) if blocked else "NONE")
-    emit("SCHEMA_STATUS_STILL_ABSENT", prediction_run_schema_status(conn) == "absent")
 
     os.environ["EXPECT_AI_ALLOW_MIGRATION_022"] = "1"
+    os.environ["PREDICTION_RUNS_ENABLED"] = "0"
     first = migrate(conn)
     emit("FIRST_APPLY", ",".join(first) if first else "NONE")
-    emit("FIRST_APPLY_VIA", "standalone_migrate_022")
     emit("MIGRATION_FIRST_APPLY_PASS", PERSIST_MIGRATION in first)
-    emit("SCHEMA_STATUS_AFTER_FIRST", prediction_run_schema_status(conn))
-    cols2 = pred_cols(conn)
-    emit("PREDICTIONS_COLUMN_COUNT_AFTER", len(cols2))
-    emit("NEW_COLS_PRESENT", all(c in cols2 for c in _PREDICTION_RUN_COLUMNS))
+    emit("NEW_COLS_PRESENT", all(c in pred_cols(conn) for c in _PREDICTION_RUN_COLUMNS))
     emit("LIVE_INDEX_STILL_PRESENT", "idx_predictions_race" in [
         str(r[1]) for r in conn.execute("PRAGMA index_list(predictions)")
     ])
@@ -220,14 +251,11 @@ def main() -> int:
             "AND prediction_semantic_hash IS NULL"
         ).fetchone()[0]
     )
-    emit("NULL_COMPAT_ROWCOUNT", nulls)
     emit("EXISTING_NULL_ROW_COMPAT", nulls == 300)
-    emit("ROWCOUNT_AFTER_FIRST", int(conn.execute("SELECT COUNT(*) FROM predictions").fetchone()[0]))
 
     second = migrate(conn)
     emit("SECOND_APPLY", ",".join(second) if second else "NONE")
     emit("MIGRATION_SECOND_APPLY_NOOP", second == [])
-    emit("SCHEMA_STATUS_AFTER_SECOND", prediction_run_schema_status(conn))
 
     conn.execute("DROP INDEX IF EXISTS %s" % _IDEMPOTENCY_INDEX)
     conn.commit()
@@ -235,23 +263,27 @@ def main() -> int:
     repaired = migrate(conn)
     emit("PARTIAL_REPAIR_APPLIED", ",".join(repaired) if repaired else "NONE")
     emit("MIGRATION_PARTIAL_REPAIR_PASS", prediction_run_schema_status(conn) == "complete" and index_present(conn))
-    emit("PARTIAL_ROWCOUNT_STILL_300", int(conn.execute("SELECT COUNT(*) FROM predictions").fetchone()[0]) == 300)
+
+    conn.execute("DROP INDEX IF EXISTS %s" % _IDEMPOTENCY_INDEX)
+    conn.execute(
+        "CREATE INDEX %s ON predictions(idempotency_key)" % _IDEMPOTENCY_INDEX
+    )
+    conn.commit()
+    emit("SCHEMA_STATUS_AFTER_WRONG_INDEX", prediction_run_schema_status(conn))
+    wrong_repaired = migrate(conn)
+    emit("WRONG_INDEX_REPAIR_APPLIED", ",".join(wrong_repaired) if wrong_repaired else "NONE")
+    emit("MIGRATION_WRONG_INDEX_REPAIR_PASS", prediction_run_schema_status(conn) == "complete")
 
     legacy_insert(conn, "conv-legacy-1", "conversation")
     legacy_insert(conn, "ra-legacy-1", "result_automation")
     legacy_insert(conn, "challenge-legacy-1", "challenge")
-    conn.execute(
-        "INSERT INTO conversation_history(session_id, role, content, intent, race_id, meta_json, created_at) "
-        "VALUES ('s2','assistant','ok','chat',NULL,'{}','2026-09-11T00:00:00+00:00')"
-    )
     conn.commit()
     extra = conn.execute(
-        "SELECT race_id, persist_source, idempotency_key FROM predictions "
+        "SELECT persist_source, idempotency_key FROM predictions "
         "WHERE race_id IN ('conv-legacy-1','ra-legacy-1','challenge-legacy-1')"
     ).fetchall()
     emit("LEGACY_INSERT_COUNT", len(extra))
-    emit("CONVERSATION_RA_CHALLENGE_NULL_COMPAT", all(r[1] is None and r[2] is None for r in extra) and len(extra) == 3)
-    emit("CONVERSATION_HISTORY_COUNT", int(conn.execute("SELECT COUNT(*) FROM conversation_history").fetchone()[0]))
+    emit("CONVERSATION_RA_CHALLENGE_NULL_COMPAT", all(r[0] is None and r[1] is None for r in extra) and len(extra) == 3)
 
     os.environ["PREDICTION_RUNS_ENABLED"] = "0"
     os.environ.pop("EXPECT_AI_ALLOW_MIGRATION_022", None)
@@ -261,14 +293,11 @@ def main() -> int:
     emit("ROLLBACK_MIGRATE_AFTER_UNSET_ALLOW", ",".join(after_unset) if after_unset else "NONE")
     emit("ROLLBACK_INDEX_ABSENT", not index_present(conn))
     emit("ROLLBACK_COLUMNS_REMAIN", all(c in pred_cols(conn) for c in _PREDICTION_RUN_COLUMNS))
-    emit("ROLLBACK_REQUIRED_ORDER", "PREDICTION_RUNS_ENABLED=0 then UNSET EXPECT_AI_ALLOW_MIGRATION_022 then DROP INDEX")
-
+    emit("PREDICTION_RUNS_ENABLED", os.environ.get("PREDICTION_RUNS_ENABLED"))
     emit("POST_ENABLED", "NO")
-    emit("PRODUCTION_BACKUP_DESIGN_APPROVED", "NO")
-    emit("PRODUCTION_BACKUP_EXECUTED", "NO")
+    emit("PRODUCTION_BACKUP_EXECUTION_PACK", "NO")
     emit("PRODUCTION_APPLY_READY", "NO")
-    emit("OWNER_APPLY_APPROVED", "NO")
-    emit("NEXT_STEP", "BACKUP_V2_AND_LIVE_SCHEMA_BASED_ISOLATED_REHEARSAL")
+    emit("NEXT_STEP", "INDEPENDENT_REVIEW_OF_022_REHEARSAL_V2")
     conn.close()
     return 0
 

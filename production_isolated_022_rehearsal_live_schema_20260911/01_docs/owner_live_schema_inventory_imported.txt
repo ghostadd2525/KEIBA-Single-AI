@@ -4,29 +4,6 @@ OWNER LIVE SCHEMA INVENTORY (canonical import)
 AUDIT_STATUS=SUCCESS
 SQLITE_VERSION=3.45.1
 SCHEMA_MIGRATIONS_COUNT=22
-SCHEMA_MIGRATIONS=
-001_init,
-002_race_identity,
-003_supply_platform,
-004_user_domain,
-005_results_eval,
-006_result_automation,
-007_collect_c0,
-008_collect_contract_1_1,
-009_user_race_results,
-010_user_progress_audit,
-011_research_evidence,
-012_research_snapshot_features,
-013_research_prediction_corpus,
-014_research_historical_ingest,
-015_research_race_meta,
-016_research_knowledge_base,
-017_research_knowledge_validation,
-018_research_candidate_review,
-019_final_predictions,
-020_research_corpus_canonical,
-020_user_challenge_lifecycle,
-021_user_challenge_point_events
 HAS_019_FINAL_PREDICTIONS=YES
 HAS_020_SERIES=YES
 HAS_021_SERIES=YES
@@ -35,11 +12,14 @@ HAS_PERSIST_022=NO
 PREDICTIONS_COLUMN_COUNT=8
 PREDICTIONS_EXISTING_COLUMNS=id,race_id,core_race_id,engine_source,fallback_reason,model_version,bundle_json,created_at
 PREDICTIONS_EXISTING_INDEX=idx_predictions_race(race_id,created_at)
-LIVE_SCHEMA_022_STRUCTURAL_COMPATIBILITY=YES
 PRODUCTION_CHANGED=NO
 DB_CHANGED=NO
 BACKUP_COPY_EXECUTED=NO
 APPLY_EXECUTED=NO
 
-The previous claim that the Owner paste lacked SCHEMA_MIGRATIONS names
-is withdrawn. These 22 names are canonical.
+v5 022 four nullable columns + partial UNIQUE index are absent on live.
+No collision with existing columns or idx_predictions_race.
+
+LIVE_SCHEMA_022_STRUCTURAL_COMPATIBILITY=YES
+This isolated rehearsal applies 022 only to a temp DB built from that
+live predictions shape. Production APPLY is not performed.
