@@ -1,0 +1,29 @@
+Rollback review after a committed 022 APPLY
+==========================================
+
+This pack does not execute rollback DDL after COMMIT.
+If COMMIT succeeded and a later check failed:
+
+  APPLY_EXECUTED=YES
+  POST_APPLY_REGRESSION_PASS=NO
+  ROLLBACK_REVIEW_REQUIRED=YES
+
+Automatic actions in that state
+-------------------------------
+1. Confirm PREDICTION_RUNS_ENABLED effective 0
+2. Unset process EXPECT_AI_ALLOW_MIGRATION_022
+3. Do not DROP INDEX automatically. Owner decides.
+4. Do not DROP COLUMN
+5. Do not DELETE rows
+6. Do not rewrite bundle_json
+7. Do not DELETE the schema_migrations 022 row
+8. Do not restore live DB from backup
+
+Owner-later rollback order (not executed here)
+----------------------------------------------
+1. PREDICTION_RUNS_ENABLED=0
+2. Unset EXPECT_AI_ALLOW_MIGRATION_022
+3. Owner may DROP INDEX IF EXISTS uq_predictions_idempotency_key_not_null
+
+Columns remain. Rows remain. bundle_json is not rewritten.
+Backup is last-resort, not the default rollback.
