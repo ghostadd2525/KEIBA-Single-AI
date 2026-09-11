@@ -1,0 +1,34 @@
+Owner steps (do not run until independent review of this v2 pack)
+================================================================
+
+This agent must not execute Production backup.
+This pack does not set OWNER_PRODUCTION_BACKUP_APPROVED.
+
+1. Keep v1 ZIP as audit trail. Do not run v1.
+2. Keep APPLY plan ZIP unchanged. Do not APPLY 022 here.
+3. Independent review of this v2 ZIP must pass first.
+4. A new read-only inventory that records SOURCE_DEV and SOURCE_INO
+   is required before a real backup can pass.
+   Current inventory dest/ino = ABSENT. Do not invent a match.
+5. After review + new inventory (future pack or Owner paste of dest/ino
+   is not done in this pack), Owner may later set
+   OWNER_PRODUCTION_BACKUP_APPROVED=1 in their own Windows session
+   and run only:
+     02_powershell/OWNER_BACKUP.ps1
+6. Success requires stdout keys:
+   OWNER_BACKUP_STATUS=SUCCESS
+   PRODUCTION_BACKUP_EXECUTED=YES
+   BACKUP_INTEGRITY_OK=YES
+   BACKUP_SCHEMA_OK=YES
+   BACKUP_MIGRATION_SET_OK=YES
+   BACKUP_MASTER_SHA_MATCH=YES
+   BACKUP_SHA256_RECORDED=YES
+   BACKUP_DISTINCT_INODE=YES
+   BACKUP_DIR_MODE=0o700
+   BACKUP_FILE_MODE=0o600
+   APPLY_PRECONDITION_BACKUP_PASS=YES
+   PRODUCTION_APPLY_READY=NO
+   MIGRATION_MAY_PROCEED=NO
+7. Audit log is written under Windows Downloads.
+   The backup DB stays on Production:
+   /home/ubuntu/KEIBA-Single-AI/var/sqlite_backups/<UTC>/expect_ai.db

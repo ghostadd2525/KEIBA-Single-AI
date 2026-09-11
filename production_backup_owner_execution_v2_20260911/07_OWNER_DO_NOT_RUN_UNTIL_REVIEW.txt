@@ -1,0 +1,8 @@
+Do not run OWNER_BACKUP.ps1 on Production until this v2 pack
+passes independent review and a new read-only inventory records
+SOURCE_DEV and SOURCE_INO.
+
+Do not set OWNER_PRODUCTION_BACKUP_APPROVED in this pack.
+Do not APPLY 022.
+Do not merge PR #23-#30.
+Do not overwrite the v1 Owner pack ZIP or the APPLY plan ZIP.
