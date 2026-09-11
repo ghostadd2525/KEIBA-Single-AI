@@ -1,0 +1,28 @@
+Production backup execution contract (design only)
+=================================================
+
+Backup itself is a Production write (new file). Do not run on
+Production until Owner sets OWNER_PRODUCTION_BACKUP_APPROVED=1
+in a dedicated future pack. This pack never sets that flag.
+
+Order after Owner approval (future, not now)
+  1. PREDICTION_RUNS_ENABLED=0
+  2. EXPECT_AI_ALLOW_MIGRATION_019 unset
+  3. EXPECT_AI_ALLOW_MIGRATION_022 unset
+  4. confirm explicit source path (one file)
+  5. record source dev/ino/size/mtime
+  6. dest = new timestamp file in a dedicated directory
+  7. refuse if dest exists
+  8. refuse if dest parent free space < source size + 8MiB
+  9. sqlite3.Connection.backup(pages=64, sleep=0.05)
+  10. PRAGMA integrity_check = ok
+  11. compare user_version, table count, table names, schema_migrations
+      (schema_version is recorded; Connection.backup onto a new dest may
+      leave dest schema_version different — that alone is not a fail)
+  12. record dest SHA256 / size / mode
+  13. if any step fails: MIGRATION_MAY_PROCEED=NO and stop
+  14. restore rehearsal only to a new temp DB
+  15. never restore onto the live path
+
+sqlite3 CLI is absent on Production. Connection.backup does not need it.
+cp / rsync of a live DB is refused.

@@ -1,0 +1,14 @@
+019 persist plan is superseded and not overwritten.
+
+Path
+  files/services/win5-ai/app/data/migrations_not_apply/019_prediction_run_idempotency.sql
+SHA256
+  d8fc71e316d7819a4dcfc0977bf6444308410144b62fd29a33ca764ea853370f
+  (byte-identical to v1-v4 review 019 SQL)
+
+migrate() never reads migrations_not_apply/.
+If the 019 filename is dropped back into app/data/migrations/,
+migrate() skips stem 019_prediction_run_idempotency.
+
+Apply target is 022_prediction_run_idempotency only.
+Do not apply 019 or 022 to Production.

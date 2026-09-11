@@ -1,0 +1,16 @@
+Owner 手順（read-only live schema inventory · 1本）
+================================================
+
+1. このフォルダだけを使う。既存 review / DRY_RUN / rehearsal ZIP は上書きしない。
+2. 02_powershell\OWNER_READONLY.ps1 を実行する。
+3. Downloads の output txt を返す。
+
+禁止
+  HTTP（/health 含む）
+  POST
+  019 / 022 適用
+  sqlite 書き込み / backup
+  Conversation / RA / Challenge 実書込み
+  systemctl 変更
+  PR #23〜#26 の merge
+  Production 変更
