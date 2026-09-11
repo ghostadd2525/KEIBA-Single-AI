@@ -1,0 +1,15 @@
+WITHDRAWN
+=========
+
+v2 claimed Owner inventory lacked dest/ino. That claim was wrong.
+
+Owner live schema inventory recorded:
+  DB_DEV=66305
+  DB_INO=349935
+  DB_SIZE_BYTES=105783296
+  DB_MTIME_EPOCH=1789143980
+
+See 01_docs/inventory_identity.txt
+INVENTORY_DEV_INO_ABSENT is withdrawn and is not a v3 halt gate.
+v3 embeds dest/ino and requires live dest/ino match before backup.
+size/mtime are recorded only and are not a match gate.

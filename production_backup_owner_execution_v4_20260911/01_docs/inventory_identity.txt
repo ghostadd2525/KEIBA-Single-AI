@@ -1,0 +1,12 @@
+Owner inventory identity (embedded)
+===================================
+
+INVENTORY_SOURCE_DEV=66305
+INVENTORY_SOURCE_INO=349935
+INVENTORY_SOURCE_SIZE=105783296
+INVENTORY_SOURCE_MTIME=1789143980
+
+INVENTORY_DEV_INO_ABSENT is withdrawn.
+size/mtime are recorded at backup time but are not a match gate.
+dev/ino must match exactly or HALT with DB_DRIFT=YES and request a
+new read-only inventory.
