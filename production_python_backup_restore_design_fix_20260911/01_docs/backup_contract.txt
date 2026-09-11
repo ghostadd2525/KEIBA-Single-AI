@@ -1,0 +1,53 @@
+Production backup design contract (design fix, not execution)
+============================================================
+
+Backup itself is a Production write (new file). Do not run on
+Production. This pack never sets OWNER_PRODUCTION_BACKUP_APPROVED
+and does not include a Production execution pack.
+
+Source open (required)
+  uri = file:<absolute-path>?mode=ro
+  sqlite3.connect(uri, uri=True)
+  PRAGMA query_only = ON
+  record source dev/ino before open and after open/backup
+  refuse if the pair changes
+
+Destination
+  explicit --dest or a single timestamped file under a dedicated --dest-dir
+  dest directory mode 0700, dest DB mode 0600, verified after chmod
+  refuse shared parents (/, /tmp, /var/tmp, /home, /opt, /workspace)
+  refuse dest == source path
+  refuse dest sharing source inode (including hardlink)
+  refuse dest exists (no overwrite)
+  refuse dest parent free < source size + 8MiB
+
+Copy
+  sqlite3.Connection.backup(pages=64, sleep=0.05)
+  PRAGMA integrity_check = ok on dest
+  compare:
+    schema_migrations
+    table names/count
+    index names/count
+    trigger names/count
+    view names/count
+    canonical sqlite_master SHA (type|name|tbl_name|normalized sql)
+  schema_version is recorded; a dest difference alone is not a fail
+
+Failure
+  MIGRATION_MAY_PROCEED=NO always after any failure
+  PRODUCTION_BACKUP_EXECUTED=NO
+  if the exclusive dest was created and not yet verified:
+    delete or quarantine that dest + dest-wal/shm/journal only
+    never delete source
+
+PRODUCTION_BACKUP_EXECUTED
+  YES only when source is a Production path AND backup verified
+  design / isolated tests: always NO
+
+Restore rehearsal
+  new temp DB only
+  never restore onto live / Production path
+
+After Owner returns live schema inventory
+  align this rehearsal fixture to the live sqlite_master
+  until then LIVE_SCHEMA_EXACT_COMPATIBILITY=UNCONFIRMED
