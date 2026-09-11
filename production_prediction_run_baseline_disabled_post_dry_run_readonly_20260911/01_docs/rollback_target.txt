@@ -1,0 +1,16 @@
+Rollback target (this step documents only; do not execute)
+
+CURRENT_019_APPLIED expected=NO so CURRENT_ROLLBACK_NEEDED=NO
+
+If 019 were applied later, rollback is:
+  DROP INDEX IF EXISTS uq_predictions_idempotency_key_not_null;
+
+NOT rollback:
+  DROP COLUMN
+  DELETE FROM predictions
+  UPDATE predictions SET bundle_json=...
+  GET route changes
+  Conversation / Challenge / RA INSERT changes
+
+ROLLBACK_TARGET=PARTIAL_UNIQUE_INDEX_ONLY
+ROLLBACK_TARGET_NAME=uq_predictions_idempotency_key_not_null

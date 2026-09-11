@@ -1,0 +1,32 @@
+Owner 手順（Step 2-4 · read-only / DRY_RUN · 1本）
+================================================
+
+1. このフォルダだけを使う。
+2. 既存 v1〜v4 review ZIP と v1 smoke pack は実行しない・上書きしない。
+3. 02_powershell\OWNER_READONLY.ps1 を実行する。
+4. Downloads の新規 output txt を返す。
+
+禁止
+  POST /v1/prediction-runs（503 確認も不可）
+  EXPECT_AI_ALLOW_MIGRATION_019 の export / systemd 編集
+  sqlite3 への書き込み / .backup 実行 / ファイルコピー
+  GET /v1/predictions/{race_id}
+  GET /v1/challenge/monthly
+  POST /v1/conversation/chat
+  POST /v1/admin/results/run
+  systemctl start|stop|restart|reload|enable|disable
+  Production 変更
+  PR #23 の merge
+  当日予想生成を成功扱いすること（Research Week）
+
+Cursor 事前フラグ（Owner 実行前）
+  LOCAL_IMPLEMENTATION_APPROVED=YES
+  PRODUCTION_BASELINE_REQUIRED=YES
+  PRODUCTION_DRY_RUN_READY=NO
+  PRODUCTION_APPLY_READY=NO
+  PRODUCTION_EXPOSURE_READY=NO
+  OWNER_APPLY_APPROVED=NO
+  APPLY_EXECUTED=NO
+  PRODUCTION_NOT_TOUCHED=YES
+  GITHUB_CHANGED=NO
+  PR23_MERGED=NO
