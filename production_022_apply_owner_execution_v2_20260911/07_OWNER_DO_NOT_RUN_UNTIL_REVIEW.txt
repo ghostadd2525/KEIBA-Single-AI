@@ -1,0 +1,9 @@
+Do not run OWNER_APPLY.ps1 on Production until this v2 pack
+passes independent review.
+
+Do not set OWNER_PRODUCTION_022_APPLY_APPROVED in this pack.
+Do not enable PREDICTION_RUNS_ENABLED.
+Do not switch the site.
+Do not merge PR #23-#34.
+Do not overwrite the APPLY plan ZIP, backup Owner ZIPs, or the v1 APPLY ZIP.
+Windows PowerShell 5.1 Parser.ParseFile is confirmed by Owner after review.

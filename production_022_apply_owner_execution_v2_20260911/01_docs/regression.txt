@@ -1,0 +1,34 @@
+Required runtime regression in this pack
+=======================================
+
+Checked by owner_apply_stdin.py (localhost AI + systemd/journal + DB):
+
+  service ActiveState=active
+  GET http://127.0.0.1:${AI_PORT}/health
+  GET http://127.0.0.1:${AI_PORT}/v1/predictions
+  envelope key/type compare before vs after APPLY
+  predictions row count before vs after each GET; delta must be 0
+  detail GET only with a race_id taken from that list
+  empty list => detail skipped
+  journalctl -p err since APPLY_STARTED_UTC; new error count must be 0
+  new-column NULL compat on existing rows (DB, not HTTP)
+
+Not called
+----------
+  POST /v1/prediction-runs
+  Conversation / RA / Challenge writes
+  authenticated detail GET (no Authorization header)
+
+Not claimed CHANGED=NO when unchecked
+-------------------------------------
+  public /api/health
+  static / /race.html /races.html
+  public /api/predictions
+  Conversation / RA / Challenge UI
+
+Those unchecked items set CHECKED=NO and require the same-procedure
+Owner smoke in 00_docs/OWNER_STEPS.txt.
+
+Research Week
+-------------
+  public /api/predictions 503 OPS_CLOSED is a pass when that surface is checked

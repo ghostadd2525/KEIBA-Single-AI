@@ -1,0 +1,1130 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""Single SSH stdin payload for 022 schema APPLY v2. Pregenerated. Do not concatenate."""
+from __future__ import annotations
+
+import hashlib
+import json
+import os
+import sqlite3
+import stat
+import subprocess
+import sys
+import urllib.error
+import urllib.request
+from datetime import datetime, timezone
+from pathlib import Path
+from urllib.parse import urlparse
+
+PACK = "production_022_apply_owner_execution_v2_20260911"
+CANONICAL_SOURCE = "/home/ubuntu/KEIBA-Single-AI/services/win5-ai/var/expect_ai.db"
+BACKUP_PATH = "/home/ubuntu/KEIBA-Single-AI/var/sqlite_backups/20260911T175303Z/expect_ai.db"
+BACKUP_SHA256 = "f840b475b232fb183a74be5b5159ece7e81b99e514d3b8d71055b9ad1721b60d"
+INVENTORY_SOURCE_DEV = 66305
+INVENTORY_SOURCE_INO = 349935
+BACKUP_DEV = 66305
+BACKUP_INO = 287106
+PERSIST_022 = "022_prediction_run_idempotency"
+PERSIST_019 = "019_prediction_run_idempotency"
+PARTIAL_INDEX = "uq_predictions_idempotency_key_not_null"
+RACE_INDEX = "idx_predictions_race"
+NEW_COLS = (
+    "idempotency_key",
+    "persist_source",
+    "input_snapshot_hash",
+    "prediction_semantic_hash",
+)
+OWNER_MIGRATIONS = (
+    "001_init",
+    "002_race_identity",
+    "003_supply_platform",
+    "004_user_domain",
+    "005_results_eval",
+    "006_result_automation",
+    "007_collect_c0",
+    "008_collect_contract_1_1",
+    "009_user_race_results",
+    "010_user_progress_audit",
+    "011_research_evidence",
+    "012_research_snapshot_features",
+    "013_research_prediction_corpus",
+    "014_research_historical_ingest",
+    "015_research_race_meta",
+    "016_research_knowledge_base",
+    "017_research_knowledge_validation",
+    "018_research_candidate_review",
+    "019_final_predictions",
+    "020_research_corpus_canonical",
+    "020_user_challenge_lifecycle",
+    "021_user_challenge_point_events",
+)
+OWNER_PRED_COLUMNS = (
+    "id",
+    "race_id",
+    "core_race_id",
+    "engine_source",
+    "fallback_reason",
+    "model_version",
+    "bundle_json",
+    "created_at",
+)
+INDEX_SQL = (
+    "CREATE UNIQUE INDEX IF NOT EXISTS uq_predictions_idempotency_key_not_null "
+    "ON predictions(idempotency_key) WHERE idempotency_key IS NOT NULL"
+)
+ALTER_SQL = tuple("ALTER TABLE predictions ADD COLUMN %s TEXT" % c for c in NEW_COLS)
+WATCHED_ENV_KEYS = (
+    "PREDICTION_RUNS_ENABLED",
+    "EXPECT_AI_ALLOW_MIGRATION_022",
+    "EXPECT_AI_ALLOW_MIGRATION_019",
+)
+SERVICE_CANDIDATES = (
+    "expect-ai.service",
+    "win5-ai.service",
+    "expect_ai.service",
+)
+APPROVAL = "OWNER_PRODUCTION_022_APPLY_APPROVED"
+PHASE_NOT_STARTED = "NOT_STARTED"
+PHASE_TRANSACTION_OPEN = "TRANSACTION_OPEN"
+PHASE_COMMITTED = "COMMITTED"
+
+
+class Halt(Exception):
+    def __init__(self, code: str) -> None:
+        self.code = code
+        super().__init__(code)
+
+
+class State:
+    apply_phase = PHASE_NOT_STARTED
+    apply_executed = False
+    audit_closed = False
+    http_calls: list[tuple[str, str]] = []
+    ai_key = ""
+    ai_port = 8000
+    apply_started = ""
+    unit = ""
+
+
+STATE = State()
+
+
+def emit(key: str, value: object) -> None:
+    if value is True:
+        text = "YES"
+    elif value is False:
+        text = "NO"
+    else:
+        text = str(value)
+    print("%s=%s" % (key, text.replace("\n", " ")))
+
+
+def test_mode() -> bool:
+    return (os.environ.get("OWNER_APPLY_PACK_TEST") or "").strip() == "1"
+
+
+def test_fail_mode() -> str:
+    return (os.environ.get("OWNER_APPLY_TEST_FAIL") or "").strip()
+
+
+def file_sha(path: Path) -> str:
+    h = hashlib.sha256()
+    with open(path, "rb") as fh:
+        for chunk in iter(lambda: fh.read(1024 * 1024), b""):
+            h.update(chunk)
+    return h.hexdigest()
+
+
+def canonical_source() -> Path:
+    if test_mode():
+        override = (os.environ.get("OWNER_APPLY_TEST_SRC") or "").strip()
+        if override:
+            return Path(override)
+    return Path(CANONICAL_SOURCE)
+
+
+def backup_path() -> Path:
+    if test_mode():
+        override = (os.environ.get("OWNER_APPLY_TEST_BACKUP") or "").strip()
+        if override:
+            return Path(override)
+    return Path(BACKUP_PATH)
+
+
+def expected_source_dev_ino() -> tuple[int, int]:
+    if test_mode():
+        d = (os.environ.get("OWNER_APPLY_TEST_SOURCE_DEV") or "").strip()
+        i = (os.environ.get("OWNER_APPLY_TEST_SOURCE_INO") or "").strip()
+        if d and i:
+            return int(d), int(i)
+    return INVENTORY_SOURCE_DEV, INVENTORY_SOURCE_INO
+
+
+def expected_backup_dev_ino() -> tuple[int, int]:
+    if test_mode():
+        d = (os.environ.get("OWNER_APPLY_TEST_BACKUP_DEV") or "").strip()
+        i = (os.environ.get("OWNER_APPLY_TEST_BACKUP_INO") or "").strip()
+        if d and i:
+            return int(d), int(i)
+    return BACKUP_DEV, BACKUP_INO
+
+
+def expected_backup_sha() -> str:
+    if test_mode():
+        override = (os.environ.get("OWNER_APPLY_TEST_BACKUP_SHA") or "").strip()
+        if override:
+            return override
+    return BACKUP_SHA256
+
+
+def refuse_unapproved() -> None:
+    if (os.environ.get(APPROVAL) or "").strip() != "1":
+        raise Halt("OWNER_PRODUCTION_022_APPLY_APPROVED_UNSET")
+
+
+def migration_list(conn: sqlite3.Connection) -> list[str]:
+    try:
+        return [str(r[0]) for r in conn.execute("SELECT version FROM schema_migrations ORDER BY 1")]
+    except sqlite3.Error:
+        return []
+
+
+def prediction_columns(conn: sqlite3.Connection) -> list[str]:
+    try:
+        return [str(r[1]) for r in conn.execute("PRAGMA table_info(predictions)")]
+    except sqlite3.Error:
+        return []
+
+
+def column_notnull(conn: sqlite3.Connection, name: str) -> int:
+    for row in conn.execute("PRAGMA table_info(predictions)"):
+        if str(row[1]) == name:
+            return int(row[3] or 0)
+    return -1
+
+
+def pred_row_count(conn: sqlite3.Connection) -> int:
+    row = conn.execute("SELECT COUNT(*) FROM predictions").fetchone()
+    return int(row[0] if row else 0)
+
+
+def pred_row_count_ro(path: Path) -> int:
+    conn = sqlite3.connect("file:%s?mode=ro" % path.resolve().as_posix(), uri=True)
+    try:
+        conn.execute("PRAGMA query_only=ON")
+        return pred_row_count(conn)
+    finally:
+        conn.close()
+
+
+def normalize_sql(sql: str) -> str:
+    return " ".join((sql or "").split()).lower()
+
+
+def inspect_index(conn: sqlite3.Connection) -> str:
+    listed = {
+        str(r[1]): int(r[2] or 0)
+        for r in conn.execute("PRAGMA index_list(predictions)").fetchall()
+    }
+    master = conn.execute(
+        "SELECT sql FROM sqlite_master WHERE type='index' AND name=?",
+        (PARTIAL_INDEX,),
+    ).fetchone()
+    if PARTIAL_INDEX not in listed and master is None:
+        return "missing"
+    unique = listed.get(PARTIAL_INDEX, 0) == 1
+    cols = [
+        str(r[2] or "")
+        for r in conn.execute("PRAGMA index_info(%s)" % PARTIAL_INDEX).fetchall()
+    ]
+    sql = normalize_sql(master[0] if master and master[0] else "")
+    compact = sql.replace(" ", "")
+    has_unique = unique and ("createuniqueindex" in compact or " unique " in " %s " % sql)
+    single_key = cols == ["idempotency_key"]
+    has_predicate = "whereidempotency_keyisnotnull" in compact
+    on_predictions = "onpredictions(idempotency_key)" in compact
+    if has_unique and single_key and has_predicate and on_predictions:
+        return "ok"
+    return "mismatch"
+
+
+def inspect_race_index(conn: sqlite3.Connection) -> str:
+    names = {str(r[1]) for r in conn.execute("PRAGMA index_list(predictions)").fetchall()}
+    if RACE_INDEX not in names:
+        return "missing"
+    cols = [str(r[2] or "") for r in conn.execute("PRAGMA index_info(%s)" % RACE_INDEX).fetchall()]
+    if cols == ["race_id", "created_at"]:
+        return "ok"
+    return "mismatch"
+
+
+def verify_pre_schema(conn: sqlite3.Connection, *, prefix: str = "") -> int:
+    migrations = migration_list(conn)
+    cols = prediction_columns(conn)
+    have = set(migrations)
+    owner = set(OWNER_MIGRATIONS)
+    emit("%sSCHEMA_MIGRATIONS_COUNT" % prefix, len(migrations))
+    emit("%sPREDICTIONS_COLUMN_COUNT" % prefix, len(cols))
+    emit("%sHAS_PERSIST_022" % prefix, PERSIST_022 in have)
+    emit("%sHAS_PERSIST_019" % prefix, PERSIST_019 in have)
+    emit("%sNEW_PERSIST_COLUMNS_PRESENT" % prefix, sum(1 for c in NEW_COLS if c in cols))
+    emit("%sPARTIAL_UNIQUE_INDEX_STATE" % prefix, inspect_index(conn))
+    emit("%sEXISTING_RACE_INDEX" % prefix, inspect_race_index(conn))
+    rows = pred_row_count(conn)
+    emit("%sPRED_ROW_COUNT_BEFORE" % prefix, rows)
+    if PERSIST_022 in have or inspect_index(conn) != "missing" or any(c in cols for c in NEW_COLS):
+        raise Halt("ALREADY_APPLIED_OR_PARTIAL")
+    if have != owner:
+        raise Halt("MIGRATION_SET_MISMATCH")
+    if cols != list(OWNER_PRED_COLUMNS):
+        raise Halt("PREDICTIONS_COLUMNS_MISMATCH")
+    if inspect_race_index(conn) != "ok":
+        raise Halt("EXISTING_INDEX_MISSING_OR_MISMATCH")
+    emit("%sSOURCE_SCHEMA_GATE" % prefix, "PASS")
+    return rows
+
+
+def verify_post_schema(conn: sqlite3.Connection, rows_before: int, *, prefix: str = "") -> None:
+    migrations = migration_list(conn)
+    cols = prediction_columns(conn)
+    have = set(migrations)
+    emit("%sSCHEMA_MIGRATIONS_COUNT_AFTER" % prefix, len(migrations))
+    emit("%sPREDICTIONS_COLUMN_COUNT_AFTER" % prefix, len(cols))
+    emit("%sHAS_PERSIST_022" % prefix, PERSIST_022 in have)
+    emit("%sPARTIAL_UNIQUE_INDEX_STATE" % prefix, inspect_index(conn))
+    rows = pred_row_count(conn)
+    emit("%sPRED_ROW_COUNT_AFTER" % prefix, rows)
+    if have != set(OWNER_MIGRATIONS) | {PERSIST_022}:
+        raise Halt("POST_APPLY_MIGRATION_SET_MISMATCH")
+    if PERSIST_019 in have:
+        raise Halt("HAS_PERSIST_019")
+    want_cols = list(OWNER_PRED_COLUMNS) + list(NEW_COLS)
+    if cols != want_cols:
+        raise Halt("POST_APPLY_COLUMNS_MISMATCH")
+    for col in NEW_COLS:
+        if column_notnull(conn, col) != 0:
+            raise Halt("NEW_COLUMN_NOT_NULLABLE")
+        nulls = conn.execute("SELECT COUNT(*) FROM predictions WHERE %s IS NULL" % col).fetchone()
+        if int(nulls[0] if nulls else -1) != rows:
+            raise Halt("NEW_COLUMN_NULL_COMPAT_FAIL")
+    if inspect_index(conn) != "ok":
+        raise Halt("APPLY_INDEX_MISMATCH")
+    if inspect_race_index(conn) != "ok":
+        raise Halt("EXISTING_INDEX_MISSING_OR_MISMATCH")
+    if rows != rows_before:
+        raise Halt("PRED_ROW_COUNT_CHANGED")
+    emit("%sSOURCE_SCHEMA_AFTER" % prefix, "PASS")
+    emit("%sNEW_COLUMN_NULL_COMPAT" % prefix, "PASS")
+
+
+def verify_identity(path: Path, exp_dev: int, exp_ino: int, kind: str) -> os.stat_result:
+    st = path.stat()
+    emit("%s_DEV" % kind, st.st_dev)
+    emit("%s_INO" % kind, st.st_ino)
+    emit("%s_SIZE" % kind, st.st_size)
+    emit("%s_MTIME" % kind, int(st.st_mtime))
+    emit("%s_MODE" % kind, oct(stat.S_IMODE(st.st_mode)))
+    if (int(st.st_dev), int(st.st_ino)) != (int(exp_dev), int(exp_ino)):
+        emit("DB_DRIFT", "YES")
+        raise Halt("DB_DRIFT" if kind == "SOURCE" else "BACKUP_DRIFT")
+    emit("DB_DRIFT", "NO")
+    return st
+
+
+def verify_backup(path: Path) -> None:
+    if not path.is_file():
+        raise Halt("BACKUP_MISSING")
+    got = file_sha(path)
+    emit("BACKUP_SHA256", got)
+    emit("BACKUP_SHA256_EXPECTED", expected_backup_sha())
+    emit("BACKUP_SHA256_MATCH", got == expected_backup_sha())
+    if got != expected_backup_sha():
+        raise Halt("BACKUP_SHA_MISMATCH")
+    verify_identity(path, *expected_backup_dev_ino(), "BACKUP")
+    conn = sqlite3.connect("file:%s?mode=ro" % path.resolve().as_posix(), uri=True)
+    try:
+        conn.execute("PRAGMA query_only=ON")
+        integrity = conn.execute("PRAGMA integrity_check").fetchone()
+        ok = bool(integrity) and str(integrity[0]) == "ok"
+        emit("BACKUP_INTEGRITY_OK", ok)
+        if not ok:
+            raise Halt("BACKUP_INTEGRITY_FAIL")
+    finally:
+        conn.close()
+    emit("APPLY_PRECONDITION_BACKUP_PASS", "YES")
+
+
+def _flag_01(raw: str | None) -> int:
+    return 1 if (raw or "").strip().lower() in ("1", "true", "yes", "on") else 0
+
+
+def parse_systemd_show(text: str) -> dict[str, str]:
+    out: dict[str, str] = {}
+    for line in (text or "").splitlines():
+        if "=" not in line:
+            continue
+        key, val = line.split("=", 1)
+        out[key.strip()] = val.strip()
+    return out
+
+
+def parse_assignment_blob(blob: str, *, split_null: bool, extra_keys: tuple[str, ...] = ()) -> dict[str, str]:
+    out: dict[str, str] = {}
+    raw = blob.replace("\n", "\0") if split_null else blob
+    parts = raw.split("\0") if split_null else raw.split()
+    wanted = set(WATCHED_ENV_KEYS) | set(extra_keys)
+    for part in parts:
+        if "=" not in part:
+            continue
+        key, val = part.split("=", 1)
+        if key in wanted:
+            out[key] = val
+    return out
+
+
+def parse_env_file(path: str) -> dict[str, str]:
+    out: dict[str, str] = {}
+    try:
+        with open(path, "r", encoding="utf-8", errors="replace") as fh:
+            for line in fh:
+                stripped = line.strip()
+                if not stripped or stripped.startswith("#") or "=" not in stripped:
+                    continue
+                key, val = stripped.split("=", 1)
+                key = key.strip()
+                if key in WATCHED_ENV_KEYS:
+                    out[key] = val.strip().strip("'\"")
+    except OSError:
+        return {}
+    return out
+
+
+def environment_file_paths(raw: str) -> list[str]:
+    paths: list[str] = []
+    for chunk in (raw or "").replace(" ", "\n").splitlines():
+        item = chunk.strip()
+        if not item:
+            continue
+        path = item.split("(", 1)[0].strip()
+        if path.startswith("/"):
+            paths.append(path)
+    return paths
+
+
+def run_cmd(args: list[str]) -> tuple[int, str]:
+    try:
+        p = subprocess.run(
+            args,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+            timeout=20,
+            check=False,
+        )
+        return int(p.returncode), (p.stdout or "")
+    except Exception:
+        return 1, ""
+
+
+def read_proc_environ(pid: str) -> tuple[bool, dict[str, str]]:
+    if not pid.isdigit() or int(pid) <= 0:
+        return False, {}
+    try:
+        with open("/proc/%s/environ" % pid, "rb") as fh:
+            blob = fh.read().decode("utf-8", errors="replace")
+    except OSError:
+        return False, {}
+    return True, parse_assignment_blob(
+        blob,
+        split_null=True,
+        extra_keys=("AI_PORT", "AI_API_KEY", "AI_HOST"),
+    )
+
+
+def collect_production_env(*, after: bool = False) -> dict[str, object]:
+    if test_mode() and (os.environ.get("OWNER_APPLY_TEST_ENV") or "").strip() == "1":
+        show = os.environ.get("OWNER_APPLY_TEST_SYSTEMD_SHOW") or ""
+        proc_blob = os.environ.get("OWNER_APPLY_TEST_PROC_ENVIRON") or ""
+        file_blob = os.environ.get("OWNER_APPLY_TEST_ENVFILE") or ""
+        sd = parse_systemd_show(show)
+        proc_ok = bool(proc_blob) or (os.environ.get("OWNER_APPLY_TEST_PROC_OK") or "") == "1"
+        proc = parse_assignment_blob(
+            proc_blob.replace(" ", "\0"),
+            split_null=True,
+            extra_keys=("AI_PORT", "AI_API_KEY", "AI_HOST"),
+        ) if proc_blob else {}
+        files = parse_assignment_blob(file_blob.replace(" ", "\0"), split_null=True) if file_blob else {}
+        systemd_ok = bool(show) or (os.environ.get("OWNER_APPLY_TEST_SYSTEMD_OK") or "") == "1"
+        files_ok = bool(file_blob) or (os.environ.get("OWNER_APPLY_TEST_FILES_OK") or "") == "1"
+        env_line = sd.get("Environment") or ""
+        systemd_env = parse_assignment_blob(env_line.replace(" ", "\0"), split_null=True)
+        file_paths = environment_file_paths(sd.get("EnvironmentFiles") or "")
+        if file_blob:
+            file_paths = file_paths or ["TEST"]
+        unit_loaded = (sd.get("LoadState") or "") == "loaded"
+        mainpid = str(sd.get("MainPID") or "0").strip()
+        mainpid_set = mainpid not in ("", "0")
+        active_state = sd.get("ActiveState") or "UNSET"
+        if after and test_fail_mode() == "inactive":
+            active_state = "inactive"
+        return {
+            "systemd_ok": systemd_ok,
+            "proc_ok": proc_ok,
+            "files_ok": files_ok,
+            "proc": proc,
+            "systemd": systemd_env,
+            "files": files,
+            "env_files": "SET" if file_paths else "UNSET",
+            "mainpid": "SET" if mainpid_set else "UNSET",
+            "unit": sd.get("Id") or "TEST",
+            "unit_loaded": unit_loaded,
+            "file_paths_configured": bool(file_paths),
+            "mainpid_set": mainpid_set,
+            "load_state": sd.get("LoadState") or "UNSET",
+            "active_state": active_state,
+            "ai_port": int((os.environ.get("OWNER_APPLY_TEST_AI_PORT") or proc.get("AI_PORT") or "8000").strip() or "8000"),
+            "ai_key": (os.environ.get("OWNER_APPLY_TEST_AI_KEY") or proc.get("AI_API_KEY") or ""),
+        }
+
+    unit = ""
+    show_out = ""
+    show_rc = 1
+    for cand in SERVICE_CANDIDATES:
+        for args in (
+            ["systemctl", "show", cand, "--no-pager", "-p", "Id", "-p", "MainPID", "-p", "LoadState", "-p", "ActiveState", "-p", "Environment", "-p", "EnvironmentFiles"],
+            ["systemctl", "--user", "show", cand, "--no-pager", "-p", "Id", "-p", "MainPID", "-p", "LoadState", "-p", "ActiveState", "-p", "Environment", "-p", "EnvironmentFiles"],
+        ):
+            rc, out = run_cmd(args)
+            if rc == 0 and out.strip():
+                parsed = parse_systemd_show(out)
+                if (parsed.get("LoadState") or "") == "loaded":
+                    show_rc = rc
+                    show_out = out
+                    unit = cand
+                    break
+        if show_out:
+            break
+    sd = parse_systemd_show(show_out)
+    unit_loaded = (sd.get("LoadState") or "") == "loaded"
+    systemd_ok = show_rc == 0 and bool(sd) and unit_loaded
+    env_line = sd.get("Environment") or ""
+    systemd_env = parse_assignment_blob(env_line.replace(" ", "\0"), split_null=True)
+    file_paths = environment_file_paths(sd.get("EnvironmentFiles") or "")
+    files: dict[str, str] = {}
+    files_ok = False
+    if file_paths:
+        readable = 0
+        for path in file_paths:
+            parsed = parse_env_file(path)
+            if parsed or os.path.isfile(path):
+                readable += 1
+            files.update(parsed)
+        files_ok = readable == len(file_paths)
+    elif systemd_ok:
+        files_ok = True
+    mainpid = str(sd.get("MainPID") or "0").strip()
+    mainpid_set = mainpid not in ("", "0")
+    proc_ok, proc = read_proc_environ(mainpid)
+    ai_port = 8000
+    raw_port = proc.get("AI_PORT") if proc_ok else None
+    if raw_port and str(raw_port).strip().isdigit():
+        ai_port = int(str(raw_port).strip())
+    return {
+        "systemd_ok": systemd_ok,
+        "proc_ok": proc_ok,
+        "files_ok": files_ok,
+        "proc": proc,
+        "systemd": systemd_env,
+        "files": files,
+        "env_files": "SET" if file_paths else "UNSET",
+        "mainpid": "SET" if mainpid_set else "UNSET",
+        "unit": unit or "UNSET",
+        "unit_loaded": unit_loaded,
+        "file_paths_configured": bool(file_paths),
+        "mainpid_set": mainpid_set,
+        "load_state": sd.get("LoadState") or "UNSET",
+        "active_state": sd.get("ActiveState") or "UNSET",
+        "ai_port": ai_port,
+        "ai_key": (proc.get("AI_API_KEY") or "") if proc_ok else "",
+    }
+
+
+def effective_env(info: dict[str, object]) -> dict[str, tuple[str, int]]:
+    out: dict[str, tuple[str, int]] = {}
+    for key in WATCHED_ENV_KEYS:
+        raw = None
+        source = "UNSET"
+        if info["proc_ok"] and key in info["proc"]:
+            raw = info["proc"][key]
+            source = "PROC"
+        elif info["systemd_ok"] and key in info["systemd"]:
+            raw = info["systemd"][key]
+            source = "SYSTEMD_ENVIRONMENT"
+        elif info["files_ok"] and key in info["files"]:
+            raw = info["files"][key]
+            source = "ENVIRONMENT_FILE"
+        present = raw is not None
+        effective = _flag_01(raw) if present else 0
+        out[key] = (source if present else "UNSET", effective)
+        emit("%s_SET" % key, "SET" if present else "UNSET")
+        emit("%s_EFFECTIVE" % key, effective)
+        emit("%s_SOURCE" % key, source)
+    return out
+
+
+def verify_production_env(*, after: bool = False) -> dict[str, tuple[str, int]]:
+    info = collect_production_env(after=after)
+    STATE.unit = str(info["unit"] or "")
+    STATE.ai_port = int(info["ai_port"] or 8000)
+    if not STATE.ai_key:
+        STATE.ai_key = str(info.get("ai_key") or "")
+    emit("PRODUCTION_ENV_UNIT", info["unit"])
+    emit("PRODUCTION_ENV_LOAD_STATE", info["load_state"])
+    emit("PRODUCTION_ENV_ACTIVE_STATE", info["active_state"])
+    emit("PRODUCTION_ENV_UNIT_LOADED", "YES" if info["unit_loaded"] else "NO")
+    emit("PRODUCTION_ENV_SYSTEMD_READ", info["systemd_ok"])
+    emit("PRODUCTION_ENV_PROC_READ", info["proc_ok"])
+    emit("PRODUCTION_ENV_FILES_READ", info["files_ok"])
+    emit("AI_PORT_USED", STATE.ai_port)
+    emit("AI_API_KEY_SET", "SET" if STATE.ai_key else "UNSET")
+    determined = bool(
+        info["unit_loaded"]
+        and info["systemd_ok"]
+        and (info["proc_ok"] or not info["mainpid_set"])
+        and (info["files_ok"] or not info["file_paths_configured"])
+    )
+    emit("PRODUCTION_ENV_DETERMINED", determined)
+    if not determined:
+        raise Halt("PRODUCTION_ENV_UNDETERMINED")
+    if str(info["active_state"]) != "active":
+        raise Halt("SERVICE_NOT_ACTIVE")
+    eff = effective_env(info)
+    if eff["PREDICTION_RUNS_ENABLED"][1] == 1:
+        raise Halt("PREDICTION_RUNS_ENABLED_EFFECTIVE_1")
+    if eff["EXPECT_AI_ALLOW_MIGRATION_019"][1] == 1:
+        raise Halt("EXPECT_AI_ALLOW_MIGRATION_019_EFFECTIVE_1")
+    if eff["EXPECT_AI_ALLOW_MIGRATION_022"][1] == 1:
+        raise Halt("EXPECT_AI_ALLOW_MIGRATION_022_EFFECTIVE_1")
+    emit("PRODUCTION_ENV_GATE", "PASS_AFTER" if after else "PASS")
+    emit("SERVICE_ACTIVE_CHECKED", "YES")
+    return eff
+
+
+def envelope_shape(payload: object) -> dict[str, object]:
+    if not isinstance(payload, dict):
+        return {"type": type(payload).__name__}
+    keys = sorted(str(k) for k in payload.keys())
+    types = {str(k): type(payload[k]).__name__ for k in payload.keys()}
+    shape: dict[str, object] = {"keys": keys, "types": types}
+    meta = payload.get("meta")
+    if isinstance(meta, dict):
+        shape["meta_keys"] = sorted(str(k) for k in meta.keys())
+    err = payload.get("error")
+    if isinstance(err, dict):
+        shape["error_keys"] = sorted(str(k) for k in err.keys())
+    return shape
+
+
+def shape_text(shape: dict[str, object]) -> str:
+    return json.dumps(shape, sort_keys=True, separators=(",", ":"))
+
+
+def redact_path(path: str) -> str:
+    if path.startswith("/v1/predictions/") and path != "/v1/predictions":
+        return "/v1/predictions/{id}"
+    return path
+
+
+def _decode_json(raw: bytes) -> object:
+    if not raw:
+        return {}
+    try:
+        return json.loads(raw.decode("utf-8", errors="replace"))
+    except json.JSONDecodeError:
+        return {"_parse": "unparsed"}
+
+
+def _http_fixture(method: str, path: str) -> tuple[int, object]:
+    fail = test_fail_mode()
+    after = STATE.apply_executed
+    if path == "/health":
+        if after and fail == "health_after":
+            return 500, {"status": "fail"}
+        raw = os.environ.get("OWNER_APPLY_TEST_HEALTH_JSON") or ""
+        payload = json.loads(raw) if raw else {"status": "ok", "db": "test", "fallback_reasons": [], "result_automation": {}}
+        status = int((os.environ.get("OWNER_APPLY_TEST_HEALTH_STATUS") or "200").strip() or "200")
+        return status, payload
+    if path == "/v1/predictions":
+        if after and fail == "get_after":
+            raise Halt("GET_PREDICTIONS_FAIL")
+        if after and fail == "row_delta":
+            src = canonical_source()
+            conn = sqlite3.connect(str(src))
+            try:
+                conn.execute("INSERT INTO predictions(race_id, created_at) VALUES (?, 't')", ("local-delta",))
+                conn.commit()
+            finally:
+                conn.close()
+        raw = os.environ.get("OWNER_APPLY_TEST_GET_JSON") or ""
+        payload = json.loads(raw) if raw else {"ok": True, "data": [], "meta": {"count": 0}}
+        status = int((os.environ.get("OWNER_APPLY_TEST_GET_STATUS") or "200").strip() or "200")
+        return status, payload
+    if path == "/v1/predictions/{id}":
+        raw = os.environ.get("OWNER_APPLY_TEST_DETAIL_JSON") or ""
+        payload = json.loads(raw) if raw else {"ok": True, "data": {}, "meta": {}}
+        status = int((os.environ.get("OWNER_APPLY_TEST_DETAIL_STATUS") or "200").strip() or "200")
+        return status, payload
+    if path == "/api/health":
+        status = int((os.environ.get("OWNER_APPLY_TEST_API_HEALTH_STATUS") or "0").strip() or "0")
+        if status <= 0:
+            raise Halt("API_HEALTH_UNREACHABLE")
+        raw = os.environ.get("OWNER_APPLY_TEST_API_HEALTH_JSON") or '{"ok":true}'
+        return status, json.loads(raw)
+    if path in ("/", "/race.html", "/races.html"):
+        status = int((os.environ.get("OWNER_APPLY_TEST_STATIC_STATUS") or "0").strip() or "0")
+        if status <= 0:
+            raise Halt("STATIC_UI_UNREACHABLE")
+        return status, {"_static": True}
+    if path == "/api/predictions":
+        status = int((os.environ.get("OWNER_APPLY_TEST_PUBLIC_PREDICTIONS_STATUS") or "0").strip() or "0")
+        if status <= 0:
+            raise Halt("PUBLIC_PREDICTIONS_UNREACHABLE")
+        raw = os.environ.get("OWNER_APPLY_TEST_PUBLIC_PREDICTIONS_JSON") or '{"error":{"code":"OPS_CLOSED"}}'
+        return status, json.loads(raw)
+    raise Halt("HTTP_FIXTURE_UNKNOWN_PATH")
+
+
+def http_get(url: str, *, headers: dict[str, str] | None = None, allow_auth_header: bool = False) -> tuple[int, object]:
+    method = "GET"
+    parsed = urlparse(url)
+    path = parsed.path or "/"
+    redacted = redact_path(path)
+    if method != "GET":
+        raise Halt("HTTP_NON_GET_REFUSED")
+    if path == "/v1/prediction-runs" or path.startswith("/v1/prediction-runs"):
+        raise Halt("POST_PREDICTION_RUNS_REFUSED")
+    hdrs = dict(headers or {})
+    if not allow_auth_header:
+        hdrs.pop("Authorization", None)
+        hdrs.pop("authorization", None)
+    STATE.http_calls.append((method, redacted))
+    emit("HTTP_CALL", "%s %s" % (method, redacted))
+    if test_mode() and (os.environ.get("OWNER_APPLY_TEST_HTTP") or "").strip() == "1":
+        return _http_fixture(method, redacted)
+    req = urllib.request.Request(url, method="GET", headers=hdrs)
+    try:
+        with urllib.request.urlopen(req, timeout=15) as resp:
+            raw = resp.read()
+            return int(resp.getcode() or 0), _decode_json(raw)
+    except urllib.error.HTTPError as exc:
+        raw = exc.read() if exc.fp else b""
+        return int(exc.code or 0), _decode_json(raw)
+    except Exception:
+        raise Halt("HTTP_GET_FAIL")
+
+
+def first_list_race_id(payload: object) -> str | None:
+    if not isinstance(payload, dict):
+        return None
+    data = payload.get("data")
+    if not isinstance(data, list) or not data:
+        return None
+    first = data[0]
+    if not isinstance(first, dict):
+        return None
+    rid = first.get("race_id") or first.get("id")
+    if rid is None or str(rid) == "":
+        return None
+    return str(rid)
+
+
+def ops_closed(status: int, payload: object) -> bool:
+    if status != 503:
+        return False
+    if not isinstance(payload, dict):
+        return False
+    err = payload.get("error")
+    if isinstance(err, dict) and str(err.get("code") or "") == "OPS_CLOSED":
+        return True
+    return str(payload.get("code") or "") == "OPS_CLOSED"
+
+
+def localhost_ai(path: str) -> str:
+    return "http://127.0.0.1:%d%s" % (int(STATE.ai_port or 8000), path)
+
+
+def ai_headers() -> dict[str, str]:
+    headers: dict[str, str] = {"Accept": "application/json"}
+    if STATE.ai_key:
+        headers["X-AI-Key"] = STATE.ai_key
+    return headers
+
+
+def check_health(*, label: str) -> dict[str, object]:
+    status, payload = http_get(localhost_ai("/health"), headers={"Accept": "application/json"})
+    emit("%s_HEALTH_STATUS" % label, status)
+    emit("%s_HEALTH_CHECKED" % label, "YES")
+    keys = sorted(str(k) for k in payload.keys()) if isinstance(payload, dict) else []
+    emit("%s_HEALTH_KEYS" % label, ",".join(keys))
+    ok = status == 200 and isinstance(payload, dict) and str(payload.get("status") or "") == "ok"
+    emit("%s_HEALTH_PASS" % label, ok)
+    if not ok:
+        raise Halt("HEALTH_FAIL")
+    return envelope_shape(payload)
+
+
+def check_get_predictions(src: Path, *, label: str) -> tuple[dict[str, object], object]:
+    before = pred_row_count_ro(src)
+    emit("%s_GET_PRED_ROW_BEFORE" % label, before)
+    status, payload = http_get(localhost_ai("/v1/predictions"), headers=ai_headers())
+    after = pred_row_count_ro(src)
+    emit("%s_GET_STATUS" % label, status)
+    emit("%s_GET_CHECKED" % label, "YES")
+    emit("%s_GET_PRED_ROW_AFTER" % label, after)
+    delta = after - before
+    emit("%s_GET_PRED_ROW_DELTA" % label, delta)
+    shape = envelope_shape(payload)
+    emit("%s_GET_ENVELOPE_KEYS" % label, ",".join(str(k) for k in (shape.get("keys") or [])))
+    ok = status == 200 and isinstance(payload, dict) and payload.get("ok") is True and "data" in payload
+    emit("%s_GET_PASS" % label, ok)
+    if not ok:
+        raise Halt("GET_PREDICTIONS_FAIL")
+    if delta != 0:
+        raise Halt("GET_PRED_ROW_DELTA_NONEZERO")
+    return shape, payload
+
+
+def maybe_detail_get(payload: object, *, label: str) -> None:
+    rid = first_list_race_id(payload)
+    if not rid:
+        emit("%s_DETAIL_GET" % label, "SKIPPED_EMPTY_LIST")
+        emit("%s_DETAIL_GET_CHECKED" % label, "NO")
+        return
+    url = localhost_ai("/v1/predictions/%s" % rid)
+    status, detail = http_get(url, headers=ai_headers(), allow_auth_header=False)
+    emit("%s_DETAIL_GET" % label, "ATTEMPTED")
+    emit("%s_DETAIL_GET_CHECKED" % label, "YES")
+    emit("%s_DETAIL_GET_STATUS" % label, status)
+    emit("%s_DETAIL_GET_AUTHORIZATION_SENT" % label, "NO")
+    ok = status == 200 and isinstance(detail, dict) and detail.get("ok") is True
+    emit("%s_DETAIL_GET_PASS" % label, ok)
+    if not ok:
+        raise Halt("DETAIL_GET_FAIL")
+
+
+def observe_optional_bff(*, label: str) -> None:
+    if test_mode() and (os.environ.get("OWNER_APPLY_TEST_BFF") or "").strip() == "1":
+        try:
+            status, payload = http_get("http://127.0.0.1:8788/api/health")
+        except Halt as exc:
+            if exc.code == "API_HEALTH_UNREACHABLE":
+                emit("%s_API_HEALTH_CHECKED" % label, "NO")
+                return
+            raise
+        emit("%s_API_HEALTH_CHECKED" % label, "YES")
+        emit("%s_API_HEALTH_STATUS" % label, status)
+        emit("%s_API_HEALTH_PASS" % label, status == 200)
+        if status != 200:
+            raise Halt("API_HEALTH_FAIL")
+        if test_mode() and (os.environ.get("OWNER_APPLY_TEST_PUBLIC_PREDICTIONS") or "").strip() == "1":
+            pstatus, ppayload = http_get("http://127.0.0.1:8788/api/predictions")
+            emit("%s_PUBLIC_PREDICTIONS_CHECKED" % label, "YES")
+            emit("%s_PUBLIC_PREDICTIONS_STATUS" % label, pstatus)
+            closed = ops_closed(pstatus, ppayload)
+            emit("%s_PUBLIC_PREDICTIONS_OPS_CLOSED" % label, closed)
+            emit("%s_PUBLIC_PREDICTIONS_PASS" % label, pstatus == 200 or closed)
+            if not (pstatus == 200 or closed):
+                raise Halt("PUBLIC_PREDICTIONS_FAIL")
+        else:
+            emit("%s_PUBLIC_PREDICTIONS_CHECKED" % label, "NO")
+        if test_mode() and (os.environ.get("OWNER_APPLY_TEST_STATIC") or "").strip() == "1":
+            for page in ("/", "/race.html", "/races.html"):
+                sstatus, _ = http_get("http://127.0.0.1:8788%s" % page)
+                emit("%s_STATIC%s_STATUS" % (label, page.replace(".", "_").replace("/", "_") or "_root"), sstatus)
+                if sstatus != 200:
+                    raise Halt("STATIC_UI_FAIL")
+            emit("%s_STATIC_UI_CHECKED" % label, "YES")
+        else:
+            emit("%s_STATIC_UI_CHECKED" % label, "NO")
+        return
+    emit("%s_API_HEALTH_CHECKED" % label, "NO")
+    emit("%s_STATIC_UI_CHECKED" % label, "NO")
+    emit("%s_PUBLIC_PREDICTIONS_CHECKED" % label, "NO")
+
+
+def journal_error_count() -> int:
+    if test_mode():
+        text = os.environ.get("OWNER_APPLY_TEST_JOURNAL") or ""
+        if test_fail_mode() == "journal_error":
+            text = "error: injected journal line"
+        lines = [ln for ln in text.splitlines() if ln.strip()]
+        return len(lines)
+    unit = STATE.unit if STATE.unit and STATE.unit != "UNSET" else "expect-ai.service"
+    since = STATE.apply_started or datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S UTC")
+    rc, out = run_cmd(
+        ["journalctl", "-u", unit, "--since", since, "-p", "err", "--no-pager", "-o", "cat"]
+    )
+    if rc != 0:
+        raise Halt("JOURNAL_READ_FAIL")
+    return len([ln for ln in (out or "").splitlines() if ln.strip()])
+
+
+def assert_no_write_calls() -> None:
+    methods = sorted({m for m, _ in STATE.http_calls})
+    paths = [p for _, p in STATE.http_calls]
+    emit("HTTP_METHODS", ",".join(methods) if methods else "NONE")
+    post_called = any(m != "GET" for m, _ in STATE.http_calls) or any(
+        p == "/v1/prediction-runs" or p.startswith("/v1/prediction-runs") for p in paths
+    )
+    emit("POST_PREDICTION_RUNS_CALLED", post_called)
+    emit("CONVERSATION_WRITE_CALLED", any("/v1/conversation/chat" in p or p == "/v1/conversation" for p in paths))
+    emit("RA_WRITE_CALLED", any("/v1/admin/etl" in p and "POST" in m for m, p in STATE.http_calls))
+    emit("CHALLENGE_WRITE_CALLED", "NO")
+    if post_called:
+        raise Halt("POST_PREDICTION_RUNS_CALLED")
+    if any(m != "GET" for m, _ in STATE.http_calls):
+        raise Halt("NON_GET_HTTP_CALLED")
+
+
+def capture_runtime(src: Path, *, label: str) -> dict[str, object]:
+    health_shape = check_health(label=label)
+    get_shape, payload = check_get_predictions(src, label=label)
+    maybe_detail_get(payload, label=label)
+    observe_optional_bff(label=label)
+    assert_no_write_calls()
+    return {"health": health_shape, "get": get_shape}
+
+
+def compare_runtime(before: dict[str, object], after: dict[str, object]) -> None:
+    emit("GET_ENVELOPE_COMPARE_CHECKED", "YES")
+    same = shape_text(before["get"]) == shape_text(after["get"])
+    emit("GET_ENVELOPE_SHAPE_MATCH", same)
+    if not same:
+        raise Halt("GET_ENVELOPE_SHAPE_MISMATCH")
+    emit("HEALTH_ENVELOPE_COMPARE_CHECKED", "YES")
+    hsame = shape_text(before["health"]) == shape_text(after["health"])
+    emit("HEALTH_ENVELOPE_SHAPE_MATCH", hsame)
+    if not hsame:
+        raise Halt("HEALTH_ENVELOPE_SHAPE_MISMATCH")
+
+
+def inject_schema_before_tx(src: Path) -> None:
+    if test_fail_mode() != "schema_before_tx":
+        return
+    conn = sqlite3.connect(str(src))
+    try:
+        conn.execute("ALTER TABLE predictions ADD COLUMN injected_before_tx TEXT")
+        conn.commit()
+    finally:
+        conn.close()
+    emit("TEST_SCHEMA_MUTATED_BEFORE_TX", "YES")
+
+
+def _rollback(conn: sqlite3.Connection) -> None:
+    try:
+        conn.execute("ROLLBACK")
+        emit("EXPLICIT_ROLLBACK", "YES")
+    except sqlite3.Error:
+        emit("EXPLICIT_ROLLBACK", "NO")
+
+
+def apply_022(src: Path, src_st: os.stat_result) -> None:
+    if (os.environ.get("EXPECT_AI_ALLOW_MIGRATION_022") or "").strip() != "1":
+        raise Halt("APPLY_WINDOW_022_UNSET")
+    conn = sqlite3.connect(str(src))
+    conn.isolation_level = None
+    committed = False
+    try:
+        conn.execute("PRAGMA busy_timeout=30000")
+        conn.execute("PRAGMA foreign_keys=ON")
+        conn.execute("BEGIN IMMEDIATE")
+        STATE.apply_phase = PHASE_TRANSACTION_OPEN
+        emit("APPLY_PHASE", PHASE_TRANSACTION_OPEN)
+        emit("BEGIN_IMMEDIATE", "YES")
+        emit("BUSY_TIMEOUT_MS", 30000)
+        now = src.stat()
+        emit("TX_SOURCE_DEV", now.st_dev)
+        emit("TX_SOURCE_INO", now.st_ino)
+        if (int(now.st_dev), int(now.st_ino)) != (int(src_st.st_dev), int(src_st.st_ino)):
+            raise Halt("SOURCE_IDENTITY_CHANGED")
+        exp_dev, exp_ino = expected_source_dev_ino()
+        if (int(now.st_dev), int(now.st_ino)) != (int(exp_dev), int(exp_ino)):
+            emit("DB_DRIFT", "YES")
+            raise Halt("DB_DRIFT")
+        rows_before = verify_pre_schema(conn, prefix="TX_")
+        fail = test_fail_mode()
+        for idx, stmt in enumerate(ALTER_SQL):
+            if fail == "alter2" and idx == 1:
+                raise Halt("INJECTED_ALTER2_FAIL")
+            conn.execute(stmt)
+        if fail == "index":
+            raise Halt("INJECTED_INDEX_FAIL")
+        conn.execute(INDEX_SQL)
+        if fail == "migration_insert":
+            raise Halt("INJECTED_MIGRATION_INSERT_FAIL")
+        conn.execute(
+            "INSERT INTO schema_migrations(version, applied_at) VALUES (?, datetime('now'))",
+            (PERSIST_022,),
+        )
+        verify_post_schema(conn, rows_before, prefix="TX_")
+        conn.execute("COMMIT")
+        committed = True
+        STATE.apply_phase = PHASE_COMMITTED
+        STATE.apply_executed = True
+        emit("APPLY_PHASE", PHASE_COMMITTED)
+        emit("APPLY_EXECUTED", "YES")
+    except Halt:
+        if not committed:
+            _rollback(conn)
+        raise
+    except sqlite3.Error:
+        if not committed:
+            _rollback(conn)
+            raise Halt("SQLITE_ERROR")
+        raise Halt("SQLITE_ERROR_AFTER_COMMIT")
+    finally:
+        try:
+            conn.close()
+        except sqlite3.Error:
+            pass
+
+
+def emit_rollback_review_holds() -> None:
+    emit("AUTO_DROP_COLUMNS", "NO")
+    emit("AUTO_DROP_INDEX", "NO")
+    emit("AUTO_DELETE_ROWS", "NO")
+    emit("AUTO_DELETE_SCHEMA_MIGRATIONS", "NO")
+    emit("AUTO_REWRITE_BUNDLE_JSON", "NO")
+    emit("AUTO_BACKUP_RESTORE", "NO")
+    emit("INDEX_DROP_OWNER_DECISION_REQUIRED", "YES")
+    emit("PREDICTION_RUNS_ENABLED_MUST_STAY", "0")
+
+
+def fail_closed(code: str) -> int:
+    os.environ.pop("EXPECT_AI_ALLOW_MIGRATION_022", None)
+    try:
+        assert_no_write_calls()
+    except Halt:
+        pass
+    if STATE.apply_executed or STATE.apply_phase == PHASE_COMMITTED:
+        emit("APPLY_EXECUTED", "YES")
+        emit("APPLY_PHASE", PHASE_COMMITTED)
+        emit("POST_APPLY_REGRESSION_PASS", "NO")
+        emit("ROLLBACK_REVIEW_REQUIRED", "YES")
+        emit_rollback_review_holds()
+    else:
+        emit("APPLY_EXECUTED", "NO")
+        emit("APPLY_PHASE", STATE.apply_phase)
+        emit("POST_APPLY_REGRESSION_PASS", "NO")
+        emit("ROLLBACK_REVIEW_REQUIRED", "NO")
+    emit("OWNER_APPLY_STATUS", "FAIL")
+    emit("PRODUCTION_APPLY_READY", "NO")
+    emit("OWNER_APPLY_APPROVED", "NO")
+    emit("MIGRATION_MAY_PROCEED", "NO")
+    emit("POST_REMAINS_DISABLED", "YES")
+    emit("HALT_REASON", code)
+    emit("AUDIT_CLOSED", "YES")
+    STATE.audit_closed = True
+    return 2
+
+
+def run() -> int:
+    emit("PACK", PACK)
+    emit("APPLY_ONLY", "YES")
+    emit("POST_ENABLE_IN_THIS_PACK", "NO")
+    emit("SITE_SWITCH_IN_THIS_PACK", "NO")
+    emit("SERVICE_CHANGE_IN_THIS_PACK", "NO")
+    emit("PERSISTENT_ENV_CHANGED", "NO")
+    emit("SCP_USED", "NO")
+    emit("SUDO_USED", "NO")
+    emit("RAW_ENVIRONMENT_LOGGED", "NO")
+    emit("CANONICAL_SOURCE", CANONICAL_SOURCE)
+    emit("BACKUP_PATH_CANON", BACKUP_PATH)
+    emit("PRODUCTION_APPLY_READY", "NO")
+    emit("OWNER_APPLY_APPROVED", "NO")
+    emit("APPLY_PHASE", PHASE_NOT_STARTED)
+    emit("GET_UI_CONVERSATION_RA_CHALLENGE_CHANGED", "UNCHECKED")
+    refuse_unapproved()
+    verify_production_env(after=False)
+    bak = backup_path()
+    verify_backup(bak)
+    src = canonical_source()
+    if (not test_mode()) and str(src.resolve()) != CANONICAL_SOURCE:
+        raise Halt("REFUSED_NON_CANONICAL_SOURCE")
+    if not src.is_file():
+        raise Halt("SOURCE_MISSING")
+    src_st = verify_identity(src, *expected_source_dev_ino(), "SOURCE")
+    src_ro = sqlite3.connect("file:%s?mode=ro" % src.resolve().as_posix(), uri=True)
+    try:
+        src_ro.execute("PRAGMA query_only=ON")
+        verify_pre_schema(src_ro, prefix="RO_")
+    finally:
+        src_ro.close()
+    pre_runtime = capture_runtime(src, label="PRE")
+    inject_schema_before_tx(src)
+    STATE.apply_started = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S UTC")
+    emit("APPLY_STARTED_UTC", STATE.apply_started)
+    os.environ["EXPECT_AI_ALLOW_MIGRATION_022"] = "1"
+    emit("PROCESS_022_WINDOW", "OPEN")
+    emit("PROCESS_ONLY_022", "YES")
+    try:
+        apply_022(src, src_st)
+    finally:
+        os.environ.pop("EXPECT_AI_ALLOW_MIGRATION_022", None)
+        emit("PROCESS_022_WINDOW", "CLOSED")
+    after_st = src.stat()
+    if (int(after_st.st_dev), int(after_st.st_ino)) != (int(src_st.st_dev), int(src_st.st_ino)):
+        raise Halt("SOURCE_IDENTITY_CHANGED")
+    src_after = sqlite3.connect("file:%s?mode=ro" % src.resolve().as_posix(), uri=True)
+    try:
+        src_after.execute("PRAGMA query_only=ON")
+        verify_post_schema(src_after, pred_row_count(src_after), prefix="POST_")
+    finally:
+        src_after.close()
+    verify_production_env(after=True)
+    post_runtime = capture_runtime(src, label="POST")
+    compare_runtime(pre_runtime, post_runtime)
+    errors = journal_error_count()
+    emit("JOURNAL_ERROR_CHECKED", "YES")
+    emit("JOURNAL_ERROR_COUNT_AFTER_APPLY", errors)
+    if errors != 0:
+        raise Halt("JOURNAL_ERROR_AFTER_APPLY")
+    emit("OWNER_IMMEDIATE_POST_APPLY_SMOKE_REQUIRED", "YES")
+    emit("OWNER_IMMEDIATE_POST_APPLY_SMOKE_DONE", "NO")
+    emit("POST_APPLY_REGRESSION_PASS", "YES")
+    emit("ROLLBACK_REVIEW_REQUIRED", "NO")
+    live = (not test_mode()) and str(src.resolve()) == CANONICAL_SOURCE
+    emit("OWNER_APPLY_STATUS", "SUCCESS")
+    emit("APPLY_EXECUTED", "YES")
+    emit("LIVE_CANONICAL_APPLY", live)
+    emit("MIGRATION_022_APPLIED", "YES")
+    emit("POST_REMAINS_DISABLED", "YES")
+    emit("PREDICTION_RUNS_ENABLED_MUST_STAY", "0")
+    emit("SITE_SWITCHED", "NO")
+    emit("PRODUCTION_APPLY_READY", "NO")
+    emit("OWNER_APPLY_APPROVED", "NO")
+    emit("MIGRATION_MAY_PROCEED", "NO")
+    emit("POST_ENABLE_IS_SEPARATE_STEP", "YES")
+    emit("AUDIT_CLOSED", "YES")
+    STATE.audit_closed = True
+    return 0
+
+
+def main() -> int:
+    try:
+        return run()
+    except Halt as exc:
+        return fail_closed(exc.code)
+    except sqlite3.Error:
+        return fail_closed("SQLITE_ERROR")
+    except Exception:
+        return fail_closed("UNHANDLED_EXCEPTION")
+    finally:
+        os.environ.pop("EXPECT_AI_ALLOW_MIGRATION_022", None)
+        if not STATE.audit_closed:
+            fail_closed("AUDIT_CLOSE_FALLBACK")
+
+
+if __name__ == "__main__":
+    sys.dont_write_bytecode = True
+    raise SystemExit(main())
