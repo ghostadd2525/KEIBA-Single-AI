@@ -37,7 +37,8 @@ OWNER_COLUMNS = (
     "created_at",
 )
 # 001-018 names below match repo stems so schema_migrations looks Production-shaped.
-REPO_STEMS_001_018 = (
+# Owner live schema inventory SCHEMA_MIGRATIONS= (canonical, 22 names).
+OWNER_SCHEMA_MIGRATIONS = (
     "001_init",
     "002_race_identity",
     "003_supply_platform",
@@ -56,12 +57,12 @@ REPO_STEMS_001_018 = (
     "016_research_knowledge_base",
     "017_research_knowledge_validation",
     "018_research_candidate_review",
-)
-LIVE_VERSIONS = REPO_STEMS_001_018 + (
     "019_final_predictions",
-    "020_live_series",
-    "021_live_series",
+    "020_research_corpus_canonical",
+    "020_user_challenge_lifecycle",
+    "021_user_challenge_point_events",
 )
+LIVE_VERSIONS = OWNER_SCHEMA_MIGRATIONS
 PRODUCTION_DB_PATHS = (
     "/home/ubuntu/KEIBA-Single-AI/services/win5-ai/var/expect_ai.db",
     "/opt/expect-ai/current/services/win5-ai/var/expect_ai.db",
@@ -186,10 +187,24 @@ def main() -> int:
     ]
     emit("PREDICTIONS_INDEX_BEFORE", ",".join(idx))
     emit("HAS_022_COLS_BEFORE", any(c in cols for c in _PREDICTION_RUN_COLUMNS))
-    emit("SEEDED_MIGRATION_COUNT", len(versions(conn)))
-    emit("SEEDED_HAS_019_FINAL", "019_final_predictions" in versions(conn))
-    emit("SEEDED_HAS_PERSIST_019", "019_prediction_run_idempotency" in versions(conn))
-    emit("SEEDED_HAS_PERSIST_022", PERSIST_MIGRATION in versions(conn))
+    seeded = tuple(versions(conn))
+    owner = tuple(OWNER_SCHEMA_MIGRATIONS)
+    emit("SEEDED_MIGRATION_COUNT", len(seeded))
+    emit("OWNER_SCHEMA_MIGRATIONS_COUNT", 22)
+    emit("OWNER_SCHEMA_MIGRATIONS", ",".join(owner))
+    emit("SEEDED_SCHEMA_MIGRATIONS", ",".join(seeded))
+    emit("OWNER_SCHEMA_MIGRATIONS_EXACT_MATCH", seeded == owner)
+    emit("SEEDED_HAS_019_FINAL", "019_final_predictions" in seeded)
+    emit("SEEDED_HAS_020_RESEARCH_CORPUS_CANONICAL", "020_research_corpus_canonical" in seeded)
+    emit("SEEDED_HAS_020_USER_CHALLENGE_LIFECYCLE", "020_user_challenge_lifecycle" in seeded)
+    emit("SEEDED_HAS_021_USER_CHALLENGE_POINT_EVENTS", "021_user_challenge_point_events" in seeded)
+    emit("SEEDED_HAS_PERSIST_019", "019_prediction_run_idempotency" in seeded)
+    emit("SEEDED_HAS_PERSIST_022", PERSIST_MIGRATION in seeded)
+    if seeded != owner:
+        emit("LIVE_SCHEMA_022_REHEARSAL_PASS", "RETRACTED_SEED_MISMATCH")
+        emit("MIGRATION_REHEARSAL_COMPLETE", "NO")
+        conn.close()
+        return 2
     emit("ROWCOUNT_BEFORE", int(conn.execute("SELECT COUNT(*) FROM predictions").fetchone()[0]))
     emit("SCHEMA_STATUS_BEFORE", prediction_run_schema_status(conn))
 
