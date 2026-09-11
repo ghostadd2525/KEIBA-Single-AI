@@ -1,0 +1,18 @@
+Owner Production backup / inventory canon
+=========================================
+
+BACKUP_PATH=/home/ubuntu/KEIBA-Single-AI/var/sqlite_backups/20260911T175303Z/expect_ai.db
+BACKUP_SHA256=f840b475b232fb183a74be5b5159ece7e81b99e514d3b8d71055b9ad1721b60d
+SOURCE_IDENTITY=66305:349935
+BACKUP_IDENTITY=66305:287106
+INVENTORY_SOURCE_DEV=66305
+INVENTORY_SOURCE_INO=349935
+INVENTORY_SOURCE_SIZE=105783296
+INVENTORY_SOURCE_MTIME=1789143980
+PREDICTION_RUNS_ENABLED_EFFECTIVE=0
+
+size/mtime are inventory facts, not a match gate.
+dev/ino must match or HALT DB_DRIFT.
+
+Measurement caps in this pack are explicit and much smaller than
+INVENTORY_SOURCE_SIZE=105783296. They are not the future APPLY limits.

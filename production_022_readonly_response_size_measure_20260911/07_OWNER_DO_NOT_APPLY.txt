@@ -1,0 +1,7 @@
+This pack is GET-only measurement.
+Do not run OWNER_APPLY.ps1 from v1-v4.
+Do not set OWNER_PRODUCTION_022_APPLY_APPROVED.
+Do not enable PREDICTION_RUNS_ENABLED.
+Do not merge PR #23-#37.
+Do not overwrite v1-v4 APPLY ZIPs.
+After unzip, sha256sum -c SHA256SUMS.txt must PASS.

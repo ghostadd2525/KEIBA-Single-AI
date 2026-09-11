@@ -1,0 +1,25 @@
+Owner steps — GET-only measurement (not APPLY)
+==============================================
+
+Do not run v4 again. Do not overwrite v1-v4 APPLY ZIPs.
+This agent must not measure or APPLY on Production.
+
+1. Keep v1-v4 APPLY ZIPs and the backup canon.
+2. After local verify of this pack, Owner may set
+   OWNER_PRODUCTION_022_MEASURE_APPROVED=1 in their Windows session
+   and run only:
+     02_powershell/OWNER_MEASURE.ps1
+3. Wrapper forwards that exact 1. It never sets APPLY approval,
+   EXPECT_AI_ALLOW_MIGRATION_022, or PREDICTION_RUNS_ENABLED.
+4. Remote does GET only:
+   /health
+   /v1/predictions
+   at most one detail GET from the current list race_id (not logged)
+   predictions row count before and after
+5. Remote does not APPLY, POST, write DB/env/systemd/files/cache.
+6. Return the Owner output log. Do not create v5 APPLY limits until
+   that measurement log is received.
+
+PRODUCTION_022_APPLY_EXECUTION_ALLOWED=NO
+OWNER_APPLY_APPROVED=NO
+APPLY_EXECUTED=NO
