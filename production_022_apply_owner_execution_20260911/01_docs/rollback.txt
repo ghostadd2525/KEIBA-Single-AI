@@ -1,0 +1,11 @@
+Rollback order if 022 must be reversed later
+===========================================
+
+1. PREDICTION_RUNS_ENABLED=0
+2. Unset EXPECT_AI_ALLOW_MIGRATION_022
+3. DROP INDEX IF EXISTS uq_predictions_idempotency_key_not_null
+
+Columns remain. Rows remain. bundle_json is not rewritten.
+Do not DROP COLUMN. Do not DELETE FROM predictions.
+Do not overwrite live DB from backup as the first step.
+This pack does not execute rollback.
