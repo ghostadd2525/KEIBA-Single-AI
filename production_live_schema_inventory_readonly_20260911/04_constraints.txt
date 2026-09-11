@@ -1,0 +1,19 @@
+ALLOWED
+  systemctl show (read-only) for DB path
+  /proc/<pid>/environ keys EXPECT_AI_DB_PATH only
+  sqlite file: mode=ro
+  PRAGMA query_only / table_info / index_list / index_info / user_version / schema_version
+  SELECT version FROM schema_migrations
+  SELECT sql FROM sqlite_master for named tables / prediction indexes / triggers
+
+FORBIDDEN
+  any HTTP
+  GET /health (migrate can write)
+  POST
+  INSERT UPDATE DELETE ALTER CREATE DROP
+  sqlite3.Connection.backup
+  SELECT bundle_json / race_id values / horse names / row bodies
+  EXPECT_AI_ALLOW_MIGRATION_019 or 022 enable
+  Conversation / RA / Challenge writes
+  Updating or merging PR #23-#26
+  Overwriting existing review / DRY_RUN / rehearsal ZIP
