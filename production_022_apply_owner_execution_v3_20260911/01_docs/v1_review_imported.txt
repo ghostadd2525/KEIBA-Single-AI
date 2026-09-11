@@ -1,0 +1,28 @@
+v1 APPLY Owner execution pack — independent review
+==================================================
+
+ZIP_SHA256=a34855f3dc7967f7801b05cdfad80099b6b5b261b1c2970019fca22cb53335ab
+STDIN_PAYLOAD_SHA256=15ed986425eed779ea8ef5a1bd4b7beca5dbeb4eb041d67b9b64064a15b321fc
+ZIP_INTEGRITY=PASS
+SHA256SUMS=PASS
+STDIN_COMPILE=PASS
+LOCAL_TESTS=PASS
+PRODUCTION_022_APPLY_PACK_REVIEW=CHANGES_REQUIRED
+V1_ZIP_OVERWRITE=NO
+
+P0-1 APPLY state misreport
+  apply_022() commit 後に verify_post_schema() または
+  verify_production_env(after=True) が失敗すると fail_closed() が
+  無条件で APPLY_EXECUTED=NO を出す。実際は 022 適用済み。
+
+P0-2 TOCTOU
+  pre-schema を別 RO connection で見て閉じた後、新しい RW connection
+  で DDL。write transaction 内で schema/identity を再確認していない。
+
+P0-3 本番回帰未確認
+  GET/UI/Conversation/RA/Challenge を見ていないのに
+  GET_UI_CONVERSATION_RA_CHALLENGE_CHANGED=NO を出している。
+  systemd active、journal、internal health、GET envelope、
+  GET 前後 predictions 件数も未確認。
+
+v2 answers those defects. v1 ZIP is retained as audit evidence.
