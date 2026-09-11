@@ -1,0 +1,19 @@
+systemd / journal (observe only)
+================================
+
+Before and after a future APPLY:
+
+  systemctl is-active <expect-ai unit>
+  ActiveState=active required
+
+  journalctl -u <expect-ai unit> --since <apply-window>
+  count error-level lines
+  APPLY must not introduce a new error burst
+
+  Confirm process environ:
+    PREDICTION_RUNS_ENABLED is 0 or absent
+    EXPECT_AI_ALLOW_MIGRATION_022 is absent after the window
+
+This plan does not contain systemctl start/stop/restart/edit commands
+that an agent or wrapper may run. Observation commands belong in a
+future Owner-approved execution pack only.

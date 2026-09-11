@@ -1,0 +1,27 @@
+Separate engineering steps
+==========================
+
+Step A (this backup Owner pack, not this plan)
+  Production backup only
+  PRODUCTION_BACKUP_EXECUTION_ALLOWED=NO until Owner approves
+  no 022, no systemd, no POST
+
+Step B (this plan)
+  Review APPLY / rollback / regression
+  NOT an execution pack
+  PRODUCTION_APPLY_READY=NO
+
+Step C (future, not created here)
+  Owner-approved 022 APPLY execution pack
+  requires Step A success
+  keeps PREDICTION_RUNS_ENABLED=0
+  unsets EXPECT_AI_ALLOW_MIGRATION_022 after apply
+
+Step D (future, not created here)
+  POST /v1/prediction-runs enable
+  site / BFF switch
+  separate Owner approval
+  not part of 022 APPLY
+
+Do not collapse A+B+C or C+D.
+Do not merge PR #23-#29 to skip these steps.

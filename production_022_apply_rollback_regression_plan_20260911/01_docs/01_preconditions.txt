@@ -1,0 +1,39 @@
+Preconditions (all required before any future APPLY pack)
+=========================================================
+
+P1. Independent reviews imported
+    BACKUP_V2_INDEPENDENT_REVIEW_COMPLETE=YES
+    LIVE_SCHEMA_022_REHEARSAL_PASS=YES
+    REHEARSAL_V2_INDEPENDENT_REVIEW_COMPLETE=YES
+    Claimed v1 rehearsal ZIP is not used as a seed or as a pass artifact.
+
+P2. Production backup Owner execution pack exists and is independently reviewed
+    PACK=production_backup_owner_execution_20260911
+    Reviewed contract SHA256=55890bbdff280548c43bb53f80930049e83ba16fb7d2abe2b7c1c7e34b91c66e
+    Source=/home/ubuntu/KEIBA-Single-AI/services/win5-ai/var/expect_ai.db
+    mode=ro + query_only
+    dest=dedicated timestamp directory 0700 / file 0600
+
+P3. Owner actually ran that backup pack (NOT this plan pack) and it passed
+    OWNER_BACKUP_STATUS=SUCCESS
+    BACKUP_INTEGRITY_OK=YES
+    BACKUP_SCHEMA_OK=YES
+    BACKUP_MIGRATION_SET_OK=YES
+    BACKUP_MASTER_SHA_MATCH=YES
+    BACKUP_SHA256_RECORDED=YES
+    BACKUP_DISTINCT_INODE=YES
+    APPLY_PRECONDITION_BACKUP_PASS=YES
+    If any fail: APPLY_FORBIDDEN_AFTER_BACKUP_FAIL=YES and APPLY is prohibited.
+
+P4. Runtime defaults at APPLY time
+    PREDICTION_RUNS_ENABLED=0 (or unset, treated as 0)
+    EXPECT_AI_ALLOW_MIGRATION_022 is unset until the APPLY window
+    POST /v1/prediction-runs is not called
+    GET / UI / Conversation / RA / Challenge code is unchanged
+
+P5. This plan pack is not an execution pack
+    PRODUCTION_APPLY_READY=NO
+    OWNER_APPLY_APPROVED=NO
+    APPLY_EXECUTED=NO
+
+P6. PR #23-#29 remain unmerged.

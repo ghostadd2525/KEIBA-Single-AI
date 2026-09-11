@@ -1,0 +1,32 @@
+Rollback order (mandatory)
+==========================
+
+If 022 has been applied and must be rolled back:
+
+  1. PREDICTION_RUNS_ENABLED=0
+  2. Unset EXPECT_AI_ALLOW_MIGRATION_022
+  3. DROP INDEX IF EXISTS uq_predictions_idempotency_key_not_null
+
+Columns remain. That is intended.
+Existing prediction rows remain. That is intended.
+bundle_json is not rewritten. That is intended.
+
+Forbidden rollback actions
+--------------------------
+DROP COLUMN idempotency_key
+DROP COLUMN persist_source
+DROP COLUMN input_snapshot_hash
+DROP COLUMN prediction_semantic_hash
+DELETE FROM predictions
+UPDATE predictions SET bundle_json=...
+DELETE FROM schema_migrations WHERE version='022_prediction_run_idempotency'
+  (row may remain after index drop; do not invent a fake 020/021 replacement)
+
+Do not restore by overwriting the live DB from backup as the first step.
+Backup is the last-resort physical copy, not the default rollback.
+
+ROLLBACK_TARGET=PARTIAL_UNIQUE_INDEX_ONLY
+ROLLBACK_TARGET_NAME=uq_predictions_idempotency_key_not_null
+ROLLBACK_LEAVES_COLUMNS=YES
+ROLLBACK_LEAVES_ROWS=YES
+ROLLBACK_LEAVES_BUNDLE_JSON=YES
