@@ -1,0 +1,5 @@
+Do not run this isolated v2 rehearsal on Production.
+Do not APPLY 022.
+Do not enable PREDICTION_RUNS_ENABLED.
+Do not create or run a Production backup execution pack.
+The claimed 21-seed ZIP is audit trail only.

@@ -1,0 +1,5 @@
+Owner: do not run this isolated 022 rehearsal against Production.
+Do not set EXPECT_AI_ALLOW_MIGRATION_022 on Production.
+Do not enable PREDICTION_RUNS_ENABLED.
+Do not APPLY 022.
+This pack is temp-DB only.

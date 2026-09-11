@@ -1,0 +1,48 @@
+CORRECTION
+==========
+
+「Owner貼付に SCHEMA_MIGRATIONS 名前一覧が無かった」は撤回する。
+Owner 正本は次の 22 件である。
+
+SCHEMA_MIGRATIONS=
+001_init,
+002_race_identity,
+003_supply_platform,
+004_user_domain,
+005_results_eval,
+006_result_automation,
+007_collect_c0,
+008_collect_contract_1_1,
+009_user_race_results,
+010_user_progress_audit,
+011_research_evidence,
+012_research_snapshot_features,
+013_research_prediction_corpus,
+014_research_historical_ingest,
+015_research_race_meta,
+016_research_knowledge_base,
+017_research_knowledge_validation,
+018_research_candidate_review,
+019_final_predictions,
+020_research_corpus_canonical,
+020_user_challenge_lifecycle,
+021_user_challenge_point_events
+SCHEMA_MIGRATIONS_COUNT=22
+
+CLAIMED isolated ZIP
+  production_isolated_022_rehearsal_live_schema_20260911.zip
+  SHA256=7981db7fff2d8a8d0a057bf66aeddca72a37c842cdf66c926dd5d3f9ac4c1037
+  seeded 21 names including placeholders 020_live_series / 021_live_series
+  missing 020_research_corpus_canonical, 020_user_challenge_lifecycle,
+          021_user_challenge_point_events
+  LIVE_SCHEMA_022_REHEARSAL_PASS=RETRACTED_SEED_MISMATCH
+
+CLAIMED backup v2 ZIP is unchanged and still the file to review
+  production_python_backup_restore_rehearsal_v2_20260911.zip
+  SHA256=9653f26224679d750ea1c3f578a0b8dda0e2178dab5b8ad464ee8cf9a42b9a5a
+
+NEXT_STEP=ATTACH_ZIP_FILES_AS_FILES
+BACKUP_V2_LOCAL_TESTS_CLAIMED=YES
+LIVE_SCHEMA_022_REHEARSAL_CLAIMED=YES
+BACKUP_V2_INDEPENDENT_REVIEW_COMPLETE=NO
+LIVE_SCHEMA_REHEARSAL_INDEPENDENT_REVIEW_COMPLETE=NO
