@@ -1,0 +1,41 @@
+Owner steps — final v2 022 APPLY pack (do not APPLY yet)
+=======================================================
+
+This agent must not apply 022 on Production.
+This pack does not set OWNER_PRODUCTION_022_APPLY_APPROVED.
+Do not re-run measurement v2. Do not re-run the fresh backup pack.
+Do not delete, overwrite, or restore the historical 20260911T175303Z backup.
+Do not overwrite the reviewed final pack ZIP
+4f80248bc8d7520db66e12089be578ee9606e4a6d7bd9d22271d33d39bc32916.
+
+1. Keep APPLY v1-v5, measurement v1/v2, backup Owner packs, the APPLY
+   plan ZIP, and the existing final pack ZIP. Do not overwrite them.
+2. Independent review of this final v2 ZIP.
+   After unzip, `sha256sum -c SHA256SUMS.txt` must PASS.
+3. After review, Owner confirms Windows PowerShell 5.1 Parser.ParseFile
+   on OWNER_APPLY.ps1 with PARSE_ERROR_COUNT=0. Linux pwsh parse is
+   not that confirmation and is not official ALL_PASS.
+4. Only after that explicit Owner approval may Owner set
+   OWNER_PRODUCTION_022_APPLY_APPROVED=1 in their Windows session and
+   run only 02_powershell/OWNER_APPLY.ps1.
+5. Wrapper HALTs before SSH when:
+   approval is unset
+   APPLY backup canon is unset / pending
+   canon path/SHA/dev/ino/size is not the pinned fresh backup
+   canon is the historical 20260911T175303Z backup
+   stdin payload SHA256 != 9a506fa195ddc4b88eaabfe10a28967fa46c537e8443ada6ef629531e93e18cf
+6. Remote HALTs before APPLY when:
+   fresh backup path/SHA/dev:ino/size do not match the pinned canon
+   historical backup is specified
+   live dest/ino != 66305:349935
+   schema is not exact Owner 22-migration / 8-column canon
+   022 or persist-019 already present
+   PREDICTION_RUNS_ENABLED or 019/022 allow-migration effective 1
+
+POST remains disabled. Do not enable POST. Do not switch site.
+Do not merge PR #23-#42.
+
+PRODUCTION_022_APPLY_EXECUTION_ALLOWED=NO
+OWNER_APPLY_APPROVED=NO
+APPLY_EXECUTED=NO
+NEXT_STEP=INDEPENDENT_REVIEW_OF_FINAL_V2_022_APPLY_PACK

@@ -1,0 +1,43 @@
+Final 022 APPLY pack independent review (imported, pack not changed)
+===================================================================
+
+FINAL_022_APPLY_PACK_ZIP_SHA256=4f80248bc8d7520db66e12089be578ee9606e4a6d7bd9d22271d33d39bc32916
+ZIP_SHA256_MATCH=YES
+ZIP_INTEGRITY=PASS
+SHA256SUMS=PASS
+STDIN_SHA256=9a506fa195ddc4b88eaabfe10a28967fa46c537e8443ada6ef629531e93e18cf
+STDIN_SHA256_MATCH=YES
+FINAL_022_APPLY_PACK_REVIEW=CHANGES_REQUIRED
+FINAL_022_APPLY_PACK_REVIEWED=YES
+FINAL_022_APPLY_PACK_REVIEW_RESULT=CHANGES_REQUIRED
+FINAL_022_APPLY_PACK_EXECUTION_ALLOWED=NO
+OWNER_APPLY_APPROVED=NO
+APPLY_EXECUTED=NO
+
+P0 imported:
+OWNER_APPLY.ps1 computed owner_apply_stdin.py SHA256 and logged it,
+then sent the bytes on SSH stdin without comparing the digest to the
+pinned expected value.
+
+Required fix in this final v2 pack:
+after STDIN_PAYLOAD_SHA256 is computed, compare it to
+9a506fa195ddc4b88eaabfe10a28967fa46c537e8443ada6ef629531e93e18cf
+before any SSH start.
+
+Mismatch must emit and halt:
+  STDIN_PAYLOAD_SHA256_MATCH=NO
+  SSH_STARTED=NO
+  HALT_REASON=STDIN_PAYLOAD_SHA256_MISMATCH
+  OWNER_APPLY_STATUS=FAIL
+  APPLY_EXECUTED=NO
+  PRODUCTION_APPLY_READY=NO
+  MIGRATION_MAY_PROCEED=NO
+
+Match may emit STDIN_PAYLOAD_SHA256_MATCH=YES and then continue
+toward SSH processing.
+
+Keep the reviewed final pack as an immutable artifact.
+FINAL_PACK_ZIP_OVERWRITE=NO
+FINAL_022_APPLY_PACK_EXECUTE=NO
+NEXT_STEP=CREATE_NEW_FINAL_PACK_WITH_STDIN_SHA_ENFORCEMENT
+This file records the imported review. The new pack is final v2.

@@ -1,0 +1,22 @@
+v2 APPLY Owner execution pack — independent review
+==================================================
+
+ZIP_SHA256=f3152cdd3f92418da9c7a1f5227410f8fdff94e161ca3dda09c1e33c76bee75c
+STDIN_PAYLOAD_SHA256=06cdd3248b2def6b02cee2ce710b64a3d1e16a67b2dc4b05ba774042f3270cb8
+PRODUCTION_022_APPLY_PACK_REVIEW=CHANGES_REQUIRED
+V2_ZIP_OVERWRITE=NO
+
+P0-1 SHA256SUMS mismatch
+  03_tests/parser_and_paths_evidence.txt
+  manifest=ede3b271ecb0a5aed5949adf359bb4c786cf0524972b4c0fc3d8189715cf77e7
+  actual=82112acb01c2be9e316ea9be5887001a133b49ab21213af5b52936f67ee54d40
+  run_tests.py hashed files then overwrote the evidence file.
+
+P0-2 public smoke not executed
+  OWNER_IMMEDIATE_POST_APPLY_SMOKE_DONE=NO and
+  POST_APPLY_REGRESSION_PASS=YES were emitted together.
+
+P1 PARSER_ENGINE missing
+  run_tests.py TypeError when powershell.exe/pwsh are absent.
+
+v3 answers those defects. v1 and v2 ZIPs are retained.
