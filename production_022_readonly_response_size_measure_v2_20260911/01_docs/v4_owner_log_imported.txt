@@ -1,0 +1,44 @@
+Owner v4 APPLY execution log — imported facts
+============================================
+
+V4 was not re-run. This pack does not overwrite the v4 ZIP.
+
+V4_ZIP_SHA256=8bc2457cf8871b86b62421069e9d4972c636ff74c185d7df753832df0897ed8d
+V4_STDIN_PAYLOAD_SHA256=0ccd36127d66aae8faebafed5c21027f1b8811eda12c10ba17ee2a02a9a4ed82
+V4_OWNER_LOG_OUTPUT_SHA256=307fe722bbd75f650e4019a1d9eb600a0d39d3a15dd18245fd379536d14fa462
+V4_OWNER_LOG_FILE_BYTES_PRESENT_IN_THIS_ENVIRONMENT=NO
+V4_OWNER_LOG_FACTS_IMPORTED=YES
+V4_RERUN=NO
+V4_ZIP_OVERWRITE=NO
+
+AUDIT_STATUS=FAILED
+SSH_EXIT=2
+HALT_REASON=HTTP_BODY_OVERSIZED
+APPLY_EXECUTED=NO
+APPLY_PHASE=NOT_STARTED
+REMOTE_APPLY_EXECUTED=NO
+REMOTE_APPLY_PHASE=NOT_STARTED
+PRODUCTION_CHANGED=NO
+DB_CHANGED=NO
+POST_PREDICTION_RUNS_CALLED=NO
+
+Stop site (Owner reported)
+--------------------------
+PRE internal GET http://127.0.0.1:8000/v1/predictions
+HTTP_MAX_JSON_BYTES=262144
+Production list body was at least 262145 bytes (valid response, limit too small)
+
+Already PASS on that v4 run (Owner reported)
+--------------------------------------------
+health
+backup
+Production env
+source identity 66305:349935
+22 migrations
+predictions 8 columns
+idx_predictions_race
+022 not applied
+
+v4 remains audit evidence. Do not re-execute v4.
+This measurement pack exists because APPLY v4 stopped before COMMIT
+on a bounded read that was smaller than a normal Production list.

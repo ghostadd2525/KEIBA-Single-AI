@@ -1,0 +1,25 @@
+Owner steps — GET-only measurement v2 (do not run until review)
+==============================================================
+
+Do not run v1 measurement or v4 APPLY.
+Do not overwrite v1 measurement ZIP or v1-v4 APPLY ZIPs.
+This agent must not measure or APPLY on Production.
+
+v2 independent review must PASS first.
+After review, Owner may later set OWNER_PRODUCTION_022_MEASURE_APPROVED=1
+in their own Windows session and run only OWNER_MEASURE.ps1.
+
+Remote HALTs before any HTTP GET unless live schema is exact Owner canon:
+  22 migrations, no extra/missing/duplicate
+  022 and persist-019 absent
+  predictions exactly 8 columns
+  new 4 columns absent
+  partial UNIQUE absent
+  idx_predictions_race columns race_id,created_at in that order
+
+CACHE_WRITE and FILE_WRITE are NOT_CHECKED in this pack.
+
+PRODUCTION_022_APPLY_EXECUTION_ALLOWED=NO
+OWNER_APPLY_APPROVED=NO
+APPLY_EXECUTED=NO
+NEXT_STEP=INDEPENDENT_REVIEW_OF_MEASUREMENT_V2

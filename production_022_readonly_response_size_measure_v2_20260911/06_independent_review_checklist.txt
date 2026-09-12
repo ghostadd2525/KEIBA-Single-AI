@@ -1,0 +1,53 @@
+Independent review checklist — measurement v2
+=============================================
+
+Do not run Owner measurement until this review PASSes.
+Do not overwrite v1 measurement ZIP or v1-v4 APPLY ZIPs.
+
+Integrity
+  [ ] MEASURE_ZIP_SHA256_MATCH against sidecar
+  [ ] MEASURE_STDIN_SHA256_MATCH against FLAGS.txt
+  [ ] ZIP_INTEGRITY=PASS (unzip -t)
+  [ ] Independent unzip then sha256sum -c SHA256SUMS.txt = PASS
+  [ ] python3 run_tests.py = ALL_PASS
+
+P0-1 exact Owner-canon schema gate before HTTP GET
+  [ ] migrations == owner 22 names, not missing-only
+  [ ] count 22, missing 0, extra 0, duplicate 0
+  [ ] 022_prediction_run_idempotency absent
+  [ ] 019_prediction_run_idempotency absent
+  [ ] predictions columns == owner 8 exactly, not cols[:8]
+  [ ] new 4 persist columns all absent
+  [ ] uq_predictions_idempotency_key_not_null absent
+  [ ] idx_predictions_race columns race_id,created_at in that order, not exists-only
+  [ ] extra migration HALTs before HTTP_CALL
+  [ ] 022 already applied HALTs before HTTP_CALL
+  [ ] persist 019 present HALTs before HTTP_CALL
+  [ ] 9th column HALTs before HTTP_CALL
+  [ ] partial new-4 columns HALTs before HTTP_CALL
+  [ ] partial UNIQUE HALTs before HTTP_CALL
+  [ ] idx_predictions_race column-order mismatch HALTs before HTTP_CALL
+
+P0-2 write flags
+  [ ] CACHE_WRITE=NOT_CHECKED
+  [ ] FILE_WRITE=NOT_CHECKED
+  [ ] CACHE_OR_FILE_WRITE_VERIFIED=NO
+  [ ] CACHE_WRITE=NO and FILE_WRITE=NO are not emitted as measured facts
+  [ ] no recursive Production find / os.walk inventory
+
+Detail / HTTP contract
+  [ ] INTERNAL_DETAIL_HTTP_STATUS, INTERNAL_DETAIL_OVERSIZED, INTERNAL_DETAIL_JSON_PARSE emitted
+  [ ] detail oversized => OWNER_MEASURE_STATUS=PARTIAL
+  [ ] HTTP status != 200 is not SUCCESS
+  [ ] JSON parse fail is not SUCCESS
+  [ ] race_id values are not logged
+  [ ] POST /v1/prediction-runs refused
+  [ ] PRED_ROW_DELTA must be 0
+  [ ] gzip wire/decoded separated
+  [ ] body caps are measurement windows, not APPLY limits
+
+Hard flags
+  PRODUCTION_022_APPLY_EXECUTION_ALLOWED=NO
+  OWNER_APPLY_APPROVED=NO
+  APPLY_EXECUTED=NO
+  NEXT_STEP=INDEPENDENT_REVIEW_OF_MEASUREMENT_V2
