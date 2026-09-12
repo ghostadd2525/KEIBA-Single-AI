@@ -1,0 +1,29 @@
+Changes from live-compare v3 (not an overwrite)
+==============================================
+
+v3 ZIP SHA256 (immutable):
+  8c07a72ff08601df2920d7efddb00f92cb14db2a3232332e0aa8e400f4d7a0a5
+v2 ZIP SHA256 (immutable):
+  87c14446b79709ac9bc62553bc365253c0933232315a11a28783e13366cc0795
+v1 ZIP SHA256 (immutable):
+  037b3ff9996c328ea87bf9fe9da659600f71191766bdf4024e59b8abf12ca927
+v4 review ZIP SHA256 (immutable):
+  77ecd36924719fbcfd3cdb0a58e19fc8160013e6267201be48e1199634676f74
+
+P0-1
+----
+v3 ran `git -C <repo> status -sb --untracked-files=no`.
+`git status` may refresh `.git/index` and is not strict read-only.
+
+v4 routes every git call through git_cmd():
+  git --no-optional-locks -C <repo> ...
+
+No GIT_OPTIONAL_LOCKS export.
+No git config on Production.
+
+P1
+--
+v3 accepted empty/missing LoadState as GO.
+v4 accepts LoadState only when it is `loaded`.
+ABSENT / not-found / error / bad-setting / any other value
+=> STOP_REASON=systemd_unit_not_loaded and COMPARE_RESULT=STOP.

@@ -1,0 +1,19 @@
+Do not write, restart, or apply anything from this pack.
+Do not SSH from Cursor.
+Do not give this pack to Owner until independent review PASSes.
+Do not set PREDICTION_RUNS_ENABLED=1.
+Do not set EXPECT_AI_ALLOW_MIGRATION_022.
+Do not run migrate().
+Do not export GIT_OPTIONAL_LOCKS.
+Do not run git config on Production.
+Do not overwrite v1/v2/v3 live-compare ZIPs.
+Do not overwrite v1-v4 review ZIPs.
+Do not create a Production deploy or APPLY pack.
+Do not POST /v1/prediction-runs.
+Do not switch the site.
+
+OWNER_EXECUTE_NOW=NO
+PRODUCTION_CODE_DEPLOY_ALLOWED=NO
+OWNER_DEPLOY_APPROVED=NO
+POST_CODE_PRODUCTION_DEPLOYED=NO
+NEXT_STEP=INDEPENDENT_REVIEW_OF_OWNER_READ_ONLY_LIVE_COMPARE_V4
