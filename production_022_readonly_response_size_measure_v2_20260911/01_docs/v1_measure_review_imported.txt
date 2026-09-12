@@ -1,0 +1,14 @@
+v1 measurement pack — independent review
+=======================================
+
+ZIP_SHA256=f78acd66ed1f33b5ee394f4e12397d4de333b2934df7e2737e4bcb53f5c41269
+STDIN_PAYLOAD_SHA256=e3b1f6ea320fcb6b417f05f96c0a26542b003b93918b9bba0bfaa4ee46c81b04
+MEASURE_PACK_REVIEW=CHANGES_REQUIRED
+V1_MEASURE_ZIP_OVERWRITE=NO
+
+Confirmed PASS: ZIP/stdin hashes, zip integrity, sha256sum -c, python tests.
+
+P0-1 schema gate was incomplete (missing-only, cols[:8], index exists-only).
+P0-2 CACHE_WRITE=NO / FILE_WRITE=NO were hardcoded, not measured.
+
+v2 answers those defects. v1 ZIP is retained as audit evidence.

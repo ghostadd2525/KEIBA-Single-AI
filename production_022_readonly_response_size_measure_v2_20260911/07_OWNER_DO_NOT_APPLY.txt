@@ -1,0 +1,6 @@
+Do not run this v2 measurement pack until independent review PASS.
+Do not run OWNER_APPLY.ps1 from v1-v4.
+Do not run the v1 measurement pack.
+Do not set OWNER_PRODUCTION_022_APPLY_APPROVED.
+Do not overwrite v1 measurement ZIP or v1-v4 APPLY ZIPs.
+After unzip, sha256sum -c SHA256SUMS.txt must PASS.
