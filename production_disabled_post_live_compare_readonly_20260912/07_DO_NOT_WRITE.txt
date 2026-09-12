@@ -1,0 +1,15 @@
+Do not write, restart, or apply anything from this pack.
+Do not SSH from Cursor.
+Do not set PREDICTION_RUNS_ENABLED=1.
+Do not set EXPECT_AI_ALLOW_MIGRATION_022.
+Do not run migrate().
+Do not copy files/ onto Production.
+Do not overwrite v1-v4 review ZIPs.
+Do not create a Production deploy or APPLY pack.
+Do not POST /v1/prediction-runs.
+Do not switch the site.
+
+PRODUCTION_CODE_DEPLOY_ALLOWED=NO
+OWNER_DEPLOY_APPROVED=NO
+POST_CODE_PRODUCTION_DEPLOYED=NO
+NEXT_STEP=OWNER_READ_ONLY_LIVE_COMPARE
