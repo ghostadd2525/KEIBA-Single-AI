@@ -1,0 +1,20 @@
+Do not run OWNER_APPLY.ps1 on Production until this final v2 pack
+passes independent review and Owner explicit approval.
+
+Do not set OWNER_PRODUCTION_022_APPLY_APPROVED in this pack.
+Do not enable PREDICTION_RUNS_ENABLED.
+Do not reuse or restore the 20260911T175303Z historical backup.
+Do not overwrite APPLY v1-v5, measurement v1/v2, backup Owner ZIPs,
+or the existing final pack ZIP
+4f80248bc8d7520db66e12089be578ee9606e4a6d7bd9d22271d33d39bc32916.
+Do not merge PR #23-#42.
+Do not treat Linux pwsh parse as official ALL_PASS.
+Windows PowerShell 5.1 Parser.ParseFile PARSE_ERROR_COUNT=0 is
+Owner-confirm pending.
+After unzip, sha256sum -c SHA256SUMS.txt must PASS.
+
+PRODUCTION_022_APPLY_EXECUTION_ALLOWED=NO
+OWNER_APPLY_APPROVED=NO
+APPLY_EXECUTED=NO
+FINAL_022_APPLY_PACK_EXECUTION_ALLOWED=NO
+NEXT_STEP=INDEPENDENT_REVIEW_OF_FINAL_V2_022_APPLY_PACK

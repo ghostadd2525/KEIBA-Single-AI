@@ -1,0 +1,27 @@
+v5 APPLY independent review (imported, pack not changed)
+=======================================================
+
+V5_ZIP_SHA256=60cef7b2354d2c3a4b49e6a5f687537cc6188936ccbf9534ba070ca7667f84d8
+V5_STDIN_SHA256=b75b3fa2d0e1d1314e3a29571db48ab7e8ff197d1f292074ce280791dcf4b183
+V5_ZIP_SHA256_MATCH=YES
+V5_STDIN_SHA256_MATCH=YES
+V5_ZIP_INTEGRITY=PASS
+V5_SHA256SUMS=PASS
+V5_PYTHON_TESTS=PASS
+V5_MEASURED_ENDPOINT_LIMITS_REVIEW=PASS
+V5_OLD_BACKUP_REJECTION=PASS
+V5_TRANSACTION_REVIEW=PASS
+V5_DESTRUCTIVE_ROLLBACK_ABSENT=YES
+V5_LOCAL_DESIGN_REVIEW=PASS
+V5_OWNER_EXECUTION_ALLOWED=NO
+
+Reason imported:
+fresh backup canon was unset. The v5 remote payload HALTed before
+GET/APPLY, but OWNER_APPLY.ps1 started SSH when the approval variable
+was 1. That is not an SSH-before HALT.
+
+Keep v5 as the documented local-design artifact.
+V5_APPLY_PACK_OVERWRITE=NO
+V5_APPLY_PACK_EXECUTE=NO
+This final pack is a new version. It pins the fresh backup canon in
+both the remote payload and the Windows wrapper.
