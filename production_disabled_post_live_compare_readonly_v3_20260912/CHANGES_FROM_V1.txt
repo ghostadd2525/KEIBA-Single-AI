@@ -1,0 +1,42 @@
+Changes from live-compare v1 (not an overwrite)
+==============================================
+
+v1 ZIP SHA256 (immutable):
+  037b3ff9996c328ea87bf9fe9da659600f71191766bdf4024e59b8abf12ca927
+v1 pack name:
+  production_disabled_post_live_compare_readonly_20260912
+
+P0-1
+----
+v1 presented command block had a 59-char snapshot.py SHA:
+  2114c953b57461f73d0450384f38df2a2b086a397c77cc70b448cbde5f7
+Correct v4 file SHA is 64 hex:
+  2114c953b57461f73d0450384f38df2a2b086a51e53591c77cc70b448cbde5f7
+v2 does not hand-type the 11 deploy SHAs. generate_hashes.py reads
+v4_reference/file_sha256.txt and hashes v4_reference/files, then
+writes the generated block in live_compare.py and
+01_docs/expected_hashes.txt. Tests require 64 lowercase hex and
+byte-identity with the v4 files. Canonical and presented scripts
+are generated as identical bytes.
+
+P0-2
+----
+INDEX_CONTRACT no longer accepts word presence.
+It now requires all of:
+  sqlite_master.tbl_name == predictions
+  PRAGMA index_list(predictions) unique == 1 for the named index
+  PRAGMA index_info columns == ["idempotency_key"]
+  SQL matches ON predictions(idempotency_key)
+  SQL predicate is WHERE idempotency_key IS NOT NULL
+
+P1-1
+----
+All 6 MUST_ABSENT paths emit STOP_REASON=must_absent_present:<rel>
+and COMPARE_RESULT=STOP when PRESENT.
+
+P1-2
+----
+SYSTEMD_EXECSTART raw is not printed.
+SYSTEMD_EXECSTART_PATH / SYSTEMD_EXECSTART_ARGV_SAFE are printed
+after redacting token/password/key/secret assignment and flag values.
+Environment raw values remain unpublished; only UNSET|ZERO|ONE|OTHER.
