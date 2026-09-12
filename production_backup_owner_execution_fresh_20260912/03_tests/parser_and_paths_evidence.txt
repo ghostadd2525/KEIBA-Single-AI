@@ -1,0 +1,100 @@
+PASS pack_contract
+PASS stdin_payload
+PASS remote_backup
+PASS parser_engine_available
+PARSER_ENGINE=pwsh
+NOTE=Windows powershell.exe not on this Linux host; Language.Parser.ParseFile used via pwsh
+PS_VERSION=7.6.6
+PS_EDITION=Core
+PARSE_ERROR_COUNT=0
+
+PASS parsefile_exit0
+PASS parsefile_count0
+PS_EDITION=Core
+PS_VERSION=7.6.6
+PS_MAJOR=7
+PASS parsefile_error_count_0
+PARSE_ERROR_COUNT=0
+PASS ast_has_Stop-ProcessTree
+PASS ast_has_Get-TaskText
+PASS ast_has_Get-WrapperAuditStatus
+PASS ast_has_Invoke-TimedProcess
+PASS ast_has_Test-OwnerApprovalReady
+PASS ast_has_Get-Sha256Hex
+PASS ast_stdout_drain_before_wait
+PASS ast_stderr_drain_before_wait
+PASS ast_outer_try_present
+PASS approval_check_before_ssh
+PASS no_pscustomobject_contains
+PASS no_scp
+PASS no_sudo
+PASS no_setenv
+PASS wrapper_does_not_set_approval
+PASS stdin_python3_dash
+PASS path_success_not_timeout
+PASS path_success_exit0
+PASS path_success_drain_started
+PASS path_success_stdout
+PASS path_success_stderr
+PASS path_success_wrapper
+PASS path_success_wrapper_exit
+PASS path_nonzero_not_timeout
+PASS path_nonzero_exit7
+PASS path_nonzero_drain_started
+PASS path_nonzero_stdout
+PASS path_nonzero_stderr
+PASS path_nonzero_wrapper_failed
+PASS path_nonzero_reason_ssh_exit
+PASS path_nonzero_wrapper_exit1
+PASS path_timeout_flag
+PASS path_timeout_drain_started
+PASS path_timeout_partial_stdout
+PASS path_timeout_wrapper_failed
+PASS path_timeout_reason
+PASS path_timeout_wrapper_exit1
+PASS path_startfail_not_timeout
+PASS path_startfail_code
+PASS path_startfail_wrapper_failed
+PASS path_startfail_reason
+PASS approval_unset_not_ready
+PASS approval_unset_reason
+PASS approval_ready_when_explicit
+PASS windows_env_not_prod_evidence
+PASS reads_pregenerated_stdin
+PASS stdin_readallbytes
+PASS no_runtime_name_concat
+PASS apply_approval_halt_token
+PASS apply_approval_halt_before_ssh
+PATH_TEST_FAIL_COUNT=0
+
+PASS paths_exit0
+PASS paths_parse0
+PASS paths_fail0
+PASS paths_path_success_wrapper
+PASS paths_path_nonzero_reason_ssh_exit
+PASS paths_path_timeout_reason
+PASS paths_path_startfail_code
+PASS paths_path_success_drain_started
+PASS paths_approval_unset_not_ready
+PASS paths_approval_ready_when_explicit
+PASS paths_windows_env_not_prod_evidence
+PASS paths_approval_check_before_ssh
+PASS paths_no_pscustomobject_contains
+PASS paths_ast_stdout_drain_before_wait
+PASS paths_reads_pregenerated_stdin
+PASS paths_stdin_readallbytes
+PASS paths_no_runtime_name_concat
+PASS paths_apply_approval_halt_token
+PASS paths_apply_approval_halt_before_ssh
+PASS ps1_unapproved_exit2
+PASS ps1_unapproved_no_ssh
+PASS ps1_unapproved_reason
+PASS ps1_output_file_created
+PASS ps1_log_ssh_no
+PASS ps1_no_remote_block
+PASS ps1_apply_approval_exit2
+PASS ps1_apply_approval_no_ssh
+PASS ps1_apply_approval_reason
+PASS ps1_apply_approval_output_file
+PASS ps1_apply_approval_log_ssh_no
+PASS ps1_apply_approval_no_remote_block
