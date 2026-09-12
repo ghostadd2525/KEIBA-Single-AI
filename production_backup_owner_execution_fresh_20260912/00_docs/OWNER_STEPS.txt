@@ -1,0 +1,39 @@
+Owner steps (do not run until independent review of this fresh pack)
+===================================================================
+
+This agent must not execute Production backup.
+This pack does not set OWNER_PRODUCTION_BACKUP_APPROVED.
+Do not run v5 APPLY. Do not create a v5 APPLY fix pack.
+Do not delete, overwrite, or restore the historical backup.
+
+1. Keep backup Owner v1-v4, APPLY v1-v5, measurement v1/v2, and the
+   APPLY plan ZIP as audit trail. Do not overwrite or run them.
+2. Independent review of this fresh backup ZIP must pass first.
+3. After review, Owner confirms Windows PowerShell 5.1 Parser.ParseFile
+   on OWNER_BACKUP.ps1.
+4. After that, Owner may later set OWNER_PRODUCTION_BACKUP_APPROVED=1
+   in their own Windows session and run only:
+     02_powershell/OWNER_BACKUP.ps1
+5. Do not set OWNER_PRODUCTION_022_APPLY_APPROVED=1 for this pack.
+   The wrapper HALTs before SSH if that APPLY approval is 1.
+6. Wrapper reads owner_backup_stdin.py with ReadAllBytes and sends those
+   exact bytes to SSH stdin. It never concatenates Python files.
+7. Remote copies the live DB at execution time:
+     /home/ubuntu/KEIBA-Single-AI/services/win5-ai/var/expect_ai.db
+   into a new UTC stamp directory under
+     /home/ubuntu/KEIBA-Single-AI/var/sqlite_backups/<NEWSTAMP>/expect_ai.db
+8. Remote will HALT before copy if:
+   dest/ino != 66305/349935
+   schema != Owner 22-migration canon
+   dest path is the historical 20260911T175303Z backup
+   Production effective PREDICTION_RUNS_ENABLED=1
+   Production effective EXPECT_AI_ALLOW_MIGRATION_022=1
+   Production effective EXPECT_AI_ALLOW_MIGRATION_019=1
+   Production env cannot be determined
+   Owner backup approval is unset
+9. After a successful fresh backup, verify integrity/schema/migrations/SHA
+   before any later APPLY pack pins that new path/SHA/dev/ino.
+10. This pack does not pin APPLY backup canon and does not APPLY.
+
+Audit log is written under Personal Downloads.
+The backup DB stays on Production. Historical backup stays untouched.
