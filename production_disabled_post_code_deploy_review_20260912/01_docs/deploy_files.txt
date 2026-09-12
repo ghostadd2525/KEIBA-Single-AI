@@ -1,0 +1,23 @@
+Production deploy candidates (not tests)
+=======================================
+
+services/win5-ai/app/main.py
+services/win5-ai/app/data/db.py
+services/win5-ai/app/data/repository/__init__.py
+services/win5-ai/app/core/feature_loader_bridge.py
+services/win5-ai/app/data/migrations/022_prediction_run_idempotency.sql
+services/win5-ai/app/data/migrations_not_apply/019_prediction_run_idempotency.sql
+services/win5-ai/app/data/migrations_not_apply/README.txt
+services/win5-ai/app/predictions/__init__.py
+services/win5-ai/app/predictions/corpus.py
+services/win5-ai/app/predictions/feature_pin.py
+services/win5-ai/app/predictions/guards.py
+services/win5-ai/app/predictions/provenance.py
+services/win5-ai/app/predictions/raeval84_holdout.py
+services/win5-ai/app/predictions/runs.py
+services/win5-ai/app/predictions/snapshot.py
+services/win5-ai/app/predictions/data/raeval84_v1_holdout_race_ids.txt
+
+Do not deploy:
+  services/win5-ai/tests/**
+  fake_ai_platform

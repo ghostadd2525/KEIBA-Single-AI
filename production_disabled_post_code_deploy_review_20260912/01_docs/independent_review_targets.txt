@@ -1,0 +1,22 @@
+Independent review targets
+==========================
+
+1. files/ vs origin/main 25a3f88 unified diff is complete
+2. 019 persist SQL is only under migrations_not_apply/
+3. Active migrations do not contain 019_prediction_run_idempotency.sql
+4. db.py skips 022 unless EXPECT_AI_ALLOW_MIGRATION_022=1
+5. Already-applied 23-version fixture: migrate() returns []
+6. POST disabled / unset env: 503 PREDICTION_RUNS_DISABLED before
+   handle_post_prediction_run()
+7. GET list/detail shape unchanged; predictions row delta 0
+8. Conversation / Challenge / RA INSERTs omit the new 4 columns
+9. v4 connector source has no INSERT INTO predictions
+10. No systemd / env / UI / kaoba / result-automation edits in the diff
+11. Existing review and APPLY ZIPs were not overwritten
+12. Production was not deployed from this bundle
+
+Known not in this diff:
+  KAOBA_IMAGE_ASSET
+  RESULT_AUTOMATION_STATUS
+  FULL_FIELD_OFFICIAL_MATCH
+  UI_FULL_AUDIT

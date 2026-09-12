@@ -1,0 +1,34 @@
+Production live code compare — Owner read-only, no deploy
+=======================================================
+
+Cursor must not SSH. Owner runs this on the Production host
+without writing files, restarting, or setting env.
+
+Live root (last known):
+  /home/ubuntu/KEIBA-Single-AI/services/win5-ai
+
+For each path, record SHA256 of the live file or ABSENT:
+
+  app/main.py
+  app/data/db.py
+  app/data/repository/__init__.py
+  app/core/feature_loader_bridge.py
+  app/data/migrations/022_prediction_run_idempotency.sql
+  app/data/migrations/019_prediction_run_idempotency.sql
+  app/predictions/__init__.py
+  app/predictions/runs.py
+  app/predictions/guards.py
+
+Compare to file_sha256.txt in this bundle (paths under files/).
+
+Also record:
+  grep -n prediction-runs app/main.py || echo ABSENT
+  grep -n PREDICTION_RUNS_ENABLED app/main.py || echo ABSENT
+  test ! -f app/data/migrations/019_prediction_run_idempotency.sql
+  ls app/data/migrations | sort
+  systemctl show expect-ai.service -p Environment -p EnvironmentFiles
+  Do not change systemd. Do not set EXPECT_AI_ALLOW_MIGRATION_022.
+  Do not set PREDICTION_RUNS_ENABLED=1.
+
+Do not POST /v1/prediction-runs.
+Do not switch the site.
