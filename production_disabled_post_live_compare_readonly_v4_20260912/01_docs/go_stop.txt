@@ -1,0 +1,75 @@
+GO / STOP for this v4 compare pack only
+=======================================
+
+This step is evidence collection. It never approves a deploy.
+Owner must not run it until independent review of this v4 pack PASSes.
+
+GO  (COMPARE_RESULT=GO)
+-----------------------
+All of the following are true:
+  - WIN5_ROOT found (app/main.py exists)
+  - deploy_files hashes recorded (ABSENT is a valid record)
+  - none of the 6 MUST_ABSENT files are PRESENT
+  - main.py class recorded
+  - systemd show succeeded
+  - LoadState is loaded
+  - ExecStart and WorkingDirectory are present
+  - if ActiveState=active, process environ was read
+  - PREDICTION_RUNS_ENABLED and EXPECT_AI_ALLOW_MIGRATION_022
+    classified as UNSET/ZERO/ONE/OTHER
+  - sqlite opened read-only and 022 / 4 columns / index recorded
+
+Owner action on GO (after review + later Owner execution):
+  Return the full stdout transcript.
+  Do not deploy. Do not create an APPLY pack.
+  PRODUCTION_CODE_DEPLOY_ALLOWED stays NO
+  OWNER_DEPLOY_APPROVED stays NO
+
+STOP  (COMPARE_RESULT=STOP)
+---------------------------
+Any of:
+  - win5_root_not_found
+  - db_file_absent
+  - db_readonly_open_failed
+  - db_readonly_query_failed
+  - systemd_show_failed
+  - systemd_unit_not_loaded
+  - systemd_execstart_absent
+  - systemd_working_directory_absent
+  - effective_env_unverified
+  - must_absent_present:<rel> for any of:
+      app/predictions/corpus.py
+      app/predictions/raeval84_holdout.py
+      app/predictions/data/raeval84_v1_holdout_race_ids.txt
+      app/data/migrations_not_apply/019_prediction_run_idempotency.sql
+      app/data/migrations_not_apply/README.txt
+      app/data/migrations/019_prediction_run_idempotency.sql
+
+Owner action on STOP:
+  Do not guess paths. Do not write files to "fix" the probe.
+  Return the transcript. Still no deploy.
+
+HARD STOP before any later deploy pack
+--------------------------------------
+Even if COMPARE_RESULT=GO, do not start a Production code
+deploy pack while any of these appear as STOP_REASON:
+
+  - PREDICTION_RUNS_ENABLED_is_ONE
+  - EXPECT_AI_ALLOW_MIGRATION_022_is_ONE
+  - schema_022_missing
+  - missing_col_idempotency_key
+    / persist_source / input_snapshot_hash
+    / prediction_semantic_hash
+  - idempotency_index_not_ok
+  - live_main_py_imports_runs_before_disabled_gate
+  - must_absent_present:<rel>  (also forces COMPARE_RESULT=STOP)
+
+Later main.py rule (not a compare STOP)
+---------------------------------------
+  MATCH_BASE      -> later deploy may use the v4 unified main.py
+                    hunk-or-file against origin/main
+  MATCH_CANDIDATE -> POST hunk already present; do not overwrite
+                    main.py unless a new review says so
+  DIVERGENT       -> hunk only; never replace live main.py wholesale
+
+This pack does not authorize that later deploy.
