@@ -1,0 +1,29 @@
+Bundled origin/main base (v3 harness, unchanged in v4)
+=====================================================
+
+v2 independent review could not re-run 51 tests because the
+receiving environment lacked git object
+25a3f88b8aab61a5462c06efa133b21865ef6083.
+
+v3 includes the test-required origin/main tree as:
+
+  base/origin_main_25a3f88.tar.gz
+  base/IDENTITY.txt
+  base/SHA256SUMS.txt
+  base/GIT_LS_TREE.txt
+
+IDENTITY records:
+  BASE_COMMIT
+  ROOT_TREE_SHA
+  WIN5_TREE_SHA
+  TAR_SHA256
+  FILE_COUNT=2565
+  BASE_SCOPE=full-tree
+
+run_tests.py verifies those SHAs, extracts the tar to a temporary
+directory, overlays files/, runs unittest, and asserts 51 tests.
+It does not read tests/*.log as a pass condition.
+It does not SSH, deploy, or POST.
+
+This base tree is not in 01_docs/deploy_files.txt.
+Do not deploy base/ to Production.

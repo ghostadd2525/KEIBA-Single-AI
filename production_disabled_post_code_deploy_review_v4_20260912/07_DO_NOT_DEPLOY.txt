@@ -1,0 +1,20 @@
+Do not deploy from this review bundle.
+Do not merge PR #23-#47 as Production deploy.
+Do not SSH to Production from Cursor.
+Do not restart expect-ai.
+Do not set PREDICTION_RUNS_ENABLED=1.
+Do not set EXPECT_AI_ALLOW_MIGRATION_022.
+Do not call POST /v1/prediction-runs on Production.
+Do not switch the site to POST.
+Do not re-run OWNER_APPLY.ps1.
+Do not re-apply 022.
+Do not overwrite existing review or APPLY ZIPs.
+Do not overwrite production_disabled_post_code_deploy_review_20260912.zip
+  (SHA256 474cb805c99d81235287b0a2a8a74fe9406c88f963024b98e6e1bf9a8154caaf).
+Do not overwrite production_disabled_post_code_deploy_review_v2_20260912.zip
+  (SHA256 38b6ea058335663a54b10263657195b26eea05146532a6d07019da90dd11a620).
+Do not overwrite production_disabled_post_code_deploy_review_v3_20260912.zip
+  (SHA256 b324b9d94478e32987e62166ccb8032ab4dd480732b2b9a1f1138bbc524820c7).
+Do not copy base/ onto Production.
+
+NEXT_STEP=INDEPENDENT_REVIEW_OF_DISABLED_POST_CODE_DEPLOY_V4_BUNDLE
