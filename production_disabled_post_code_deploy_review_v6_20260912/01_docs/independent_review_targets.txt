@@ -1,0 +1,61 @@
+Independent review targets (v6)
+===============================
+
+P0-1 (PASS in v2–v5; main.py unchanged)
+  Disabled PREDICTION_RUNS_ENABLED check in app/main.py runs
+  before `from .predictions.runs import ...`.
+  Counterexample: app.predictions.runs forced unimportable
+  still yields 503 PREDICTION_RUNS_DISABLED, infer 0, save 0.
+
+P0-2 (PASS in v3–v5; harness still ZIP-only)
+  ZIP-only: python3 run_tests.py re-runs the suite without an
+  external git clone. Bundled tests/*.log is not a pass condition.
+  v6 suite is 52 tests (v5's 51 + step-1 journal no-op) twice,
+  plus test_separate_process_concurrency x20 on DELETE fixture.
+
+P0-3 (PASS in v4/v5; keep generating SUMS last)
+  After independent extract and BEFORE run_tests.py:
+    sha256sum -c SHA256SUMS.txt
+  must PASS for every listed file, including FLAGS.txt.
+  SHA256SUMS.txt is generated last, after all other files are
+  finalized. Do not edit FLAGS or any other file after that.
+
+P0-4 (PASS in v5; keep)
+  _connect_idempotent() must not issue PRAGMA journal_mode.
+  busy_timeout and IMMEDIATE isolation stay.
+  database is locked is not swallowed.
+
+P0-5 (v6 remaining fix)
+  migrate() must not call ensure_wal_journal() and must not write
+  journal_mode. ensure_wal_journal() must not exist.
+  inspect_journal_mode() is read-only.
+  Step-1 startup migrate() (main() on Production boot) must not
+  change persistent journal_mode or create -wal/-shm.
+  Counterexample test:
+    test_step1_migrate_does_not_change_journal_mode_when_wal_unset
+  WAL enable is a separate step-2 Owner approval / precondition.
+  It is not implemented in this bundle.
+
+P1 (PASS in v2–v5; deploy_files.txt unchanged)
+  deploy_files.txt excludes corpus / RAEVAL holdout / archived 019
+  + README. Do not run live-compare v4 against this bundle; its
+  recorded SHAs will not match v5/v6 files.
+
+Also
+1. files/ vs origin/main 25a3f88 unified diff is complete
+2. 019 persist SQL is only under migrations_not_apply/
+3. db.py skips 022 unless EXPECT_AI_ALLOW_MIGRATION_022=1
+4. Existing review and APPLY ZIPs were not overwritten
+   (v1 474cb805… v2 38b6ea05… v3 b324b9d9… v4 77ecd369…
+    v5 8a9b5070… must still match)
+5. Production was not deployed from this bundle
+6. bundled base tar is byte-identical to v3–v5
+7. disabled POST remains 503, infer/save 0, PREDICTION_RUNS_ENABLED=0
+8. DELETE-journal 4-process same-key: one prediction_id, one create,
+   rest replay, predictions row count 1, x20
+
+Known not in this diff:
+  KAOBA_IMAGE_ASSET
+  RESULT_AUTOMATION_STATUS
+  FULL_FIELD_OFFICIAL_MATCH
+  UI_FULL_AUDIT

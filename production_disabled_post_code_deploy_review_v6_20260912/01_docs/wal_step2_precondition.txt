@@ -1,0 +1,19 @@
+WAL is not enabled by this step-1 bundle
+=======================================
+
+Step-1 (disabled POST code) must not change Production journal_mode.
+migrate() and _connect_idempotent() do not write
+  PRAGMA journal_mode = WAL
+and do not create -wal/-shm.
+
+inspect_journal_mode() is read-only. It exists so a later step-2
+Owner review can record the live mode before POST enable.
+
+If WAL is wanted later:
+  1. Separate Owner approval (not this pack)
+  2. Separate precondition check of the live journal_mode
+  3. Only then, and only before POST enable, consider a WAL change
+  4. Do not fold that write into migrate() or connect()
+
+This bundle does not implement that write path.
+LIVE_COMPARE_V4_DO_NOT_RUN=YES
