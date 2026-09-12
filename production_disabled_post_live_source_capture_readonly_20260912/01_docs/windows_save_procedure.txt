@@ -1,0 +1,50 @@
+Windows-only save of Production stdout
+=====================================
+
+Cursor does not SSH.
+Production must not receive a copied script file.
+Production must not receive the tar via SCP.
+Save the transcript and extracted files on Windows only.
+
+After independent review PASSes, Owner:
+
+1. On Windows, keep OWNER_PASTE_COMMAND_BLOCK.sh next to
+   OWNER_WINDOWS_SAVE.ps1 (do not copy either onto Production).
+
+2. PowerShell (example):
+
+     $Out = Join-Path $PWD "live_source_capture_windows"
+     New-Item -ItemType Directory -Force -Path $Out | Out-Null
+     $Transcript = Join-Path $Out "transcript.txt"
+     Get-Content -Raw .\OWNER_PASTE_COMMAND_BLOCK.sh |
+       ssh USER@PRODUCTION bash 2>&1 |
+       Tee-Object -FilePath $Transcript
+
+   The ssh remote command is `bash` only.
+   Do not add `> /tmp/...` or `tee` on the Production side.
+
+3. Confirm the transcript contains:
+     CAPTURE_RESULT=GO
+     === TAR_BASE64_BEGIN ===
+     === TAR_BASE64_END ===
+     three CAPTURE_REL / CAPTURE_PATH / CAPTURE_SIZE / CAPTURE_SHA256 groups
+
+4. Extract on Windows (not Production):
+
+     python extract_capture.py .\live_source_capture_windows\transcript.txt `
+       --out .\live_source_capture_windows\extracted
+
+   or run OWNER_WINDOWS_SAVE.ps1 which does steps 2-4.
+
+5. Return to Cursor:
+     - transcript.txt
+     - extracted/app/main.py
+     - extracted/app/data/repository/__init__.py
+     - extracted/app/core/feature_loader_bridge.py
+     - extracted/MANIFEST.txt
+
+6. Do not deploy. Do not overwrite existing ZIPs.
+   PRODUCTION_CODE_DEPLOY_ALLOWED=NO
+   OWNER_DEPLOY_APPROVED=NO
+   NEXT_STEP remains independent review until this pack PASSes;
+   after Owner execute, next is the local 3-way, still not deploy.
