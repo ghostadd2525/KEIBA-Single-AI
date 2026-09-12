@@ -1,0 +1,23 @@
+Historical Production backup — NOT v5 APPLY canon
+================================================
+
+This backup remains audit evidence. Do not delete or overwrite it.
+Do not reuse it as the final APPLY backup canon.
+Do not restore it over current live data.
+
+BACKUP_PATH=/home/ubuntu/KEIBA-Single-AI/var/sqlite_backups/20260911T175303Z/expect_ai.db
+BACKUP_SIZE=105967616
+BACKUP_SHA256=f840b475b232fb183a74be5b5159ece7e81b99e514d3b8d71055b9ad1721b60d
+SOURCE_IDENTITY_AT_BACKUP=66305:349935
+BACKUP_IDENTITY=66305:287106
+
+Then:
+  live SOURCE_SIZE=107237376
+  PREDICTIONS_ROW_COUNT=301
+Previous APPLY audit had PREDICTIONS_ROW_COUNT=300.
+A full restore of this backup can drop the newer row.
+
+HISTORICAL_BACKUP_NOT_APPLY_CANON=YES
+APPLY_BACKUP_CANON=PENDING_FRESH_PRODUCTION_BACKUP
+FRESH_BACKUP_IS_SEPARATE_PACK=YES
+AUTO_BACKUP_RESTORE=NO

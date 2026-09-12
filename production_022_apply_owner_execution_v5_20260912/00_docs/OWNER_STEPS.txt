@@ -1,0 +1,36 @@
+Owner steps — v5 local design (do not APPLY)
+===========================================
+
+This agent must not apply 022 on Production.
+This pack does not set OWNER_PRODUCTION_022_APPLY_APPROVED.
+Do not re-run measurement v2.
+Do not use the 20260911T175303Z backup as APPLY canon.
+Do not restore that backup over live data (rows grew 300 -> 301).
+
+1. Keep measurement v1/v2 ZIPs and APPLY v1-v4 ZIPs. Do not overwrite them.
+2. Independent review of this v5 design pack.
+   After unzip, `sha256sum -c SHA256SUMS.txt` must PASS.
+3. After review, Owner confirms Windows PowerShell 5.1 Parser.ParseFile.
+   Linux pwsh parse is not that confirmation.
+4. Owner decides whether to continue.
+5. APPLY直前の新規 Production backup は別承認・別pack。
+6. 新backupの integrity / schema / migration / SHA を検証する。
+7. その新backupを canon に固定した最終packを新規作成する（このv5を上書きしない）。
+8. 最終独立レビュー。
+9. Owner明示承認。
+10. その後だけ APPLY。
+
+This v5 remote payload HALTs before APPLY when:
+  APPLY backup canon is unset
+  backup path/SHA is the historical 20260911T175303Z backup
+  schema is not exact Owner 22-migration / 8-column canon
+  022 or persist-019 already present
+  PREDICTION_RUNS_ENABLED effective 1
+
+POST remains disabled. Do not enable POST. Do not switch site.
+Do not merge PR #23-#39.
+
+PRODUCTION_022_APPLY_EXECUTION_ALLOWED=NO
+OWNER_APPLY_APPROVED=NO
+APPLY_EXECUTED=NO
+NEXT_STEP=V5_LOCAL_DESIGN_WITH_MEASURED_LIMITS_THEN_FRESH_BACKUP
