@@ -1,0 +1,21 @@
+Cursor must not execute Production APPLY
+========================================
+
+CURSOR_PRODUCTION_SSH_ALLOWED=NO
+CURSOR_APPLY_ALLOWED=NO
+OWNER_LOCAL_EXECUTION_REQUIRED=YES
+
+This agent:
+- does not open Production SSH
+- does not run OWNER_APPLY.ps1
+- does not set OWNER_PRODUCTION_022_APPLY_APPROVED
+- does not enable PREDICTION_RUNS_ENABLED
+- does not merge PR #23-#43
+- does not create a new APPLY pack
+- does not overwrite the reviewed final v2 ZIP
+
+Production reflection is Owner-local only:
+  NEXT_STEP=OWNER_RUNS_FINAL_V2_OWNER_APPLY_PS1_ON_WINDOWS
+
+APPLY_EXECUTED=NO
+PRODUCTION_022_APPLY_EXECUTION_ALLOWED=NO

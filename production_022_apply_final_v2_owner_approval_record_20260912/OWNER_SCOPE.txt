@@ -1,0 +1,43 @@
+Owner scope — 022 schema APPLY only
+===================================
+
+OWNER_SCOPE_APPROVED=022_SCHEMA_APPLY_ONLY
+OWNER_APPLY_APPROVED=YES
+APPROVED_PACK=production_022_apply_owner_execution_final_v2_20260912
+PREDICTION_RUNS_ENABLED_MUST_STAY=0
+
+Approved
+--------
+- Use the Owner-verified fresh Production backup as APPLY canon
+  PATH=/home/ubuntu/KEIBA-Single-AI/var/sqlite_backups/20260912T013332Z/expect_ai.db
+  SHA256=32dfe70339a7237442d08a032d019ec03abbb8b85d0c90fa39d385e54da07e6a
+  IDENTITY=66305:287343
+  SIZE=107413504
+- Owner runs the reviewed final v2 pack once from Windows PowerShell 5.1
+- That run applies 022 schema migration only
+- Same-run read-only regression checks that the pack already performs
+
+Not approved
+------------
+- Enable or call POST /v1/prediction-runs
+- Switch the site to POST
+- Change prediction logic, GET, or UI
+- Write Conversation / RA / Challenge
+- Change systemd, EnvironmentFile, or persistent env
+- Automatic restore
+- Delete columns, rows, bundle_json, or migration records
+- Merge PR #23 through #43
+- Create a new APPLY pack
+- Cursor Production SSH
+- Cursor APPLY
+
+Cursor records this scope only.
+Cursor does not set OWNER_PRODUCTION_022_APPLY_APPROVED.
+Owner sets that variable in the Windows session if and when Owner runs
+the reviewed OWNER_APPLY.ps1.
+
+CURSOR_PRODUCTION_SSH_ALLOWED=NO
+CURSOR_APPLY_ALLOWED=NO
+OWNER_LOCAL_EXECUTION_REQUIRED=YES
+APPLY_EXECUTED=NO
+NEXT_STEP=OWNER_RUNS_FINAL_V2_OWNER_APPLY_PS1_ON_WINDOWS
