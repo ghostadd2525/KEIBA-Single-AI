@@ -1,0 +1,34 @@
+Output judgment table
+=====================
+
+Field                              How to read
+---------------------------------  ------------------------------------------
+WIN5_ROOT / REPO_ROOT_GUESS        Actual runtime / repo paths
+GIT_HEAD / GIT_BRANCH /            Current commit, branch, worktree
+GIT_WORKTREE / GIT_STATUS_SB
+GIT_HAS_BASE_COMMIT_25a3f88        YES => live git can diff vs origin/main
+LIVE <rel> <sha> <class>           deploy_files.txt target
+                                   MATCH_CANDIDATE = already v4 file
+                                   MATCH_BASE / MATCH_ORIGIN_MAIN = origin/main
+                                   DIFFER / DIVERGENT = neither
+                                   ABSENT = not on disk
+LIVE <excluded> ABSENT/PRESENT     corpus / RAEVAL / archived 019
+MAIN_PY_CLASS                      MATCH_BASE | MATCH_CANDIDATE |
+                                   DIVERGENT | ABSENT
+MAIN_PY_HUNK_DIFF                  LATER_APPLY_FULL_POST_HUNK |
+                                   NONE_ALREADY_CANDIDATE |
+                                   REQUIRED_DO_NOT_REPLACE_WHOLESALE
+LIVE_GATE_BEFORE_RUNS_IMPORT       YES required if POST code exists
+SYSTEMD_EXECSTART                  Actual start command
+SYSTEMD_WORKINGDIRECTORY           Runtime cwd
+PREDICTION_RUNS_ENABLED            UNSET | ZERO | ONE | OTHER
+EXPECT_AI_ALLOW_MIGRATION_022      UNSET | ZERO | ONE | OTHER
+  (values never printed)
+SCHEMA_HAS_022                     YES expected (already COMMITTED)
+PRED_COL_*                         YES expected for 4 new columns
+INDEX_CONTRACT                     OK = UNIQUE + idempotency_key +
+                                   WHERE ... IS NOT NULL
+COMPARE_RESULT                     GO = evidence complete
+                                   STOP = evidence incomplete
+HARD_STOP_BEFORE_ANY_LATER_DEPLOY  YES = do not plan a deploy pack yet
+LATER_CODE_DEPLOY_ALLOWED          always NO from this pack

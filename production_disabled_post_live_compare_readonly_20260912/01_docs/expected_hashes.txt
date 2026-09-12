@@ -1,0 +1,31 @@
+v4 candidate and origin/main hashes used by OWNER_LIVE_COMPARE.sh
+================================================================
+
+origin/main 25a3f88 main.py
+  a54f1eaa5b8540c2f08d8b0e656a3ccbb78142d4d1cb2c8951e4105f3630184e
+v4 candidate main.py
+  7577973c16eb7aad395cd11acae3c8ef987a3c0533924c1994ae32afeaf818e5
+origin/main db.py
+  8a86f514b1b08fde9a90a71acc99eac3f6fc9c2aeae200e8787721093592ef1a
+v4 candidate db.py
+  caa14ebd448a40164dab427d21b847bc85749087a103cbb2a9f49a008e126722
+
+Other deploy_files candidate SHA256 (v4 file_sha256.txt):
+  app/core/feature_loader_bridge.py
+    f3c25c7b87941138555158e051d0520fc705889e8a2a17e8889c7fc5325eae44
+  app/data/repository/__init__.py
+    70fab66425a142307eab738783e32fbb93ec8fb6859c438007c7c6cd94165f77
+  app/data/migrations/022_prediction_run_idempotency.sql
+    627910c7985276d516fbbbcc09ca15964081955452eae28ae8a773c38acf28a9
+  app/predictions/__init__.py
+    d4373c31ad5aac82a2d83a53d91bc2b95607bd891d7b9286c3c154478d5dc21c
+  app/predictions/guards.py
+    7e6d74dd77b6645364679187a325b42676cd64d6546f5576022f19d30e6dfc82
+  app/predictions/runs.py
+    d04bc99281474aa4e0e78b9951df6335f6b9995c9e7328b100afd552815f35c1
+  app/predictions/feature_pin.py
+    49794f3671589a5ec13bc622161bac8c10609ff922c51033343dca30a31fbc36
+  app/predictions/provenance.py
+    2cc2585d53a3dbdffd8c7a4dc56921aafaf4ce6cd5421d1928950a34194bb704
+  app/predictions/snapshot.py
+    2114c953b57461f73d0450384f38df2a2b086a51e53591c77cc70b448cbde5f7
