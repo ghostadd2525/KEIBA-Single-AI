@@ -1,0 +1,62 @@
+Three-way: origin/main vs Production live vs local implementation
+================================================================
+
+1. origin/main
+   COMMIT=25a3f88b8aab61a5462c06efa133b21865ef6083
+   predictions/ package: ABSENT
+   POST /v1/prediction-runs: ABSENT
+   main.py SHA256=a54f1eaa5b8540c2f08d8b0e656a3ccbb78142d4d1cb2c8951e4105f3630184e
+   db.py SHA256=8a86f514b1b08fde9a90a71acc99eac3f6fc9c2aeae200e8787721093592ef1a
+   migrations: 001-018 only (no 019_final_predictions / 020 / 021 / 022)
+
+2. Production live code
+   FETCHED_THIS_RUN=NO
+   CURSOR_PRODUCTION_SSH_ALLOWED=NO
+   Known from Owner APPLY canon (schema, not source tree):
+     SCHEMA_MIGRATIONS_COUNT=23
+     PREDICTIONS_COLUMN_COUNT=12
+     022 already COMMITTED
+     PREDICTION_RUNS_ENABLED effective 0
+   Live source hashes were not re-read. Do not assume live main.py
+   equals origin/main. Owner hashes live files with the separate
+   read-only step 01_docs/production_live_compare_procedure.txt
+
+3. Local implementation (this bundle files/)
+   Source: review v5 Prediction Run files + WAL-once db.py
+   + v2 P0-1 gate: env check before importing predictions.runs
+   main.py SHA256=7577973c16eb7aad395cd11acae3c8ef987a3c0533924c1994ae32afeaf818e5
+     = origin/main main.py + POST route hunk that 503s before
+     importing app.predictions.runs
+   db.py SHA256=773bfc8a233b20a751091d3466200b1fcd633e8b521c47498235766fd4dcde6f
+     persist target 022; skips 019; skips 022 unless
+     EXPECT_AI_ALLOW_MIGRATION_022=1; WAL is initialized once in
+     migrate() via ensure_wal_journal()
+   repository/__init__.py SHA256=83785d8aaf205df58e538e2cbf59178388e0de2d85c3f69042e71591bfc6f650
+     _connect_idempotent() keeps busy_timeout and IMMEDIATE isolation;
+     does not change journal_mode
+   022.sql is in migrations/ for code completeness. Already-applied
+   Production DB: migrate() is a no-op without the allow flag
+   (except the read-first WAL ensure).
+
+If live main.py SHA == origin/main SHA, the unified diff in
+origin_main_25a3f88.unified.diff is the deploy diff for that file.
+If live main.py SHA differs, apply only the POST-route hunk
+(01_docs/main_py_post_route_hunk.txt) and the new files; do not
+replace live main.py wholesale.
+
+v1 ZIP remains immutable:
+  production_disabled_post_code_deploy_review_20260912.zip
+  SHA256=474cb805c99d81235287b0a2a8a74fe9406c88f963024b98e6e1bf9a8154caaf
+v2 ZIP remains immutable:
+  production_disabled_post_code_deploy_review_v2_20260912.zip
+  SHA256=38b6ea058335663a54b10263657195b26eea05146532a6d07019da90dd11a620
+v3 ZIP remains immutable:
+  production_disabled_post_code_deploy_review_v3_20260912.zip
+  SHA256=b324b9d94478e32987e62166ccb8032ab4dd480732b2b9a1f1138bbc524820c7
+v4 ZIP remains immutable:
+  production_disabled_post_code_deploy_review_v4_20260912.zip
+  SHA256=77ecd36924719fbcfd3cdb0a58e19fc8160013e6267201be48e1199634676f74
+
+v5 changes _connect_idempotent / ensure_wal_journal / run_tests
+stability loops. bundled base tar is unchanged from v3/v4.
+deploy_files.txt path list is unchanged.
