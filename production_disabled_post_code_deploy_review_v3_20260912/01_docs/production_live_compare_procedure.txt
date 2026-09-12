@@ -1,0 +1,52 @@
+Production live code compare — separate Owner read-only step
+===========================================================
+
+This is NOT process 1 (deploy_files). Cursor must not SSH.
+Owner runs this on the Production host without writing files,
+restarting, setting env, or applying 022.
+
+Live root (last known):
+  /home/ubuntu/KEIBA-Single-AI/services/win5-ai
+
+For each Production deploy candidate, record SHA256 or ABSENT:
+
+  app/main.py
+  app/data/db.py
+  app/data/repository/__init__.py
+  app/core/feature_loader_bridge.py
+  app/data/migrations/022_prediction_run_idempotency.sql
+  app/predictions/__init__.py
+  app/predictions/guards.py
+  app/predictions/runs.py
+  app/predictions/feature_pin.py
+  app/predictions/provenance.py
+  app/predictions/snapshot.py
+
+Also confirm ABSENT or not-deployed (not in deploy_files.txt):
+
+  app/predictions/corpus.py
+  app/predictions/raeval84_holdout.py
+  app/predictions/data/raeval84_v1_holdout_race_ids.txt
+  app/data/migrations_not_apply/019_prediction_run_idempotency.sql
+  app/data/migrations_not_apply/README.txt
+  app/data/migrations/019_prediction_run_idempotency.sql
+
+Compare deploy-candidate hashes to file_sha256.txt (paths under files/).
+
+main.py contract:
+  origin/main SHA256=a54f1eaa5b8540c2f08d8b0e656a3ccbb78142d4d1cb2c8951e4105f3630184e
+  If live SHA equals that, unified diff is the main.py deploy diff.
+  If live SHA differs, do not replace main.py wholesale.
+  Apply only 01_docs/main_py_post_route_hunk.txt + new files.
+
+Also record:
+  grep -n prediction-runs app/main.py || echo ABSENT
+  grep -n PREDICTION_RUNS_ENABLED app/main.py || echo ABSENT
+  test ! -f app/data/migrations/019_prediction_run_idempotency.sql
+  ls app/data/migrations | sort
+  systemctl show expect-ai.service -p Environment -p EnvironmentFiles
+  Do not change systemd. Do not set EXPECT_AI_ALLOW_MIGRATION_022.
+  Do not set PREDICTION_RUNS_ENABLED=1.
+
+Do not POST /v1/prediction-runs.
+Do not switch the site.
