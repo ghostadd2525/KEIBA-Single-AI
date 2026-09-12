@@ -1,0 +1,47 @@
+Independent review targets (v3)
+===============================
+
+P0-1 (already PASS in v2; files/ unchanged)
+  Disabled PREDICTION_RUNS_ENABLED check in app/main.py runs
+  before `from .predictions.runs import ...`.
+  Counterexample: app.predictions.runs forced unimportable
+  still yields 503 PREDICTION_RUNS_DISABLED, infer 0, save 0.
+
+P0-2 (v3 remaining fix)
+  ZIP-only: python3 run_tests.py must re-run 51 tests without an
+  external git clone.
+  It must verify bundled base commit/SHA, extract the tar to a
+  temp directory, overlay files/, execute unittest, and assert
+  EXPECTED_TEST_COUNT=51.
+  INDEPENDENT_TEST_EXECUTION_PASS only on that success.
+  Bundled tests/*.log is not a pass condition.
+  No Production / SSH / POST.
+
+P1 (already PASS in v2; deploy_files.txt unchanged)
+  deploy_files.txt excludes corpus / RAEVAL holdout / archived 019
+  + README. Proof in deploy_file_dependency_proof.txt.
+  Live compare remains a separate Owner read-only procedure.
+  Divergent live main.py: hunk only, no wholesale replace.
+
+Also
+1. files/ vs origin/main 25a3f88 unified diff is complete
+2. 019 persist SQL is only under migrations_not_apply/
+3. Active migrations do not contain 019_prediction_run_idempotency.sql
+4. db.py skips 022 unless EXPECT_AI_ALLOW_MIGRATION_022=1
+5. Already-applied 23-version fixture: migrate() returns []
+6. POST disabled / unset env: 503 PREDICTION_RUNS_DISABLED before
+   importing or calling handle_post_prediction_run()
+7. GET list/detail shape unchanged; predictions row delta 0
+8. Conversation / Challenge / RA INSERTs omit the new 4 columns
+9. v4 connector source has no INSERT INTO predictions
+10. No systemd / env / UI / kaoba / result-automation edits in the diff
+11. Existing review and APPLY ZIPs were not overwritten
+    (v1 474cb805… and v2 38b6ea05… must still match)
+12. Production was not deployed from this bundle
+13. files/ and deploy_files.txt are byte-identical to v2
+
+Known not in this diff:
+  KAOBA_IMAGE_ASSET
+  RESULT_AUTOMATION_STATUS
+  FULL_FIELD_OFFICIAL_MATCH
+  UI_FULL_AUDIT
