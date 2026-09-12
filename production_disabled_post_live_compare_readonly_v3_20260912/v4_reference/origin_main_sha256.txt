@@ -1,0 +1,2 @@
+8a86f514b1b08fde9a90a71acc99eac3f6fc9c2aeae200e8787721093592ef1a  services/win5-ai/app/data/db.py
+a54f1eaa5b8540c2f08d8b0e656a3ccbb78142d4d1cb2c8951e4105f3630184e  services/win5-ai/app/main.py
