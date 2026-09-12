@@ -1,21 +1,25 @@
-Cursor must not execute Production APPLY
-========================================
+Cursor must not execute Production APPLY or re-run
+==================================================
 
 CURSOR_PRODUCTION_SSH_ALLOWED=NO
 CURSOR_APPLY_ALLOWED=NO
-OWNER_LOCAL_EXECUTION_REQUIRED=YES
+REAPPLY_ALLOWED=NO
+OWNER_APPLY_PS1_RERUN_ALLOWED=NO
+ROLLBACK_EXECUTED=NO
 
 This agent:
 - does not open Production SSH
 - does not run OWNER_APPLY.ps1
-- does not set OWNER_PRODUCTION_022_APPLY_APPROVED
+- does not re-apply 022
+- does not rollback, DROP index, or restore backup
 - does not enable PREDICTION_RUNS_ENABLED
-- does not merge PR #23-#43
+- does not merge PR #23-#44
 - does not create a new APPLY pack
 - does not overwrite the reviewed final v2 ZIP
 
-Production reflection is Owner-local only:
-  NEXT_STEP=OWNER_RUNS_FINAL_V2_OWNER_APPLY_PS1_ON_WINDOWS
+Previous instruction to have Owner run OWNER_APPLY.ps1 is retracted.
+022 is already COMMITTED.
 
-APPLY_EXECUTED=NO
-PRODUCTION_022_APPLY_EXECUTION_ALLOWED=NO
+NEXT_STEP=READ_ONLY_PUBLIC_403_DIAGNOSIS_AND_OWNER_BROWSER_SMOKE
+APPLY_EXECUTED=YES
+APPLY_PHASE=COMMITTED
