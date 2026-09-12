@@ -1,0 +1,38 @@
+Owner scope — already executed; no re-run
+=========================================
+
+OWNER_SCOPE_APPROVED=022_SCHEMA_APPLY_ONLY
+OWNER_APPLY_APPROVED=YES
+APPROVED_PACK=production_022_apply_owner_execution_final_v2_20260912
+PREDICTION_RUNS_ENABLED_MUST_STAY=0
+
+Outcome imported from Owner canonical log
+----------------------------------------
+PRODUCTION_022_SCHEMA_APPLIED=YES
+APPLY_EXECUTED=YES
+APPLY_PHASE=COMMITTED
+POST_REMAINS_DISABLED=YES
+POST_APPLY_INTERNAL_REGRESSION=PASS
+POST_APPLY_PUBLIC_SMOKE=FAILED_HTTP_403
+
+Still not approved
+------------------
+- Re-run final v2 OWNER_APPLY.ps1
+- Re-apply 022
+- Automatic rollback
+- DROP index
+- Restore backup
+- Enable or call POST /v1/prediction-runs
+- Switch the site to POST
+- Change systemd, EnvironmentFile, or persistent env
+- Merge PR #23 through #44
+- Create a new APPLY pack
+- Cursor Production SSH
+- Cursor APPLY
+
+CURSOR_PRODUCTION_SSH_ALLOWED=NO
+CURSOR_APPLY_ALLOWED=NO
+REAPPLY_ALLOWED=NO
+OWNER_APPLY_PS1_RERUN_ALLOWED=NO
+ROLLBACK_EXECUTED=NO
+NEXT_STEP=READ_ONLY_PUBLIC_403_DIAGNOSIS_AND_OWNER_BROWSER_SMOKE

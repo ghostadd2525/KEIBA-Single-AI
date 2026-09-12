@@ -1,0 +1,75 @@
+Owner browser visual steps — public 403 isolation
+=================================================
+
+Purpose
+-------
+Separate a Cloudflare/WAF 403 that hit the APPLY pack's Python
+urllib GET from a general-browser outage.
+
+The pack public smoke did not set User-Agent. urllib.request then
+sends a Python-urllib default. That can be 403 while a normal
+browser is 200.
+
+Do not use PowerShell, curl, Python, or "Copy as cURL" for this
+first pass. Use a normal desktop browser only.
+Do not log in. Do not POST. Do not open DevTools replay that
+changes the request into a scripted client.
+Do not re-run OWNER_APPLY.ps1.
+
+SITE_UI_VISUAL_CHECKED starts as NO. Owner records YES only after
+these pages are seen in a normal browser.
+
+Browser
+-------
+Use the Owner everyday browser (Chrome / Edge / Safari / Firefox
+as usually used). Do not use a headless or automation profile.
+
+For each URL below:
+1. Open a new tab.
+2. Paste the URL.
+3. Record HTTP-visible outcome: page shows / 403 / other error.
+4. If the browser network panel is already open, read status only.
+   Do not resend as curl.
+5. Do not capture race_id values, horse names, or bundle_json.
+
+URLs (expect-keiba.com only for this first isolation)
+-----------------------------------------------------
+A. https://expect-keiba.com/
+   Expect if general-public OK: HTML 200, site chrome visible.
+   Record: BROWSER_ROOT=200 or BROWSER_ROOT=403 or other.
+
+B. https://expect-keiba.com/race.html
+   Expect if general-public OK: HTML 200.
+   Record: BROWSER_RACE=200 or BROWSER_RACE=403 or other.
+
+C. https://expect-keiba.com/races.html
+   Expect if general-public OK: HTML 200.
+   Record: BROWSER_RACES=200 or BROWSER_RACES=403 or other.
+
+D. https://expect-keiba.com/api/health
+   Expect if general-public OK: JSON 200, ok=true, service=bff.
+   Record: BROWSER_API_HEALTH=200 or 403 or other.
+
+E. https://expect-keiba.com/api/predictions
+   Research Week known-good: 503 with error.code=OPS_CLOSED.
+   Also acceptable: 200 JSON envelope if the week is open.
+   Record: BROWSER_API_PREDICTIONS=503_OPS_CLOSED or 200 or 403
+   or other. Do not treat a Research Week OPS_CLOSED 503 as a 403.
+
+How to interpret
+----------------
+All A-D are 200 (and E is 200 or 503 OPS_CLOSED):
+  PUBLIC_403_SCOPE=AUDIT_CLIENT_OR_USER_AGENT
+  The pack urllib GET was blocked. General browsers work.
+  Do not rollback. Do not re-apply 022.
+
+Any of A-D is 403 in the normal browser:
+  PUBLIC_403_SCOPE=GENERAL_BROWSER
+  Then a read-only origin/WAF diagnosis is needed.
+  Still do not rollback, re-apply, or change systemd/env.
+
+pages.dev is not required for this first isolation.
+Do not enable POST. Do not switch the site.
+
+SITE_UI_VISUAL_CHECKED=NO until Owner completes A-E.
+NEXT_STEP=READ_ONLY_PUBLIC_403_DIAGNOSIS_AND_OWNER_BROWSER_SMOKE

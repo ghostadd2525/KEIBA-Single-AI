@@ -1,0 +1,16 @@
+Windows PowerShell 5.1 Parser.ParseFile — Owner confirmation imported
+=====================================================================
+
+WINDOWS_PS51_PARSEFILE=PASS
+PS_VERSION=5.1.26100.9444
+PS_EDITION=Desktop
+PARSE_ERROR_COUNT=0
+
+Target:
+  APPROVED_PACK=production_022_apply_owner_execution_final_v2_20260912
+  OWNER_APPLY.ps1 inside the reviewed ZIP
+  FINAL_V2_ZIP_SHA256=bcf3020a4b4e3356f5ff7edb22dc499ded37332451669e58b4ebeca8691005e3
+
+Linux pwsh parse remains unofficial and is not this confirmation.
+This file records the Owner machine result. Cursor did not re-run
+Parser.ParseFile on Windows.
