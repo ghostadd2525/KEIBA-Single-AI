@@ -1,0 +1,22 @@
+APPLY backup canon — fresh 20260912T013332Z only
+===============================================
+
+Pinned APPLY canon (Owner-verified fresh backup):
+  BACKUP_PATH=/home/ubuntu/KEIBA-Single-AI/var/sqlite_backups/20260912T013332Z/expect_ai.db
+  BACKUP_SHA256=32dfe70339a7237442d08a032d019ec03abbb8b85d0c90fa39d385e54da07e6a
+  BACKUP_IDENTITY=66305:287343
+  BACKUP_SIZE=107413504
+  SOURCE_IDENTITY=66305:349935
+  OWNER_LOG_SHA256=f3525b6fea85526083224b38a7d48271ae6a356c3af4bf67908efa07c852495d
+
+Historical backup remains audit evidence. Do not delete or overwrite it.
+Do not reuse it as APPLY canon. Do not restore it over live data.
+
+  HISTORICAL_PATH=/home/ubuntu/KEIBA-Single-AI/var/sqlite_backups/20260911T175303Z/expect_ai.db
+  HISTORICAL_SHA256=f840b475b232fb183a74be5b5159ece7e81b99e514d3b8d71055b9ad1721b60d
+  HISTORICAL_SIZE=105967616
+  HISTORICAL_IDENTITY=66305:287106
+
+HISTORICAL_BACKUP_NOT_APPLY_CANON=YES
+APPLY_BACKUP_CANON=PINNED_FRESH_PRODUCTION_BACKUP
+AUTO_BACKUP_RESTORE=NO

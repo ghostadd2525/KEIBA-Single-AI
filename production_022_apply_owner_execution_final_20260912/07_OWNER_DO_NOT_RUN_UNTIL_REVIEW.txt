@@ -1,0 +1,14 @@
+Do not run OWNER_APPLY.ps1 on Production until this final pack
+passes independent review and Owner explicit approval.
+
+Do not set OWNER_PRODUCTION_022_APPLY_APPROVED in this pack.
+Do not enable PREDICTION_RUNS_ENABLED.
+Do not reuse or restore the 20260911T175303Z historical backup.
+Do not overwrite APPLY v1-v5, measurement v1/v2, or backup Owner ZIPs.
+Do not merge PR #23-#41.
+After unzip, sha256sum -c SHA256SUMS.txt must PASS.
+
+PRODUCTION_022_APPLY_EXECUTION_ALLOWED=NO
+OWNER_APPLY_APPROVED=NO
+APPLY_EXECUTED=NO
+NEXT_STEP=INDEPENDENT_REVIEW_OF_FINAL_022_APPLY_PACK
