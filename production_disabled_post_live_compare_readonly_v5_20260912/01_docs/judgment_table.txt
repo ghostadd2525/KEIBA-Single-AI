@@ -1,0 +1,50 @@
+Output judgment table (v5)
+==========================
+
+Field                              How to read
+---------------------------------  ------------------------------------------
+WIN5_ROOT / REPO_ROOT_GUESS        Actual runtime / repo paths
+GIT_HEAD / GIT_BRANCH /            Current commit, branch, worktree
+GIT_WORKTREE / GIT_STATUS_SB
+GIT_HAS_BASE_COMMIT_25a3f88        YES => live git can diff vs origin/main
+LIVE <rel> <sha> <class>           deploy_files.txt target from review v6
+                                   MATCH_CANDIDATE = already v6 file
+                                   MATCH_BASE / MATCH_ORIGIN_MAIN = origin/main
+                                   DIFFER / DIVERGENT = neither
+                                   ABSENT = not on disk
+LIVE <excluded> ABSENT/PRESENT     corpus / RAEVAL / archived 019 / active 019
+                                   PRESENT => STOP_REASON=must_absent_present:<rel>
+MAIN_PY_CLASS                      MATCH_BASE | MATCH_CANDIDATE |
+                                   DIVERGENT | ABSENT
+MAIN_PY_HUNK_DIFF                  LATER_APPLY_FULL_POST_HUNK |
+                                   NONE_ALREADY_CANDIDATE |
+                                   REQUIRED_DO_NOT_REPLACE_WHOLESALE
+LIVE_GATE_BEFORE_RUNS_IMPORT       YES required if POST code exists
+SYSTEMD_LOADSTATE                  only `loaded` is valid; anything else => STOP
+SYSTEMD_ACTIVE                     only `active` is valid; anything else => STOP
+SYSTEMD_EXECSTART_PATH             Executable path only (allowlist)
+SYSTEMD_EXECSTART_ARGV_SAFE        executable, -m, module, safe boolean flags
+                                   All other argv tokens are [REDACTED]
+                                   Raw ExecStart / Environment are never printed
+PREDICTION_RUNS_ENABLED            UNSET | ZERO | ONE | OTHER
+EXPECT_AI_ALLOW_MIGRATION_022      UNSET | ZERO | ONE | OTHER
+EXPECT_AI_ALLOW_MIGRATION_019      UNSET | ZERO | ONE | OTHER
+  (values never printed)
+EFFECTIVE_ENV_UNVERIFIED           YES if active and /proc environ unread
+SCHEMA_MIGRATIONS_COUNT            23 expected
+PREDICTIONS_COLUMN_COUNT           12 expected
+SCHEMA_HAS_022                     YES expected (already COMMITTED)
+SCHEMA_HAS_019_PERSIST             NO expected (active persist 019 ABSENT)
+PRED_COL_*                         YES expected for 4 new columns
+INDEX_TBL_NAME_OK                  YES = sqlite_master.tbl_name is predictions
+INDEX_LIST_UNIQUE_OK               YES = PRAGMA index_list unique=1
+INDEX_INFO_COLS_OK                 YES = ["idempotency_key"]
+INDEX_SQL_TARGET_OK                YES = predictions(idempotency_key)
+INDEX_SQL_PREDICATE_OK             YES = WHERE idempotency_key IS NOT NULL
+INDEX_CONTRACT                     OK only if all five checks pass
+COMPARE_RESULT                     GO = evidence complete, schema canon holds,
+                                   flags not ONE, no MUST_ABSENT
+                                   STOP = evidence incomplete, mismatch, or
+                                   MUST_ABSENT present
+HARD_STOP_BEFORE_ANY_LATER_DEPLOY  YES = do not plan a deploy pack yet
+LATER_CODE_DEPLOY_ALLOWED          always NO from this pack

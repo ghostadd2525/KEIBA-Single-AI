@@ -1,0 +1,37 @@
+Changes from live-compare v4 (not an overwrite)
+==============================================
+
+v4 ZIP SHA256 (immutable):
+  51335931464f1628b5ac007067b1a27d78d7cd16fc9c5f0ae0c6683bbf41c5e5
+v3 ZIP SHA256 (immutable):
+  8c07a72ff08601df2920d7efddb00f92cb14db2a3232332e0aa8e400f4d7a0a5
+v2 ZIP SHA256 (immutable):
+  87c14446b79709ac9bc62553bc365253c0933232315a11a28783e13366cc0795
+v1 ZIP SHA256 (immutable):
+  037b3ff9996c328ea87bf9fe9da659600f71191766bdf4024e59b8abf12ca927
+v6 review ZIP SHA256 (immutable):
+  548b274facc2b4f8ffba8b854a6e009d8b7455fb816dcde9550eb9b364329373
+
+Do not run live-compare v4. It still expects stale candidate SHAs:
+  db.py        caa14ebd448a40164dab427d21b847bc85749087a103cbb2a9f49a008e126722
+  repository   70fab66425a142307eab738783e32fbb93ec8fb6859c438007c7c6cd94165f77
+
+v5 canon (code-deploy review v6):
+  db.py        81fc91adbe53aa091841fd9ea097b7cbd63cf4ede4a3699bf66e1c7a2343136f
+  repository   9624699ec48d2af8b1fdc24ac81b8ae436c77ffa92a7f0b1378ecd17248b4c08
+  main.py      7577973c16eb7aad395cd11acae3c8ef987a3c0533924c1994ae32afeaf818e5
+               (unchanged from v4/v5 review; still != origin/main a54f1eaa…)
+
+Also now STOP when:
+  SCHEMA_MIGRATIONS_COUNT != 23
+  PREDICTIONS_COLUMN_COUNT != 12
+  schema has 019_prediction_run_idempotency
+  ActiveState is not active
+  PREDICTION_RUNS_ENABLED / EXPECT_AI_ALLOW_MIGRATION_022 /
+  EXPECT_AI_ALLOW_MIGRATION_019 classifies as ONE
+
+v4 read-only contracts are unchanged:
+  git --no-optional-locks
+  LoadState=loaded only
+  ExecStart allowlist
+  MUST_ABSENT PRESENT => STOP

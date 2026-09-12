@@ -1,0 +1,73 @@
+GO / STOP for this v5 compare pack only
+=======================================
+
+This step is evidence collection. It never approves a deploy.
+Owner must not run it until independent review of this v5 pack PASSes.
+Do not run live-compare v4.
+
+GO  (COMPARE_RESULT=GO)
+-----------------------
+All of the following are true:
+  - WIN5_ROOT found (app/main.py exists)
+  - deploy_files hashes recorded (ABSENT is a valid record)
+  - none of the 6 MUST_ABSENT files are PRESENT
+  - main.py class recorded
+  - systemd show succeeded
+  - LoadState is loaded
+  - ActiveState is active
+  - ExecStart and WorkingDirectory are present
+  - if ActiveState=active, process environ was read
+  - PREDICTION_RUNS_ENABLED, EXPECT_AI_ALLOW_MIGRATION_022,
+    EXPECT_AI_ALLOW_MIGRATION_019 classified UNSET/ZERO (not ONE)
+  - sqlite opened read-only
+  - SCHEMA_MIGRATIONS_COUNT=23
+  - PREDICTIONS_COLUMN_COUNT=12
+  - SCHEMA_HAS_019_PERSIST=NO
+  - INDEX_CONTRACT=OK
+
+Owner action on GO (after review + later Owner execution):
+  Return the full stdout transcript.
+  Do not deploy. Do not create an APPLY pack.
+  PRODUCTION_CODE_DEPLOY_ALLOWED stays NO
+  OWNER_DEPLOY_APPROVED stays NO
+
+STOP  (COMPARE_RESULT=STOP)
+---------------------------
+Any of:
+  - win5_root_not_found
+  - db_file_absent
+  - db_readonly_open_failed
+  - db_readonly_query_failed
+  - systemd_show_failed
+  - systemd_unit_not_loaded
+  - systemd_unit_not_active
+  - systemd_execstart_absent
+  - systemd_working_directory_absent
+  - effective_env_unverified
+  - schema_migrations_count_not_23
+  - predictions_column_count_not_12
+  - schema_019_persist_present
+  - PREDICTION_RUNS_ENABLED_is_ONE
+  - EXPECT_AI_ALLOW_MIGRATION_022_is_ONE
+  - EXPECT_AI_ALLOW_MIGRATION_019_is_ONE
+  - must_absent_present:<rel> for any of:
+      app/predictions/corpus.py
+      app/predictions/raeval84_holdout.py
+      app/predictions/data/raeval84_v1_holdout_race_ids.txt
+      app/data/migrations_not_apply/019_prediction_run_idempotency.sql
+      app/data/migrations_not_apply/README.txt
+      app/data/migrations/019_prediction_run_idempotency.sql
+
+Owner action on STOP:
+  Do not guess paths. Do not write files to "fix" the probe.
+  Return the transcript. Still no deploy.
+
+Later main.py rule (not a compare STOP by itself)
+------------------------------------------------
+  MATCH_BASE      -> later deploy may use the v6 unified main.py
+                    hunk-or-file against origin/main
+  MATCH_CANDIDATE -> POST hunk already present; do not overwrite
+                    main.py unless a new review says so
+  DIVERGENT       -> hunk only; never replace live main.py wholesale
+
+This pack does not authorize that later deploy.

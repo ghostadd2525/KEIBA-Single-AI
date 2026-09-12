@@ -1,0 +1,84 @@
+Production live code compare v5 — Owner read-only step
+=====================================================
+
+Canon: code-deploy review v6 deploy_files + file SHA.
+This pack automates collection via OWNER_LIVE_COMPARE.sh.
+Still NOT process 1 (deploy_files). Cursor must not SSH.
+Owner must not run until independent review of this v5 pack PASSes.
+Do not run live-compare v4. Its candidate SHAs are stale vs v6.
+Owner runs on the Production host without writing files,
+restarting, setting env, or applying 022.
+
+Live root (last known):
+  /home/ubuntu/KEIBA-Single-AI/services/win5-ai
+
+For each Production deploy candidate, record SHA256 or ABSENT.
+Expected SHA256s are generated from v5_reference/file_sha256.txt
+plus the actual v5_reference/files — never hand-typed:
+
+  app/main.py
+  app/data/db.py
+  app/data/repository/__init__.py
+  app/core/feature_loader_bridge.py
+  app/data/migrations/022_prediction_run_idempotency.sql
+  app/predictions/__init__.py
+  app/predictions/guards.py
+  app/predictions/runs.py
+  app/predictions/feature_pin.py
+  app/predictions/provenance.py
+  app/predictions/snapshot.py
+
+Also confirm ABSENT (not in deploy_files.txt). PRESENT is STOP
+with STOP_REASON=must_absent_present:<rel> for each of:
+
+  app/predictions/corpus.py
+  app/predictions/raeval84_holdout.py
+  app/predictions/data/raeval84_v1_holdout_race_ids.txt
+  app/data/migrations_not_apply/019_prediction_run_idempotency.sql
+  app/data/migrations_not_apply/README.txt
+  app/data/migrations/019_prediction_run_idempotency.sql
+
+main.py contract:
+  origin/main SHA256 from v5_reference/origin_main_sha256.txt
+  If live SHA equals that, the v6 unified diff is the main.py
+  deploy diff (later; not this step).
+  If live SHA differs, do not replace main.py wholesale.
+  Later apply only the POST-route hunk + new files.
+
+Also record:
+  prediction-runs / PREDICTION_RUNS_ENABLED lines in main.py
+  migrations list
+  systemd unit / LoadState=loaded / ActiveState=active /
+  allowlisted ExecStart / watched env class
+  sqlite 23 migrations / 12 columns / 022 / persist 019 ABSENT /
+  strict partial UNIQUE index
+
+systemd EVIDENCE_GAPS (COMPARE_RESULT=STOP):
+  systemd_show_failed
+  systemd_unit_not_loaded   (LoadState is not loaded)
+  systemd_unit_not_active   (ActiveState is not active)
+  systemd_execstart_absent
+  systemd_working_directory_absent
+  effective_env_unverified  (active + MainPID/environ unread)
+
+Git reads use: git --no-optional-locks -C <repo> ...
+Do not export GIT_OPTIONAL_LOCKS. Do not run git config.
+
+ExecStart stdout is allowlist-only:
+  path = executable only
+  argv = executable, -m/--module, safe module name, safe boolean flags
+  flag values / positionals / KEY=VALUE / URL / DSN / Bearer = hidden
+
+Index contract (all required for INDEX_CONTRACT=OK):
+  sqlite_master.tbl_name = predictions
+  PRAGMA index_list(predictions) unique=1
+  PRAGMA index_info columns = ["idempotency_key"]
+  SQL target = predictions(idempotency_key)
+  predicate = WHERE idempotency_key IS NOT NULL
+
+Do not print raw ExecStart or Environment values.
+Do not change systemd. Do not set EXPECT_AI_ALLOW_MIGRATION_022.
+Do not set EXPECT_AI_ALLOW_MIGRATION_019.
+Do not set PREDICTION_RUNS_ENABLED=1.
+Do not POST /v1/prediction-runs.
+Do not switch the site.
