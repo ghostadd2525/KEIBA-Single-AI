@@ -1,0 +1,33 @@
+Production deploy candidates (runtime for disabled POST code)
+============================================================
+
+services/win5-ai/app/main.py
+  If live SHA == origin/main a54f1eaa…, this file (or the unified
+  diff) may be used. If live SHA differs, do not replace main.py
+  wholesale. Apply only 01_docs/main_py_post_route_hunk.txt plus
+  the new files below.
+
+services/win5-ai/app/data/db.py
+services/win5-ai/app/data/repository/__init__.py
+services/win5-ai/app/core/feature_loader_bridge.py
+services/win5-ai/app/data/migrations/022_prediction_run_idempotency.sql
+services/win5-ai/app/predictions/__init__.py
+services/win5-ai/app/predictions/guards.py
+services/win5-ai/app/predictions/runs.py
+services/win5-ai/app/predictions/feature_pin.py
+services/win5-ai/app/predictions/provenance.py
+services/win5-ai/app/predictions/snapshot.py
+
+Excluded from Production deploy (kept in files/ for review/tests only)
+---------------------------------------------------------------------
+services/win5-ai/app/predictions/corpus.py
+services/win5-ai/app/predictions/raeval84_holdout.py
+services/win5-ai/app/predictions/data/raeval84_v1_holdout_race_ids.txt
+services/win5-ai/app/data/migrations_not_apply/019_prediction_run_idempotency.sql
+services/win5-ai/app/data/migrations_not_apply/README.txt
+
+Proof: 01_docs/deploy_file_dependency_proof.txt
+
+Do not deploy:
+  services/win5-ai/tests/**
+  fake_ai_platform
