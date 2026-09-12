@@ -1,0 +1,39 @@
+Independent review targets (v4)
+===============================
+
+P0-1 (PASS in v2/v3; files/ unchanged)
+  Disabled PREDICTION_RUNS_ENABLED check in app/main.py runs
+  before `from .predictions.runs import ...`.
+  Counterexample: app.predictions.runs forced unimportable
+  still yields 503 PREDICTION_RUNS_DISABLED, infer 0, save 0.
+
+P0-2 (PASS in v3; harness logic unchanged except pack name)
+  ZIP-only: python3 run_tests.py re-runs 51 tests without an
+  external git clone. Bundled tests/*.log is not a pass condition.
+
+P0-3 (v4 remaining fix)
+  After independent extract and BEFORE run_tests.py:
+    sha256sum -c SHA256SUMS.txt
+  must PASS for every listed file, including FLAGS.txt.
+  SHA256SUMS.txt is generated last, after all other files are
+  finalized. Do not edit FLAGS or any other file after that.
+
+P1 (PASS in v2/v3; deploy_files.txt unchanged)
+  deploy_files.txt excludes corpus / RAEVAL holdout / archived 019
+  + README. Live compare remains a separate Owner read-only step.
+  Divergent live main.py: hunk only, no wholesale replace.
+
+Also
+1. files/ vs origin/main 25a3f88 unified diff is complete
+2. 019 persist SQL is only under migrations_not_apply/
+3. db.py skips 022 unless EXPECT_AI_ALLOW_MIGRATION_022=1
+4. Existing review and APPLY ZIPs were not overwritten
+   (v1 474cb805… v2 38b6ea05… v3 b324b9d9… must still match)
+5. Production was not deployed from this bundle
+6. files/, deploy_files.txt, and bundled base are unchanged from v3
+
+Known not in this diff:
+  KAOBA_IMAGE_ASSET
+  RESULT_AUTOMATION_STATUS
+  FULL_FIELD_OFFICIAL_MATCH
+  UI_FULL_AUDIT

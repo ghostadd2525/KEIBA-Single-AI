@@ -1,0 +1,30 @@
+Deployment / rollback plan — not approved to run
+===============================================
+
+PRODUCTION_CODE_DEPLOY_ALLOWED=NO
+OWNER_DEPLOY_APPROVED=NO
+
+When later approved (not this step):
+1. Keep PREDICTION_RUNS_ENABLED unset or 0. Do not edit systemd.
+2. Do not set EXPECT_AI_ALLOW_MIGRATION_022.
+3. Deploy only the files listed in 01_docs/deploy_files.txt
+   If live main.py SHA != origin/main, apply only
+   01_docs/main_py_post_route_hunk.txt plus new files.
+4. Do not copy tests/, corpus.py, raeval84_holdout.py,
+   holdout txt, migrations_not_apply/019, or README to Production.
+5. Restart is Owner-only after review. This bundle does not restart.
+6. After start, migrate() must apply nothing. 022 already in
+   schema_migrations. Allow flag off => 022 block skipped.
+7. Confirm GET /v1/predictions and detail unchanged.
+8. Confirm POST /v1/prediction-runs returns 503 PREDICTION_RUNS_DISABLED
+   from a local/internal client only if Owner chooses. Site stays GET.
+9. Confirm Conversation / Challenge / RA still insert with new cols NULL.
+
+Rollback (code only, no schema rollback):
+1. Restore previous live files from the pre-deploy copy Owner makes.
+2. Restart. Schema 022 stays. Do not DROP INDEX. Do not restore backup.
+3. PREDICTION_RUNS_ENABLED stays 0.
+
+Do not re-run OWNER_APPLY.ps1.
+Do not re-apply 022.
+Do not automatic restore.
