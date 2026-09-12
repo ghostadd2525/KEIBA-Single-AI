@@ -1,0 +1,44 @@
+Independent review targets (v2)
+===============================
+
+P0-1
+  Disabled PREDICTION_RUNS_ENABLED check in app/main.py runs
+  before `from .predictions.runs import ...`.
+  Counterexample: app.predictions.runs forced unimportable
+  still yields 503 PREDICTION_RUNS_DISABLED, infer 0, save 0.
+
+P0-2
+  python3 run_tests.py actually materializes origin/main 25a3f88,
+  overlays files/, and executes unittest.
+  Bundled tests/*.log is not a pass condition.
+  If base commit cannot be materialized:
+    RECORDED_LOCAL_TESTS_ONLY
+    INDEPENDENT_TEST_EXECUTION_PASS must not appear.
+
+P1
+  deploy_files.txt excludes corpus / RAEVAL holdout / archived 019
+  + README. Proof in deploy_file_dependency_proof.txt.
+  Live compare remains a separate Owner read-only procedure.
+  Divergent live main.py: hunk only, no wholesale replace.
+
+Also
+1. files/ vs origin/main 25a3f88 unified diff is complete
+2. 019 persist SQL is only under migrations_not_apply/
+3. Active migrations do not contain 019_prediction_run_idempotency.sql
+4. db.py skips 022 unless EXPECT_AI_ALLOW_MIGRATION_022=1
+5. Already-applied 23-version fixture: migrate() returns []
+6. POST disabled / unset env: 503 PREDICTION_RUNS_DISABLED before
+   importing or calling handle_post_prediction_run()
+7. GET list/detail shape unchanged; predictions row delta 0
+8. Conversation / Challenge / RA INSERTs omit the new 4 columns
+9. v4 connector source has no INSERT INTO predictions
+10. No systemd / env / UI / kaoba / result-automation edits in the diff
+11. Existing review and APPLY ZIPs were not overwritten
+    (v1 ZIP 474cb805… must still match)
+12. Production was not deployed from this bundle
+
+Known not in this diff:
+  KAOBA_IMAGE_ASSET
+  RESULT_AUTOMATION_STATUS
+  FULL_FIELD_OFFICIAL_MATCH
+  UI_FULL_AUDIT

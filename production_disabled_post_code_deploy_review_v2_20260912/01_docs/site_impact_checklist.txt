@@ -1,0 +1,41 @@
+Production site / API impact checklist
+=====================================
+
+Before / after a later code deploy (not this review):
+
+GET
+  GET /v1/predictions envelope ok + data
+  GET /v1/predictions/{race_id} PredictionBundle
+    win_prob / model_rank / mark / fallback unchanged
+  GET write count on predictions = 0
+
+Public site (Owner browser, already a separate 403 track)
+  https://expect-keiba.com/
+  /race.html /races.html /api/health
+  /api/predictions Research Week OPS_CLOSED or 200
+  Do not treat urllib 403 as schema failure.
+
+Writes
+  ConversationService.chat still stores
+  Challenge INSERT still succeeds; new 4 cols NULL
+  RA cache INSERT still succeeds; new 4 cols NULL
+  v4 connector remains read-only (no predictions INSERT)
+
+POST
+  Route present but disabled
+  Disabled check is in main.py before importing predictions.runs
+  503 PREDICTION_RUNS_DISABLED even if runs import would raise
+  infer 0 / FeatureLoader 0 / INSERT 0
+  Site must not switch to POST
+  SITE_CORPUS_ACCUMULATION_ACTIVE=NO
+
+systemd
+  No EnvironmentFile edit
+  PREDICTION_RUNS_ENABLED must stay unset or 0
+  EXPECT_AI_ALLOW_MIGRATION_022 must stay unset
+
+Out of scope for this bundle (steps 4-8):
+  KAOBA_IMAGE_ASSET
+  RESULT_AUTOMATION_STATUS=DEGRADED
+  FULL_FIELD_OFFICIAL_MATCH
+  UI_FULL_AUDIT

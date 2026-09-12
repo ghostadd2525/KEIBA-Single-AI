@@ -1,0 +1,59 @@
+Production deploy_files dependency proof
+=======================================
+
+Question: are these runtime-required for disabled POST code on Production?
+
+  corpus.py
+  raeval84_holdout.py
+  raeval84_v1_holdout_race_ids.txt
+  migrations_not_apply/019_prediction_run_idempotency.sql
+  migrations_not_apply/README.txt
+
+Method
+------
+1. AST-walk runtime modules used by the disabled POST route and by
+   later enable (without calling POST):
+     main.py
+     data/db.py
+     data/repository/__init__.py
+     core/feature_loader_bridge.py
+     predictions/__init__.py
+     predictions/guards.py
+     predictions/runs.py
+     predictions/feature_pin.py
+     predictions/provenance.py
+     predictions/snapshot.py
+   Forbidden import module parts: corpus, raeval84_holdout
+   Test: RuntimeDependencyProofTests.test_runtime_modules_do_not_import_corpus_or_holdout
+
+2. migrate() reads only Path(__file__).parent / "migrations" (*.sql).
+   db.py source does not contain "migrations_not_apply".
+   SUPERSEDED_019 is skipped even if someone later puts that stem
+   into migrations/. Archived 019 + README are never opened at runtime.
+   Test: test_migrate_does_not_read_migrations_not_apply
+
+3. Who does import the excluded files?
+   corpus.py          -> tests/predictions/test_local_implementation.py
+                         and corpus.py itself
+   raeval84_holdout.py -> corpus.py only
+   holdout txt         -> raeval84_holdout.DEFAULT_HOLDOUT_PATH only
+   019 SQL + README    -> review archive only
+
+Conclusion
+----------
+Not runtime-required for:
+  - disabled POST (503 path inlines PREDICTION_RUNS_ENABLED in main.py
+    and returns before importing runs)
+  - enabled POST implementation (runs.py import graph)
+
+Therefore they are excluded from 01_docs/deploy_files.txt.
+They remain under files/ so local/review tests can still import them.
+
+022 SQL stays in deploy_files because db.py names
+PERSIST_MIGRATION=022_prediction_run_idempotency and migrate()
+scans migrations/*.sql. With EXPECT_AI_ALLOW_MIGRATION_022 unset,
+the 022 block is skipped. Production already has 022 COMMITTED.
+022 is not re-applied.
+
+Live Production compare is NOT part of this deploy file list.
+See 01_docs/production_live_compare_procedure.txt (Owner read-only).
