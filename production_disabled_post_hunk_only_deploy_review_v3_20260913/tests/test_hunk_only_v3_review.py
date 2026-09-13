@@ -417,8 +417,12 @@ class HunkOnlyReviewTests(unittest.TestCase):
         self.assertEqual(flags["OWNER_RETURN_ZIPS_ATTACHED_TO_THIS_WORKSPACE"], "YES")
         self.assertEqual(flags["WINDOWS_ZIP_BACKSLASH_MEMBERS"], "YES")
         self.assertEqual(flags["STUB_OR_MOCK_SUCCESS"], "NO")
-        self.assertIn(flags["OVERLAY_SUITE"], ("NOT_RUN", "PASS"))
-        self.assertIn(flags["PACK_AUTHOR_INDEPENDENT_TEST_EXECUTION_PASS"], ("NO", "YES"))
+        self.assertEqual(flags["OVERLAY_SUITE"], "PASS")
+        self.assertEqual(flags["PACK_AUTHOR_INDEPENDENT_TEST_EXECUTION_PASS"], "YES")
+        self.assertEqual(flags["FULL_SUITE_1_PASS"], "YES")
+        self.assertEqual(flags["FULL_SUITE_2_PASS"], "YES")
+        self.assertEqual(flags["DELETE_JOURNAL_CONCURRENCY_REPEAT_1_TO_20"], "PASS")
+        self.assertEqual(flags["EXTRA_LIVE_REGRESSION_PASS"], "YES")
 
     def test_readme_and_donot_forbid_execution(self) -> None:
         readme = (PACK / "00_README.txt").read_text(encoding="utf-8")

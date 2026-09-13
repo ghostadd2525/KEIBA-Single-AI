@@ -73,6 +73,20 @@ Owner return ZIPs were attached and ingested via zipfile (Windows
 backslash members accepted). Capture-tool fixtures are rejected.
 Do not invent those files.
 
+Pack-author overlay (local, not Production)
+------------------------------------------
+STRUCT_SELF_TEST=PASS RAN=39
+FULL_SUITE_1_PASS Ran 52 tests
+DELETE_JOURNAL_CONCURRENCY_REPEAT_1_TO_20=PASS
+FULL_SUITE_2_PASS Ran 52 tests
+EXTRA_LIVE_REGRESSION_PASS
+INDEPENDENT_TEST_EXECUTION_PASS
+STUB_OR_MOCK_SUCCESS=NO
+
+Overlay runtime deps (local reviewer machine only):
+  python3 -m pip install 'pandas>=2.0' 'numpy>=1.24'
+Do not install anything on Production from this pack.
+
 Do not create a Production deploy/execution pack from this run.
 
 NEXT_STEP=INDEPENDENT_REVIEW_OF_HUNK_ONLY_V3_BUNDLE
