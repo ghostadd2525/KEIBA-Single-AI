@@ -1,0 +1,31 @@
+Independent review targets (hunk-only bundle)
+=============================================
+
+P0-H1  live_canon three files match Owner capture SHA/SIZE
+P0-H2  candidate main.py == apply_live_post_hunk(live_canon main.py)
+       SHA256 a4970e70778da58f987df4a7316c9dfbd0a660c7a3bc31088d731869a4983a9c
+P0-H3  unified diff live -> candidate has exactly the two POST insertions
+       and no other edits
+P0-H4  candidate main.py != review-v6 main.py != origin/main main.py
+P0-H5  Production-only markers remain
+         "WIN5 AI — PredictionBundle"
+         "Optional integration facades"
+P0-H6  AST: PREDICTION_RUNS_ENABLED gate is before
+       `from .predictions.runs import`
+P0-H7  AST: do_POST prediction-runs branch is before _check_key()
+P0-H8  AST: do_PATCH is unchanged (no prediction-runs branch)
+P0-H9  compile(candidate main.py) succeeds
+P0-H10 every deploy target has LIVE_SHA or ABSENT precondition
+P0-H11 non-main deploy candidates match review-v6 file_sha256.txt
+P0-H12 FLAGS keep PRODUCTION_CODE_DEPLOY_ALLOWED=NO and
+       PREDICTION_RUNS_ENABLED=0 and EXPECT_AI_ALLOW_MIGRATION_022 unset
+P0-H13 SHA256SUMS.txt generated last; sha256sum -c PASSes
+P0-H14 no execution/apply/SSH/migrate/POST/restart scripts
+P0-H15 rollback doc is per-file restore, not schema rollback
+P0-H16 disabled env still returns 503 PREDICTION_RUNS_DISABLED
+       without importing app.predictions.runs
+
+Also
+  existing review / compare / capture / APPLY ZIPs were not overwritten
+  022_REAPPLY=NO
+  this pack does not deploy
