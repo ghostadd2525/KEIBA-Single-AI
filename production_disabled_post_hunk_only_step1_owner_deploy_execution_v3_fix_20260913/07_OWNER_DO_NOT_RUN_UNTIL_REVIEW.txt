@@ -1,0 +1,17 @@
+Do not run OWNER_DEPLOY_V3.ps1 on Production.
+Do not run v1 OWNER_DEPLOY.ps1.
+Do not run v2 OWNER_DEPLOY_V2.ps1.
+This pack is waiting for independent review.
+Do not set OWNER_PRODUCTION_STEP1_V3_DEPLOY_APPROVED.
+Do not set OWNER_PRODUCTION_STEP1_V2_DEPLOY_APPROVED.
+Do not set OWNER_PRODUCTION_STEP1_DEPLOY_APPROVED.
+Do not enable PREDICTION_RUNS_ENABLED.
+Do not set EXPECT_AI_ALLOW_MIGRATION_022 or 019.
+Do not migrate. Do not reapply 022. Do not POST write runs.
+Do not change env or systemd unit files.
+Do not restart expect-ai.service from this review step.
+After unzip, sha256sum -c SHA256SUMS.txt must PASS.
+Cursor does not SSH.
+PR merge is forbidden from this pack.
+OLD_EXECUTION_PACK_RERUN_ALLOWED=NO
+V2_RERUN_ALLOWED=NO
