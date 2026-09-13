@@ -1,0 +1,42 @@
+Why v3 (independent review CHANGES_REQUIRED)
+============================================
+
+v1 ZIP remains immutable:
+  production_disabled_post_live_source_capture_readonly_20260912.zip
+  SHA256=c38c58ac567d9a3b99987e5c1c75b9ece84c509b5d7740849126f46fc47aae24
+v2 ZIP remains immutable:
+  production_disabled_post_live_source_capture_readonly_v2_20260912.zip
+  SHA256=a1697ba3d020c85dbcc7dba9e40d5c3608623f1181a2722c77419486805a9ea1
+
+v2 PASS (unchanged here):
+  extract fail-closed, transcript/tar/hash/size match
+  PowerShell 5.1 raw-byte SSH stdin
+  SSH start/timeout/nonzero skips extract
+  3 capture targets, stdout, memory-only tar
+
+P0 live_source_capture.py
+-------------------------
+v2 read_readonly() used os.open(path, os.O_RDONLY) only and
+followed filesystem symlinks. A main.py symlink to a file
+outside win5 still passed path.is_file() and leaked the target.
+
+v3:
+  - lstat: only regular files; symlink is explicit STOP
+  - Linux open uses O_RDONLY|O_NOFOLLOW
+  - fstat after open must still be a regular file
+  - /proc/self/fd path must be under resolved WIN5_ROOT
+  - that path's relative form must equal the expected rel
+  - resolve/fd path outside WIN5_ROOT => STOP before payload
+  - unlinked fd (" (deleted)") or post-open lstat/inode mismatch => STOP
+  - any one of the three files failing omits tar/base64 entirely
+
+P1 OWNER_WINDOWS_SAVE.ps1
+-------------------------
+If OutDir already exists, STOP before SSH. Do not New-Item -Force.
+Do not reuse or overwrite an old transcript directory.
+
+Unchanged
+---------
+  three files, stdout only, memory-only tar
+  extract fail-closed contract
+  no Production writes
