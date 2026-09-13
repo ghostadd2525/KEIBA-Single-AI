@@ -1,0 +1,18 @@
+Owner Windows PowerShell 5.1 only. Cursor does not SSH.
+
+1. Unzip this pack. Do not overwrite existing ZIPs.
+2. sha256sum -c SHA256SUMS.txt  (review machine) — Owner wrapper also
+   re-checks SHA256SUMS + payload SHA before SSH.
+3. Independent review PASS is required before any approval env is set.
+4. Do not set OWNER_READONLY_STEP1_PROBE_APPROVED in this review step.
+5. Do not set OWNER_PRODUCTION_STEP1_DEPLOY_APPROVED.
+6. Do not re-run OWNER_DEPLOY.ps1.
+7. Later approved read-only run only:
+   $env:OWNER_READONLY_STEP1_PROBE_APPROVED = '1'
+   .\02_powershell\OWNER_PROBE.ps1
+   Wrapper never assigns that env itself.
+8. Remote command is python3 - with pregenerated owner_probe_stdin.py
+   bytes on SSH stdin. No SCP. No remote mkdir from wrapper.
+9. Production side writes nothing. Restart/reload are refused.
+   sudo is list-only: sudo -n -l / sudo -n -l -U ubuntu.
+10. Return the Downloads output transcript. Do not merge the PR.

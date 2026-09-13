@@ -1,0 +1,14 @@
+Do not run OWNER_PROBE.ps1 on Production.
+This pack is waiting for independent review.
+Do not set OWNER_READONLY_STEP1_PROBE_APPROVED yet.
+Do not set OWNER_PRODUCTION_STEP1_DEPLOY_APPROVED.
+Do not re-run OWNER_DEPLOY.ps1.
+Do not restart or reload expect-ai.service.
+Do not enable PREDICTION_RUNS_ENABLED.
+Do not set EXPECT_AI_ALLOW_MIGRATION_022 or 019.
+Do not migrate. Do not reapply 022. Do not POST.
+Do not change env or systemd unit files.
+Do not create, replace, or delete Production files.
+After unzip, sha256sum -c SHA256SUMS.txt must PASS.
+Cursor does not SSH.
+PR merge is forbidden from this pack.

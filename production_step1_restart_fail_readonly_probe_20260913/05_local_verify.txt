@@ -1,0 +1,17 @@
+Pack-author local verify (not Production)
+=========================================
+
+python3 run_tests.py => ALL_PASS
+sha256sum -c SHA256SUMS.txt => ALL OK after run_tests
+PARSER_ENGINE=pwsh (Linux). WINDOWS_PS51_PARSEFILE=OWNER_CONFIRM_AFTER_INDEPENDENT_REVIEW
+Unapproved wrapper: SSH_STARTED=NO, PACK_SHA_GATE=PASS,
+HALT_REASON=OWNER_READONLY_STEP1_PROBE_APPROVED_UNSET
+Local fake-tree: restore SHA/ABSENT, ops SHA, schema 23/12/partial UNIQUE,
+flags unset/0, GET /health, row delta=0, sudo -n -l only, no restart/reload,
+no Production writes.
+Cursor did not SSH. Pack was not executed on Production.
+
+PRODUCTION_CODE_DEPLOY_ALLOWED=NO
+OWNER_DEPLOY_PS1_RERUN_ALLOWED=NO
+REAPPLY_ALLOWED=NO
+POST_CODE_PRODUCTION_DEPLOYED=NO

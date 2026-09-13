@@ -1,0 +1,46 @@
+Forbidden during this diagnosis
+===============================
+
+NEVER
+-----
+systemctl restart
+systemctl reload
+systemctl daemon-reload
+systemctl try-restart
+systemctl kill
+systemctl stop
+systemctl start
+systemctl enable
+systemctl disable
+systemctl edit
+systemctl set-environment
+systemctl unset-environment
+sudo systemctl restart ...
+sudo -n systemctl restart ...
+OWNER_DEPLOY.ps1
+python3 - with the reviewed owner_deploy_stdin.py
+file write / replace / restore / chmod of deploy targets
+POST /v1/prediction-runs except that this diagnosis does not POST at all
+migrate()
+sqlite BEGIN IMMEDIATE / ALTER / CREATE / DROP / INSERT / UPDATE / DELETE
+PREDICTION_RUNS_ENABLED=1
+EXPECT_AI_ALLOW_MIGRATION_022=1
+EXPECT_AI_ALLOW_MIGRATION_019=1
+env file edits
+systemd unit file edits
+PR merge
+UI changes
+new deploy pack
+new capture pack
+re-apply of the 11 files
+
+SUDO
+----
+Allowed only:
+  sudo -n -l
+  sudo -n -l -U ubuntu
+Optional listing of matching command specs, for example:
+  sudo -n -l | grep -F systemctl
+Do not pass restart/reload/start/stop as a sudo command.
+If sudo -n -l fails (needs password): record SUDO_N_L_STATUS=FAIL and stop
+using sudo. Do not fall back to interactive sudo.
