@@ -1,0 +1,24 @@
+GO / STOP
+========
+
+GO only if independent review of THIS pack PASSes, then Owner later
+returns a capture with:
+
+  CAPTURE_RESULT=GO (exactly one)
+  exactly one REL=app/ops/prediction_capacity.py
+  SIZE + SHA256 hex64
+  TAR member matches SIZE/SHA
+  EXTRACT_RESULT=GO
+  file is regular, not a stub from this pack's fixtures/
+
+STOP now (this run):
+  SEARCH_RESULT=NOT_FOUND
+  IDENTITY_PROVEN=NO
+  OWNER_EXECUTE_NOW=NO
+
+STOP later (Owner capture):
+  file ABSENT
+  symlink / not regular / outside WIN5_ROOT
+  OutDir already exists
+  mixed GO/STOP
+  extra/missing members

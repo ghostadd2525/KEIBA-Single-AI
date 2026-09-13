@@ -1,0 +1,30 @@
+Owner read-only capture procedure — do not run until review PASSes
+================================================================
+
+OWNER_EXECUTE_NOW=NO
+CURSOR_PRODUCTION_SSH=NO
+
+Target
+------
+  app/ops/prediction_capacity.py
+  exactly one regular file under WIN5_ROOT
+  ABSENT => STOP (no tar payload)
+
+Windows PowerShell 5.1 (after approval)
+---------------------------------------
+1. Choose a NEW OutDir that does not exist.
+2. From the unpacked pack directory:
+
+   .\OWNER_WINDOWS_SAVE.ps1 `
+     -RemoteHost ubuntu@<prod-host> `
+     -IdentityFile <pem> `
+     -OutDir <new-empty-dir>
+
+3. Script sends OWNER_PASTE_COMMAND_BLOCK.sh raw bytes to SSH stdin
+   (ReadAllBytes; no Get-Content -Raw).
+4. Production: stdout only. lstat regular + O_NOFOLLOW + fstat.
+   Path must stay under WIN5_ROOT. No Production file create/change.
+5. Windows saves transcript.txt and extracted/app/ops/prediction_capacity.py.
+6. Return the ZIP of OutDir. Do not overwrite previous capture ZIPs.
+
+This pack does not SSH and does not execute the capture.

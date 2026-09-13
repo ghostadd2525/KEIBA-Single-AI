@@ -1,0 +1,44 @@
+Read-only search — Production-identical app/ops/prediction_capacity.py
+=====================================================
+
+QUESTION: does any existing git object or artifact contain Production
+bytes of app/ops/prediction_capacity.py?
+
+METHOD (this run, read-only, no Production SSH)
+----------------------------------------------
+1. git log --all -- app/ops/prediction_capacity.py and *prediction_capacity*
+   RESULT=empty
+2. git log --all -S 'prediction_capacity' -- '*.py'
+   RESULT=only hunk-only live/candidate main.py imports (commit a32c1d2)
+3. git ls-tree origin/main 25a3f88 services/win5-ai/app/ops
+   RESULT=no prediction_capacity.py
+   origin ops/__init__.py does not export prediction_capacity
+4. git ls-tree Production GIT_HEAD f02c50e8174d1537d829af3a0da6cc41d450baae
+   services/win5-ai/app/ops
+   RESULT=no prediction_capacity.py
+   (live-compare v5: worktree dirty; this file is not in that commit)
+5. Recursive find of prediction_capacity.py under
+   /tmp /workspace /opt/cursor/artifacts /home/ubuntu
+   RESULT=zero files
+6. Zip member name search for prediction_capacity across
+   /tmp /opt/cursor/artifacts /workspace
+   RESULT=zero members
+
+JUDGMENT
+--------
+SEARCH_RESULT=NOT_FOUND
+IDENTITY_PROVEN=NO
+LIVE_SHA256=UNKNOWN
+Therefore a new Owner read-only capture of this one file is required.
+Do not invent or stub the file.
+Do not treat any fixture in this pack as Production bytes.
+
+LIVE IMPORT (already captured in hunk-only live main.py)
+--------------------------------------------------------
+from .ops import prediction_capacity
+prediction_capacity.get_with_meta(race_id)
+
+Other live-only import in live main.py:
+  from .challenge.lifecycle import get_lifecycle_service
+  origin/main 25a3f88 HAS services/win5-ai/app/challenge/lifecycle.py
+  That file is NOT in this capture. Scope is prediction_capacity.py only.
