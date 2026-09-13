@@ -3,7 +3,11 @@ Read-only check matrix
 
 Host: ubuntu@13.231.5.5 (Owner Windows PS 5.1 SSH stdin only).
 Cursor SSH=NO.
-Approval for any later probe pack is separate. This file is the design.
+This file is the design. Additional capture is not required.
+Do not create a new deploy pack. Do not re-run OWNER_DEPLOY.ps1.
+NEXT_STEP=READ_ONLY_RESTART_FAILURE_AND_RESTORE_STATE_DIAGNOSIS
+See seven_targets_log_diagnosis.txt for log-known vs live-unknown.
+See readonly_command_plan.txt for allowed argv.
 
 A. Original restart exit/stderr (do not re-issue restart)
 ---------------------------------------------------------
@@ -12,8 +16,8 @@ A. Original restart exit/stderr (do not re-issue restart)
    Expect no SYSTEMCTL_RESTART_EXIT (payload did not emit it).
 2. journalctl read-only, no pager, bounded:
      journalctl -u expect-ai.service -n 80 --no-pager
-     journalctl -u expect-ai.service --since "2026-09-13 00:00:00" --no-pager
-     journalctl -t python3 -n 20 --no-pager
+     journalctl -u expect-ai.service --since "2026-09-13 06:17:00" --until "2026-09-13 06:22:00" --no-pager
+     (UTC window from BACKUP_DIR 20260913T061824Z / Owner JST 15:18:21-15:18:44)
    Look for: Access denied, Interactive authentication required,
    Failed to restart, Timed out, start-limit, MainPID changes.
 3. Do NOT run `systemctl restart` to recreate exit code.

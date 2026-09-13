@@ -1,6 +1,12 @@
 Inference from Owner execution result + existing payload bytes
 ==============================================================
 
+TRANSCRIPT_RECEIVED=YES
+FILE=production_disabled_post_hunk_only_step1_owner_deploy_execution_20260913_output_20260913_151821.txt
+STARTED=2026-09-13T15:18:21
+FINISHED=2026-09-13T15:18:44
+BACKUP_DIR=/home/ubuntu/KEIBA-Single-AI/var/code_backups/20260913T061824Z
+
 Sequence encoded by the reviewed stdin (owner_deploy_stdin.py)
 --------------------------------------------------------------
 1. refuse unless OWNER_PRODUCTION_STEP1_DEPLOY_APPROVED=1
@@ -18,7 +24,7 @@ Sequence encoded by the reviewed stdin (owner_deploy_stdin.py)
    Recovery restart runs ONLY if restart_executed AND restored.
    Owner: RESTART_EXECUTED=NO and CODE_RESTORED=YES
    => recovery restart must not have been attempted.
-   This matches RESTART_EXECUTED=NO.
+   Transcript: RECOVERY_RESTART_COUNT=0. Matches.
 
 What the payload did not record
 -------------------------------
@@ -29,10 +35,13 @@ restart_once() does not emit:
   SYSTEMCTL_RESTART_STDERR
   SYSTEMCTL_RESTART_TIMEOUT
 On timeout or OSError it returns (1, "") with empty stdout.
+collect_production_env() does not emit LoadState/ActiveState/MainPID.
+restore_code_only() does not emit RESTORED_SHA_* (only CODE_RESTORED=YES).
+After restore, env/schema are not re-collected.
 
-Therefore the original Owner transcript cannot contain the exact
-restart exit code/stderr unless those lines were added by systemd
-to journald. The payload itself discarded them.
+Therefore the Owner transcript cannot contain the exact restart exit
+code/stderr. Historical rc must come from journald, not by re-issuing
+restart. SSH_EXIT=2 is pack fail_closed, not systemctl.
 
 SUBPROCESS_TIMEOUT_S = 8
 ------------------------
@@ -41,6 +50,7 @@ longer than 8s, Python kills the wait and run_cmd returns 1.
 The pack then HALTs RESTART_FAIL and restores files WITHOUT a
 recovery restart (because restart_executed stayed False).
 Disk would be restored; systemd may still have accepted a restart.
+Total Owner elapsed was 23s, so an 8s wait is possible but unproven.
 That case MUST be checked via journalctl + MainPID/ActiveEnterTimestamp
 without issuing another restart.
 
@@ -53,11 +63,5 @@ C. Unit not found / LoadState != loaded (less likely: preconditions passed
    and collect_production_env already called systemctl show).
 D. systemctl restart started, then wait failed; process may have new code.
 
-Owner transcript still needed
------------------------------
-Return the Downloads
-  production_disabled_post_hunk_only_step1_owner_deploy_execution_20260913_output_*.txt
-without redacting:
-  RESTART_COMMAND, RESTART_PHASE, SUDO_USED, BEFORE_/AFTER_ systemd keys,
-  BACKUP_DIR, POST_REPLACE_SHA_*, CODE_RESTORED, HALT_REASON.
-Do not re-run the deploy pack to regenerate it.
+Do not re-run the deploy pack to regenerate evidence.
+Do not create a new deploy pack from these hypotheses.

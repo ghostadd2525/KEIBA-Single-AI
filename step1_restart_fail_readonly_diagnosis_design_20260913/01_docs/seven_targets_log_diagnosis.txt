@@ -1,0 +1,211 @@
+Seven confirmation targets from Owner log (read-only)
+=====================================================
+
+SOURCE
+------
+Owner transcript:
+  production_disabled_post_hunk_only_step1_owner_deploy_execution_20260913_output_20260913_151821.txt
+Imported:
+  production_step1_restart_fail_readonly_probe_20260913/01_docs/owner_transcript_imported.txt
+Reviewed stdin:
+  production_disabled_post_hunk_only_step1_owner_deploy_execution_20260913/02_powershell/owner_deploy_stdin.py
+  SHA256=fed42b89258442c5774b5aaeadbda1dc1b5f2ec2318eec2e5a74c2785d32c1eb
+
+Clock
+-----
+STARTED=2026-09-13T15:18:21 (Owner local, JST)
+FINISHED=2026-09-13T15:18:44 (elapsed 23s)
+BACKUP_DIR=.../20260913T061824Z
+Deploy window UTC = 2026-09-13 06:18:21 .. 06:18:44
+Journal bound for later live read: 06:17:00 .. 06:22:00 UTC
+
+SSH_EXIT=2 is fail_closed() halt from the pack, NOT systemctl's exit code.
+
+
+1. systemctl restart expect-ai.service の正確な exit code と stderr
+-------------------------------------------------------------------
+LOG_STATUS=UNKNOWN
+Why the transcript cannot contain them:
+  - restart_once() argv is exactly: systemctl restart expect-ai.service
+  - SUDO_USED=NO (emitted)
+  - run_cmd() captures stderr but returns only (rc, stdout)
+  - restart_once() does not emit SYSTEMCTL_RESTART_EXIT / STDOUT / STDERR
+  - any rc != 0 raises Halt("RESTART_FAIL") BEFORE STATE.restart_executed=True
+  - timeout or OSError becomes rc=1 with empty stdout (SUBPROCESS_TIMEOUT_S=8)
+Transcript evidence:
+  RESTART_UNIT=expect-ai.service
+  RESTART_COMMAND=systemctl restart expect-ai.service
+  RESTART_PHASE=DEPLOY
+  SUDO_USED=NO
+  then immediately CODE_RESTORE_ONLY / DEPLOY_PHASE=RESTORED / HALT_REASON=RESTART_FAIL
+  RESTART_EXECUTED=NO
+  RECOVERY_RESTART_COUNT=0
+HISTORICAL_RESTART_RC=UNKNOWN
+HISTORICAL_RESTART_STDERR=UNKNOWN
+HISTORICAL_RESTART_TIMEOUT=UNKNOWN (8s timeout is possible; total run was 23s)
+LIVE_FILL: journalctl -u expect-ai.service bounded, no pager.
+DO_NOT: re-issue systemctl restart to recreate the rc.
+
+
+2. ubuntu ユーザーが restart 可能か
+----------------------------------
+LOG_STATUS=PARTIAL
+Known:
+  - Pack ran as the SSH user (ubuntu).
+  - BEFORE_SYSTEMD_COLLECT_OK=YES and AFTER_SYSTEMD_COLLECT_OK=YES
+    => `systemctl show expect-ai.service` succeeded without sudo.
+  - Restart was attempted without sudo and the pack treated it as failure.
+  - show permission != restart permission (polkit).
+UNKNOWN:
+  - Whether ubuntu is in a group that can restart this unit.
+  - Whether polkit asked for interactive auth.
+LIVE_FILL:
+  id
+  systemctl --version
+  systemctl show ... (properties only; never restart)
+  journalctl lines: Access denied / Interactive authentication required /
+    Failed to restart / auth
+INTERPRET:
+  SHOW_OK + RESTART_FAIL is consistent with class A (polkit / Access denied).
+  Not confirmed until journal or sudo -n -l is read.
+
+
+3. sudo -n systemctl restart expect-ai.service が許可されているか
+----------------------------------------------------------------
+LOG_STATUS=UNKNOWN (must not be answered by running it)
+Known:
+  SUDO_INVOKED=NO
+  SUDO_USED=NO
+  Pack refuses argv containing sudo (Halt SUDO_REFUSED).
+  Therefore the failed restart was unsudoded systemctl, not sudo -n restart.
+LIVE_FILL (list only):
+  sudo -n -l
+  sudo -n -l -U ubuntu
+  Parse NOPASSWD specs for:
+    /bin/systemctl restart expect-ai.service
+    /usr/bin/systemctl restart expect-ai.service
+    systemctl restart expect-ai.service
+    unrestricted systemctl
+Record:
+  SUDO_N_L_EXIT
+  SUDO_N_L_HAS_SYSTEMCTL_RESTART_EXPECT_AI=YES|NO
+  SUDO_N_L_HAS_UNRESTRICTED_SYSTEMCTL=YES|NO
+DO_NOT:
+  sudo -n systemctl restart expect-ai.service
+  sudo systemctl restart ...
+If sudo -n -l needs a password: SUDO_N_L_STATUS=FAIL and stop using sudo.
+
+
+4. systemd unit の現在の LoadState / ActiveState / MainPID
+---------------------------------------------------------
+LOG_STATUS=UNKNOWN_NOW
+Known:
+  collect_production_env() called systemctl show with
+    Id,LoadState,MainPID,Environment,EnvironmentFiles,ActiveState,FragmentPath
+  It emitted *_SYSTEMD_COLLECT_OK=YES and *_UNIT=expect-ai.service
+  It did NOT emit LoadState, ActiveState, or MainPID values.
+  GET /health is absent from this transcript (restart never reached
+  RESTART_EXECUTED=YES).
+UNKNOWN live:
+  LoadState, ActiveState, SubState, MainPID, ActiveEnterTimestamp,
+  NRestarts, Result
+LIVE_FILL: systemctl show properties listed in readonly_command_plan.txt
+  plus /proc/<MainPID>/comm and starttime (read-only).
+Compare ActiveEnterTimestamp / ExecMainStartTimestamp to UTC window
+2026-09-13 06:18:21 .. 06:18:44.
+If MainPID started inside that window AND disk is restored:
+  RUNNING_PROCESS_MAY_HAVE_CANDIDATE_BYTES=YES
+  (recovery restart did not run; systemd may still have accepted a restart
+   while the pack timed out or lost the wait)
+If MainPID predates FILES_REPLACED (BACKUP 06:18:24Z):
+  RUNNING_PROCESS_LIKELY_PREDEPLOY_BYTES=YES
+DO_NOT restart to "fix" a candidate-in-memory process in this diagnosis.
+
+
+5. 11対象がすべて pre-deploy SHA / ABSENT へ復元されているか
+----------------------------------------------------------
+LOG_STATUS=PACK_ASSERTED_YES ; INDEPENDENT_LIVE_REHASH=NOT_DONE
+Pack restore_code_only():
+  - LIVE_SHA four files: write backup bytes, hash, Halt RESTORE_SHA_MISMATCH
+    if mismatch. On success emits CODE_RESTORED=YES only (no RESTORED_SHA_*).
+  - ABSENT seven: unlink if the pack created them.
+Transcript:
+  PRECONDITION all 11 LIVE_SHA or ABSENT
+  BACKUP_SHA of four files match live canon
+  BACKUP_ABSENT of seven = YES
+  POST_REPLACE_SHA of four = candidate SHAs
+  POST_REPLACE of seven SQL/py files present
+  CODE_RESTORED=YES
+  HALT_REASON would have been RESTORE_SHA_MISMATCH if hash failed
+Canon (must match live now):
+  app/main.py
+    7486a9ad7578e9ccdf883eaaac85f0b0de7ba329e286302b8d2f57db81d79235 SIZE=45983
+    must NOT be candidate a4970e70778da58f987df4a7316c9dfbd0a660c7a3bc31088d731869a4983a9c
+  app/data/db.py
+    8a86f514b1b08fde9a90a71acc99eac3f6fc9c2aeae200e8787721093592ef1a
+  app/data/repository/__init__.py
+    557713a95b0e9f5a8f798eeb5e525c85adab3063b2e6529ee0be2155bb29992b
+  app/core/feature_loader_bridge.py
+    e06e6ee971e2ae8d07bbcee4501ab9024052de52dd119ea007cb71481ae5272e
+  ABSENT:
+    app/data/migrations/022_prediction_run_idempotency.sql
+    app/predictions/{__init__,guards,runs,feature_pin,provenance,snapshot}.py
+LIVE_FILL: O_NOFOLLOW sha256 of four + lstat seven. See restore_sha_canon.txt.
+RESTORE_DISK_MATCH=YES only after live re-hash, not from CODE_RESTORED alone.
+
+
+6. PREDICTION_RUNS_ENABLED / EXPECT_AI_ALLOW_MIGRATION_022/019 が unset/0 か
+--------------------------------------------------------------------------
+LOG_STATUS=UNSET_AT_COLLECT ; LIVE_AFTER_RESTORE=NOT_RECOLLECTED
+Transcript:
+  BEFORE_PREDICTION_RUNS_ENABLED=UNSET
+  BEFORE_EXPECT_AI_ALLOW_MIGRATION_022=UNSET
+  BEFORE_EXPECT_AI_ALLOW_MIGRATION_019=UNSET
+  AFTER_* (post-replace, pre-restart) same UNSET
+  Pack Halt if any effective 1.
+  ENV_CHANGED=NO SYSTEMD_CHANGED=NO throughout
+  restore_code_only does not edit env or unit files
+  After restore, collect_production_env was NOT called again
+Owner report: env / systemd definitions unchanged.
+LIVE_FILL: systemctl show Environment + EnvironmentFiles (read files) +
+  /proc/<MainPID>/environ if readable. Print only the three watched keys.
+Effective 1 => record FLAGS_UNSET_OR_0=NO. Do not change them.
+
+
+7. schema 23 versions / 12 columns / partial UNIQUE が維持されているか
+---------------------------------------------------------------------
+LOG_STATUS=HELD_THROUGH_REPLACE ; LIVE_AFTER_RESTORE=NOT_REQUERIED
+Transcript PRE_ and POST_REPLACE:
+  SCHEMA_MIGRATIONS_COUNT=23
+  SCHEMA_MIGRATIONS_UNIQUE_COUNT=23
+  PREDICTIONS_COLUMN_COUNT=12
+  HAS_PERSIST_022=YES
+  HAS_PERSIST_019=NO
+  PARTIAL_UNIQUE_INDEX_STATE=ok
+  EXISTING_RACE_INDEX=ok
+  PRED_ROW_COUNT=344
+  SCHEMA_READONLY_PASS=YES
+  SCHEMA_WRITE=NO MIGRATE=NO BEGIN_IMMEDIATE=NO SCHEMA_ROLLBACK=NO
+Restore does not touch the DB. Owner report: 022 schema / DB unchanged.
+LIVE_FILL: sqlite URI mode=ro + PRAGMA query_only=ON
+  SELECT version FROM schema_migrations ORDER BY 1
+    => 23 including 022_prediction_run_idempotency
+    => not 019_prediction_run_idempotency
+  PRAGMA table_info(predictions) => 12 columns
+  index uq_predictions_idempotency_key_not_null UNIQUE on
+    idempotency_key WHERE idempotency_key IS NOT NULL
+No DDL. No INSERT/UPDATE/DELETE.
+
+
+Hypothesis classes (not confirmed; do not act on them)
+-----------------------------------------------------
+A. Permission: ubuntu Interactive authentication / Access denied / polkit.
+   Consistent with show OK + unsudoded restart FAIL + SUDO_USED=NO.
+B. Timeout: restart >8s; pack synthesizes rc=1; disk restored; systemd may
+   have accepted restart (MainPID in deploy window).
+C. Unit not found / LoadState != loaded: less likely because show collect OK.
+D. systemctl accepted restart then wait failed; process may hold candidate
+   bytes while disk is restored.
+
+This design does not choose A-D. Live journal + unit timestamps decide.
+Do not translate any class into a new deploy pack or a restart.

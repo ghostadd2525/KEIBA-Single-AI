@@ -1,11 +1,26 @@
-Proposed later Owner probe (not shipped as a pack in this change)
+Existing later probe pack (frozen; not authorized by this design)
 =================================================================
 
-If a later read-only diagnosis pack is requested, it MUST:
+A read-only probe pack already exists from a prior turn. This design
+does not recreate it, does not unzip-replace it, and does not authorize
+Owner to run it.
+
+ZIP=production_step1_restart_fail_readonly_probe_20260913.zip
+SHA256=d9cff97f381a5ad36a4c743a7d85ba9d3840e90405f379525115987b807ddb9e
+STDIN=02_powershell/owner_probe_stdin.py
+STDIN_SHA256=b646abea07ea685d45c7666ee498eef805585907c8c0e881522e69ca7c56aaef
+ENTRY=02_powershell/OWNER_PROBE.ps1
+APPROVAL_ENV=OWNER_READONLY_STEP1_PROBE_APPROVED
+PROBE_PACK_RERUN_AUTHORIZED_BY_THIS_DESIGN=NO
+NEW_DEPLOY_PACK=NO
+EXTRA_CAPTURE_PACK=NO
+OWNER_DEPLOY_PS1_RERUN_ALLOWED=NO
+
+If a later separate decision asks to run a probe, that pack MUST still:
 - Owner Windows PowerShell 5.1 only
 - Verify pack/payload SHA before SSH
-- Halt unless a dedicated approval env is 1
-  (not OWNER_PRODUCTION_STEP1_DEPLOY_APPROVED)
+- Halt unless OWNER_READONLY_STEP1_PROBE_APPROVED=1
+  (never OWNER_PRODUCTION_STEP1_DEPLOY_APPROVED)
 - Refuse OWNER_DEPLOY.ps1 re-run
 - Embed no candidate tar; copy no files
 - run_cmd may include sudo only as: sudo -n -l
@@ -18,10 +33,13 @@ If a later read-only diagnosis pack is requested, it MUST:
 - write transcript only under Owner Downloads; refuse overwrite
 
 It MUST NOT:
-- call systemctl restart/reload
+- call systemctl restart/reload, including sudo -n systemctl restart
 - restore or replace code
 - POST, migrate, change env/systemd
 - merge the PR
+- become a new deploy pack
 
-This design change does not include that pack ZIP.
-Wait for Owner to return the existing deploy transcript first.
+NEXT_STEP for this design folder:
+READ_ONLY_RESTART_FAILURE_AND_RESTORE_STATE_DIAGNOSIS
+Not: run OWNER_PROBE.ps1
+Not: build another ZIP

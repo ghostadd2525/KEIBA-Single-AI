@@ -50,6 +50,8 @@ If live main.py equals this candidate SHA, restore did not complete.
 
 BACKUP_DIR
 ----------
-From Owner transcript BACKUP_DIR=...
+From Owner transcript:
+  /home/ubuntu/KEIBA-Single-AI/var/code_backups/20260913T061824Z
 Read-only list the backup tree. Do not copy backup files back again.
 If CODE_RESTORED=YES, disk should already match pre-deploy SHA/ABSENT.
+Independent live re-hash is still required (pack did not emit RESTORED_SHA_*).

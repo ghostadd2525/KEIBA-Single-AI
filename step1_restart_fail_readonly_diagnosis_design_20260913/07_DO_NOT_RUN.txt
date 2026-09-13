@@ -1,6 +1,13 @@
 Do not run any Production command from this folder.
 This is a diagnosis DESIGN for PR #64.
-Do not restart expect-ai.service.
+Do not restart or reload expect-ai.service.
+Do not run sudo -n systemctl restart expect-ai.service.
 Do not re-run OWNER_DEPLOY.ps1.
 Do not create a new deploy pack from this folder.
+Do not add a capture pack.
 Cursor does not SSH.
+REAPPLY_ALLOWED=NO
+OWNER_DEPLOY_PS1_RERUN_ALLOWED=NO
+PRODUCTION_CODE_DEPLOY_ALLOWED=NO
+POST_CODE_PRODUCTION_DEPLOYED=NO
+NEXT_STEP=READ_ONLY_RESTART_FAILURE_AND_RESTORE_STATE_DIAGNOSIS
