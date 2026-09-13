@@ -1,0 +1,53 @@
+Windows-only save of Production stdout (v2)
+==========================================
+
+Cursor does not SSH.
+Production must not receive a copied script file.
+Production must not receive the tar via SCP.
+Save the transcript and extracted files on Windows only.
+Do not use Get-Content -Raw | ssh. PowerShell 5.1 can change script bytes.
+
+After independent review PASSes, Owner:
+
+1. On Windows, keep OWNER_PASTE_COMMAND_BLOCK.sh next to
+   OWNER_WINDOWS_SAVE.ps1 (do not copy either onto Production).
+
+2. PowerShell 5.1 (preferred):
+
+     .\OWNER_WINDOWS_SAVE.ps1 -RemoteHost USER@PRODUCTION `
+       -IdentityFile C:\path\to\existing.pem `
+       -OutDir (Join-Path $PWD "live_source_capture_windows")
+
+   The ps1 reads OWNER_PASTE_COMMAND_BLOCK.sh as raw bytes and writes
+   those bytes to SSH stdin. Remote command is `bash` only.
+   Do not add `> /tmp/...` or `tee` on the Production side.
+   If SSH fails to start, times out, or exits non-zero, extract is skipped.
+
+3. Confirm the transcript contains exactly:
+     one CAPTURE_RESULT=GO
+     one === TAR_BASE64_BEGIN ===
+     one === TAR_BASE64_END ===
+     three CAPTURE_REL / CAPTURE_SIZE / CAPTURE_SHA256 groups
+     three TAR_MEMBER lines
+     TAR_B64_CHARS / TAR_B64_SHA256
+     TAR_GZ_BYTES / TAR_GZ_SHA256
+
+4. Extract on Windows (not Production), only after SSH exit 0:
+
+     python extract_capture.py .\live_source_capture_windows\transcript.txt `
+       --out .\live_source_capture_windows\extracted
+
+   extract_capture.py creates the output directory only after every
+   check passes. Any failure is EXTRACT_RESULT=STOP and zero files.
+
+5. Return to Cursor:
+     - transcript.txt
+     - extracted/app/main.py
+     - extracted/app/data/repository/__init__.py
+     - extracted/app/core/feature_loader_bridge.py
+     - extracted/MANIFEST.txt
+
+6. Do not deploy. Do not overwrite existing ZIPs.
+   PRODUCTION_CODE_DEPLOY_ALLOWED=NO
+   OWNER_DEPLOY_APPROVED=NO
+   NEXT_STEP=INDEPENDENT_REVIEW_OF_READONLY_LIVE_SOURCE_CAPTURE_V2
