@@ -1,0 +1,42 @@
+GO / STOP for this live-source capture pack only
+================================================
+
+This step captures three source files. It never approves a deploy.
+Owner must not run it until independent review of this pack PASSes.
+live-compare v5 COMPARE_RESULT=GO is not deploy approval.
+
+GO  (CAPTURE_RESULT=GO)
+-----------------------
+All of the following are true:
+  - WIN5_ROOT found (app/main.py exists)
+  - all three capture targets opened read-only
+  - path / size / SHA256 printed for each
+  - in-memory tar.gz contains exactly those three members
+  - base64 payload printed
+  - no STOP_REASON
+
+Owner action on GO (after review + later Owner execution):
+  Save stdout on Windows only.
+  Extract with extract_capture.py or OWNER_WINDOWS_SAVE.ps1.
+  Return transcript + extracted files.
+  Do not deploy. Do not create an APPLY or deploy pack.
+  PRODUCTION_CODE_DEPLOY_ALLOWED stays NO
+  OWNER_DEPLOY_APPROVED stays NO
+
+STOP  (CAPTURE_RESULT=STOP)
+---------------------------
+Any of:
+  - win5_root_not_found
+  - capture_file_absent:<rel>
+  - capture_file_unreadable:<rel>
+  - capture_hash_invalid:<rel>
+
+On STOP the tar/base64 payload is omitted.
+
+Owner action on STOP:
+  Do not guess paths. Do not write files to "fix" the probe.
+  Return the transcript. Still no deploy.
+
+systemd show failure is not a hard STOP by itself if a fallback
+path still finds the three files. ExecStart is never printed.
+Environment is never requested or printed.

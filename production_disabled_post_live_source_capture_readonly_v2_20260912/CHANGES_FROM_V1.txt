@@ -1,0 +1,47 @@
+Why v2 (independent review CHANGES_REQUIRED)
+============================================
+
+v1 ZIP remains immutable:
+  production_disabled_post_live_source_capture_readonly_20260912.zip
+  SHA256=c38c58ac567d9a3b99987e5c1c75b9ece84c509b5d7740849126f46fc47aae24
+
+v1 PASS (unchanged here):
+  ZIP SHA / size, ZIP integrity, SHA256SUMS, 19 tests
+  Production os.O_RDONLY, in-memory tar.gz
+  Owner shell scripts byte-identical
+  Production write-none
+
+P0-1 extract_capture.py
+-----------------------
+v1 accepted a transcript with zero CAPTURE_REL/SIZE/SHA256 records
+if the tar contained three expected member names. That is STOP in v2.
+
+v2 extract requires, before any output directory or file is created:
+  - CAPTURE_RESULT=GO exactly once; STOP+GO mixed is STOP
+  - BEGIN/END markers exactly once each
+  - CAPTURE_REL list exactly the three expected files
+  - missing / extra / duplicate records rejected
+  - each record has CAPTURE_SIZE (digits) and 64-hex CAPTURE_SHA256
+  - TAR_MEMBER records exactly the three expected files
+  - TAR_B64_CHARS / TAR_B64_SHA256 match the payload
+  - TAR_GZ_BYTES / TAR_GZ_SHA256 match the decoded archive
+  - tar members: name, count, REGTYPE only
+  - extra / duplicate / symlink / hardlink / absolute / .. members STOP
+  - transcript record, tar member, and extracted bytes size/SHA all match
+  - failure: EXTRACT_RESULT=STOP and zero output files
+
+P0-2 OWNER_WINDOWS_SAVE.ps1
+---------------------------
+v1 used Get-Content -Raw | ssh, which can change script bytes on
+Windows PowerShell 5.1. v2 reads the Owner script with
+[System.IO.File]::ReadAllBytes and writes those bytes to SSH stdin
+(BaseStream). Optional -IdentityFile for an existing PEM.
+SSH start failure, timeout, or exit code != 0 skips extract_capture.py.
+No Production file create. No SCP upload.
+
+Unchanged Production capture contract
+-------------------------------------
+  three files only
+  os.O_RDONLY
+  tar.gz built in memory
+  stdout only
