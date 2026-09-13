@@ -1,0 +1,21 @@
+THIS IS NOT A PRODUCTION EXECUTION PACK.
+Do not deploy from this review bundle.
+Do not create a Production execution pack from this run.
+Do not SSH to Production from Cursor.
+Do not merge this PR as Production deploy.
+Do not restart or reload expect-ai.
+Do not set PREDICTION_RUNS_ENABLED=1.
+Do not set EXPECT_AI_ALLOW_MIGRATION_022.
+Do not call POST /v1/prediction-runs on Production.
+Do not re-apply 022. Schema is already COMMITTED.
+Do not change systemd or env.
+Do not replace live app/main.py wholesale with review-v6 main.py
+  (SHA256 7577973c16eb7aad395cd11acae3c8ef987a3c0533924c1994ae32afeaf818e5)
+  or origin/main main.py
+  (SHA256 a54f1eaa5b8540c2f08d8b0e656a3ccbb78142d4d1cb2c8951e4105f3630184e).
+Do not overwrite immutable ZIPs listed in FLAGS.txt.
+
+NEXT_STEP=INDEPENDENT_REVIEW_OF_HUNK_ONLY_CODE_DEPLOY_BUNDLE
+PRODUCTION_CODE_DEPLOY_ALLOWED=NO
+OWNER_DEPLOY_APPROVED=NO
+POST_CODE_PRODUCTION_DEPLOYED=NO
