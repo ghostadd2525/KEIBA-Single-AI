@@ -1,0 +1,49 @@
+【Production Diagnosis】
+工程1 v1 FAIL → CODE_RESTORED. Probe PASS: Production restored and healthy.
+ROOT_CAUSE=SUDO_REQUIRED_FOR_SYSTEMCTL_RESTART
+This v2 pack keeps the same 11 candidate bytes and preconditions.
+It only changes the restart contract to sudo -n, records rc/stderr,
+extends restart timeout to 60s, and classifies timeout SUCCESS/FAIL/UNKNOWN.
+Cursor does not SSH. Owner Windows PowerShell 5.1 is the only execution path.
+This pack is created for independent review and must not be run yet.
+OLD_EXECUTION_PACK_RERUN_ALLOWED=NO
+Do not overwrite hunk-only v1/v2/v3 ZIPs or old execution ZIP a8d226c3....
+
+【Server Diagnosis】
+Status: PASS (restore-state probe). 工程1 code still not live.
+Evidence:
+- RESTORE_DISK_MATCH=YES MAIN_PY_CLASS=LIVE
+- UNIT loaded/active/running MainPID=852255 since 2026-09-11
+- FLAGS_UNSET_OR_0 SCHEMA 23/12 HEALTH 200 row delta 0
+- ubuntu sudo -n restart NOPASSWD=YES
+
+【Client Diagnosis】
+Status: BLOCKED
+Network: not exercised; no Production browser session in this agent
+Console: not exercised
+Timing: not exercised
+Response Body: not exercised
+Cache: not exercised
+PredictionBundle Parse: not exercised
+Render Flow: not exercised
+Unhandled Promise: not exercised
+JavaScript Error: not exercised
+Client Evidence: pack creation only. Do not mark Client PASS by inference.
+
+Diff Summary:
+v2 execution pack vs v1: restart argv sudo -n, timeout 60s, transcript rc/stderr,
+unit postchecks, recovery still code-only restore. Candidate bytes unchanged.
+CONTRACT_QA_FAILURE remains PRE_EXISTING_BASELINE_FAILURE.
+
+Root Cause: # Server (v1 unsudoded restart). Client not in scope.
+Expected Action: independent review of this v2 pack. Do not run yet.
+
+【Decision】
+Action Type: Create step1 Owner deploy execution v2 review pack
+Implementation Required: Pack only (not product code)
+Deployment Required: No
+Configuration Required: No
+Production Required: No
+Rollback Required: No
+Risk: Medium after later approved run (code replace + sudo -n restart)
+Expected Next Action: INDEPENDENT_REVIEW_OF_STEP1_OWNER_DEPLOY_EXECUTION_V2_PACK
