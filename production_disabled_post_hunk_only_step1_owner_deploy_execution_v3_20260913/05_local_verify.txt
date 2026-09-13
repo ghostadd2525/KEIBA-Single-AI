@@ -1,0 +1,24 @@
+Pack-author local verify (not Production)
+=========================================
+
+python3 run_tests.py => ALL_PASS
+sha256sum -c SHA256SUMS.txt => ALL OK after run_tests
+PARSER_ENGINE=pwsh 7.4.6 (Linux). WINDOWS_PS51_PARSEFILE=OWNER_CONFIRM_AFTER_INDEPENDENT_REVIEW
+ParseFile OWNER_DEPLOY_V3.ps1: PARSE_ERROR_COUNT=0
+path test: PATH_TEST_FAIL_COUNT=0
+Unapproved wrapper: SSH_STARTED=NO, PACK_SHA_GATE=PASS,
+HALT_REASON=OWNER_PRODUCTION_STEP1_V3_DEPLOY_APPROVED_UNSET exit 2
+v1 or v2 approval env without v3: HALT_REASON=OLD_EXECUTION_PACK_RERUN_REFUSED
+Local fake-tree: LIVE_SHA mismatch STOP, ABSENT mismatch STOP, restore-only on failure,
+sudo -n expect-ai.service restart on success, recovery restart after post-restart failure.
+Readiness: delayed GET /health polls then PASS; never-ready times out then restore+recovery.
+Timeout with new MainPID classifies SUCCESS. Restart rc/stderr recorded.
+Candidate tar.gz SHA unchanged from v2:
+  16f6eb1fc70fa57b000fb323c4519171c01a831d03bced558511c9d3f89c6c47
+Cursor did not SSH. Pack was not executed on Production.
+
+PRODUCTION_CODE_DEPLOY_ALLOWED=NO
+OWNER_DEPLOY_APPROVED=NO
+POST_CODE_PRODUCTION_DEPLOYED=NO
+OLD_EXECUTION_PACK_RERUN_ALLOWED=NO
+V2_RERUN_ALLOWED=NO

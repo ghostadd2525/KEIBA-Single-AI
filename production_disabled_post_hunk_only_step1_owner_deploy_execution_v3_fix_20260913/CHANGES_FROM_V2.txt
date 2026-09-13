@@ -1,0 +1,27 @@
+v3_fix vs original v3 (022 SQL exclusion only)
+==============================================
+
+Independent review of original v3: CHANGES_REQUIRED.
+Original v3 ZIP is not overwritten:
+  production_disabled_post_hunk_only_step1_owner_deploy_execution_v3_20260913.zip
+  SHA256=6ee27587e23d38ebc2fc9fe8a0c4a7d6bdb65d860d5d75d28a09ae05e5c599d4
+
+Changed
+-------
+- Remove app/data/migrations/022_prediction_run_idempotency.sql from
+  DEPLOY_TARGETS and candidate tar.gz
+- Deploy candidate count=10
+- 022 SQL remains expected ABSENT (MUST_ABSENT). Presence => STOP
+- 022_SQL_FILE_DEPLOY=NO  022_REAPPLY=NO  MIGRATE=NO
+- Schema 022 still verified read-only (23 versions / 12 columns)
+
+Unchanged from v3
+-----------------
+- Readiness polling after deploy restart SUCCESS
+- Restart argv: sudo -n systemctl restart expect-ai.service
+- Recovery: code restore + at most one recovery restart
+- disabled POST 503 PREDICTION_RUNS_DISABLED
+- Remaining 10 candidate file bytes
+- Cursor does not SSH
+
+v1 ZIP a8d226c3... and v2 ZIP 20a273c7... are not overwritten.

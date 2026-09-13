@@ -1,0 +1,42 @@
+Why v2 exists
+=============
+
+Hunk-only v1 PASSed hunk application review.
+Overlay of origin/main 25a3f88 + 11 candidates + live prediction_capacity
+then failed 3/52 because app.ops.final_prediction_store was missing.
+
+Owner later captured and verified:
+
+  prediction_capacity.py
+    SIZE=15241
+    SHA256=c351bd9753d20994156e00141d564a55a42891983ecab5b2c5c55a32d9908f1e
+    DEPLOY_CANDIDATE=NO
+  final_prediction_store.py
+    SIZE=22775
+    SHA256=40352ff56b3267533267d5de9c893f3bda8963d5fe121474f7785b0152594a12
+    DEPLOY_CANDIDATE=NO
+    import closure: stdlib + app.data.db.connect only
+
+Owner-reported independent composite:
+  FULL_SUITE_1=PASS 52
+  FULL_SUITE_2=PASS 52
+  DELETE_JOURNAL_CONCURRENCY_REPEAT_1_TO_20=PASS
+  DISABLED_POST_503=PASS
+  GET_LIST_DETAIL=PASS
+  CONVERSATION=PASS
+
+v2 adds, without changing the 11 deploy candidates:
+  - those two files as live canon / SHA precondition
+  - bundled origin/main 25a3f88 tar
+  - in-bundle 52 x2 + concurrency x20 runner
+  - Challenge lifecycle + RA existing-path non-write
+  - GET predictions row delta=0
+
+This build does not invent the two live ops files.
+Owner return ZIPs were not attached to this workspace.
+OVERLAY_SUITE=NOT_RUN REASON=LIVE_CANON_OPS_MISSING
+PACK_AUTHOR_INDEPENDENT_TEST_EXECUTION_PASS=NO
+See 01_docs/owner_return_intake.txt.
+
+Hunk-only v1 ZIP is not overwritten:
+  f194488073a98a54fc4fafcadb808f32d3e0b8e53665dcb317da7c7662824db4

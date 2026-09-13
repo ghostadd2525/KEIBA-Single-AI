@@ -1,0 +1,52 @@
+【Production Diagnosis】
+工程1 v2 FAIL → CODE_RESTORED. Restart SUCCESS, then HTTP_FAIL on /health.
+Production reported RESTORED. Recovery restart executed once.
+This v3_fix pack excludes 022 SQL from deploy candidates.
+Readiness polling from v3 is unchanged. 10 code files only.
+It only adds bounded readiness polling after a successful deploy restart.
+Cursor does not SSH. Owner Windows PowerShell 5.1 is the only execution path.
+This pack is created for independent review and must not be run yet.
+OLD_EXECUTION_PACK_RERUN_ALLOWED=NO
+V2_RERUN_ALLOWED=NO
+Do not overwrite hunk-only v1/v2/v3 ZIPs, v1 ZIP a8d226c3...,
+v2 ZIP 20a273c7..., or probe ZIP d9cff97f....
+
+【Server Diagnosis】
+Status: PARTIAL (Owner v2 transcript). 工程1 code still not live.
+Evidence:
+- SYSTEMCTL_RESTART_EXIT=0 RESTART_OUTCOME=SUCCESS MainPID changed
+- HALT_REASON=HTTP_FAIL after restart, no post-restart sleep in v2
+- CODE_RESTORED=YES RECOVERY_RESTART_EXECUTED=YES
+- Hypothesis POST_RESTART_STARTUP_WAIT_INSUFFICIENT used as v3 design
+  basis; not independently re-proven here
+
+【Client Diagnosis】
+Status: BLOCKED
+Network: not exercised; no Production browser session in this agent
+Console: not exercised
+Timing: not exercised
+Response Body: not exercised
+Cache: not exercised
+PredictionBundle Parse: not exercised
+Render Flow: not exercised
+Unhandled Promise: not exercised
+JavaScript Error: not exercised
+Client Evidence: pack creation only. Do not mark Client PASS by inference.
+
+Diff Summary:
+v3 execution pack vs v2: wait_until_ready after deploy restart SUCCESS.
+Candidate bytes, restart argv, recovery, schema, POST-disabled contract
+unchanged. CONTRACT_QA_FAILURE remains PRE_EXISTING_BASELINE_FAILURE.
+
+Root Cause: # Server (post-restart health gate). Client not in scope.
+Expected Action: independent review of this v3 pack. Do not run yet.
+
+【Decision】
+Action Type: Create step1 Owner deploy execution v3 review pack
+Implementation Required: Pack only (not product code)
+Deployment Required: No
+Configuration Required: No
+Production Required: No
+Rollback Required: No
+Risk: Medium after later approved run (code replace + sudo -n restart + readiness wait)
+Expected Next Action: INDEPENDENT_REVIEW_OF_STEP1_OWNER_DEPLOY_EXECUTION_V3_PACK
