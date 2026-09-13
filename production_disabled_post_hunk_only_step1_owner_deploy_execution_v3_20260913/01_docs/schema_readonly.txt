@@ -1,0 +1,50 @@
+Read-only schema confirmation (no DDL)
+======================================
+
+DB=/home/ubuntu/KEIBA-Single-AI/services/win5-ai/var/expect_ai.db
+Mode=sqlite URI mode=ro + PRAGMA query_only=ON
+BEGIN IMMEDIATE=NO
+migrate()=NO
+022 SQL execute=NO
+
+Expect 23 schema_migrations versions
+------------------------------------
+001_init
+002_race_identity
+003_supply_platform
+004_user_domain
+005_results_eval
+006_result_automation
+007_collect_c0
+008_collect_contract_1_1
+009_user_race_results
+010_user_progress_audit
+011_research_evidence
+012_research_snapshot_features
+013_research_prediction_corpus
+014_research_historical_ingest
+015_research_race_meta
+016_research_knowledge_base
+017_research_knowledge_validation
+018_research_candidate_review
+019_final_predictions
+020_research_corpus_canonical
+020_user_challenge_lifecycle
+021_user_challenge_point_events
+022_prediction_run_idempotency
+
+Expect 12 predictions columns
+-----------------------------
+id, race_id, core_race_id, engine_source, fallback_reason,
+model_version, bundle_json, created_at,
+idempotency_key, persist_source, input_snapshot_hash,
+prediction_semantic_hash
+
+Partial UNIQUE
+--------------
+uq_predictions_idempotency_key_not_null
+ON predictions(idempotency_key)
+WHERE idempotency_key IS NOT NULL
+
+HAS_PERSIST_019 must be NO.
+Mismatch => STOP. Do not write code. Do not rollback schema.
