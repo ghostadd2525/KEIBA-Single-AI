@@ -1,0 +1,21 @@
+THIS IS NOT A PRODUCTION EXECUTION PACK.
+Do not deploy from this review bundle.
+Do not create a Production execution pack from this run.
+Do not SSH to Production from Cursor.
+Do not merge this PR as Production deploy.
+Do not restart or reload expect-ai.
+Do not set PREDICTION_RUNS_ENABLED=1.
+Do not set EXPECT_AI_ALLOW_MIGRATION_022.
+Do not call POST /v1/prediction-runs on Production.
+Do not re-apply 022. Schema is already COMMITTED.
+Do not change systemd or env.
+Do not deploy app/ops/prediction_capacity.py.
+Do not deploy app/ops/final_prediction_store.py.
+Do not replace live app/main.py wholesale.
+Do not overwrite hunk-only v1 ZIP
+  f194488073a98a54fc4fafcadb808f32d3e0b8e53665dcb317da7c7662824db4
+
+NEXT_STEP=INDEPENDENT_REVIEW_OF_HUNK_ONLY_V2_BUNDLE
+PRODUCTION_CODE_DEPLOY_ALLOWED=NO
+OWNER_DEPLOY_APPROVED=NO
+POST_CODE_PRODUCTION_DEPLOYED=NO

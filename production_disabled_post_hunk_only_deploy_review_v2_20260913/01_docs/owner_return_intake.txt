@@ -1,0 +1,61 @@
+Owner return ZIP intake — live ops canon only
+=============================================
+
+This pack does not invent Production bytes.
+This pack does not SSH.
+This pack does not deploy prediction_capacity.py or final_prediction_store.py.
+
+Required live canon files (NOT deploy candidates)
+-------------------------------------------------
+app/ops/prediction_capacity.py
+  SIZE=15241
+  SHA256=c351bd9753d20994156e00141d564a55a42891983ecab5b2c5c55a32d9908f1e
+  Owner return ZIP SHA256=
+    c04f27e6bc9016927c9a902268ccfeb5a8ac8a62117ca74948b90bc7cbbea843
+
+app/ops/final_prediction_store.py
+  SIZE=22775
+  SHA256=40352ff56b3267533267d5de9c893f3bda8963d5fe121474f7785b0152594a12
+  Owner return ZIP SHA256=
+    f24d10d28ab99286894e36f60ff53fba3b89c087cac8afaa607c95a5b7670f8d
+
+This workspace status
+---------------------
+LIVE_OPS_PRESENT_IN_THIS_BUILD=NO
+Owner return ZIPs were not attached to this cloud workspace.
+Capture-tool fixtures are rejected.
+STUB_OR_MOCK_SUCCESS=NO
+OVERLAY_SUITE stays NOT_RUN until both files match the SHAs above.
+
+How to attach (Owner)
+---------------------
+Attach one of:
+  1. both Owner return ZIPs (SHA must match above)
+  2. both extracted files:
+       extracted/app/ops/prediction_capacity.py
+       extracted/app/ops/final_prediction_store.py
+
+Do not attach capture-tool fixtures.
+Do not overwrite hunk-only v1 ZIP
+  f194488073a98a54fc4fafcadb808f32d3e0b8e53665dcb317da7c7662824db4
+
+After attach, rebuild live_canon/app/ops/ with:
+  python3 ingest_owner_ops_canon.py --capacity-zip PATH --store-zip PATH
+or:
+  python3 ingest_owner_ops_canon.py --capacity-file PATH --store-file PATH
+
+Then:
+  python3 generate_sha256sums.py
+  python3 run_tests.py
+
+run_tests.py must then print:
+  LIVE_OPS_PRESENT path SHA match
+  FULL_SUITE_1_PASS Ran 52 tests
+  FULL_SUITE_2_PASS Ran 52 tests
+  CONCURRENCY_REPEAT_1_PASS .. _20_PASS
+  EXTRA_LIVE_REGRESSION_PASS
+  INDEPENDENT_TEST_EXECUTION_PASS
+
+Until then:
+  PACK_AUTHOR_INDEPENDENT_TEST_EXECUTION_PASS=NO
+  NEXT_STEP=ATTACH_OWNER_RETURN_ZIPS_THEN_REBUILD_HUNK_ONLY_V2_LIVE_CANON

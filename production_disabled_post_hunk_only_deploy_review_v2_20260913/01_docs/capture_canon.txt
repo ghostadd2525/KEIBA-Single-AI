@@ -1,0 +1,27 @@
+Owner capture v3 — verified in this run before pack authoring
+=============================================================
+
+workspace_path issued:
+  /home/ubuntu/.cursor/projects/workspace/uploads/live_source_capture_v3_windows_20260913_9f9d.zip
+
+ZIP SHA256 (match):
+  f460685bcb59d837cca2f9b2c9154f51bf1d354f062ad6c26810bd86f2103a4a
+ZIP integrity: OK
+CAPTURE_RESULT=GO
+transcript BEGIN/END = 1/1
+
+extracted/app/main.py
+  SIZE=45983
+  SHA256=7486a9ad7578e9ccdf883eaaac85f0b0de7ba329e286302b8d2f57db81d79235
+extracted/app/data/repository/__init__.py
+  SIZE=12823
+  SHA256=557713a95b0e9f5a8f798eeb5e525c85adab3063b2e6529ee0be2155bb29992b
+extracted/app/core/feature_loader_bridge.py
+  SIZE=1408
+  SHA256=e06e6ee971e2ae8d07bbcee4501ab9024052de52dd119ea007cb71481ae5272e
+
+live_canon/ in this pack is a byte copy of those three extracted files.
+Mismatch of live_canon vs these SHAs is a review FAIL.
+
+This pack does not re-run capture and does not include the Owner ZIP.
+The Owner ZIP is a separate immutable artifact.
