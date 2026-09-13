@@ -1,0 +1,22 @@
+Do not run this capture until independent review PASSes and Owner approves.
+Do not SSH to Production from Cursor.
+Do not write on Production.
+Do not restart or reload expect-ai.
+Do not set PREDICTION_RUNS_ENABLED=1.
+Do not set EXPECT_AI_ALLOW_MIGRATION_022.
+Do not call POST /v1/prediction-runs.
+Do not migrate.
+Do not create an execution pack.
+Do not stub or mock app.ops.final_prediction_store to mark the v6 suite PASS.
+Do not treat prediction_capacity.py as a deploy candidate.
+Do not overwrite existing review / compare / capture / hunk-only ZIPs.
+Do not merge PRs as Production deploy.
+
+OWNER_EXECUTE_NOW=NO
+PRODUCTION_CODE_DEPLOY_ALLOWED=NO
+OWNER_DEPLOY_APPROVED=NO
+POST_CODE_PRODUCTION_DEPLOYED=NO
+PREDICTION_CAPACITY_DEPLOY_CANDIDATE=NO
+FINAL_PREDICTION_STORE_DEPLOY_CANDIDATE=NO
+EXECUTION_PACK=NO
+NEXT_STEP=INDEPENDENT_REVIEW_OF_READONLY_FINAL_PREDICTION_STORE_CAPTURE

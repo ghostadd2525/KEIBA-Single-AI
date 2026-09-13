@@ -1,0 +1,24 @@
+After live bytes exist — not this pack
+======================================
+
+Do not run these steps from this capture pack.
+Do not create an execution pack from this capture pack.
+
+1. Verify captured app/ops/final_prediction_store.py SIZE/SHA against transcript + MANIFEST.
+2. AST-walk that file for further missing imports. No stub.
+3. Overlay onto origin/main 25a3f88:
+     the 11 hunk-only deploy candidates
+     plus live app/ops/prediction_capacity.py
+       (canon / SHA precondition; not a deploy candidate)
+     plus this live app/ops/final_prediction_store.py
+       (canon / SHA precondition; not a deploy candidate)
+4. Run review v6 52-test suite twice.
+5. Run DELETE-journal 4-process concurrency 20 times.
+6. Run live GET / Conversation / Challenge / RA regressions.
+7. Success requires those live bytes. Mocking
+   app.ops.final_prediction_store is not a pass.
+8. Publish a NEW review bundle. Do not overwrite
+   production_disabled_post_hunk_only_deploy_review_20260913.zip
+   SHA256 f194488073a98a54fc4fafcadb808f32d3e0b8e53665dcb317da7c7662824db4
+9. Do not overwrite the prediction_capacity capture pack ZIP
+   SHA256 9f91bebe1646d8686ec182ff8b70e12b215526508e4c62b7eb86055c25b6a143

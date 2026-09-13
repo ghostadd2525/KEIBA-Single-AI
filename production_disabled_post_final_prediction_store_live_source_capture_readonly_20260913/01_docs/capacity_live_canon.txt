@@ -1,0 +1,23 @@
+prediction_capacity.py is live canon, not a deploy candidate
+===========================================================
+
+Owner-verified capture (independent collation, CAPTURE_RESULT=GO):
+
+  FILE=app/ops/prediction_capacity.py
+  SIZE=15241
+  SHA256=c351bd9753d20994156e00141d564a55a42891983ecab5b2c5c55a32d9908f1e
+  CAPTURE_ZIP_SHA256=c04f27e6bc9016927c9a902268ccfeb5a8ac8a62117ca74948b90bc7cbbea843
+  PACK_ZIP_SHA256=9f91bebe1646d8686ec182ff8b70e12b215526508e4c62b7eb86055c25b6a143
+  TRANSCRIPT_MANIFEST_FILE_SHA_MATCH=YES
+  PYTHON_COMPILE=PASS
+
+PREDICTION_CAPACITY_DEPLOY_CANDIDATE=NO
+PREDICTION_CAPACITY_ROLE=LIVE_CANON_AND_SHA_PRECONDITION
+
+Use only as:
+  - Production existing-file SHA precondition
+  - overlay / repro-test live canon
+
+Do not add it to the 11 hunk-only deploy candidates.
+Do not overwrite the hunk-only ZIP.
+Do not recapture it in this pack.

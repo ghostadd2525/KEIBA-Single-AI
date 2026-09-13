@@ -1,0 +1,56 @@
+Read-only search — Production-identical app/ops/final_prediction_store.py
+=====================================================
+
+QUESTION: does any existing git object or artifact contain Production
+bytes of app/ops/final_prediction_store.py?
+
+METHOD (this run, read-only, no Production SSH)
+----------------------------------------------
+1. git log --all -- app/ops/final_prediction_store.py and *final_prediction_store*
+   RESULT=empty
+2. git log --all -S 'final_prediction_store' -- '*.py'
+   RESULT=empty (no python blob ever contained that identifier)
+3. git log --all -S 'persistent_store_enabled'
+   RESULT=empty
+4. git ls-tree origin/main 25a3f88 services/win5-ai/app/ops
+   RESULT=no final_prediction_store.py
+   origin ops/__init__.py does not export final_prediction_store
+   origin ops/__init__.py does not export prediction_capacity
+5. git ls-tree Production GIT_HEAD f02c50e8174d1537d829af3a0da6cc41d450baae
+   services/win5-ai/app/ops
+   RESULT=no final_prediction_store.py
+   (live-compare v5: worktree dirty; this file is not in that commit)
+6. Recursive find of final_prediction_store.py under
+   /tmp /workspace /opt/cursor/artifacts /home/ubuntu
+   RESULT=zero files
+7. Zip member name search for final_prediction_store across
+   /tmp /opt/cursor/artifacts /workspace
+   RESULT=zero members
+8. Cloud-agent transcripts mention the filename as a forbidden-file
+   list in older history-repair tasks
+   (path sometimes written as services/win5-ai/app/final_prediction_store.py).
+   Those mentions are not Production bytes and do not prove identity.
+
+JUDGMENT
+--------
+SEARCH_RESULT=NOT_FOUND
+IDENTITY_PROVEN=NO
+LIVE_SHA256=UNKNOWN
+Therefore a new Owner read-only capture of this one file is required.
+Do not invent or stub the file.
+Do not treat any fixture in this pack as Production bytes.
+
+LIVE DEPENDENCY (from Owner-verified prediction_capacity.py)
+------------------------------------------------------------
+from app.ops.final_prediction_store import get_store, persistent_store_enabled
+  (module path: app.ops.final_prediction_store)
+
+prediction_capacity.py is live canon / SHA precondition only.
+PREDICTION_CAPACITY_DEPLOY_CANDIDATE=NO
+FILE=app/ops/prediction_capacity.py
+SIZE=15241
+SHA256=c351bd9753d20994156e00141d564a55a42891983ecab5b2c5c55a32d9908f1e
+
+Scope of THIS pack is app/ops/final_prediction_store.py only.
+Do not recapture prediction_capacity.py.
+Do not overwrite the hunk-only ZIP or the capacity capture ZIP.
