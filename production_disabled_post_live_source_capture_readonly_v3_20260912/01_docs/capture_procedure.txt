@@ -1,0 +1,70 @@
+Owner read-only live-source capture — procedure
+==============================================
+
+Cursor must not SSH.
+Owner must not run until independent review of this pack PASSes.
+COMPARE_RESULT=GO from live-compare v5 is not deploy approval.
+
+What this does
+--------------
+On the Production SSH host, paste OWNER_PASTE_COMMAND_BLOCK.sh
+into bash. The script:
+
+  1. Discovers win5 via read-only `systemctl show expect-ai.service`
+     (-p Id, FragmentPath, WorkingDirectory, ExecStart, LoadState only).
+     Never requests Environment or EnvironmentFiles.
+  2. Opens exactly three files read-only, without following
+     filesystem symlinks:
+       app/main.py
+       app/data/repository/__init__.py
+       app/core/feature_loader_bridge.py
+     Each path must lstat as a regular file (symlink is STOP).
+     Linux open uses O_RDONLY|O_NOFOLLOW. After open, fstat must
+     still be regular, and /proc/self/fd must stay under the
+     resolved WIN5_ROOT with the expected relative path.
+     One violation among the three omits the tar/base64 payload.
+  3. Prints resolved path, size, SHA256 for each.
+  4. Builds tar.gz in memory (those three members only).
+  5. Prints the archive as base64 between
+       === TAR_BASE64_BEGIN ===
+       === TAR_BASE64_END ===
+  6. Prints CAPTURE_RESULT=GO|STOP
+
+What this does not do
+---------------------
+  - create or change any Production file
+  - SCP upload
+  - dump env values
+  - open sqlite / read DB rows
+  - collect race_id values
+  - print ExecStart or Environment
+  - run git pull / checkout / reset / merge
+  - deploy, APPLY, restart, migrate, POST
+
+Windows save (only place files are written)
+-------------------------------------------
+See 01_docs/windows_save_procedure.txt
+and OWNER_WINDOWS_SAVE.ps1.
+
+After capture
+-------------
+Owner returns the Windows transcript and extracted files.
+Then run locally (not on Production):
+
+  python3 extract_capture.py TRANSCRIPT --out extracted_live
+  python3 three_way_diff.py --live extracted_live
+
+Three sides:
+  origin/main 25a3f88b8aab61a5462c06efa133b21865ef6083
+  Production live bytes
+  code-deploy review v6 candidates
+
+Do not create a Production deploy/execution pack from that 3-way.
+
+Live root (last known):
+  /home/ubuntu/KEIBA-Single-AI/services/win5-ai
+Unit:
+  expect-ai.service
+
+main.py later rule (not authorized by this pack):
+  DIVERGENT => hunk only; never wholesale replace.
