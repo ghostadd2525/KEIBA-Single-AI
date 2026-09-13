@@ -1,0 +1,100 @@
+Read-only check matrix
+======================
+
+Host: ubuntu@13.231.5.5 (Owner Windows PS 5.1 SSH stdin only).
+Cursor SSH=NO.
+Approval for any later probe pack is separate. This file is the design.
+
+A. Original restart exit/stderr (do not re-issue restart)
+---------------------------------------------------------
+1. Owner transcript (required): search RESTART_*, HALT_REASON, SSH_EXIT.
+   Expect RESTART_COMMAND=systemctl restart expect-ai.service
+   Expect no SYSTEMCTL_RESTART_EXIT (payload did not emit it).
+2. journalctl read-only, no pager, bounded:
+     journalctl -u expect-ai.service -n 80 --no-pager
+     journalctl -u expect-ai.service --since "2026-09-13 00:00:00" --no-pager
+     journalctl -t python3 -n 20 --no-pager
+   Look for: Access denied, Interactive authentication required,
+   Failed to restart, Timed out, start-limit, MainPID changes.
+3. Do NOT run `systemctl restart` to recreate exit code.
+   HISTORICAL_RESTART_RC=UNKNOWN unless journal/transcript contains it.
+   Record that unknown vs confirmed.
+
+B. Can ubuntu restart without sudo?
+-----------------------------------
+  id
+  systemctl --version
+  systemctl show expect-ai.service --property=Id,LoadState,ActiveState,SubState,MainPID,FragmentPath,User,Group,Environment,EnvironmentFiles,ActiveEnterTimestamp,InactiveEnterTimestamp,NRestarts,Result,ExecMainStartTimestamp
+  (restart is NOT in this argv)
+  If show works: SYSTEMCTL_SHOW_AS_UBUNTU=YES
+  Restart permission is independent of show.
+
+C. sudo -n restart permission (list only)
+-----------------------------------------
+  sudo -n -l
+  sudo -n -l -U ubuntu
+  Parse whether any NOPASSWD spec matches
+    /bin/systemctl restart expect-ai.service
+    /usr/bin/systemctl restart expect-ai.service
+    systemctl restart expect-ai.service
+  Record:
+    SUDO_N_L_EXIT
+    SUDO_N_L_HAS_SYSTEMCTL_RESTART_EXPECT_AI=YES|NO
+    SUDO_N_L_HAS_UNRESTRICTED_SYSTEMCTL=YES|NO
+  Never execute those commands.
+
+D. Unit now
+-----------
+  From B: LoadState, ActiveState, MainPID
+  Read /proc/<MainPID>/comm and starttime (stat field) read-only
+  Compare ActiveEnterTimestamp to Owner log STARTED/FINISHED
+  If MainPID started during the failed deploy window AND disk is restored:
+    RUNNING_PROCESS_MAY_HAVE_CANDIDATE_BYTES=YES
+    (no recovery restart ran)
+  If MainPID predates FILES_REPLACED:
+    RUNNING_PROCESS_LIKELY_PREDEPLOY_BYTES=YES
+
+E. 11 targets restored?
+-----------------------
+  sha256sum or Python hashlib on the LIVE_SHA four files
+  lstat ABSENT seven paths (must not exist)
+  Compare to 01_docs/restore_sha_canon.txt
+  RESTORE_DISK_MATCH=YES only if all 11 match.
+
+F. Flags unset/0
+----------------
+  From systemctl show Environment + EnvironmentFiles (read files)
+  From /proc/<MainPID>/environ if readable
+  Do not print secrets except watched keys:
+    PREDICTION_RUNS_ENABLED
+    EXPECT_AI_ALLOW_MIGRATION_022
+    EXPECT_AI_ALLOW_MIGRATION_019
+  Effective 1 => STOP later deploy; do not change them.
+
+G. Schema 23 / 12 / partial UNIQUE
+----------------------------------
+  DB=/home/ubuntu/KEIBA-Single-AI/services/win5-ai/var/expect_ai.db
+  sqlite3 URI mode=ro + PRAGMA query_only=ON
+  SELECT version FROM schema_migrations ORDER BY 1  => 23 including
+    022_prediction_run_idempotency, not 019_prediction_run_idempotency
+  PRAGMA table_info(predictions) => 12 columns
+  index uq_predictions_idempotency_key_not_null UNIQUE on
+    idempotency_key WHERE idempotency_key IS NOT NULL
+  No DDL.
+
+HTTP
+----
+  Optional GET /health only if needed to see if the process is serving.
+  No POST. No /v1/prediction-runs.
+
+Pass/fail of this diagnosis (design)
+------------------------------------
+DIAGNOSIS_COMPLETE=YES when A-G all recorded (unknown is an allowed
+value for historical restart rc).
+RESTORE_DISK_MATCH=YES|NO
+SUDO_N_L_HAS_SYSTEMCTL_RESTART_EXPECT_AI=YES|NO
+SYSTEMCTL_SHOW_AS_UBUNTU=YES|NO
+RUNNING_PROCESS_MAY_HAVE_CANDIDATE_BYTES=YES|NO
+SCHEMA_READONLY_PASS=YES|NO
+FLAGS_UNSET_OR_0=YES|NO
+Do not translate this into a new deploy pack automatically.

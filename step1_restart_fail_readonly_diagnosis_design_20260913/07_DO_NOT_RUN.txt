@@ -1,0 +1,6 @@
+Do not run any Production command from this folder.
+This is a diagnosis DESIGN for PR #64.
+Do not restart expect-ai.service.
+Do not re-run OWNER_DEPLOY.ps1.
+Do not create a new deploy pack from this folder.
+Cursor does not SSH.

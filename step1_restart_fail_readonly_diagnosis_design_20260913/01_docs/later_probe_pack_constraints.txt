@@ -1,0 +1,27 @@
+Proposed later Owner probe (not shipped as a pack in this change)
+=================================================================
+
+If a later read-only diagnosis pack is requested, it MUST:
+- Owner Windows PowerShell 5.1 only
+- Verify pack/payload SHA before SSH
+- Halt unless a dedicated approval env is 1
+  (not OWNER_PRODUCTION_STEP1_DEPLOY_APPROVED)
+- Refuse OWNER_DEPLOY.ps1 re-run
+- Embed no candidate tar; copy no files
+- run_cmd may include sudo only as: sudo -n -l
+- argv denylist: restart, reload, start, stop, enable, disable, edit,
+  daemon-reload, kill
+- sqlite mode=ro query_only
+- emit SYSTEMCTL_SHOW_*, SUDO_N_L_*, FILE_SHA_*, ABSENT_*, SCHEMA_*,
+  FLAG_*, JOURNAL_SNIPPET (redact secrets)
+- timeout >= 30s for journalctl; still no restart
+- write transcript only under Owner Downloads; refuse overwrite
+
+It MUST NOT:
+- call systemctl restart/reload
+- restore or replace code
+- POST, migrate, change env/systemd
+- merge the PR
+
+This design change does not include that pack ZIP.
+Wait for Owner to return the existing deploy transcript first.

@@ -1,0 +1,63 @@
+Inference from Owner execution result + existing payload bytes
+==============================================================
+
+Sequence encoded by the reviewed stdin (owner_deploy_stdin.py)
+--------------------------------------------------------------
+1. refuse unless OWNER_PRODUCTION_STEP1_DEPLOY_APPROVED=1
+2. collect env (systemctl show, no restart)
+3. schema read-only, ops SHA, MUST_ABSENT, LIVE_SHA/ABSENT
+4. backup 11 targets
+5. stage + py_compile + os.replace
+6. schema/env/ops again
+7. restart_once("DEPLOY") = argv exactly:
+     systemctl restart expect-ai.service
+   SUDO=NO. Pack refuses any argv containing sudo.
+8. On non-zero return: Halt("RESTART_FAIL") BEFORE setting
+     STATE.restart_executed = True
+9. fail_closed: restore_code_only(); maybe_recovery_restart()
+   Recovery restart runs ONLY if restart_executed AND restored.
+   Owner: RESTART_EXECUTED=NO and CODE_RESTORED=YES
+   => recovery restart must not have been attempted.
+   This matches RESTART_EXECUTED=NO.
+
+What the payload did not record
+-------------------------------
+run_cmd() captures stderr but returns only (returncode, stdout).
+restart_once() does not emit:
+  SYSTEMCTL_RESTART_EXIT
+  SYSTEMCTL_RESTART_STDOUT
+  SYSTEMCTL_RESTART_STDERR
+  SYSTEMCTL_RESTART_TIMEOUT
+On timeout or OSError it returns (1, "") with empty stdout.
+
+Therefore the original Owner transcript cannot contain the exact
+restart exit code/stderr unless those lines were added by systemd
+to journald. The payload itself discarded them.
+
+SUBPROCESS_TIMEOUT_S = 8
+------------------------
+If `systemctl restart expect-ai.service` is permitted but takes
+longer than 8s, Python kills the wait and run_cmd returns 1.
+The pack then HALTs RESTART_FAIL and restores files WITHOUT a
+recovery restart (because restart_executed stayed False).
+Disk would be restored; systemd may still have accepted a restart.
+That case MUST be checked via journalctl + MainPID/ActiveEnterTimestamp
+without issuing another restart.
+
+Likely classes (hypothesis, not confirmed)
+------------------------------------------
+A. Permission: ubuntu Interactive authentication / Access denied / polkit.
+   systemctl show can succeed while restart fails.
+B. Timeout: restart took >8s; rc synthesized as 1; stderr empty in pack.
+C. Unit not found / LoadState != loaded (less likely: preconditions passed
+   and collect_production_env already called systemctl show).
+D. systemctl restart started, then wait failed; process may have new code.
+
+Owner transcript still needed
+-----------------------------
+Return the Downloads
+  production_disabled_post_hunk_only_step1_owner_deploy_execution_20260913_output_*.txt
+without redacting:
+  RESTART_COMMAND, RESTART_PHASE, SUDO_USED, BEFORE_/AFTER_ systemd keys,
+  BACKUP_DIR, POST_REPLACE_SHA_*, CODE_RESTORED, HALT_REASON.
+Do not re-run the deploy pack to regenerate it.
