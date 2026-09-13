@@ -27,7 +27,8 @@ AUDIT_STATUS=FAILED
 REAPPLY_ALLOWED=NO
 OWNER_DEPLOY_PS1_RERUN_ALLOWED=NO
 PRODUCTION_CODE_DEPLOY_ALLOWED=NO
-NEXT_STEP=READ_ONLY_RESTART_FAILURE_AND_RESTORE_STATE_DIAGNOSIS
+OWNER_READONLY_STEP1_PROBE_APPROVED=YES
+NEXT_STEP=OWNER_RUNS_REVIEWED_READONLY_RESTART_FAILURE_STATE_PROBE
 
 022 schema / DB / env / systemd definitions reported unchanged.
 Production code reported restored from the immediate pre-deploy backup.
@@ -57,8 +58,10 @@ known and specify the remaining read-only checks for:
 See 01_docs/seven_targets_log_diagnosis.txt and
 01_docs/readonly_command_plan.txt.
 
-A probe ZIP already exists from a prior turn
+A probe ZIP already exists and is frozen
 (production_step1_restart_fail_readonly_probe_20260913.zip
 SHA256 d9cff97f381a5ad36a4c743a7d85ba9d3840e90405f379525115987b807ddb9e).
-This design does not recreate it, does not authorize running it, and
-does not treat it as a new deploy pack.
+Independent review of that ZIP is PASS.
+Owner is approved to run OWNER_PROBE.ps1 once from Windows PS 5.1 after
+setting OWNER_READONLY_STEP1_PROBE_APPROVED=1 (literal 1, not YES).
+Cursor does not SSH. Do not run OWNER_DEPLOY.ps1. Do not restart.
