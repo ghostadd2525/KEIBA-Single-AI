@@ -1,0 +1,10 @@
+LIVE_CANON_OPS_BYTES=NOT_IN_THIS_WORKSPACE
+STUB_OR_MOCK=NO
+Do not invent these files.
+Required:
+  app/ops/prediction_capacity.py SIZE=15241 SHA256=c351bd9753d20994156e00141d564a55a42891983ecab5b2c5c55a32d9908f1e
+  app/ops/final_prediction_store.py SIZE=22775 SHA256=40352ff56b3267533267d5de9c893f3bda8963d5fe121474f7785b0152594a12
+Owner return ZIPs:
+  prediction_capacity c04f27e6bc9016927c9a902268ccfeb5a8ac8a62117ca74948b90bc7cbbea843
+  final_prediction_store f24d10d28ab99286894e36f60ff53fba3b89c087cac8afaa607c95a5b7670f8d
+These are NOT deploy candidates.

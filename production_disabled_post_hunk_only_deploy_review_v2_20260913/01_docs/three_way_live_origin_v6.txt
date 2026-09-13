@@ -1,0 +1,31 @@
+Three-way: live capture v3 / origin/main 25a3f88 / review v6
+===========================================================
+
+app/main.py
+  live     SIZE=45983 SHA256=7486a9ad7578e9ccdf883eaaac85f0b0de7ba329e286302b8d2f57db81d79235
+  origin   SIZE=42291 SHA256=a54f1eaa5b8540c2f08d8b0e656a3ccbb78142d4d1cb2c8951e4105f3630184e
+  v6       SIZE=44653 SHA256=7577973c16eb7aad395cd11acae3c8ef987a3c0533924c1994ae32afeaf818e5
+  hunked   SIZE=48345 SHA256=a4970e70778da58f987df4a7316c9dfbd0a660c7a3bc31088d731869a4983a9c
+  JUDGMENT=DIVERGENT  ACTION=hunk-only on live  WHOLESALE=FORBIDDEN
+
+app/data/repository/__init__.py
+  live     SIZE=12823 SHA256=557713a95b0e9f5a8f798eeb5e525c85adab3063b2e6529ee0be2155bb29992b
+  origin   SIZE=12823 SHA256=557713a95b0e9f5a8f798eeb5e525c85adab3063b2e6529ee0be2155bb29992b
+  v6       SIZE=18441 SHA256=9624699ec48d2af8b1fdc24ac81b8ae436c77ffa92a7f0b1378ecd17248b4c08
+  JUDGMENT=LIVE_EQUALS_ORIGIN  ACTION=deploy v6 candidate after LIVE_SHA check
+
+app/core/feature_loader_bridge.py
+  live     SIZE=1408  SHA256=e06e6ee971e2ae8d07bbcee4501ab9024052de52dd119ea007cb71481ae5272e
+  origin   SIZE=1408  SHA256=e06e6ee971e2ae8d07bbcee4501ab9024052de52dd119ea007cb71481ae5272e
+  v6       SIZE=3394  SHA256=f3c25c7b87941138555158e051d0520fc705889e8a2a17e8889c7fc5325eae44
+  JUDGMENT=LIVE_EQUALS_ORIGIN  ACTION=deploy v6 candidate after LIVE_SHA check
+
+app/data/db.py (not in capture ZIP; live-compare v5)
+  live-compare v5  SHA256=8a86f514b1b08fde9a90a71acc99eac3f6fc9c2aeae200e8787721093592ef1a
+  origin           SHA256=8a86f514b1b08fde9a90a71acc99eac3f6fc9c2aeae200e8787721093592ef1a
+  v6               SHA256=81fc91adbe53aa091841fd9ea097b7cbd63cf4ede4a3699bf66e1c7a2343136f
+  JUDGMENT=MATCH_ORIGIN_MAIN  ACTION=deploy v6 candidate after LIVE_SHA check
+
+predictions/* and 022.sql file
+  live=ABSENT (live-compare v5). Schema 022 is COMMITTED.
+  ACTION=copy files if still ABSENT. Never apply 022 SQL.
