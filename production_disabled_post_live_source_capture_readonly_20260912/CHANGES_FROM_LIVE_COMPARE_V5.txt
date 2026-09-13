@@ -1,0 +1,33 @@
+Why this pack is not live-compare v5
+====================================
+
+live-compare v5 already ran. Owner transcript SHA256:
+  4a65fd2ca5f54284268975d90d28e65222c785421b204567bb3bf1780be28c94
+COMPARE_RESULT=GO. That is evidence only, not deploy approval.
+
+This pack does a different job:
+  - read-only open of three live source files
+  - print path / size / SHA256
+  - emit those three files as tar.gz base64 on stdout
+  - Windows saves the bytes
+  - after return, local 3-way vs origin/main 25a3f88 and review v6
+
+This pack does NOT:
+  - re-read sqlite / schema / index
+  - classify PREDICTION_RUNS_ENABLED or migration flags
+  - print ExecStart / Environment
+  - run git on Production
+  - create a deploy execution pack
+  - overwrite live-compare v1-v5 or review v1-v6 ZIPs
+
+Capture targets (only):
+  app/main.py
+  app/data/repository/__init__.py
+  app/core/feature_loader_bridge.py
+
+v5 already classified:
+  main.py = DIVERGENT (hunk-only later)
+  repository/__init__.py = DIFFER
+  feature_loader_bridge.py = DIFFER
+This pack fetches the actual live bytes so the later 3-way can
+show the real diffs. It does not authorize replacing those files.

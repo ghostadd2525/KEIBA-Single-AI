@@ -1,0 +1,22 @@
+Output judgment table (live-source capture)
+==========================================
+
+Field                              How to read
+---------------------------------  ------------------------------------------
+WIN5_ROOT                          Runtime win5 path (app/main.py exists)
+SYSTEMD_SHOW                       OK or FAIL (FAIL still tries fallbacks)
+SYSTEMD_LOADSTATE                  recorded; not a hard STOP by itself
+SYSTEMD_WORKINGDIRECTORY           recorded when systemd show succeeded
+CAPTURE_REL / CAPTURE_PATH         Relative name and resolved live path
+CAPTURE_SIZE / CAPTURE_SHA256      Live file size and SHA256
+CAPTURE_OPEN                       OK | ABSENT | FAIL
+TAR_MEMBER_COUNT                   3 on GO; 0 when payload omitted
+TAR_GZ_SHA256 / TAR_B64_SHA256     Integrity of the stdout payload
+CAPTURE_RESULT                     GO = three files captured
+                                   STOP = missing/unreadable/not found
+STOP_REASON                        evidence gap; do not deploy
+LATER 3-way CLASS                  MATCH_ORIGIN_MAIN | MATCH_V6 |
+                                   DIVERGENT | ABSENT
+MAIN_PY_LATER_MODE                 HUNK_ONLY when DIVERGENT
+PRODUCTION_CODE_DEPLOY_ALLOWED     always NO from this pack
+DEPLOY_EXECUTION_PACK              always NO

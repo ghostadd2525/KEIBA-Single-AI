@@ -1,0 +1,48 @@
+Three-way after Owner returns live bytes
+=======================================
+
+This runs on Windows or the review machine only.
+It does not SSH. It does not write Production.
+It is not a deploy approval.
+
+Sides
+-----
+1. origin/main 25a3f88b8aab61a5462c06efa133b21865ef6083
+   Bundled under reference/origin_main_25a3f88/
+   Extracted from review v6 base tar
+     SHA256=d1e6b5847f1387d696d39b87ad0dbfa4e44f8322ad1caecb75ce0969bad5edff
+
+2. Production live
+   The three files Owner captured and extracted on Windows.
+
+3. code-deploy review v6 candidates
+   Bundled under reference/review_v6/
+   ZIP SHA256=548b274facc2b4f8ffba8b854a6e009d8b7455fb816dcde9550eb9b364329373
+
+Command
+-------
+  python3 three_way_diff.py --live extracted_live
+
+Without --live, or if the directory is missing, the harness prints
+CAPTURE_RETURNED=NO and exits 0. That is expected before Owner
+returns bytes. Self-tests use fixtures, not Production.
+
+Classes per file
+----------------
+  MATCH_ORIGIN_MAIN  live SHA == origin/main 25a3f88
+  MATCH_V6           live SHA == review v6 candidate
+  DIVERGENT          live SHA equals neither
+  ABSENT             captured file missing
+
+main.py later rule (still not authorized here):
+  DIVERGENT => hunk only; never wholesale replace
+  MATCH_ORIGIN_MAIN => later pack may use v6 POST hunk / file vs origin/main
+  MATCH_V6 => already the candidate; do not overwrite unless a new review says so
+
+v5 already reported live main.py=DIVERGENT. The 3-way must confirm
+that with the actual live bytes before any later hunk is designed.
+
+Do not create a Production deploy/execution pack from this 3-way.
+PRODUCTION_CODE_DEPLOY_ALLOWED=NO
+OWNER_DEPLOY_APPROVED=NO
+POST_CODE_PRODUCTION_DEPLOYED=NO
