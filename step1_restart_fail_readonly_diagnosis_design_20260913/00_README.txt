@@ -1,18 +1,52 @@
-Read-only diagnosis DESIGN for step1 RESTART_FAIL + CODE_RESTORED
-================================================================
+Read-only diagnosis DESIGN for step1 restore + v2 HTTP_FAIL
+===========================================================
 
 THIS IS NOT A DEPLOY PACK.
 THIS IS NOT AN EXECUTION PACK.
 THIS IS NOT A CAPTURE PACK.
-Do not run OWNER_DEPLOY.ps1 again.
-Do not create a replacement deploy pack from this document.
+Do not run OWNER_DEPLOY.ps1 (v1).
+Do not run OWNER_DEPLOY_V2.ps1 (v2).
+Do not create a v3 deploy pack from this document.
 Do not systemctl restart or reload.
 Do not sudo -n systemctl restart.
 Cursor does not SSH.
 Additional capture is not required for this design.
 
-Frozen Owner result
--------------------
+Current Owner result (v2) — do not rerun v2
+-------------------------------------------
+STEP1_V2_RESULT=FAILED_AND_RESTORED
+V2_RERUN_ALLOWED=NO
+SYSTEMCTL_RESTART_EXIT=0
+SYSTEMCTL_RESTART_TIMEOUT=NO
+RESTART_MAINPID_CHANGED=YES
+RESTART_OUTCOME=SUCCESS
+DEPLOY_RESTART_COUNT=1
+HALT_REASON=HTTP_FAIL
+CODE_RESTORED=YES
+RECOVERY_RESTART_EXECUTED=YES
+RECOVERY_RESTART_COUNT=1
+DEPLOY_PHASE=RESTORED
+POST_CODE_PRODUCTION_DEPLOYED=NO
+SSH_EXIT=2
+SUDO_RESTART_PERMISSION=RESOLVED
+HYPOTHESIS=POST_RESTART_STARTUP_WAIT_INSUFFICIENT
+HYPOTHESIS_CONFIRMED=NO
+V3_DEPLOY_PACK=NO
+NEXT_STEP=OWNER_DECISION_RERUN_EXISTING_REVIEWED_READONLY_PROBE
+
+See STEP1_V2_HTTP_FAIL_RECORD.txt.
+Restart permission is resolved. The new failure is health/HTTP
+immediately after a successful restart. Do not confirm the wait
+hypothesis yet. Do not build v3.
+
+Existing probe ZIP is frozen and reused unchanged
+(production_step1_restart_fail_readonly_probe_20260913.zip
+SHA256 d9cff97f381a5ad36a4c743a7d85ba9d3840e90405f379525115987b807ddb9e).
+Independent review of that ZIP is PASS. First Owner probe run is DONE.
+This design does NOT authorize a second run. Owner must decide.
+
+Historical Owner result (v1) — do not rerun v1
+----------------------------------------------
 STEP1_DEPLOY_RESULT=FAILED_AND_RESTORED
 PRECONDITIONS_PASS=YES
 BACKUP_RECORDED=YES
@@ -61,7 +95,9 @@ See 01_docs/seven_targets_log_diagnosis.txt and
 A probe ZIP already exists and is frozen
 (production_step1_restart_fail_readonly_probe_20260913.zip
 SHA256 d9cff97f381a5ad36a4c743a7d85ba9d3840e90405f379525115987b807ddb9e).
-Independent review of that ZIP is PASS.
-Owner is approved to run OWNER_PROBE.ps1 once from Windows PS 5.1 after
-setting OWNER_READONLY_STEP1_PROBE_APPROVED=1 (literal 1, not YES).
-Cursor does not SSH. Do not run OWNER_DEPLOY.ps1. Do not restart.
+Independent review of that ZIP is PASS. First Owner probe run is DONE.
+A second run is NOT authorized by this design.
+If Owner later approves a rerun, use the same ZIP and OWNER_PROBE.ps1
+with OWNER_READONLY_STEP1_PROBE_APPROVED=1 (literal 1, not YES).
+Cursor does not SSH. Do not run OWNER_DEPLOY.ps1 or OWNER_DEPLOY_V2.ps1.
+Do not restart. Do not create v3.

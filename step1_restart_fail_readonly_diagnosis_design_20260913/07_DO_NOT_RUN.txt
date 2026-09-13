@@ -2,17 +2,29 @@ Do not run any Production command from this folder.
 This is a diagnosis DESIGN for PR #64.
 Do not restart or reload expect-ai.service.
 Do not run sudo -n systemctl restart expect-ai.service.
-Do not re-run OWNER_DEPLOY.ps1.
-Do not create a new deploy pack from this folder.
+Do not re-run OWNER_DEPLOY.ps1 (v1).
+Do not re-run OWNER_DEPLOY_V2.ps1 (v2).
+Do not create a v3 deploy pack from this folder.
 Do not add a capture pack.
+Do not change the existing probe ZIP.
 Cursor does not SSH.
 REAPPLY_ALLOWED=NO
 OWNER_DEPLOY_PS1_RERUN_ALLOWED=NO
+V2_RERUN_ALLOWED=NO
 PRODUCTION_CODE_DEPLOY_ALLOWED=NO
 POST_CODE_PRODUCTION_DEPLOYED=NO
-NEXT_STEP=OWNER_RUNS_REVIEWED_READONLY_RESTART_FAILURE_STATE_PROBE
+HYPOTHESIS_CONFIRMED=NO
+V3_DEPLOY_PACK=NO
+NEXT_STEP=OWNER_DECISION_RERUN_EXISTING_REVIEWED_READONLY_PROBE
+PROBE_PACK_RERUN_AUTHORIZED_BY_THIS_DESIGN=NO
+OWNER_READONLY_STEP1_PROBE_RERUN_APPROVED=NO
+First Owner probe run is DONE. A second run needs a NEW Owner decision.
+If Owner later approves a rerun, reuse the existing reviewed ZIP unchanged:
+  production_step1_restart_fail_readonly_probe_20260913.zip
+  SHA256=d9cff97f381a5ad36a4c743a7d85ba9d3840e90405f379525115987b807ddb9e
+  entry=02_powershell/OWNER_PROBE.ps1
+  env=OWNER_READONLY_STEP1_PROBE_APPROVED=1
 Do not run OWNER_DEPLOY.ps1.
+Do not run OWNER_DEPLOY_V2.ps1.
 Do not restart expect-ai.service.
 Cursor does not SSH.
-Owner may run the reviewed probe pack once via OWNER_PROBE.ps1
-after setting OWNER_READONLY_STEP1_PROBE_APPROVED=1.

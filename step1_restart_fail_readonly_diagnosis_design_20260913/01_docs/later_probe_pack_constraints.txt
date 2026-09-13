@@ -40,6 +40,8 @@ It MUST NOT:
 - become a new deploy pack
 
 NEXT_STEP for this design folder:
-READ_ONLY_RESTART_FAILURE_AND_RESTORE_STATE_DIAGNOSIS
-Not: run OWNER_PROBE.ps1
-Not: build another ZIP
+OWNER_DECISION_RERUN_EXISTING_REVIEWED_READONLY_PROBE
+This design still does NOT authorize OWNER_PROBE.ps1.
+First Owner probe run is DONE. A second run needs a NEW Owner decision.
+Reuse the existing reviewed ZIP unchanged; do not build another ZIP.
+Do not build v3. Do not confirm POST_RESTART_STARTUP_WAIT_INSUFFICIENT yet.
