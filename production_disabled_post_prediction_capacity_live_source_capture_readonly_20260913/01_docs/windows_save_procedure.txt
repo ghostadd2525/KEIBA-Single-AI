@@ -1,0 +1,8 @@
+Windows save — same contract as capture v3
+==========================================
+
+PowerShell 5.1.
+Send OWNER_PASTE_COMMAND_BLOCK.sh with [IO.File]::ReadAllBytes.
+Do not Get-Content -Raw the Owner script.
+Existing OutDir => STOP before SSH.
+Cursor does not SSH.
