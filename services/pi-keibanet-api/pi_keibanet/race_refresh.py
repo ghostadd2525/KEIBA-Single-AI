@@ -44,7 +44,7 @@ class RefreshConfig:
     data_root: Path
     state_root: Path
     min_interval_sec: float = 1.0
-    window_start_hour: int = 8
+    window_start_hour: int = 7
     window_end_hour: int = 20
     tz: ZoneInfo = JST
     # When set, features are written under this data root (demo_daily_outputs/...)
@@ -57,7 +57,7 @@ class RefreshConfig:
         state_raw = (os.environ.get("PI_RACE_REFRESH_STATE_ROOT") or "").strip()
         state_root = Path(state_raw) if state_raw else data_root / "var" / "race_refresh"
         min_interval = float(os.environ.get("PI_NETKEIBA_MIN_INTERVAL_SEC", "1.0"))
-        start_h = int(os.environ.get("PI_RACE_REFRESH_START_HOUR", "8"))
+        start_h = int(os.environ.get("PI_RACE_REFRESH_START_HOUR", "7"))
         end_h = int(os.environ.get("PI_RACE_REFRESH_END_HOUR", "20"))
         shadow_raw = (os.environ.get("PI_FEATURES_SHADOW_DIR") or "").strip()
         shadow_dir = Path(shadow_raw) if shadow_raw else None
