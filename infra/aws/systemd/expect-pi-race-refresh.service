@@ -12,7 +12,7 @@ Environment=PI_KEIBANET_MIN_INTERVAL_SEC=1.0
 Environment=PI_AI_PLATFORM_ROOT=/opt/expect-ai/platform
 Environment=PI_DATA_ROOT=/opt/expect-ai/platform/data
 Environment=PI_RACE_REFRESH_STATE_ROOT=/opt/expect-ai/platform/data/var/race_refresh
-Environment=PI_RACE_REFRESH_START_HOUR=8
+Environment=PI_RACE_REFRESH_START_HOUR=7
 Environment=PI_RACE_REFRESH_END_HOUR=20
 ExecStart=/usr/bin/python3 scripts/prod_race_refresh.py
 

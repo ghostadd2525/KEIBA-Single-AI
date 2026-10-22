@@ -1,5 +1,5 @@
 [Unit]
-Description=Expect PI Race Refresh — every 15 min (script gates 08:00-20:00 JST)
+Description=Expect PI Race Refresh — every 15 min (script gates 07:00-20:00 JST)
 
 [Timer]
 # EC2: timedatectl set-timezone Asia/Tokyo 推奨

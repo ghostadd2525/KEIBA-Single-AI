@@ -17,7 +17,7 @@ from pi_keibanet.race_refresh import RefreshConfig, now_jst, run_refresh, write_
 def main() -> int:
     parser = argparse.ArgumentParser(description="Refresh published races → features")
     parser.add_argument("--date", default=None, help="YYYY-MM-DD (default: today JST)")
-    parser.add_argument("--force", action="store_true", help="Run even outside 08:00-20:00 window")
+    parser.add_argument("--force", action="store_true", help="Run even outside 07:00-20:00 window")
     parser.add_argument(
         "--shadow-dir",
         default=None,
