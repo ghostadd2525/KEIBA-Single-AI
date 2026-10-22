@@ -56,10 +56,19 @@ describe("raceCardSummaryHtml / data-race-honmei", () => {
   it("ready カードに data-race-honmei と data-confidence-band", () => {
     const bind = loadBind();
     const html = bind.raceCardSummaryHtml(ready, { listDate: "2026-07-25" });
+    // データ連携用の属性（検索・お気に入りが使用）
     assert.match(html, /data-race-honmei="コルドンブルー"/);
     assert.match(html, /data-confidence-band="medium"/);
     assert.match(html, /data-prediction-status="ready"/);
-    assert.match(html, /aria-label="本命 4番 コルドンブルー"/);
+    // 読み上げ契約（現行）: リンクの識別情報はテキストで提供され、
+    // 自信度欄とお気に入りボタンに aria-label が付く。
+    // 一覧で視覚表示していない本命情報を、読み上げ専用の
+    // aria-label としては要求しない。
+    assert.match(html, /新潟 6R/);
+    assert.match(html, /豊栄特別/);
+    assert.match(html, /aria-label="このレースの自信度 [^"]+"/);
+    assert.match(html, /aria-label="お気に入りに追加"/);
+    assert.doesNotMatch(html, /aria-label="本命/);
   });
 
   it("missing は data-race-honmei 空文字", () => {
@@ -195,9 +204,17 @@ describe("Flag OFF 恒等 — 検索 haystack", () => {
 });
 
 describe("Feature Flag 既定（検索は v2_race_list_ui に連動）", () => {
-  it("beta.json で v2_race_list_ui は false", () => {
+  it("コード既定値: v2_race_list_ui は OFF（本番設定の実値は検証しない）", () => {
+    // Flag の契約は 2 層に分かれる（実値を検証するものではない）:
+    //  - コード既定値: betaConfig.js の DEFAULTS では OFF
+    //  - 本番設定値: public/config/beta.json は Release Version 2
+    //    （commit 03e7a4f5）で意図的に ON
+    const src = readFileSync(join(ROOT, "functions/_lib/betaConfig.js"), "utf8");
+    const m = src.match(/v2_race_list_ui:\s*(true|false)/);
+    assert.ok(m, "betaConfig.js に v2_race_list_ui 既定値が存在する");
+    assert.equal(m[1], "false");
     const beta = JSON.parse(readFileSync(join(ROOT, "public/config/beta.json"), "utf8"));
-    assert.equal(beta.ui_features.v2_race_list_ui, false);
+    assert.equal(typeof beta.ui_features.v2_race_list_ui, "boolean");
   });
 
   it("races.html が race-search.js を読み込む", () => {

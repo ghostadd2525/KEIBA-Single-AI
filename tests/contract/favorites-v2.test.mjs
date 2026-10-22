@@ -106,7 +106,13 @@ describe("RaceCardSummary → ExpectFavorites", () => {
     assert.equal(item.confPct, 42);
     assert.equal(item.place, "新潟 6R");
     assert.equal(item.name, "豊栄特別");
-    const raw = JSON.parse(store.expect_favorites_v1);
+    // 保存先キーは実装のキー解決（ユーザー未ログイン時は :guest）に従う。
+    // 旧キー名を固定参照せず、実装が書いた先を検証する。
+    const savedKeys = Object.keys(store).filter((k) =>
+      k.startsWith("expect_favorites_v1")
+    );
+    assert.equal(savedKeys.length, 1, "favorites 保存キーが 1 件だけある");
+    const raw = JSON.parse(store[savedKeys[0]]);
     assert.equal(raw[0].honmei, "コルドンブルー");
     assert.equal(raw[0].confPct, 42);
   });
@@ -122,18 +128,33 @@ describe("RaceCardSummary → ExpectFavorites", () => {
   });
 });
 
-describe("cardHtml / Flag OFF 恒等", () => {
-  it("Flag ON で ◎ と信頼度% を表示", () => {
+describe("cardHtml / ホーム表示契約", () => {
+  // 現行仕様: ホームのお気に入りカードはレース情報のみを表示し、
+  // 本命・信頼度は出さない（public/assets/styles.css の
+  // 「ホームお気に入りはレース情報のみ（予想・信頼度は出さない）」）。
+  // 本命・信頼度のデータ保持は表示とは分けて検証する。
+  it("Flag ON でもホームカードに本命・信頼度を表示しない（データは保持）", () => {
     const { Fav } = loadFavorites(true);
     Fav.cacheBundles([ready]);
     Fav.add(ready.race_id);
-    const html = Fav.cardHtml(Fav.list()[0], false);
-    assert.match(html, /fav-summary/);
-    assert.match(html, /◎ 4 コルドンブルー/);
-    assert.match(html, /42%/);
+    const item = Fav.list()[0];
+    // データ保持: 本命・信頼度は item に保持される
+    assert.equal(item.honmei, "コルドンブルー");
+    assert.equal(item.honmeiNum, 4);
+    assert.equal(item.confPct, 42);
+    // 表示: fav-summary / 本命 / 信頼度% は出力されない
+    const html = Fav.cardHtml(item, false);
+    assert.doesNotMatch(html, /fav-summary/);
+    assert.doesNotMatch(html, /◎/);
+    assert.doesNotMatch(html, /コルドンブルー/);
+    assert.doesNotMatch(html, /42%/);
+    // レース識別情報は表示される
+    assert.match(html, /fav-name/);
+    assert.match(html, /豊栄特別/);
+    assert.match(html, /新潟 6R/);
   });
 
-  it("Flag OFF では fav-summary を出さない（v1.1 恒等）", () => {
+  it("Flag OFF でも表示は同じで、データは保持される", () => {
     const { Fav } = loadFavorites(false);
     Fav.cacheBundles([ready]);
     Fav.add(ready.race_id);
@@ -179,10 +200,23 @@ describe("raceCardSummaryHtml / data-fav-*", () => {
 });
 
 describe("beta.json Flag 既定", () => {
-  it("v2_race_list_ui は false", () => {
+  // Flag の契約は 2 層（コード既定値と本番設定値）に分かれる。
+  // config/beta.json は Release Version 2（commit 03e7a4f5）で意図的に ON のため、
+  // 実値を false と断言せず、コード既定値が OFF であることを固定する。
+  it("コード既定値: betaConfig.js の v2_race_list_ui は OFF", () => {
+    const src = readFileSync(
+      join(ROOT, "functions/_lib/betaConfig.js"),
+      "utf8"
+    );
+    const m = src.match(/v2_race_list_ui:\s*(true|false)/);
+    assert.ok(m, "betaConfig.js に v2_race_list_ui 既定値が存在する");
+    assert.equal(m[1], "false");
+  });
+
+  it("本番設定: config/beta.json の v2_race_list_ui は存在し boolean（実値は検証しない）", () => {
     const beta = JSON.parse(
       readFileSync(join(ROOT, "config/beta.json"), "utf8")
     );
-    assert.equal(beta.ui_features.v2_race_list_ui, false);
+    assert.equal(typeof beta.ui_features.v2_race_list_ui, "boolean");
   });
 });
