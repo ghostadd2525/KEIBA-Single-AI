@@ -52,6 +52,18 @@ function realRaceMeta() {
 }
 
 /**
+ * Python 実行ファイルを決定する純粋関数。
+ * 環境変数 PYTHON_EXECUTABLE の値を引数として受け取り、未設定・空・
+ * 空白のみの場合は従来互換の "python" を返す。非空値は前後の空白を
+ * 除いた文字列をそのまま実行ファイル名として返す。シェル文字列として
+ * 解釈することはなく、spawnSync の shell は有効化しない。
+ */
+function resolvePythonExecutable(executable) {
+  const trimmed = typeof executable === "string" ? executable.trim() : "";
+  return trimmed ? trimmed : "python";
+}
+
+/**
  * Core Flag ON で explain_payload を実レース候補から生成。
  * PI EXPLAIN_V2_ENABLED は呼び出し側で付与/省略を模擬。
  */
@@ -77,21 +89,59 @@ payload = build_explain_payload(
 )
 print(json.dumps({"ok": True, "payload": payload}, ensure_ascii=False))
 `;
-  const py = spawnSync("python", ["-c", script], {
-    encoding: "utf8",
-    cwd: ROOT,
-    env: {
-      ...process.env,
-      WIN5_EXPLAIN_V2_ENABLED: coreEnabled ? "true" : "false",
-      PYTHONIOENCODING: "utf-8",
-    },
-  });
+  const py = spawnSync(
+    resolvePythonExecutable(process.env.PYTHON_EXECUTABLE),
+    ["-c", script],
+    {
+      encoding: "utf8",
+      cwd: ROOT,
+      env: {
+        ...process.env,
+        WIN5_EXPLAIN_V2_ENABLED: coreEnabled ? "true" : "false",
+        PYTHONIOENCODING: "utf-8",
+      },
+    }
+  );
   if (py.status !== 0) {
     throw new Error(`Core explain subprocess failed: ${py.stderr || py.stdout}`);
   }
   const line = (py.stdout || "").trim().split("\n").filter(Boolean).pop();
   return JSON.parse(line);
 }
+
+describe("Python executable resolution (unit)", () => {
+  it("undefined の場合は python を返す", () => {
+    assert.equal(resolvePythonExecutable(undefined), "python");
+  });
+
+  it("空文字の場合は python を返す", () => {
+    assert.equal(resolvePythonExecutable(""), "python");
+  });
+
+  it("空白のみの場合は python を返す", () => {
+    assert.equal(resolvePythonExecutable("  \t  "), "python");
+  });
+
+  it("前後に空白がある非空値はトリムされた値を返す", () => {
+    assert.equal(
+      resolvePythonExecutable("  C:\\Python\\python.exe  "),
+      "C:\\Python\\python.exe"
+    );
+  });
+
+  it("通常の実行ファイル名はそのまま返す", () => {
+    assert.equal(resolvePythonExecutable("python3"), "python3");
+    assert.equal(resolvePythonExecutable("python"), "python");
+  });
+
+  it("シェル構文を含む値は解釈せず単なる実行ファイル文字列として返す", () => {
+    const value = resolvePythonExecutable("python; echo injected");
+    assert.equal(typeof value, "string");
+    assert.equal(value, "python; echo injected");
+    const withPipe = resolvePythonExecutable(" python | tee out ");
+    assert.equal(withPipe, "python | tee out");
+  });
+});
 
 /** PI pass-through 模擬: Flag OFF なら explain_payload を落とす */
 function piResponse({ corePayload, piEnabled }) {
