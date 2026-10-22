@@ -1,0 +1,77 @@
+POST route hunk — do not replace live main.py wholesale
+======================================================
+
+Contract
+--------
+origin/main main.py SHA256=
+  a54f1eaa5b8540c2f08d8b0e656a3ccbb78142d4d1cb2c8951e4105f3630184e
+
+If live app/main.py SHA equals that value, the unified diff in
+origin_main_25a3f88.unified.diff (main.py portion) is the deploy
+diff for this file.
+
+If live app/main.py SHA differs, apply ONLY the two insertions
+below plus the other new/changed files in deploy_files.txt.
+Do not copy files/services/win5-ai/app/main.py over a divergent
+live main.py.
+
+Insertion 1 — method on Handler, immediately before do_OPTIONS
+--------------------------------------------------------------
+    def _handle_prediction_runs_post(self) -> None:
+        # Disabled check must run before importing the POST implementation
+        # module (app.predictions.runs). If that import later raises,
+        # disabled mode still returns 503 PREDICTION_RUNS_DISABLED.
+        raw = (os.environ.get("PREDICTION_RUNS_ENABLED") or "0").strip().lower()
+        if raw not in {"1", "true", "yes"}:
+            self._send(*err("PREDICTION_RUNS_DISABLED", "PREDICTION_RUNS_ENABLED is not 1", 503))
+            return
+        from .predictions.guards import (
+            ERROR_AUTH_REQUIRED,
+            ERROR_BODY_TOO_LARGE,
+            ERROR_RATE_LIMITED,
+            check_prediction_run_rate_limit,
+            parse_prediction_run_content_length,
+            prediction_run_body_limit_bytes,
+            verify_prediction_run_auth,
+        )
+        from .predictions.runs import handle_post_prediction_run
+
+        length = parse_prediction_run_content_length(self.headers.get("Content-Length"))
+        limit = prediction_run_body_limit_bytes()
+        if length is None or length > limit:
+            self._send(*err(ERROR_BODY_TOO_LARGE, "request body exceeds limit", 413))
+            return
+        try:
+            verify_prediction_run_auth(self.headers)
+            ident = (
+                self.headers.get("X-Prediction-Run-Key")
+                or self.headers.get("X-AI-Key")
+                or self.client_address[0]
+            )
+            check_prediction_run_rate_limit(str(ident))
+        except Exception as exc:
+            code = getattr(exc, "code", None)
+            if code == ERROR_AUTH_REQUIRED:
+                self._send(*err(ERROR_AUTH_REQUIRED, str(exc), 401))
+                return
+            if code == ERROR_RATE_LIMITED:
+                self._send(*err(ERROR_RATE_LIMITED, str(exc), 429))
+                return
+            raise
+        raw = self.rfile.read(length) if length else b"{}"
+        try:
+            body = json.loads(raw.decode("utf-8") or "{}")
+        except json.JSONDecodeError:
+            self._send(*err("BAD_REQUEST", "JSON body required", 400))
+            return
+        status, payload = handle_post_prediction_run(body if isinstance(body, dict) else {})
+        self._send(status, payload)
+
+Insertion 2 — first branch inside do_POST, before _check_key()
+--------------------------------------------------------------
+        if path == "/v1/prediction-runs":
+            self._handle_prediction_runs_post()
+            return
+
+Uses existing err() / json / os already present on origin/main main.py.
+PREDICTION_RUNS_ENABLED stays 0. Do not edit systemd.

@@ -1,0 +1,45 @@
+Why this pack exists
+====================
+
+Review v6 PASSed as the disabled-POST implementation review.
+Its candidate app/main.py SHA256=
+  7577973c16eb7aad395cd11acae3c8ef987a3c0533924c1994ae32afeaf818e5
+is origin/main main.py plus the two v6 insertions.
+
+Owner live-source capture v3 then proved Production app/main.py is
+DIVERGENT from origin/main:
+
+  live     7486a9ad7578e9ccdf883eaaac85f0b0de7ba329e286302b8d2f57db81d79235
+  origin   a54f1eaa5b8540c2f08d8b0e656a3ccbb78142d4d1cb2c8951e4105f3630184e
+  v6       7577973c16eb7aad395cd11acae3c8ef987a3c0533924c1994ae32afeaf818e5
+
+Wholesale replace of live main.py is forbidden. Copying v6 main.py over
+Production would delete Production-only bytes
+(WIN5 AI PredictionBundle text, Optional integration facades, and
+every other live-only line). That is forbidden.
+
+This pack (hunk-only v2):
+  - uses the captured live main.py as the only base
+  - applies the same two v6 insertions
+  - bundles origin/main 25a3f88 tar for the 52-test overlay
+  - overlays v6 files, then hunked live main.py, then live ops canon
+  - adds live-SHA / ABSENT preconditions for every deploy target
+  - adds live SHA preconditions for prediction_capacity.py and
+    final_prediction_store.py (NOT deploy candidates)
+  - designs rollback as per-file restore from the immediate backup
+  - stops at an independently testable review bundle
+
+This build's overlay status
+---------------------------
+LIVE_OPS_PRESENT_IN_THIS_BUILD=YES
+Owner return ZIPs were attached and ingested. Overlay is no longer
+fail-closed for missing live ops. STUB_OR_MOCK_SUCCESS=NO.
+
+What is unchanged from v6
+-------------------------
+  - POST hunk text (01_docs/main_py_post_route_hunk.txt)
+  - deploy candidates except main.py
+  - 022 already COMMITTED / 022_REAPPLY=NO
+  - PREDICTION_RUNS_ENABLED=0
+  - excluded corpus / RAEVAL holdout / archived 019
+  - no systemd / env / restart / POST / migrate

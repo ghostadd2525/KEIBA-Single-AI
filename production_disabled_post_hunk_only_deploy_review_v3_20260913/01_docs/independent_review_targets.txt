@@ -1,0 +1,53 @@
+Independent review targets (hunk-only bundle)
+=============================================
+
+P0-H1  live_canon three files match Owner capture SHA/SIZE
+P0-H2  candidate main.py == apply_live_post_hunk(live_canon main.py)
+       SHA256 a4970e70778da58f987df4a7316c9dfbd0a660c7a3bc31088d731869a4983a9c
+P0-H3  unified diff live -> candidate has exactly the two POST insertions
+       and no other edits
+P0-H4  candidate main.py != review-v6 main.py != origin/main main.py
+P0-H5  Production-only markers remain
+         "WIN5 AI — PredictionBundle"
+         "Optional integration facades"
+P0-H6  AST: PREDICTION_RUNS_ENABLED gate is before
+       `from .predictions.runs import`
+P0-H7  AST: do_POST prediction-runs branch is before _check_key()
+P0-H8  AST: do_PATCH is unchanged (no prediction-runs branch)
+P0-H9  compile(candidate main.py) succeeds
+P0-H10 every deploy target has LIVE_SHA or ABSENT precondition
+P0-H11 non-main deploy candidates match review-v6 file_sha256.txt
+P0-H12 FLAGS keep PRODUCTION_CODE_DEPLOY_ALLOWED=NO and
+       PREDICTION_RUNS_ENABLED=0 and EXPECT_AI_ALLOW_MIGRATION_022 unset
+P0-H13 SHA256SUMS.txt generated last; sha256sum -c PASSes
+P0-H14 no execution/apply/SSH/migrate/POST/restart scripts
+P0-H15 rollback doc is per-file restore, not schema rollback
+P0-H16 disabled env still returns 503 PREDICTION_RUNS_DISABLED
+       without importing app.predictions.runs
+
+Also
+  existing review / compare / capture / APPLY ZIPs were not overwritten
+  022_REAPPLY=NO
+  this pack does not deploy
+
+v2 additions
+------------
+P0-V2-1 live ops files are SHA-preconditioned and not in candidates/
+        If bytes are absent, overlay MUST be NOT_RUN (fail-closed)
+P0-V2-2 bundled origin/main tar SHA256=d1e6b5847f1387d696d39b87ad0dbfa4e44f8322ad1caecb75ce0969bad5edff
+P0-V2-3 overlay 52 tests x2 PASS without stub/mock once live ops present
+P0-V2-4 DELETE concurrency x20 PASS once live ops present
+P0-V2-5 GET list/detail predictions row delta=0
+P0-V2-6 Challenge lifecycle + RA status non-write
+P0-V2-7 hunk-only v1 ZIP unchanged f194488073a98a54fc4fafcadb808f32d3e0b8e53665dcb317da7c7662824db4
+P0-V2-8 PREDICTION_RUNS_ENABLED remains 0
+P0-V2-9 no execution pack
+P0-V2-10 ingest_owner_ops_canon.py rejects fixtures and wrong SHA
+
+v3 additions
+------------
+P0-V3-1 Owner return ZIPs attached; live ops bytes present and SHA match
+P0-V3-2 ingest accepts Windows ZIP members with backslash separators
+P0-V3-3 overlay 52 x2 + concurrency x20 actually RUN (not fail-closed)
+P0-V3-4 hunk-only v2 ZIP unchanged 9de787a0089ca2f6d3f5388f788a2f6246469dcc35ac3f110bcd1758952c3518
+P0-V3-5 still no execution pack; still DEPLOY_CANDIDATE=NO for the two ops files

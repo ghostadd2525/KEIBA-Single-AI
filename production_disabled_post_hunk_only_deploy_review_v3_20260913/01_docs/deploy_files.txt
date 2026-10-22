@@ -1,0 +1,71 @@
+Production deploy candidates (runtime for disabled POST code)
+============================================================
+
+services/win5-ai/app/main.py
+  SOURCE=live_canon + 01_docs/main_py_post_route_hunk.txt (two insertions)
+  FORBIDDEN=wholesale replace with origin/main or review-v6 main.py
+  CANDIDATE_SHA256=a4970e70778da58f987df4a7316c9dfbd0a660c7a3bc31088d731869a4983a9c
+  CANDIDATE_SIZE=48345
+
+services/win5-ai/app/data/db.py
+  SOURCE=review v6
+  CANDIDATE_SHA256=81fc91adbe53aa091841fd9ea097b7cbd63cf4ede4a3699bf66e1c7a2343136f
+
+services/win5-ai/app/data/repository/__init__.py
+  SOURCE=review v6
+  CANDIDATE_SHA256=9624699ec48d2af8b1fdc24ac81b8ae436c77ffa92a7f0b1378ecd17248b4c08
+
+services/win5-ai/app/core/feature_loader_bridge.py
+  SOURCE=review v6
+  CANDIDATE_SHA256=f3c25c7b87941138555158e051d0520fc705889e8a2a17e8889c7fc5325eae44
+
+services/win5-ai/app/data/migrations/022_prediction_run_idempotency.sql
+  SOURCE=review v6
+  CANDIDATE_SHA256=627910c7985276d516fbbbcc09ca15964081955452eae28ae8a773c38acf28a9
+  COPY_ONLY_IF_ABSENT=YES
+  022_REAPPLY=NO
+
+services/win5-ai/app/predictions/__init__.py
+  SOURCE=review v6
+  CANDIDATE_SHA256=d4373c31ad5aac82a2d83a53d91bc2b95607bd891d7b9286c3c154478d5dc21c
+
+services/win5-ai/app/predictions/guards.py
+  SOURCE=review v6
+  CANDIDATE_SHA256=7e6d74dd77b6645364679187a325b42676cd64d6546f5576022f19d30e6dfc82
+
+services/win5-ai/app/predictions/runs.py
+  SOURCE=review v6
+  CANDIDATE_SHA256=d04bc99281474aa4e0e78b9951df6335f6b9995c9e7328b100afd552815f35c1
+
+services/win5-ai/app/predictions/feature_pin.py
+  SOURCE=review v6
+  CANDIDATE_SHA256=49794f3671589a5ec13bc622161bac8c10609ff922c51033343dca30a31fbc36
+
+services/win5-ai/app/predictions/provenance.py
+  SOURCE=review v6
+  CANDIDATE_SHA256=2cc2585d53a3dbdffd8c7a4dc56921aafaf4ce6cd5421d1928950a34194bb704
+
+services/win5-ai/app/predictions/snapshot.py
+  SOURCE=review v6
+  CANDIDATE_SHA256=2114c953b57461f73d0450384f38df2a2b086a51e53591c77cc70b448cbde5f7
+
+Excluded from Production deploy (not in this pack)
+-------------------------------------------------
+services/win5-ai/app/predictions/corpus.py
+services/win5-ai/app/predictions/raeval84_holdout.py
+services/win5-ai/app/predictions/data/raeval84_v1_holdout_race_ids.txt
+services/win5-ai/app/data/migrations_not_apply/019_prediction_run_idempotency.sql
+services/win5-ai/app/data/migrations_not_apply/README.txt
+services/win5-ai/tests/**
+
+Do not deploy this list until an Owner execution pack is separately
+reviewed and approved. This bundle stops at review.
+
+Live canon bundled but NOT deploy candidates
+-------------------------------------------
+app/ops/prediction_capacity.py
+  DEPLOY_CANDIDATE=NO
+  SHA256=c351bd9753d20994156e00141d564a55a42891983ecab5b2c5c55a32d9908f1e
+app/ops/final_prediction_store.py
+  DEPLOY_CANDIDATE=NO
+  SHA256=40352ff56b3267533267d5de9c893f3bda8963d5fe121474f7785b0152594a12
