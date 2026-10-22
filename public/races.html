@@ -894,6 +894,15 @@
             e2.textContent = "レースがありません。";
           }
         }
+        // 一部の日付だけ取得に失敗した場合は、空状態と区別できる注記を1つだけ出す
+        // （list.innerHTML は描画ごとに作り直されるため重複しない）
+        if (
+          raceListController.catalogFailedDates &&
+          raceListController.catalogFailedDates.length
+        ) {
+          list.innerHTML +=
+            '<p class="race-list-partial-note muted" role="status">一部の日付のレース情報を取得できませんでした。</p>';
+        }
         var shapes = cardsToFilterShapes(filterCards, listDate);
         if (window.ExpectRealDataBind) {
           ExpectRealDataBind.cacheBundles(shapes);
@@ -1129,21 +1138,24 @@
               "catalog " + d
             ).then(
               function (catalog) {
-                return { date: d, items: (catalog && catalog.items) || [] };
+                return { date: d, items: (catalog && catalog.items) || [], failed: false };
               },
               function () {
-                return { date: d, items: [] };
+                // 失敗した日付を空結果と区別して保持する
+                return { date: d, items: [], failed: true };
               }
             );
           })
         ).then(function (rows) {
           var items = [];
+          var failedDates = [];
           rows.forEach(function (row) {
+            if (row.failed) failedDates.push(row.date);
             (row.items || []).forEach(function (it) {
               items.push(it);
             });
           });
-          return { dates: dates, items: items };
+          return { dates: dates, items: items, failedDates: failedDates };
         });
       }
 
@@ -1221,6 +1233,7 @@
 
       function loadV2(dateOpt) {
         raceListController.mode = "v2";
+        raceListController.catalogFailedDates = [];
         if (!window.ExpectApi || !ExpectApi.Race || !window.ExpectPredictionBind) {
           var missing = [];
           if (!window.ExpectApi || !ExpectApi.Race) missing.push("Race");
@@ -1250,6 +1263,7 @@
           renderV2Cards(cached.payload, { fromCache: true, dates: dates });
           loadCatalogsForDates(dates)
             .then(function (cat) {
+              raceListController.catalogFailedDates = cat.failedDates || [];
               rememberCatalogPostTimes(cat.items);
               renderV2Cards(hydratePayloadPostTimes(cached.payload), { dates: dates });
               return enrichDates(dates, hydratePayloadPostTimes(cached.payload));
@@ -1272,6 +1286,16 @@
 
         loadCatalogsForDates(dates)
           .then(function (cat) {
+            raceListController.catalogFailedDates = cat.failedDates || [];
+            if (
+              !cat.items.length &&
+              cat.failedDates &&
+              cat.failedDates.length >= dates.length
+            ) {
+              // 全日付の取得に失敗した場合は空状態ではなく通信エラーを出す
+              renderError("通信エラーのため一覧を更新できませんでした。");
+              return;
+            }
             rememberCatalogPostTimes(cat.items);
             var cards = catalogItemsToRaceCards(cat.items, dates[0]);
             cards = applyPostTimeAuthorityToCards(cards);

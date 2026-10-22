@@ -7,6 +7,28 @@ export function usePiProxy(env) {
   return Boolean(env.PI_BASE_URL);
 }
 
+/**
+ * 内部診断情報（piFetchStatus の戻り値専用。利用者向けレスポンスには載せない）。
+ * 上流ステータスと Content-Type のメディアタイプのみで、
+ * 本文・内部 URL・認証情報は含めない。
+ */
+function upstreamDiagnostics(res) {
+  let contentType = "";
+  try {
+    const raw =
+      res && res.headers && typeof res.headers.get === "function"
+        ? res.headers.get("content-type")
+        : null;
+    if (raw) contentType = String(raw).split(";")[0].trim().slice(0, 64).toLowerCase();
+  } catch {
+    contentType = "";
+  }
+  return {
+    upstream_status: res && typeof res.status === "number" ? res.status : null,
+    upstream_content_type: contentType || null,
+  };
+}
+
 export async function piFetch(context, path, init = {}) {
   const env = getEnv(context);
   if (!usePiProxy(env)) {
@@ -56,7 +78,17 @@ export async function piFetch(context, path, init = {}) {
     clearTimeout(timer);
   }
 
-  const text = await res.text();
+  let text;
+  try {
+    text = await res.text();
+  } catch {
+    // 利用者向けレスポンスには診断情報（上流ステータス等）を含めない
+    return jsonError(
+      "PI_BODY_READ_FAILED",
+      "PI KeibaNet API response body could not be read",
+      502
+    );
+  }
   let payload = null;
   try {
     payload = text ? JSON.parse(text) : null;
@@ -117,7 +149,19 @@ export async function piFetchStatus(context, path, init = {}) {
     };
   }
 
-  const text = await res.text();
+  let text;
+  try {
+    text = await res.text();
+  } catch {
+    return {
+      ok: false,
+      status: 502,
+      payload: null,
+      source: "pi-keibanet-api",
+      error: "PI_BODY_READ_FAILED",
+      diagnostics: upstreamDiagnostics(res),
+    };
+  }
   let payload = null;
   try {
     payload = text ? JSON.parse(text) : null;
@@ -128,6 +172,7 @@ export async function piFetchStatus(context, path, init = {}) {
       payload: null,
       source: "pi-keibanet-api",
       error: "PI_BAD_RESPONSE",
+      diagnostics: upstreamDiagnostics(res),
     };
   }
 
