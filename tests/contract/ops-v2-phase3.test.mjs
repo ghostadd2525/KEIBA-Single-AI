@@ -90,19 +90,79 @@ describe("v2 Ops Phase3 Slack SLK-N02", () => {
   });
 });
 
-describe("v2 Ops Phase3 Flag OFF 恒等性", () => {
-  it("v2_ops_dashboard 既定 false · opsV2Root hidden", () => {
-    const beta = JSON.parse(readFileSync(join(ROOT, "config/beta.json"), "utf8"));
-    assert.equal(beta.ui_features.v2_ops_dashboard, false);
-    const html = readFileSync(join(ROOT, "public/ops.html"), "utf8");
-    assert.match(html, /id="opsV2Root"[^>]*hidden/);
-    assert.ok(
-      html.includes(
-        "Latency / Errors はクライアント計測。サーバ新規メトリクス API は追加していません。"
-      )
+describe("v2 Ops Phase3 Flag 既定値", () => {
+  it("コード既定値: v2_ops_dashboard は OFF", () => {
+    // Flag の契約は 2 層に分かれる（実値を検証するものではない）:
+    //  - コード既定値: betaConfig.js の DEFAULTS では OFF
+    //  - 本番設定値: config/beta.json は Release Version 2
+    //    （commit 03e7a4f5）で意図的に ON
+    const src = readFileSync(join(ROOT, "functions/_lib/betaConfig.js"), "utf8");
+    const m = src.match(/v2_ops_dashboard:\s*(true|false)/);
+    assert.ok(m, "betaConfig.js に v2_ops_dashboard 既定値が存在する");
+    assert.equal(m[1], "false");
+  });
+});
+
+describe("v2 Ops dashboard API Flag / 権限（振る舞い）", () => {
+  // 旧 Ops V2 ダッシュボードの画面前提（opsV2Root 等）は現行
+  // Version8.9 Operations Console に存在しないため、画面ではなく
+  // API ハンドラの実際の振る舞い（ステータスコード）を検証する。
+  async function loadDashboard() {
+    const dash = await import(
+      pathToFileURL(join(ROOT, "functions/api/ops/dashboard.js")).href
     );
-    assert.ok(html.includes("Overview"));
-    assert.ok(html.includes("監視項目 Inventory"));
+    const auth = await import(
+      pathToFileURL(join(ROOT, "functions/_lib/auth.js")).href
+    );
+    const beta = await import(
+      pathToFileURL(join(ROOT, "functions/_lib/betaConfig.js")).href
+    );
+    return { dash, auth, beta };
+  }
+  function ctxWithToken(token) {
+    return {
+      env: {},
+      request: new Request("https://example.com/api/ops/dashboard", {
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+      }),
+      data: {},
+    };
+  }
+
+  it("Flag OFF では 404 FEATURE_DISABLED を返す", async () => {
+    const { dash, auth, beta } = await loadDashboard();
+    beta._setBetaConfigForTests({
+      ui_features: { v2_ops_dashboard: false },
+      admin_user_ids: [],
+    });
+    try {
+      const res = await dash.onRequestGet(
+        ctxWithToken(auth.makeStubToken("ops-user"))
+      );
+      assert.equal(res.status, 404);
+      const body = await res.json();
+      assert.equal(body.error.code, "FEATURE_DISABLED");
+    } finally {
+      beta._resetBetaConfigCacheForTests();
+    }
+  });
+
+  it("Flag ON でも非 ADMIN は 403 FORBIDDEN を返す", async () => {
+    const { dash, auth, beta } = await loadDashboard();
+    beta._setBetaConfigForTests({
+      ui_features: { v2_ops_dashboard: true },
+      admin_user_ids: [],
+    });
+    try {
+      const res = await dash.onRequestGet(
+        ctxWithToken(auth.makeStubToken("ops-user"))
+      );
+      assert.equal(res.status, 403);
+      const body = await res.json();
+      assert.equal(body.error.code, "FORBIDDEN");
+    } finally {
+      beta._resetBetaConfigCacheForTests();
+    }
   });
 });
 

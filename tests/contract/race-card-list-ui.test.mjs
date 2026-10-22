@@ -73,15 +73,19 @@ describe("raceCardSummaryHtml / prediction.status", () => {
     assert.doesNotMatch(html, /short_reason/);
   });
 
-  it("processing: 予想準備中 / 信頼度 —（印なし）", () => {
+  it("processing: 予想準備中を自信度ボックス内に表示（印なし）", () => {
     const html = bind.raceCardSummaryHtml({
       ...ready,
       prediction: { status: "processing" },
       summary: null,
     });
     assert.match(html, /data-prediction-status="processing"/);
-    assert.match(html, /予想準備中/);
-    assert.match(html, /race-item-status-note/);
+    // 状態表示は現行実装では自信度ボックス内（race-conf-status）に置かれる
+    // （prediction-bind.js: 左カラム下だと見落とされやすいため移設済み）
+    assert.match(html, /race-conf-status">予想準備中<\/span><small>自信度<\/small>/);
+    assert.match(html, /aria-label="このレースの自信度 予想準備中"/);
+    // 旧表示位置のクラスは出力されない
+    assert.doesNotMatch(html, /race-item-status-note/);
     assert.doesNotMatch(html, /race-item-honmei/);
     assert.doesNotMatch(html, /◎/);
   });
@@ -141,10 +145,27 @@ describe("Flag OFF 恒等 — raceCardHtml", () => {
 });
 
 describe("Feature Flag 既定", () => {
-  it("beta.json / ui-features で v2_race_list_ui は false", () => {
-    const beta = JSON.parse(readFileSync(join(ROOT, "public/config/beta.json"), "utf8"));
-    assert.equal(beta.ui_features.v2_race_list_ui, false);
+  // Flag の契約は 2 層に分かれる（実値を検証するものではない）:
+  //  - コード既定値: betaConfig.js（サーバー）では OFF
+  //  - クライアント既定: ui-features.js は /config/beta.json が取得できない
+  //    場合のフォールバックとして意図的に ON（v1.0 経路では 400 になり
+  //    一覧が読み込めないため）
+  //  - 本番設定値: public/config/beta.json は Release Version 2
+  //    （commit 03e7a4f5）で意図的に ON
+  it("コード既定値: betaConfig.js の v2_race_list_ui は OFF", () => {
+    const src = readFileSync(join(ROOT, "functions/_lib/betaConfig.js"), "utf8");
+    const m = src.match(/v2_race_list_ui:\s*(true|false)/);
+    assert.ok(m, "betaConfig.js に v2_race_list_ui 既定値が存在する");
+    assert.equal(m[1], "false");
+  });
+
+  it("クライアント既定: ui-features.js のフォールバック v2_race_list_ui は ON", () => {
     const ui = readFileSync(join(ROOT, "public/assets/api/ui-features.js"), "utf8");
-    assert.match(ui, /v2_race_list_ui:\s*false/);
+    assert.match(ui, /v2_race_list_ui:\s*true/);
+  });
+
+  it("本番設定: public/config/beta.json の v2_race_list_ui は存在し boolean（実値は検証しない）", () => {
+    const beta = JSON.parse(readFileSync(join(ROOT, "public/config/beta.json"), "utf8"));
+    assert.equal(typeof beta.ui_features.v2_race_list_ui, "boolean");
   });
 });

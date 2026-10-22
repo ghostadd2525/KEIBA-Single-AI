@@ -935,6 +935,8 @@
       html += "</div>";
     }
 
+    html += explainTraceHtml(explain);
+
     html += explainKaobaCtaHtml({
       explain: explain,
       race_id: raceId || "",
@@ -942,6 +944,110 @@
     });
     html += "</div>";
     return html;
+  }
+
+  /** 段階名の日本語ラベル（docs/releases/v2-explainability-design-review.md §5.3） */
+  function explainStageLabel(stage) {
+    var map = {
+      candidate_evaluation: "AI予測",
+      world_classification: "レース傾向の判定",
+      candidate_pool: "候補の絞り込み",
+      entry: "候補への追加",
+      repick: "候補の並べ替え",
+      // purchase は正式なラベルの根拠が未確認のため、汎用ラベルにフォールバックする
+      delete: "除外ルール",
+      mark_assignment: "印の付与",
+    };
+    // 未知の stage は内部 ID を露出させず、汎用ラベルにする
+    return map[stage] || "判断ステップ";
+  }
+
+  function explainStatusLabel(status) {
+    var map = {
+      applied: "適用",
+      skipped: "見送り",
+      locked: "固定",
+      not_applied: "未適用",
+    };
+    // 未知の status は内部値を露出させず、表示しない
+    return map[status] || "";
+  }
+
+  // delta.summary をユーザー向けに出せる形か。
+  // 内部コード（snake_case）や内部ステージ名を含む文は、そのまま出さず
+  // 段階ラベル＋状態のみで表す。既知の世界コードは承認済み日本語ラベルへ置換する。
+  var TRACE_CODE_LABEL = {
+    midupper_world: "上位争いになりやすいレース",
+    midupper_route: "好位・先行が活きやすい展開",
+    core_world: "実力差が出やすいレース",
+    ability: "能力差がはっきりしやすいレース",
+    strong_spread: "展開が分かれやすいレース",
+  };
+  var TRACE_STAGE_IDS = [
+    "candidate_evaluation",
+    "world_classification",
+    "candidate_pool",
+    "entry",
+    "repick",
+    "purchase",
+    "delete",
+    "mark_assignment",
+  ];
+
+  function explainTraceSummaryText(summary) {
+    var text = String(summary || "").trim();
+    if (!text) return "";
+    for (var i = 0; i < TRACE_STAGE_IDS.length; i++) {
+      if (text.indexOf(TRACE_STAGE_IDS[i]) !== -1) return "";
+    }
+    var unsafe = false;
+    text = text.replace(/[a-z][a-z0-9]*(?:_[a-z0-9]+)+/g, function (token) {
+      if (TRACE_CODE_LABEL[token]) return TRACE_CODE_LABEL[token];
+      unsafe = true;
+      return token;
+    });
+    if (unsafe) return "";
+    if (/\b(Pool|Entry|RePick|Purchase|Boundary|NEAR|honmei|PI)\b/i.test(text)) return "";
+    return text.replace(/\bCE\b/g, "AI予測");
+  }
+
+  /**
+   * v2_explain Flag ON — 判断トレースの折りたたみ表示（設計書 §2 / §5.3、方式 C）。
+   * decision_trace があり、表示可能な段階が1つ以上ある場合のみ出す。
+   * 本文は承認済み変換で安全に表示できる summary のみとし、表示できない
+   * 段階も段階ラベル＋有効な状態ラベルを残す。内部 ID・理由コード・
+   * 時刻などの生データは表示しない。
+   */
+  function explainTraceHtml(explain) {
+    var trace = (explain && explain.decision_trace) || {};
+    var stages = Array.isArray(trace.stages) ? trace.stages : [];
+    var items = "";
+    stages.forEach(function (s) {
+      if (!s || typeof s !== "object") return;
+      // 欠損・不正な stage からは架空の段階を作らない
+      var stage = typeof s.stage === "string" ? s.stage.trim() : "";
+      if (!stage) return;
+      var summary = explainTraceSummaryText(s.delta && s.delta.summary);
+      var status = explainStatusLabel(
+        typeof s.status === "string" ? s.status : ""
+      );
+      items +=
+        '<li><span class="explain-trace-stage">' +
+        escapeHtml(explainStageLabel(stage)) +
+        "</span>" +
+        (status
+          ? ' <span class="explain-trace-status">[' + escapeHtml(status) + "]</span>"
+          : "") +
+        (summary ? " " + escapeHtml(summary) : "") +
+        "</li>";
+    });
+    if (!items) return "";
+    return (
+      '<details class="explain-trace"><summary>詳しく見る（◎を選んだ流れ）</summary>' +
+      '<ol class="explain-trace-list">' +
+      items +
+      "</ol></details>"
+    );
   }
 
   /**

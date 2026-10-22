@@ -207,7 +207,12 @@ export function mapPiPredictionToBundle(piPayload, catalogRace = null, options =
     fingerprint: ux.fingerprint,
   };
   const uxNarrative = narrativeFromExplainUx(ux);
-  if (uxNarrative) {
+  // Flag OFF ≡ v1.1 契約（docs/releases/v2-explainability-design-review.md）:
+  // explain 2.1 が実際に組み立てられた場合（schema_version が
+  // single-explain/2.1 の場合）に限り、UI10 文章で narrative を上書きする。
+  // ゲート OFF / Core payload 無しでは、buildExplainV21 が返した
+  // 空の narrative を維持する。explain.ux の格納は従来どおり行う。
+  if (uxNarrative && explain.schema_version === "single-explain/2.1") {
     explain.narrative = uxNarrative;
   }
 

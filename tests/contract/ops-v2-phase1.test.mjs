@@ -158,7 +158,14 @@ describe("v2 Ops Phase1 assets", () => {
     assert.ok(existsSync(join(ROOT, "scripts/ops/monitor-prod.mjs")));
     assert.ok(existsSync(join(ROOT, "scripts/ops/opsMetrics.mjs")));
     assert.ok(existsSync(join(ROOT, "scripts/ops/opsSlack.mjs")));
+    // Flag の契約は 2 層に分かれる: コード既定値（betaConfig.js）は OFF、
+    // 本番設定（config/beta.json）は Release Version 2（commit 03e7a4f5）で
+    // 意図的に ON。ここではコード既定値の OFF を固定する。
+    const src = readFileSync(join(ROOT, "functions/_lib/betaConfig.js"), "utf8");
+    const m = src.match(/v2_ops_dashboard:\s*(true|false)/);
+    assert.ok(m, "betaConfig.js に v2_ops_dashboard 既定値が存在する");
+    assert.equal(m[1], "false");
     const beta = JSON.parse(readFileSync(join(ROOT, "config/beta.json"), "utf8"));
-    assert.equal(beta.ui_features.v2_ops_dashboard, false);
+    assert.equal(typeof beta.ui_features.v2_ops_dashboard, "boolean");
   });
 });

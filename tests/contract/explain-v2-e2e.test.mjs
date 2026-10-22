@@ -251,7 +251,14 @@ describe("Explainability Phase 1 E2E — Flag 組み合わせ", () => {
 
       const bind = loadPredictionBind(c.web);
       const html = bind.reasonsSectionHtml(bundle);
-      const isV2Ui = html.includes("explain-v2") && html.includes("explain-decision-key");
+      // v2 UI の判定は現行 DOM 契約（explain-v2 / explain-summary /
+      // explain-confidence）で行う。決定因子のデータは上段で
+      // bundle.explain.reason.decision_key として検証済みであり、
+      // 旧クラス名 explain-decision-key は必須条件にしない。
+      const isV2Ui =
+        html.includes("explain-v2") &&
+        html.includes("explain-summary") &&
+        html.includes("explain-confidence");
       const isLegacyList = html.includes("reason-list") && !html.includes("explain-v2");
       const isMutedEmpty = html.includes("理由データなし");
 
@@ -292,9 +299,15 @@ describe("Explainability Phase 1 E2E — 実レース表示フィールド", () 
 
     const bind = loadPredictionBind(true);
     const html = bind.reasonsSectionHtml(bundle);
-    assert.match(html, /explain-decision-key/);
+    // 表示契約は現行 DOM で検証する: 要約文に本命（馬番・馬名）と
+    // 決定の根拠が含まれること。旧クラス名 explain-decision-key への
+    // 依存は除去する（decision_key のデータ自体は上で検証済み）。
     assert.match(html, /explain-summary/);
+    assert.match(html, /4番コルドンブルーを◎にしたのは/);
+    assert.match(html, /2番手との差も相対的に大きい/);
     assert.match(html, /explain-confidence/);
+    // decision_trace の UI 表示要否は未決定のため、この assertion は
+    // 今回の修正対象から切り離し、現状のまま残す（削除・成功扱いにはしない）。
     assert.match(html, /explain-trace/);
     assert.doesNotMatch(html, /理由データなし/);
     assert.doesNotMatch(html, /undefined/);
