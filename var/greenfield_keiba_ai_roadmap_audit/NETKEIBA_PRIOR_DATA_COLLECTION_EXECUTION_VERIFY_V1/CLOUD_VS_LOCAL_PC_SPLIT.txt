@@ -1,0 +1,48 @@
+# Cloud vs Local PC data split
+# Verified_at_JST: 2026-11-25T12:51:00+0900 (approx; see file mtimes below)
+# Rule: CLOUD absent ≠ LOCAL PC absent. LOCAL_PC_DATA_FOUND must stay UNKNOWN without PC access.
+
+CLOUD_ENVIRONMENT=YES
+CLOUD_EXISTING_NETKEIBA_DATA=PARTIAL
+CLOUD_NETKEIBA_FILE_COUNT=9
+CLOUD_NETKEIBA_TOTAL_SIZE=1252444
+CLOUD_HORSE_ID_COUNT=144
+CLOUD_RACE_ID_COUNT=10
+CLOUD_SYNC_SOURCE=YES
+CLOUD_SYNC_SOURCE_PATH=git:https://github.com/ghostadd2525/KEIBA-Single-AI (repo-committed samples only; no LFS objects; no S3/Drive/rsync/EBS mount of PC data)
+LOCAL_PC_DIRECT_ACCESS=NO
+LOCAL_PC_DATA_STATUS=UNKNOWN
+LOCAL_PC_DATA_FOUND=UNKNOWN
+NETWORK_FETCH_FROM_CLOUD=NO
+FETCH_SUCCESS_COUNT=0
+UNKNOWN_HORSE_COUNT=3117
+CLOUD_RECOVERABLE_UNKNOWN_COUNT=0
+FINAL_DECISION=CLOUD_PARTIAL_SAMPLE_ONLY_PC_DATA_UNKNOWN
+
+## Environment
+- Root FS: /dev/vdc only mounted. /dev/vda and /dev/vdb present but unmounted/unused for data.
+- /mnt empty. /data absent.
+- Extra mount: fuse.agent-store on /cursor/stores (agent artifacts; empty of netkeiba data).
+- No rclone/aws/gdrive configs found under /home/ubuntu.
+- scp/sftp binaries present; no mounted shared folder from PC.
+
+## Strict real-data inventory (not source code)
+PATH_ROOT=services/pi-keibanet-api/data/debug/horse_history_diag + data/pipeline/*/horse_history_raw.csv + tests/fixtures/*.html
+FILE_COUNT=9
+TOTAL_SIZE=1252444
+OLDEST_MTIME=2026-11-25T10:10:08.964332+09:00 (checkout/snapshot mtime; not original capture time)
+NEWEST_MTIME=2026-11-25T10:10:09.120155+09:00
+SAMPLE_FILE=services/pi-keibanet-api/data/debug/horse_history_diag/horse_2022103522_ajax.json
+HASH=c10c93e1682a4af00a7604d6d1cddcf45652110eee0e84d0cd7c54b1ec62c7f3
+HORSE_ID_COUNT_UNION≈144 (horse_id columns in two horse_history_raw.csv + diag primary; fixtures add markup IDs)
+RACE_ID_COUNT_UNION≈30
+
+Note: Broader pi-keibanet-api/data tree has 24 csv/html/json (~1.33MB) with similar horse coverage. No RapPace/ResultRefund archives. No PC dump outside git tree.
+
+## Outside-repo search
+/home/ubuntu /tmp /opt/cursor /cursor/stores /mnt /var/tmp: no additional db.netkeiba.com / ajax_horse_results data files.
+
+## Interpretation
+- Cloud has ONLY small git-synced demo/diag/pipeline samples (≪3117).
+- This does NOT prove Local PC lacks larger netkeiba archives.
+- Prior NOT_COLLECTED remains valid for cloud campaign A; amend with PC=UNKNOWN.
