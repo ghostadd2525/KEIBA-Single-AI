@@ -88,6 +88,10 @@ def get_meta(engine: str, item: dict[str, Any]) -> dict[str, Any]:
     }
     if item.get("core_race_id"):
         meta["core_race_id"] = item["core_race_id"]
+    if item.get("canonical_race_id"):
+        meta["canonical_race_id"] = item["canonical_race_id"]
+    if item.get("source_race_id"):
+        meta["source_race_id"] = item["source_race_id"]
     if item.get("feature_source"):
         meta["feature_source"] = item["feature_source"]
     if item.get("fallback_reason"):
@@ -255,10 +259,17 @@ class RealAiPredictionSource:
         return items, meta
 
     def get_with_meta(self, race_id: str) -> tuple[dict[str, Any] | None, dict[str, Any] | None]:
-        rid = self._resolve_public_id(str(race_id or "").strip())
+        source_race_id = str(race_id or "").strip()
+        ident = resolve_identity(source_race_id)
+        rid = self._resolve_public_id(source_race_id)
         if not rid:
             return None, None
         bundle, item = self._infer(rid, self._catalog_race(rid))
+        # additive provenance only — do not add race_type / do not rewrite dirty fields
+        if ident and ident.core_race_id:
+            item["canonical_race_id"] = ident.core_race_id
+            item.setdefault("core_race_id", ident.core_race_id)
+        item["source_race_id"] = source_race_id
         return bundle, get_meta("real", item)
 
     def list_bundles(self, date: str = "", venue: str = "") -> list[dict[str, Any]]:

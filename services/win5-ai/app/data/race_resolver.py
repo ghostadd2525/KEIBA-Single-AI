@@ -13,9 +13,11 @@ from dataclasses import dataclass, field
 from datetime import date, datetime, timezone
 from typing import Any
 
+from .catalog_index import CatalogIndex, CatalogRace, get_catalog_index
 from .repository import RaceRepository
 
-# ai_platform 由来の venue code（検証データ基準）
+# ai_platform 由来の venue code（検証データ基準 / Core レガシー空間）
+# Catalog Win5 label_no（開催順）とは別空間。03 を Catalog の競馬場コードと読んではならない。
 _VENUE_CODE_TO_JA: dict[str, str] = {
     "01": "札幌",
     "02": "函館",
@@ -78,6 +80,8 @@ class RaceIdentity:
     catalog_race_id: str | None = None
     public_race_id: str | None = None
     source: str = "unknown"
+    id_namespace: str = "unknown"
+    numeric_race_id: str | None = None
     race_row: dict[str, Any] | None = field(default=None, repr=False)
 
     def as_meta(self) -> dict[str, Any]:
@@ -89,14 +93,24 @@ class RaceIdentity:
             "core_race_id": self.core_race_id,
             "catalog_race_id": self.catalog_race_id,
             "public_race_id": self.public_race_id,
+            "id_namespace": self.id_namespace,
+            "numeric_race_id": self.numeric_race_id,
         }
 
 
 class RaceResolver:
     """任意表記 → RaceIdentity（双方向変換含む）。"""
 
-    def __init__(self, repo: RaceRepository | None = None) -> None:
+    def __init__(
+        self,
+        repo: RaceRepository | None = None,
+        catalog: CatalogIndex | None = None,
+    ) -> None:
         self.repo = repo or RaceRepository()
+        self._catalog_override = catalog
+
+    def _catalog(self) -> CatalogIndex:
+        return self._catalog_override or get_catalog_index()
 
     # --- public API ---
 
@@ -115,6 +129,7 @@ class RaceResolver:
         if not parsed:
             return None
 
+        parsed = self._bridge_from_catalog(parsed, raw)
         identity = self._hydrate(parsed)
         db_hit = self._lookup_db(identity)
         if db_hit:
@@ -201,6 +216,7 @@ class RaceResolver:
                     venue_en=_VENUE_JA_TO_EN.get(venue_ja),
                     venue_code=_VENUE_JA_TO_CODE.get(venue_ja),
                     source="ui_label",
+                    id_namespace="ui_label",
                 )
 
         # slug: 20260719_fukushima_11
@@ -217,9 +233,10 @@ class RaceResolver:
                 venue_code=_VENUE_JA_TO_CODE.get(str(venue_ja)),
                 public_race_id=raw.lower(),
                 source="slug",
+                id_namespace="slug",
             )
 
-        # catalog: 2026-07-19-福島-11
+        # venue-qualified: 2026-07-19-福島-11 / 2026-08-16-札幌-10
         cat = re.fullmatch(r"(\d{4}-\d{2}-\d{2})-([\u4e00-\u9fff]+)-(\d+)", raw)
         if cat:
             venue_ja = cat.group(2)
@@ -231,21 +248,34 @@ class RaceResolver:
                 venue_code=_VENUE_JA_TO_CODE.get(venue_ja),
                 catalog_race_id=raw,
                 source="catalog",
+                id_namespace="venue_qualified",
             )
 
-        # core: 2026-07-19-04-11
-        core = re.fullmatch(r"(\d{4}-\d{2}-\d{2})-(\d{2})-(\d+)", raw)
-        if core:
-            code = core.group(2).zfill(2)
+        # JRA numeric: 202601010810
+        if re.fullmatch(r"\d{12}", raw):
+            hit = self._catalog().lookup_numeric(raw)
+            if hit:
+                return self._identity_from_catalog(hit, raw=raw, id_namespace="numeric")
+
+        # YYYY-MM-DD-NN-NN は Catalog (Win5 label_no) と Core (JRA venue) で同形。
+        # 形式から namespace を推測しない。Catalog identity の exact lookup を先に行う。
+        dotted = re.fullmatch(r"(\d{4}-\d{2}-\d{2})-(\d{2})-(\d+)", raw)
+        if dotted:
+            hit = self._catalog().lookup_catalog_id(raw)
+            if hit:
+                return self._identity_from_catalog(hit, raw=raw, id_namespace="catalog")
+            # Core namespace fallback（レガシー feature key / 明示 Core ID）
+            code = dotted.group(2).zfill(2)
             venue_ja = _VENUE_CODE_TO_JA.get(code, meta.get("venue") or code)
             return RaceIdentity(
-                date=core.group(1),
+                date=dotted.group(1),
                 venue_ja=str(venue_ja),
-                race_no=int(core.group(3)),
+                race_no=int(dotted.group(3)),
                 venue_code=code,
                 venue_en=_VENUE_JA_TO_EN.get(str(venue_ja)),
                 core_race_id=raw,
                 source="core",
+                id_namespace="core",
             )
 
         # free text with embedded slug
@@ -263,9 +293,60 @@ class RaceResolver:
                 venue_en=_VENUE_JA_TO_EN.get(venue_ja),
                 venue_code=_VENUE_JA_TO_CODE.get(venue_ja),
                 source="meta",
+                id_namespace="meta",
             )
 
         return None
+
+    def _identity_from_catalog(
+        self,
+        hit: CatalogRace,
+        *,
+        raw: str,
+        id_namespace: str,
+    ) -> RaceIdentity:
+        public = raw.lower() if id_namespace == "slug" else None
+        return RaceIdentity(
+            date=hit.date,
+            venue_ja=hit.course,
+            race_no=hit.race_no,
+            venue_code=hit.jra_venue_code or None,
+            venue_en=_VENUE_JA_TO_EN.get(hit.course),
+            core_race_id=hit.core_race_id or None,
+            catalog_race_id=hit.catalog_id,
+            public_race_id=public,
+            source="catalog",
+            id_namespace=id_namespace,
+            numeric_race_id=hit.numeric_race_id or None,
+        )
+
+    def _bridge_from_catalog(self, identity: RaceIdentity, raw: str) -> RaceIdentity:
+        """Catalog 行があれば Core ID を JRA numeric / course から埋める（形式推測はしない）。"""
+        if identity.id_namespace in ("catalog", "numeric") and identity.core_race_id:
+            return identity
+        cat = self._catalog()
+        hit = cat.lookup_any(raw)
+        if hit is None and identity.numeric_race_id:
+            hit = cat.lookup_numeric(identity.numeric_race_id)
+        if hit is None and identity.date and identity.venue_ja and identity.race_no:
+            hit = cat.lookup_date_course_race(
+                identity.date, identity.venue_ja, identity.race_no
+            )
+        if hit is None:
+            return identity
+        identity.date = hit.date
+        identity.venue_ja = hit.course
+        identity.race_no = hit.race_no
+        if hit.jra_venue_code:
+            identity.venue_code = hit.jra_venue_code
+        identity.venue_en = _VENUE_JA_TO_EN.get(hit.course) or identity.venue_en
+        identity.core_race_id = hit.core_race_id or identity.core_race_id
+        identity.catalog_race_id = hit.catalog_id
+        identity.numeric_race_id = hit.numeric_race_id or identity.numeric_race_id
+        if identity.id_namespace in ("unknown", "core", ""):
+            identity.id_namespace = "catalog"
+            identity.source = "catalog"
+        return identity
 
     def _hydrate(self, identity: RaceIdentity) -> RaceIdentity:
         if not identity.venue_en:
@@ -358,6 +439,11 @@ def get_resolver() -> RaceResolver:
     if _default_resolver is None:
         _default_resolver = RaceResolver()
     return _default_resolver
+
+
+def reset_resolver_for_tests() -> None:
+    global _default_resolver
+    _default_resolver = None
 
 
 def resolve_identity(
