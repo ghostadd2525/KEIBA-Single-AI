@@ -1,0 +1,87 @@
+Live SHA / ABSENT preconditions — required before any later deploy
+=================================================================
+
+If a live file SHA does not match, STOP.
+If a path that must be ABSENT is present, STOP.
+This pack does not execute the deploy.
+
+Captured live files (Owner capture v3 ZIP, verified)
+----------------------------------------------------
+app/main.py
+  PRECONDITION=LIVE_SHA
+  LIVE_SHA256=7486a9ad7578e9ccdf883eaaac85f0b0de7ba329e286302b8d2f57db81d79235
+  SIZE=45983
+  SOURCE=extracted/app/main.py from
+    live_source_capture_v3_windows_20260913.zip SHA256
+    f460685bcb59d837cca2f9b2c9154f51bf1d354f062ad6c26810bd86f2103a4a
+  NOTE=DIVERGENT from origin/main and from review-v6. Hunk-only.
+
+app/data/repository/__init__.py
+  PRECONDITION=LIVE_SHA
+  LIVE_SHA256=557713a95b0e9f5a8f798eeb5e525c85adab3063b2e6529ee0be2155bb29992b
+  SIZE=12823
+  EQUALS_ORIGIN_MAIN=YES
+
+app/core/feature_loader_bridge.py
+  PRECONDITION=LIVE_SHA
+  LIVE_SHA256=e06e6ee971e2ae8d07bbcee4501ab9024052de52dd119ea007cb71481ae5272e
+  SIZE=1408
+  EQUALS_ORIGIN_MAIN=YES
+
+Not in the capture ZIP — recorded by live-compare v5 (GO, not approval)
+----------------------------------------------------------------------
+app/data/db.py
+  PRECONDITION=LIVE_SHA
+  LIVE_SHA256=8a86f514b1b08fde9a90a71acc99eac3f6fc9c2aeae200e8787721093592ef1a
+  JUDGMENT=MATCH_ORIGIN_MAIN
+  OWNER_LOG_SHA256=4a65fd2ca5f54284268975d90d28e65222c785421b204567bb3bf1780be28c94
+  NOTE=If live db.py SHA differs at deploy time, STOP. Recapture.
+
+app/data/migrations/022_prediction_run_idempotency.sql
+  PRECONDITION=ABSENT
+  IF_PRESENT=STOP
+  022_REAPPLY=NO
+  SCHEMA=COMMITTED (do not run the SQL)
+  NOTE=Copy the candidate file later only if still ABSENT. Never apply it.
+
+app/predictions/__init__.py          PRECONDITION=ABSENT  IF_PRESENT=STOP
+app/predictions/guards.py            PRECONDITION=ABSENT  IF_PRESENT=STOP
+app/predictions/runs.py              PRECONDITION=ABSENT  IF_PRESENT=STOP
+app/predictions/feature_pin.py       PRECONDITION=ABSENT  IF_PRESENT=STOP
+app/predictions/provenance.py        PRECONDITION=ABSENT  IF_PRESENT=STOP
+app/predictions/snapshot.py          PRECONDITION=ABSENT  IF_PRESENT=STOP
+
+MUST_ABSENT (never deploy; presence is STOP)
+--------------------------------------------
+app/predictions/corpus.py
+app/predictions/raeval84_holdout.py
+app/predictions/data/raeval84_v1_holdout_race_ids.txt
+app/data/migrations/019_prediction_run_idempotency.sql
+app/data/migrations_not_apply/019_prediction_run_idempotency.sql
+
+Runtime flags that must stay as recorded
+----------------------------------------
+PREDICTION_RUNS_ENABLED=UNSET or 0   (after deploy still 0)
+EXPECT_AI_ALLOW_MIGRATION_022=UNSET or 0
+EXPECT_AI_ALLOW_MIGRATION_019=UNSET or 0
+SYSTEMD unchanged
+ENV unchanged
+No restart/reload in this pack
+No migrate
+No POST
+
+Live canon NOT deploy — SHA precondition only
+---------------------------------------------
+app/ops/prediction_capacity.py
+  PRECONDITION=LIVE_SHA
+  LIVE_SHA256=c351bd9753d20994156e00141d564a55a42891983ecab5b2c5c55a32d9908f1e
+  SIZE=15241
+  DEPLOY_CANDIDATE=NO
+  ROLE=LIVE_CANON_AND_SHA_PRECONDITION
+
+app/ops/final_prediction_store.py
+  PRECONDITION=LIVE_SHA
+  LIVE_SHA256=40352ff56b3267533267d5de9c893f3bda8963d5fe121474f7785b0152594a12
+  SIZE=22775
+  DEPLOY_CANDIDATE=NO
+  ROLE=LIVE_CANON_AND_SHA_PRECONDITION
