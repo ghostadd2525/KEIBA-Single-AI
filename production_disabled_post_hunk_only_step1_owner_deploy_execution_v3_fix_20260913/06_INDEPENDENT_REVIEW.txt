@@ -1,0 +1,29 @@
+Independent review checklist (do not run on Production)
+=======================================================
+
+1. SHA256SUMS.txt verifies; do not overwrite v1/v2/probe ZIPs.
+2. OWNER_DEPLOY_V3.ps1 ParseFile on Windows PowerShell 5.1:
+   PARSE_ERROR_COUNT=0. Linux pwsh 7.4.6 already 0.
+3. test_wrapper_paths.ps1 PATH_TEST_FAIL_COUNT=0.
+4. Unapproved: unset OWNER_PRODUCTION_STEP1_V3_DEPLOY_APPROVED =>
+   exit 2, SSH_STARTED=NO,
+   HALT_REASON=OWNER_PRODUCTION_STEP1_V3_DEPLOY_APPROVED_UNSET.
+   Wrapper never assigns the approval env.
+5. v1 or v2 approval env without v3 => OLD_EXECUTION_PACK_RERUN_REFUSED.
+6. Restart argv remains exactly:
+   sudo -n systemctl restart expect-ai.service
+7. After deploy restart SUCCESS, wait_until_ready polls
+   systemctl show (read-only) + GET /health.
+   Bounds: timeout 45s, interval 1.0s, HTTP timeout 2s, max 45 attempts.
+   No infinite wait. No time.sleep(45) only.
+8. Timeout => READINESS_TIMEOUT => code restore + one recovery restart
+   (same v2 boundary). No readiness poll after recovery.
+9. Candidate 10 files. 022 SQL is not in tar or DEPLOY_TARGETS.
+   Schema 022 remains read-only COMMITTED. MIGRATE=NO. 022_REAPPLY=NO.
+10. Disabled POST /v1/prediction-runs still 503 PREDICTION_RUNS_DISABLED.
+    GET /v1/predictions, Conversation/Challenge/RA GET contracts unchanged.
+11. ENV_CHANGED=NO, SYSTEMD_CHANGED=NO.
+12. Do not set approval. Do not SSH. Do not merge the PR.
+    Do not overwrite original v3 ZIP 6ee27587....
+
+python3 run_tests.py must be ALL_PASS on the review machine copy.

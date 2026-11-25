@@ -1,0 +1,47 @@
+Live SHA / ABSENT preconditions — re-check before any write
+==========================================================
+
+Mismatch => STOP before write. Do not restart. Do not restore schema.
+
+LIVE_SHA targets (must exist, SHA must match)
+---------------------------------------------
+app/main.py
+  LIVE_SHA256=7486a9ad7578e9ccdf883eaaac85f0b0de7ba329e286302b8d2f57db81d79235
+  SIZE=45983
+app/data/db.py
+  LIVE_SHA256=8a86f514b1b08fde9a90a71acc99eac3f6fc9c2aeae200e8787721093592ef1a
+app/data/repository/__init__.py
+  LIVE_SHA256=557713a95b0e9f5a8f798eeb5e525c85adab3063b2e6529ee0be2155bb29992b
+app/core/feature_loader_bridge.py
+  LIVE_SHA256=e06e6ee971e2ae8d07bbcee4501ab9024052de52dd119ea007cb71481ae5272e
+
+ABSENT targets (presence => STOP; deploy-created files)
+---------------------------------
+app/predictions/__init__.py
+app/predictions/guards.py
+app/predictions/runs.py
+app/predictions/feature_pin.py
+app/predictions/provenance.py
+app/predictions/snapshot.py
+
+MUST_ABSENT (never deploy; presence => STOP)
+--------------------------------------------
+app/data/migrations/022_prediction_run_idempotency.sql
+app/predictions/corpus.py
+app/predictions/raeval84_holdout.py
+app/predictions/data/raeval84_v1_holdout_race_ids.txt
+app/data/migrations/019_prediction_run_idempotency.sql
+app/data/migrations_not_apply/019_prediction_run_idempotency.sql
+
+Live ops SHA (verify, do not deploy)
+------------------------------------
+app/ops/prediction_capacity.py
+  LIVE_SHA256=c351bd9753d20994156e00141d564a55a42891983ecab5b2c5c55a32d9908f1e
+app/ops/final_prediction_store.py
+  LIVE_SHA256=40352ff56b3267533267d5de9c893f3bda8963d5fe121474f7785b0152594a12
+
+Runtime flags (read-only; halt if effective 1)
+----------------------------------------------
+PREDICTION_RUNS_ENABLED=UNSET or 0
+EXPECT_AI_ALLOW_MIGRATION_022=UNSET or 0
+EXPECT_AI_ALLOW_MIGRATION_019=UNSET or 0

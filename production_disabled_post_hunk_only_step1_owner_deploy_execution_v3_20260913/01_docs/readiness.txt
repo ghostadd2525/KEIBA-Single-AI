@@ -1,0 +1,51 @@
+Post-restart bounded readiness polling (v3 only)
+================================================
+
+When
+----
+After deploy-phase restart_once SUCCESS, before schema postcheck and
+check_internal_regression. Not used after recovery restart.
+Recovery remains v2: restore code, one sudo -n restart, then halt.
+
+Why
+---
+v2 judged GET /health in one shot immediately after systemctl restart
+returned. HTTP_LOCAL_TIMEOUT_S=3. Connect/timeout became HTTP_FAIL
+even though the unit had a new MainPID. v3 waits for the process to
+answer /health, with a hard bound.
+
+What is polled (read-only)
+--------------------------
+1. systemctl show expect-ai.service (same snapshot_unit as v2;
+   no restart/reload/edit)
+2. GET http://127.0.0.1:${AI_PORT}/health
+
+PASS when
+---------
+LoadState=loaded AND ActiveState=active AND MainPID>0
+AND GET /health status=200 with JSON status=ok.
+
+FAIL / restore
+--------------
+ActiveState=failed => HALT_REASON=READINESS_UNIT_FAIL
+Poll budget exhausted => HALT_REASON=READINESS_TIMEOUT
+READINESS_OUTCOME=TIMEOUT or FAIL
+Then existing restore_code_only + maybe_recovery_restart.
+
+Bounds (explicit; not infinite; not a single long sleep)
+--------------------------------------------------------
+READINESS_POLL_TIMEOUT_S=45
+READINESS_POLL_INTERVAL_S=1.0
+READINESS_HTTP_TIMEOUT_S=2
+READINESS_MAX_ATTEMPTS=45
+Loop sleeps min(interval, remaining_poll) only between attempts.
+
+Must not
+--------
+Edit systemd unit files
+Change Environment / EnvironmentFiles
+systemctl reload / daemon-reload
+Arbitrary time.sleep(45) without polling
+Change GET /health contract
+Enable POST /v1/prediction-runs
+Deploy ops files or 022 SQL execution

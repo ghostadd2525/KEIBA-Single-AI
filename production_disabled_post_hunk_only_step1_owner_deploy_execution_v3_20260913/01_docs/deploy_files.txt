@@ -1,0 +1,67 @@
+Production deploy candidates (工程1 disabled POST code)
+=====================================================
+
+Count=11. Source=hunk-only review v3 candidates/.
+
+services/win5-ai/app/main.py
+  SOURCE=live_canon + two review-v6 POST insertions
+  FORBIDDEN=wholesale replace with origin/main or review-v6 main.py
+  CANDIDATE_SHA256=a4970e70778da58f987df4a7316c9dfbd0a660c7a3bc31088d731869a4983a9c
+  CANDIDATE_SIZE=48345
+  PRECONDITION=LIVE_SHA
+  LIVE_SHA256=7486a9ad7578e9ccdf883eaaac85f0b0de7ba329e286302b8d2f57db81d79235
+
+services/win5-ai/app/data/db.py
+  CANDIDATE_SHA256=81fc91adbe53aa091841fd9ea097b7cbd63cf4ede4a3699bf66e1c7a2343136f
+  PRECONDITION=LIVE_SHA
+  LIVE_SHA256=8a86f514b1b08fde9a90a71acc99eac3f6fc9c2aeae200e8787721093592ef1a
+
+services/win5-ai/app/data/repository/__init__.py
+  CANDIDATE_SHA256=9624699ec48d2af8b1fdc24ac81b8ae436c77ffa92a7f0b1378ecd17248b4c08
+  PRECONDITION=LIVE_SHA
+  LIVE_SHA256=557713a95b0e9f5a8f798eeb5e525c85adab3063b2e6529ee0be2155bb29992b
+
+services/win5-ai/app/core/feature_loader_bridge.py
+  CANDIDATE_SHA256=f3c25c7b87941138555158e051d0520fc705889e8a2a17e8889c7fc5325eae44
+  PRECONDITION=LIVE_SHA
+  LIVE_SHA256=e06e6ee971e2ae8d07bbcee4501ab9024052de52dd119ea007cb71481ae5272e
+
+services/win5-ai/app/data/migrations/022_prediction_run_idempotency.sql
+  CANDIDATE_SHA256=627910c7985276d516fbbbcc09ca15964081955452eae28ae8a773c38acf28a9
+  PRECONDITION=ABSENT
+  COPY_ONLY_IF_ABSENT=YES
+  022_REAPPLY=NO
+  NEVER_EXECUTE_SQL=YES
+
+services/win5-ai/app/predictions/__init__.py
+  CANDIDATE_SHA256=d4373c31ad5aac82a2d83a53d91bc2b95607bd891d7b9286c3c154478d5dc21c
+  PRECONDITION=ABSENT
+
+services/win5-ai/app/predictions/guards.py
+  CANDIDATE_SHA256=7e6d74dd77b6645364679187a325b42676cd64d6546f5576022f19d30e6dfc82
+  PRECONDITION=ABSENT
+
+services/win5-ai/app/predictions/runs.py
+  CANDIDATE_SHA256=d04bc99281474aa4e0e78b9951df6335f6b9995c9e7328b100afd552815f35c1
+  PRECONDITION=ABSENT
+
+services/win5-ai/app/predictions/feature_pin.py
+  CANDIDATE_SHA256=49794f3671589a5ec13bc622161bac8c10609ff922c51033343dca30a31fbc36
+  PRECONDITION=ABSENT
+
+services/win5-ai/app/predictions/provenance.py
+  CANDIDATE_SHA256=2cc2585d53a3dbdffd8c7a4dc56921aafaf4ce6cd5421d1928950a34194bb704
+  PRECONDITION=ABSENT
+
+services/win5-ai/app/predictions/snapshot.py
+  CANDIDATE_SHA256=2114c953b57461f73d0450384f38df2a2b086a51e53591c77cc70b448cbde5f7
+  PRECONDITION=ABSENT
+
+Not deploy candidates (SHA verify only)
+---------------------------------------
+app/ops/prediction_capacity.py
+  LIVE_SHA256=c351bd9753d20994156e00141d564a55a42891983ecab5b2c5c55a32d9908f1e
+  DEPLOY_CANDIDATE=NO
+app/ops/final_prediction_store.py
+  LIVE_SHA256=40352ff56b3267533267d5de9c893f3bda8963d5fe121474f7785b0152594a12
+  DEPLOY_CANDIDATE=NO

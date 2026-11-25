@@ -1,0 +1,40 @@
+Why v3 exists
+=============
+
+Hunk-only v2 was fail-closed:
+  OVERLAY_SUITE=NOT_RUN REASON=LIVE_CANON_OPS_MISSING
+Owner return ZIPs were recorded by SHA but not attached to that workspace.
+
+Owner then attached both Windows return ZIPs. Verified here:
+
+  prediction_capacity_capture_windows_20260913.zip
+    SHA256=c04f27e6bc9016927c9a902268ccfeb5a8ac8a62117ca74948b90bc7cbbea843
+    CAPTURE_RESULT=GO
+    extracted app/ops/prediction_capacity.py
+      SIZE=15241
+      SHA256=c351bd9753d20994156e00141d564a55a42891983ecab5b2c5c55a32d9908f1e
+      DEPLOY_CANDIDATE=NO
+
+  final_prediction_store_capture_windows_20260913_02.zip
+    SHA256=f24d10d28ab99286894e36f60ff53fba3b89c087cac8afaa607c95a5b7670f8d
+    CAPTURE_RESULT=GO
+    extracted app/ops/final_prediction_store.py
+      SIZE=22775
+      SHA256=40352ff56b3267533267d5de9c893f3bda8963d5fe121474f7785b0152594a12
+      DEPLOY_CANDIDATE=NO
+
+v3 adds, without changing the 11 deploy candidates:
+  - ingest those two live files into live_canon/app/ops
+  - accept Windows ZIP members that use backslash separators
+  - run the in-bundle 52 x2 + concurrency x20 overlay
+  - keep Challenge / RA / GET row-delta=0 extra regressions
+
+v2 ingest would fail on these Owner ZIPs:
+  zip_member_count:...:prediction_capacity.py:0
+because namelist entries are like
+  prediction_capacity_capture_windows_20260913\extracted\app\ops\prediction_capacity.py
+
+Hunk-only v1 ZIP is not overwritten:
+  f194488073a98a54fc4fafcadb808f32d3e0b8e53665dcb317da7c7662824db4
+Hunk-only v2 ZIP is not overwritten:
+  9de787a0089ca2f6d3f5388f788a2f6246469dcc35ac3f110bcd1758952c3518

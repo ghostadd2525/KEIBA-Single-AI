@@ -1,0 +1,36 @@
+Code-file restore only. Schema rollback is forbidden.
+=====================================================
+
+PRODUCTION_CODE_DEPLOY_ALLOWED=NO until Owner approval.
+SCHEMA_ROLLBACK=NO always.
+AUTO_DROP_INDEX=NO
+AUTO_DROP_COLUMN=NO
+AUTO_DELETE_ROWS=NO
+SQLITE_BACKUP_RESTORE=NO
+
+Backup (before any replace)
+---------------------------
+BACKUP_DIR=/home/ubuntu/KEIBA-Single-AI/var/code_backups/<UTC-stamp>/
+For each of the 11 deploy paths P relative to WIN5_ROOT:
+  if P exists and is a regular file (O_NOFOLLOW):
+    copy bytes -> BACKUP_DIR/P and record SHA256
+  else:
+    write BACKUP_DIR/P.ABSENT
+Do not backup live ops files (not deploy targets).
+
+Restore (on failure after any write)
+------------------------------------
+For each deploy path P:
+  if BACKUP_DIR/P.ABSENT exists:
+    delete P only if this deploy created it
+  else:
+    copy BACKUP_DIR/P over P (same-dir staging + os.replace)
+Do not restore origin/main or review-v6 main.py.
+The only legal restore source is the immediate pre-deploy backup.
+
+After restore
+-------------
+If a deploy restart already ran: one recovery restart of expect-ai.service.
+If no restart had run: do not restart (process still has old code).
+Schema 022 stays COMMITTED.
+PREDICTION_RUNS_ENABLED stays unset/0.

@@ -1,0 +1,32 @@
+v3 vs v2 (execution pack only)
+==============================
+
+Unchanged
+---------
+- 11 deploy candidate file bytes and embedded tar.gz
+  CANDIDATE_TAR_GZ_SHA256=16f6eb1fc70fa57b000fb323c4519171c01a831d03bced558511c9d3f89c6c47
+- Restart argv: sudo -n systemctl restart expect-ai.service
+- RESTART_TIMEOUT_S=60, restart SUCCESS/FAIL/UNKNOWN classification
+- Recovery: code restore only + at most one recovery restart
+- Schema 022 COMMITTED, MIGRATE=NO, 022_REAPPLY=NO
+- disabled POST /v1/prediction-runs 503 PREDICTION_RUNS_DISABLED
+- GET /v1/predictions and Conversation / Challenge / RA GET contracts
+- Live ops files are SHA preconditions only, not candidates
+- 022 SQL is copy-if-absent, never executed
+- No env / systemd definition edits
+- Cursor does not SSH
+- Remote deadline 300s, wrapper 400000ms
+
+Changed
+-------
+- Pack name / wrapper OWNER_DEPLOY_V3.ps1
+- Approval env OWNER_PRODUCTION_STEP1_V3_DEPLOY_APPROVED=1
+- v1 and v2 approval env alone => OLD_EXECUTION_PACK_RERUN_REFUSED
+- After deploy restart SUCCESS: wait_until_ready()
+  polls unit + GET /health until PASS or READINESS_TIMEOUT
+- HALT_REASON HTTP_FAIL from a single immediate /health is no longer
+  the first post-restart gate; readiness timeout uses READINESS_TIMEOUT
+- ROOT_CAUSE_ADDRESSED=POST_RESTART_STARTUP_WAIT_INSUFFICIENT
+
+v1 ZIP a8d226c3... and v2 ZIP 20a273c7... are not overwritten.
+Probe ZIP d9cff97f... is not overwritten.

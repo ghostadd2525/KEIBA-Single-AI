@@ -1,0 +1,44 @@
+Required runtime regression after approved replace+restart
+=========================================================
+
+Internal (127.0.0.1:${AI_PORT})
+-------------------------------
+GET /health                         200 (after readiness poll PASS)
+GET /v1/predictions                 200, row delta=0
+GET /v1/predictions/{race_id}       200 if list has a race_id; skip if empty
+GET /v1/conversation/health         200
+GET /v1/challenge/active            200 or 401 or 403, row delta=0
+GET /v1/admin/results/status        200 or 401 or 403, row delta=0
+POST /v1/prediction-runs            DISABLED_PROBE only
+                                    503 error.code=PREDICTION_RUNS_DISABLED
+                                    row delta=0
+
+POST policy
+-----------
+POST /v1/prediction-runs is the sole allowed POST, as a disabled probe.
+No Conversation chat POST.
+No Challenge write POST.
+No RA run POST.
+No other POST.
+
+HTTP caps (endpoint-separated; from 022 measurement v2)
+------------------------------------------------------
+INTERNAL_HEALTH 65536
+INTERNAL_LIST   2097152
+INTERNAL_DETAIL 262144
+PUBLIC_JSON     262144
+PUBLIC_HTML     524288
+
+Public GET smoke (optional in pack-test; required on Owner run)
+--------------------------------------------------------------
+GET https://expect-keiba.com/ and /race.html /races.html
+GET https://keiba-single-ai.pages.dev/ and /race.html /races.html
+GET /api/health and /api/predictions on both origins
+SITE_UI_VISUAL_CHECKED=NO
+
+PASS
+----
+POST_DEPLOY_REGRESSION_PASS=YES only if internal checks pass and
+predictions row delta remains 0 and flags stay unset/0.
+If public smoke cannot run: POST_DEPLOY_REGRESSION_PASS=PENDING_PUBLIC_SMOKE
+and not final SUCCESS.

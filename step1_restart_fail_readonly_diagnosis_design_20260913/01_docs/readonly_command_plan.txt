@@ -1,0 +1,113 @@
+Read-only command plan (design only; Cursor does not SSH)
+=========================================================
+
+Host: ubuntu@13.231.5.5
+Owner Windows PowerShell 5.1 SSH stdin only, if later executed.
+This file is the allowed argv list. It is not an execution pack.
+Do not run OWNER_DEPLOY.ps1.
+Do not create a new deploy pack to carry these commands.
+
+Hard denylist (never argv, including under sudo -n)
+---------------------------------------------------
+systemctl restart
+systemctl reload
+systemctl try-restart
+systemctl reload-or-restart
+systemctl daemon-reload
+systemctl start
+systemctl stop
+systemctl kill
+systemctl enable
+systemctl disable
+systemctl edit
+systemctl set-environment
+systemctl unset-environment
+systemctl mask
+systemctl unmask
+systemctl reset-failed
+sudo -n systemctl restart expect-ai.service
+sudo systemctl restart ...
+OWNER_DEPLOY.ps1
+file write / replace / restore / chmod of the 11 targets
+POST
+migrate / sqlite write
+env file edits
+systemd unit file edits
+
+Allowed sudo only
+-----------------
+sudo -n -l
+sudo -n -l -U ubuntu
+If sudo -n -l fails (password required): record SUDO_N_L_STATUS=FAIL
+and stop. No interactive sudo.
+
+A. Identity and unit (no restart)
+---------------------------------
+id
+systemctl --version
+systemctl show expect-ai.service --property=Id,LoadState,ActiveState,SubState,MainPID,FragmentPath,User,Group,Environment,EnvironmentFiles,ActiveEnterTimestamp,ActiveEnterTimestampUSec,InactiveEnterTimestamp,NRestarts,Result,ExecMainStartTimestamp
+
+Optional read of /proc/<MainPID>/comm and /proc/<MainPID>/stat field 22
+(starttime). Do not write. Do not kill.
+
+B. Historical restart rc/stderr (journal only)
+----------------------------------------------
+journalctl -u expect-ai.service --since "2026-09-13 06:17:00" --until "2026-09-13 06:22:00" --no-pager
+journalctl -u expect-ai.service -n 80 --no-pager
+Look for: Access denied, Interactive authentication required,
+Failed to restart, Timed out, start-limit, MainPID changes, auth.
+Redact secrets, Environment=, API keys, request bodies.
+Do not recreate the failure by restarting.
+
+C. sudo permission list
+-----------------------
+sudo -n -l
+sudo -n -l -U ubuntu
+Parse only. Never pass restart as a sudo command.
+
+D. 11-file restore state
+------------------------
+WIN5_ROOT=/home/ubuntu/KEIBA-Single-AI/services/win5-ai
+Hash with O_NOFOLLOW. Do not follow symlinks. Do not write.
+LIVE_SHA four files vs restore_sha_canon.txt
+lstat ABSENT seven paths (must not exist)
+lstat MUST_ABSENT paths (must not exist)
+ops two files vs canon (not deploy targets)
+List BACKUP_DIR=/home/ubuntu/KEIBA-Single-AI/var/code_backups/20260913T061824Z
+read-only. Do not copy backup bytes back.
+
+E. Flags
+--------
+From systemctl show Environment + EnvironmentFiles (read those files)
+and /proc/<MainPID>/environ if readable.
+Print only:
+  PREDICTION_RUNS_ENABLED
+  EXPECT_AI_ALLOW_MIGRATION_022
+  EXPECT_AI_ALLOW_MIGRATION_019
+Must be unset or 0. Do not export or write them.
+
+F. Schema
+---------
+DB=/home/ubuntu/KEIBA-Single-AI/services/win5-ai/var/expect_ai.db
+sqlite3 URI mode=ro + PRAGMA query_only=ON
+SELECT version FROM schema_migrations ORDER BY 1
+PRAGMA table_info(predictions)
+SELECT sql FROM sqlite_master WHERE name='uq_predictions_idempotency_key_not_null'
+No BEGIN IMMEDIATE / ALTER / CREATE / DROP / INSERT / UPDATE / DELETE.
+
+G. Optional HTTP
+----------------
+GET /health only, if needed to see whether the process is serving.
+No POST. No /v1/prediction-runs.
+
+Diagnosis complete when
+-----------------------
+Each of A-G is recorded. UNKNOWN is allowed for historical restart rc.
+Do not auto-build a deploy pack from the result.
+Do not re-run OWNER_DEPLOY.ps1.
+REAPPLY_ALLOWED=NO
+OWNER_DEPLOY_PS1_RERUN_ALLOWED=NO
+PRODUCTION_CODE_DEPLOY_ALLOWED=NO
+POST_CODE_PRODUCTION_DEPLOYED=NO
+NEXT_STEP remains READ_ONLY_RESTART_FAILURE_AND_RESTORE_STATE_DIAGNOSIS
+until this matrix is filled from live read-only stdout.

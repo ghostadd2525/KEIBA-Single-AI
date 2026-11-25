@@ -1,0 +1,60 @@
+Restart contract v3 — expect-ai.service only
+============================================
+
+RESTART_REQUIRED_FOR_CODE_TO_TAKE_EFFECT=YES
+RESTART_UNIT=expect-ai.service
+RESTART_COMMAND=sudo -n systemctl restart expect-ai.service
+RESTART_ARGV=("sudo", "-n", "systemctl", "restart", "expect-ai.service")
+RESTART_COUNT_MAX_PER_PHASE=1
+RESTART_TIMEOUT_S=60
+SUDO=SUDO_N_SYSTEMCTL_RESTART_EXPECT_AI_ONLY
+UNSUDODED_SYSTEMCTL_RESTART=REFUSED
+OTHER_UNITS=NO
+SYSTEMD_EDIT=NO
+ENV_FILE_EDIT=NO
+
+v2 restart permission is resolved. v3 keeps the same argv.
+
+Transcript (always)
+-------------------
+SYSTEMCTL_RESTART_EXIT
+SYSTEMCTL_RESTART_TIMEOUT
+SYSTEMCTL_RESTART_STDOUT_REDACTED
+SYSTEMCTL_RESTART_STDERR_REDACTED
+RESTART_OUTCOME=SUCCESS|FAIL|UNKNOWN
+RESTART_UNIT_LOADSTATE / ACTIVESTATE / MAINPID / EXECMAINSTARTTIMESTAMP
+RESTART_MAINPID_CHANGED
+RESTART_EXECMAINSTARTTIMESTAMP_CHANGED
+
+Timeout
+-------
+Wait up to 60s. If the wait times out, do not treat that as automatic
+FAIL. Read-only systemctl show and classify:
+  SUCCESS: loaded + active + MainPID>0 AND (MainPID or ExecMainStartTimestamp changed)
+  FAIL: unit not active, or still the pre-deploy pid/timestamp
+  UNKNOWN: show failed / insufficient evidence
+UNKNOWN after files were replaced => restore code, then one recovery restart.
+
+Deploy restart conditions (phase=DEPLOY)
+----------------------------------------
+Same pre-replace gates as v2, then exactly one sudo -n restart.
+Then wait_until_ready() (see 01_docs/readiness.txt).
+
+Recovery restart conditions (phase=RECOVERY)
+--------------------------------------------
+Unchanged from v2.
+Run when code restore completed AND (deploy restart succeeded OR
+RESTART_OUTCOME=UNKNOWN).
+Exactly one recovery restart with the same sudo -n argv.
+If failure happened before any restart attempt: recovery count=0.
+No readiness poll after recovery.
+
+Post-success checks
+-------------------
+LoadState=loaded ActiveState=active MainPID>0
+MainPID or ExecMainStartTimestamp updated vs pre-deploy
+Bounded readiness poll PASS (unit + GET /health)
+GET /health 200 (regression, after readiness)
+POST /v1/prediction-runs 503 PREDICTION_RUNS_DISABLED
+GET regression
+predictions row delta=0

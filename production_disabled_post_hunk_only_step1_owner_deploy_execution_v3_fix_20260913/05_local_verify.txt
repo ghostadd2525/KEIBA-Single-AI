@@ -1,0 +1,22 @@
+Pack-author local verify (not Production)
+=========================================
+
+python3 run_tests.py => ALL_PASS
+sha256sum -c SHA256SUMS.txt => ALL OK after run_tests
+PARSER_ENGINE=pwsh 7.4.6 (Linux). WINDOWS_PS51_PARSEFILE=OWNER_CONFIRM_AFTER_INDEPENDENT_REVIEW
+ParseFile OWNER_DEPLOY_V3.ps1: PARSE_ERROR_COUNT=0
+path test: PATH_TEST_FAIL_COUNT=0
+Unapproved wrapper: SSH_STARTED=NO, PACK_SHA_GATE=PASS,
+HALT_REASON=OWNER_PRODUCTION_STEP1_V3_DEPLOY_APPROVED_UNSET exit 2
+v1 or v2 approval env without v3: HALT_REASON=OLD_EXECUTION_PACK_RERUN_REFUSED
+022 SQL is not a deploy candidate. Presence on disk => MUST_ABSENT_PRESENT.
+Candidate count=10. MIGRATE=NO. 022_REAPPLY=NO.
+Readiness polling unchanged from v3.
+Cursor did not SSH. Pack was not executed on Production.
+
+PRODUCTION_CODE_DEPLOY_ALLOWED=NO
+OWNER_DEPLOY_APPROVED=NO
+POST_CODE_PRODUCTION_DEPLOYED=NO
+OLD_EXECUTION_PACK_RERUN_ALLOWED=NO
+V2_RERUN_ALLOWED=NO
+ORIGINAL_V3_ZIP_UNCHANGED=YES

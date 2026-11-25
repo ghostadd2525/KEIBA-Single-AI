@@ -1,0 +1,16 @@
+Owner Windows PowerShell 5.1 only. Cursor does not SSH.
+
+1. Unzip this pack. Do not overwrite existing ZIPs.
+2. sha256sum -c SHA256SUMS.txt  (review machine) — Owner wrapper also
+   re-checks SHA256SUMS + payload SHA before SSH.
+3. Independent review PASS is required before any approval env is set.
+4. Do not set OWNER_PRODUCTION_STEP1_DEPLOY_APPROVED in this review step.
+5. Later approved run only:
+   $env:OWNER_PRODUCTION_STEP1_DEPLOY_APPROVED = '1'
+   .\02_powershell\OWNER_DEPLOY.ps1
+   Wrapper never assigns that env itself.
+6. Remote command is python3 - with pregenerated owner_deploy_stdin.py
+   bytes on SSH stdin. No SCP. No sudo. No remote mkdir from wrapper.
+7. Restart, if reached, is a single systemctl restart expect-ai.service
+   inside the payload after successful replace.
+8. Return the Downloads output transcript. Do not merge the PR.

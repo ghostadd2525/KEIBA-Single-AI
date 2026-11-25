@@ -1,0 +1,37 @@
+Rollback design — file restore only. Not approved to run.
+=========================================================
+
+PRODUCTION_CODE_DEPLOY_ALLOWED=NO
+OWNER_DEPLOY_APPROVED=NO
+SCHEMA_ROLLBACK=NO
+AUTOMATIC_RESTORE=NO
+
+This is a design for a later Owner execution pack. This review
+bundle does not restore Production files.
+
+When a later approved deploy copies the files in
+01_docs/deploy_files.txt, the Operator first writes a timestamped
+backup of each target:
+
+  For each deploy path P:
+    if P exists and is a regular file:
+      copy P -> BACKUP_DIR/P  (bytes + recorded SHA256)
+    else:
+      write BACKUP_DIR/P.ABSENT
+
+Rollback (code only):
+  For each deploy path P:
+    if BACKUP_DIR/P.ABSENT exists:
+      delete P only if P was created by the deploy
+    else:
+      copy BACKUP_DIR/P over P
+  Do not DROP INDEX.
+  Do not restore the SQLite backup.
+  Do not roll back schema 022 (COMMITTED, stays).
+  PREDICTION_RUNS_ENABLED stays 0.
+  Do not change systemd or env.
+  Restart is Owner-only and is not part of this bundle.
+
+Do not use origin/main or review-v6 main.py as the rollback image.
+The only legal restore source is the immediate pre-deploy backup
+of the live files.

@@ -1,0 +1,14 @@
+Pack-author local verify (not Production)
+=========================================
+
+python3 run_tests.py => ALL_PASS
+sha256sum -c SHA256SUMS.txt => ALL OK after run_tests
+PARSER_ENGINE=pwsh (Linux). WINDOWS_PS51_PARSEFILE=OWNER_CONFIRM_AFTER_INDEPENDENT_REVIEW
+Unapproved wrapper: SSH_STARTED=NO, PACK_SHA_GATE=PASS, HALT_REASON=OWNER_PRODUCTION_STEP1_DEPLOY_APPROVED_UNSET
+Local fake-tree: LIVE_SHA mismatch STOP, ABSENT mismatch STOP, restore-only on failure,
+single expect-ai.service restart on success, recovery restart after post-restart failure.
+Cursor did not SSH. Pack was not executed on Production.
+
+PRODUCTION_CODE_DEPLOY_ALLOWED=NO
+OWNER_DEPLOY_APPROVED=NO
+POST_CODE_PRODUCTION_DEPLOYED=NO

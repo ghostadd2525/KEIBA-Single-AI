@@ -1,0 +1,57 @@
+Restore-state SHA / ABSENT canon (pre-deploy)
+=============================================
+
+WIN5_ROOT=/home/ubuntu/KEIBA-Single-AI/services/win5-ai
+Hash regular files with O_NOFOLLOW. Do not follow symlinks.
+Do not write.
+
+LIVE_SHA (must exist after restore)
+----------------------------------
+app/main.py
+  SHA256=7486a9ad7578e9ccdf883eaaac85f0b0de7ba329e286302b8d2f57db81d79235
+  SIZE=45983
+app/data/db.py
+  SHA256=8a86f514b1b08fde9a90a71acc99eac3f6fc9c2aeae200e8787721093592ef1a
+app/data/repository/__init__.py
+  SHA256=557713a95b0e9f5a8f798eeb5e525c85adab3063b2e6529ee0be2155bb29992b
+app/core/feature_loader_bridge.py
+  SHA256=e06e6ee971e2ae8d07bbcee4501ab9024052de52dd119ea007cb71481ae5272e
+
+ABSENT (must not exist after restore)
+-------------------------------------
+app/data/migrations/022_prediction_run_idempotency.sql
+app/predictions/__init__.py
+app/predictions/guards.py
+app/predictions/runs.py
+app/predictions/feature_pin.py
+app/predictions/provenance.py
+app/predictions/snapshot.py
+
+MUST_ABSENT (presence is STOP for any later deploy; not created by step1)
+------------------------------------------------------------------------
+app/predictions/corpus.py
+app/predictions/raeval84_holdout.py
+app/predictions/data/raeval84_v1_holdout_race_ids.txt
+app/data/migrations/019_prediction_run_idempotency.sql
+app/data/migrations_not_apply/019_prediction_run_idempotency.sql
+
+Live ops (not deploy targets; SHA must still match)
+---------------------------------------------------
+app/ops/prediction_capacity.py
+  SHA256=c351bd9753d20994156e00141d564a55a42891983ecab5b2c5c55a32d9908f1e
+app/ops/final_prediction_store.py
+  SHA256=40352ff56b3267533267d5de9c893f3bda8963d5fe121474f7785b0152594a12
+
+Candidate SHA (must NOT be live after restore)
+----------------------------------------------
+app/main.py candidate
+  SHA256=a4970e70778da58f987df4a7316c9dfbd0a660c7a3bc31088d731869a4983a9c
+If live main.py equals this candidate SHA, restore did not complete.
+
+BACKUP_DIR
+----------
+From Owner transcript:
+  /home/ubuntu/KEIBA-Single-AI/var/code_backups/20260913T061824Z
+Read-only list the backup tree. Do not copy backup files back again.
+If CODE_RESTORED=YES, disk should already match pre-deploy SHA/ABSENT.
+Independent live re-hash is still required (pack did not emit RESTORED_SHA_*).

@@ -1,0 +1,46 @@
+Restart contract — expect-ai.service only
+=========================================
+
+RESTART_REQUIRED_FOR_CODE_TO_TAKE_EFFECT=YES
+RESTART_UNIT=expect-ai.service
+RESTART_COMMAND=systemctl restart expect-ai.service
+RESTART_COUNT_MAX_PER_PHASE=1
+SUDO=NO
+OTHER_UNITS=NO
+SYSTEMD_EDIT=NO
+ENV_FILE_EDIT=NO
+
+Not executed before Owner deploy approval
+-----------------------------------------
+Wrapper SSH_STARTED=NO unless OWNER_PRODUCTION_STEP1_DEPLOY_APPROVED=1.
+Unapproved payload never writes and never restarts.
+This review run must not restart Production.
+
+Deploy restart conditions (phase=DEPLOY)
+----------------------------------------
+1. Owner deploy approval is 1
+2. Pack/payload SHA already verified
+3. LIVE_SHA/ABSENT re-verified
+4. Live ops SHA verified and not deployed
+5. Per-target backup recorded
+6. Staging + syntax check + replace succeeded
+7. Post-replace SHA == candidate SHA for all 11
+8. Watched flags still unset/0
+Then exactly one restart of expect-ai.service.
+
+Recovery restart conditions (phase=RECOVERY)
+--------------------------------------------
+Run only when:
+  code restore completed AND deploy restart already ran.
+Exactly one recovery restart so restored bytes are loaded.
+If failure happened before any restart: recovery restart count=0.
+
+Verification in this pack (local, not Production)
+-------------------------------------------------
+test_deploy_local.py mocks systemctl:
+  unapproved => restart count 0
+  success => deploy restart count 1, recovery 0
+  fail before replace => 0
+  fail after restart => deploy 1 + recovery 1
+  argv is exactly systemctl restart expect-ai.service
+  sudo never present
